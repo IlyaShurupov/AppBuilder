@@ -40,3 +40,7 @@ set_target_properties(Types
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+set_target_properties(Types
+   PROPERTIES
+   FOLDER "Common")
