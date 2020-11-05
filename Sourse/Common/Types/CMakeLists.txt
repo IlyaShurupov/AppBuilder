@@ -11,6 +11,7 @@ set (TYPES_HEADERS
     "public/Ray.h"
     "public/Timer.h"
     "public/Mesh.h"
+    "public/Stack.h"
 )
 
 # Source files
@@ -22,6 +23,7 @@ set (TYPES_SOURCES
     "Ray.cpp"
     "Timer.cpp"
     "Mesh.cpp"
+    "Stack.cpp"
 )
 
 # Create the library
