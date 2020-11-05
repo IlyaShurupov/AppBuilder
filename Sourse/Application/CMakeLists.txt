@@ -14,6 +14,7 @@ set (TYPES_HEADERS
 set (TYPES_SOURCES
     "Logic/Logic.cpp"
     "Window/Window.cpp"
+    "Entry.cpp"
 )
 
 # Create the library
