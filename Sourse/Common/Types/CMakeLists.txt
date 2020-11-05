@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 
 project(Types)
 
-# Types project
-
 set (TYPES_HEADERS
     "public/Vec2.h"
     "public/Vec3.h"
@@ -27,20 +25,9 @@ set (TYPES_SOURCES
 )
 
 # Create the library
-add_library(Types ${TYPES_HEADERS} ${TYPES_SOURCES})
+add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
-target_include_directories(Types PUBLIC
+target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
               $<INSTALL_INTERFACE:include>
 )
-
-set_target_properties(Types
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-
-set_target_properties(Types
-   PROPERTIES
-   FOLDER "Common")
