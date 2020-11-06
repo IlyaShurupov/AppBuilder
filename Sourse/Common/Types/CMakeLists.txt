@@ -12,6 +12,7 @@ set (TYPES_HEADERS
     "public/Timer.h"
     "public/Mesh.h"
     "public/Stack.h"
+    "public/Matrix.h"
 )
 
 # Source files
@@ -23,13 +24,13 @@ set (TYPES_SOURCES
     "Ray.cpp"
     "Timer.cpp"
     "Mesh.cpp"
-    "Stack.cpp"
+    "Matrix.cpp"
 )
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-              $<INSTALL_INTERFACE:include>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
+              $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>
 )
