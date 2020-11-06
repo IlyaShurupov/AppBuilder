@@ -10,6 +10,7 @@ set (TYPES_HEADERS
     "public/LinkedList.h"
     "public/Ray.h"
     "public/Timer.h"
+    "public/Types.h"
     "public/Mesh.h"
     "public/Stack.h"
     "public/Matrix.h"
@@ -30,7 +31,7 @@ set (TYPES_SOURCES
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
-              $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>
-)
+#target_include_directories(${PROJECT_NAME} PUBLIC
+#             $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
+#             $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>
+#)

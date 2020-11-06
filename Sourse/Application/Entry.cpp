@@ -1,7 +1,5 @@
 
-#include "Stack.h"
-#include "Memory.h"
-#include "Matrix.h"
+#include "Types.h"
 
 int main() {
 

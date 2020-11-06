@@ -21,8 +21,6 @@ set (TYPES_SOURCES
 add_executable(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Types/public>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types/public>
               $<INSTALL_INTERFACE:/Sourse/Common/Types/public>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
-              $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>
 )
