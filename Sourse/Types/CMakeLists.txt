@@ -36,6 +36,15 @@ set (TYPES_SOURCES
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+#target_include_directories(${PROJECT_NAME} PUBLIC include)
+
 #target_include_directories(${PROJECT_NAME} PUBLIC
 #             $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
 #             $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>

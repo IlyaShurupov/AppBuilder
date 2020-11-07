@@ -6,11 +6,23 @@ Ray::Ray() {
 Ray::~Ray() {
 }
 
+void WorldTransform(Trig* trig, Vec3f* pos, Mat3f* mat) {
+
+	mat->Transform(trig->V0);
+	mat->Transform(trig->V1);
+	mat->Transform(trig->V2);
+
+	trig->V0 + *pos;
+	trig->V1 + *pos;
+	trig->V2 + *pos;
+}
+
 void Ray::Cast(List<Object>* objects, float ray_length)
 {
 	FOREACH_NODE(Object, objects, ob_node) {
+		Object* obj = ob_node->Data;
 
-		StaticMesh* mesh = ob_node->Data->GetStaticMeshComponent();
+		StaticMesh* mesh = obj->GetStaticMeshComponent();
 		if (!mesh) {
 			continue;
 		}
@@ -18,12 +30,17 @@ void Ray::Cast(List<Object>* objects, float ray_length)
 		List<Trig>* trigs = &mesh->Trigs;
 		FOREACH_NODE(Trig, trigs, trig_node) {
 
+			Trig trig = Trig(*trig_node->Data);
+
+			WorldTransform(&trig, &obj->Pos, &obj->TransformMat);
+
 			Vec3f HitPos;
-			if (!trig_node->Data->RayHit(this, HitPos)) {
+			if (!trig.RayHit(this, HitPos)) {
 				continue;
 			}
 
-			float dist = (HitPos - Pos).Length();
+			Vec3f tmp = (HitPos - Pos);
+			float dist = (float)tmp.Length();
 			if (dist < ray_length) {
 				
 				HitData.Hit = true;

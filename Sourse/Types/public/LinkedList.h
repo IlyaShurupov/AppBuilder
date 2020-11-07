@@ -11,7 +11,7 @@ public:
 
 	Node<Type>* Next;
 	Node<Type>* Prev;
-	int idx;
+	size_t idx;
 
 public:
 
@@ -130,7 +130,7 @@ void List<Type>::del(size_t index_start, size_t index_end) {
 	// Deleting Items
 	Node<Type>* del_node;
 	Buff = first;
-	for (int i = index_start; i <= index_end; i++) {
+	for (size_t i = index_start; i <= index_end; i++) {
 		del_node = Buff;
 		Buff = Buff->Next;
 		delete del_node;
@@ -159,7 +159,7 @@ void List<Type>::del(size_t index_start, size_t index_end) {
 
 	//Changing indexes
 	if (next) {
-		for (int i = index_end + 1; i < length - 1; i++) {
+		for (size_t i = index_end + 1; i < length - 1; i++) {
 			next->idx -= (idx_diff + 1);
 			next = next->Next;
 		}
@@ -222,7 +222,9 @@ size_t List<Type>::len() {
 
 template<typename Type>
 List<Type>::~List() {
-	del(length - 1);
+	if (length) {
+		del(0, length - 1);
+	}
 }
 
 
