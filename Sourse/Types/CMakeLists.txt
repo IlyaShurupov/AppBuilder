@@ -14,7 +14,10 @@ set (TYPES_HEADERS
     "public/Mesh.h"
     "public/Stack.h"
     "public/Matrix.h"
+    "public/Object.h"
+    "public/Trig.h"
 )
+
 
 # Source files
 set (TYPES_SOURCES
@@ -26,6 +29,8 @@ set (TYPES_SOURCES
     "Timer.cpp"
     "Mesh.cpp"
     "Matrix.cpp"
+    "Object.cpp"
+    "Trig.cpp"
 )
 
 # Create the library

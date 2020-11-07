@@ -3,6 +3,8 @@
 #include <math.h>
 
 #define Pi float(3.1415926535897932384626433832795)
+#define FMAX 3.40282e+038
+#define EPSILON_RAYCAST 0.0000001
 
 class Vec3f
 {
@@ -43,7 +45,7 @@ public:
 
 	// Vector Properties
 
-	float operator * (Vec3f& vec);
+	float Dot(Vec3f& vec);
 	double Length();
 	float LengthSqured();
 	Vec3f& Dir();
@@ -173,7 +175,7 @@ inline Vec3f& Vec3f::operator/(float val) {
 
 // Vector Properties
 
-inline float Vec3f::operator * (Vec3f& vec) {
+inline float Vec3f::Dot(Vec3f& vec) {
 	return (x * vec.x + y * vec.y + z * vec.z);
 }
 
