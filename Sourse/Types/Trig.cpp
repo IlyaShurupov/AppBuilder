@@ -60,7 +60,8 @@ bool Trig::RayHit(class Ray* ray, Vec3f& HitPos)
 
 	// ray intersection
 	if (t > EPSILON_RAYCAST) {
-		HitPos = ray->Pos + ray->Dir * t;
+		Vec3f tmp = ray->Dir * t;
+		HitPos = ray->Pos + tmp;
 		return true;
 	}
 	// There is a line intersection but not a ray intersection.

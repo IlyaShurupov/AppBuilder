@@ -17,10 +17,16 @@ set (TYPES_SOURCES
     "Entry.cpp"
 )
 
-# Create the library
+link_directories(${CMAKE_BINARY_DIR}/bin)
+
+# Create proj
 add_executable(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types/public>
               $<INSTALL_INTERFACE:/Sourse/Common/Types/public>
 )
+
+#target_link_libraries (${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Sourse/Types)
+target_link_libraries(${PROJECT_NAME} Types)
+#install(TARGETS ${PROJECT_NAME} DESTINATION bin)
