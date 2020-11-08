@@ -100,7 +100,7 @@ void CalcColorFromCamRay(Color4& color, Ray& ray, RenderSettings* settings) {
 }
 
 void WritePassToBuff(FBuff* Buff, int i, int j, CycleData& CData, Color4& color) {
-	int pos_x = (CData.x_passes - i) * CData.pxl_size - CData.pxl_size/2;
+	int pos_x = i * CData.pxl_size - CData.pxl_size/2;
 	int pos_y = j* CData.pxl_size - CData.pxl_size / 2;
 	Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
 }

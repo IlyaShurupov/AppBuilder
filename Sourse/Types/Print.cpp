@@ -12,7 +12,7 @@
 #define PROP(prop) prop.get()
 
 void print(Vec3f& vec) {
-	ENTR COUT "Vector3f:" << VEC(vec) NL;
+	ENTR COUT "Vec3f: " << VEC(vec) NL;
 }
 
 void print(Mat3f& mat) {
