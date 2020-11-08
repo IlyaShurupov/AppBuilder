@@ -1,15 +1,25 @@
 #pragma once
+#include "Property.h"
 
 enum OpState {
 	RUNNING,
-	FINESHED,
+	FINISHED,
 	CANCELED,
+	EXECUTE,
+	INVOKE
 };
 
 struct Operator {
-	OpState(*Invoke)(Context& C, void* CustomData) = nullptr;
-	OpState(*Execute)(Context& C, void* CustomData) = nullptr;
-	OpState(*Modal)(Context& C, void* CustomData) = nullptr;
-	OpState(*Poll)(Context& C, void* CustomData) = nullptr;
+	OpState State;
+
+	void (*Invoke)(struct Context& C, Operator& op) = nullptr;
+	void (*Execute)(struct Context& C, Operator& op) = nullptr;
+	void (*Modal)(struct Context& C, Operator& op) = nullptr;
+	void (*Poll)(struct Context& C, Operator& op) = nullptr;
+
 	void* CustomData = nullptr;
+
+	List<void>* Properties;
 };
+
+void OpsInit(struct Context& C);

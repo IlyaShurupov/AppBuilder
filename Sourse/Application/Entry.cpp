@@ -1,7 +1,7 @@
 
 #include "Types.h"
 #include "RayCast.h"
-#include <iostream>
+#include "public/Logic.h"
 
 
 void test1() {
@@ -15,10 +15,10 @@ void test1() {
 
 	Trig NewTrig = Trig(v0, v1, v2);
 
-	NewMesh.Trigs.add(NewTrig);
+	NewMesh.Trigs.add(&NewTrig);
 
 	List<Object> Objects;
-	Objects.add(NewObj);
+	Objects.add(&NewObj);
 
 	Ray NewRay;
 	NewRay.Dir.y = -1.f;
@@ -34,7 +34,7 @@ void test2() {
 	print(mat);
 	List<Mat3f> matlist;
 
-	matlist.add(mat);
+	matlist.add(&mat);
 	print(matlist);
 
 	Stack<List<Mat3f>> stack;
@@ -61,7 +61,7 @@ void test3() {
 	Object NewMeshObj;
 	StaticMesh NewMesh;
 	Trig NewTrig = Trig(Vec3f(), Vec3f(0.f, 0.f, 4.f), Vec3f(4.f, 0.f, 0.f));
-	NewMesh.Trigs.add(NewTrig);
+	NewMesh.Trigs.add(&NewTrig);
 	NewMeshObj.SetStaticMeshComponent(&NewMesh);
 
 	Object NewCamObj;
@@ -75,8 +75,8 @@ void test3() {
 	NewCamObj.TransformMat.I.assign(-1, 0, 0);
 	NewCamObj.TransformMat.J.assign(0, 0, 1);
 	NewCamObj.TransformMat.K.assign(0, 1, 0);
-	Objects.add(NewCamObj);
-	Objects.add(NewMeshObj);
+	Objects.add(&NewCamObj);
+	Objects.add(&NewMeshObj);
 
 	RayCast::RenderSettings RND_set;
 	RND_set.setObjList(&Objects);
@@ -89,5 +89,6 @@ void test3() {
 }
 
 int main() {
-	test3();
+	Context C;
+	MainLoop(C);
 }

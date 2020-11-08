@@ -6,6 +6,7 @@ project(Application)
 
 
 set (HEADERS
+    "public/Logic.h"
     "public/Event.h"
     "public/Operator.h"
     "public/Context.h"

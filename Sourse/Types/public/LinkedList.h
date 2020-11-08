@@ -47,7 +47,7 @@ private:
 public:
 	List();
 	~List();
-	void add(Type& data);
+	void add(Type* data);
 	Type* operator[](size_t idx);
 	void pop();
 	size_t len();
@@ -66,16 +66,16 @@ List<Type>::List() {
 }
 
 template<typename Type>
-void List<Type>::add(Type& data)
+void List<Type>::add(Type* data)
 {
 	if (!length)
 	{
-		First = new Node<Type>(Last, nullptr, length, &data);
+		First = new Node<Type>(Last, nullptr, length, data);
 		Last = First;
 	}
 	else
 	{
-		Last->Next = new Node<Type>(Last, nullptr, length, &data);
+		Last->Next = new Node<Type>(Last, nullptr, length, data);
 		Last = Last->Next;
 	}
 	length += 1;

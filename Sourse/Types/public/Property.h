@@ -1,8 +1,33 @@
 #pragma once
 
 #include "MathMacros.h"
+#include "LinkedList.h"
 
-// TODO: make all private
+// TODO: a lot to do
+
+template <typename Type>
+struct PropertyBoundaries {
+	Type min, max;
+};
+
+template <typename Type>
+class Property {
+public:
+	Type val;
+
+	Property() {
+	}
+	Property(Type& val) {
+	}
+	~Property() {
+	}
+
+	void setVal(Type val) {
+	}
+	Type* getVal() {
+	}
+};
+
 
 class PropertyInt
 {
@@ -37,3 +62,18 @@ public:
 	float val;
 	float min, max;
 };
+
+template <typename RetVal, typename Arg>
+class PropertyFuncAdress
+{
+public:
+	RetVal (*func)(Arg arg);
+
+	PropertyFuncAdress() {
+	}
+	~PropertyFuncAdress() {
+	}
+};
+
+//PropertyFuncAdress* FindProperty() {
+//}

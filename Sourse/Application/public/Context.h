@@ -6,7 +6,8 @@
 #include "Operator.h"
 
 struct Context {
-	List<Window> windows;
+	Window* ActiveWin;
+	List<Window> Windows;
 	List<Object> Collection;
 	List<Operator> Operators;
 };

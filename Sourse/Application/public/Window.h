@@ -15,4 +15,5 @@ public:
 	~Window();
 
 	void Upd();
+	bool IsEvent();
 };

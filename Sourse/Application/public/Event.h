@@ -2,7 +2,7 @@
 #include "Vec2.h"
 
 enum KeyState {
-	NONE = 0,
+	EVENT_NONE = 0,
 	PRESSED,
 	RELEASED,
 	HOLD,
