@@ -78,3 +78,10 @@ float PropertyFloat::get()
 {
 	return val;
 }
+
+
+PropertyFuncAdress::PropertyFuncAdress() {
+	func = nullptr;
+}
+PropertyFuncAdress::~PropertyFuncAdress() {
+}

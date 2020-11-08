@@ -12,14 +12,16 @@ enum OpState {
 struct Operator {
 	OpState State;
 
-	void (*Invoke)(struct Context& C, Operator& op) = nullptr;
-	void (*Execute)(struct Context& C, Operator& op) = nullptr;
-	void (*Modal)(struct Context& C, Operator& op) = nullptr;
-	void (*Poll)(struct Context& C, Operator& op) = nullptr;
+	void (*Invoke)(struct Context* C, Operator* op) = nullptr;
+	void (*Execute)(struct Context* C, Operator* op) = nullptr;
+	void (*Modal)(struct Context* C, Operator* op) = nullptr;
+	void (*Poll)(struct Context* C, Operator* op) = nullptr;
 
 	void* CustomData = nullptr;
 
-	List<void>* Properties;
+	List<PropertyFloat> IntProps;
+	List<PropertyInt> FloatProps;
+	List<PropertyFuncAdress> FuncProps;
 };
 
-void OpsInit(struct Context& C);
+void OpsInit(struct Context* C);

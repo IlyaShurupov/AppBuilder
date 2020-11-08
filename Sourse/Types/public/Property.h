@@ -63,17 +63,12 @@ public:
 	float min, max;
 };
 
-template <typename RetVal, typename Arg>
+
 class PropertyFuncAdress
 {
 public:
-	RetVal (*func)(Arg arg);
+	void* (*func)(void* arg);
 
-	PropertyFuncAdress() {
-	}
-	~PropertyFuncAdress() {
-	}
+	PropertyFuncAdress();
+	~PropertyFuncAdress();
 };
-
-//PropertyFuncAdress* FindProperty() {
-//}
