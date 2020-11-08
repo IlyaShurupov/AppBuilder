@@ -16,19 +16,19 @@ int MainLoop(Context& C) {
 			switch (Op->State) {
 
 				case FINISHED:
-					Op->Poll(C, Op->CustomData);
+					Op->Poll(&C, Op);
 					break;
 
 				case RUNNING:
-					Op->Modal(C, Op->CustomData);
+					Op->Modal(&C, Op);
 					break;
 
 				case EXECUTE:
-					Op->Execute(C, Op->CustomData);
+					Op->Execute(&C, Op);
 					break;
 
 				case INVOKE:
-					Op->Invoke(C, Op->CustomData);
+					Op->Invoke(&C, Op);
 					break;
 			}
 		}

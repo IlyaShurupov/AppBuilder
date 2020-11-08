@@ -90,5 +90,6 @@ void test3() {
 
 int main() {
 	Context C;
-	MainLoop(C);
+	test3();
+	//MainLoop(C);
 }
