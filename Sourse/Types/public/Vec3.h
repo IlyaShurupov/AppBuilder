@@ -19,6 +19,7 @@ public:
 	Vec3f();
 	Vec3f(Vec3f& vec);
 	void assign(float x, float y, float z);
+	void assign(Vec3f& vec);
 	void assign(float vec[3]);
 	Vec3f& operator=(Vec3f& vec);
 
@@ -128,6 +129,12 @@ inline void Vec3f::assign(float x, float y, float z) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
+}
+
+inline void Vec3f::assign(Vec3f& vec) {
+	x = vec.x;
+	y = vec.y;
+	z = vec.z;
 }
 
 inline void Vec3f::assign(float vec[3]) {

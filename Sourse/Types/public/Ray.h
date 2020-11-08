@@ -3,9 +3,9 @@
 #include "Object.h"
 
 struct RayHitData {
-	bool Hit;
-	Object* Obj;
-	Trig* trig;
+	bool Hit = false;
+	Object* Obj = nullptr;
+	Trig* trig = nullptr;
 	Vec3f HitPos;
 };
 

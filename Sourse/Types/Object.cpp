@@ -28,7 +28,7 @@ Camera* Object::GetCameraComponent()
 }
 
 void Object::getWorldLocation(Vec3f& out) {
-	out.assign(0.f, 0.f, 0.f);
+	out.assign(Pos);
 	Object* parent = Parent;
 	while (parent) {
 		out += parent->Pos;

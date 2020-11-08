@@ -13,5 +13,5 @@ public:
 	Vec3f V2;
 
 	void Normal(Vec3f& dir);
-	bool RayHit(class Ray* ray, Vec3f& HitPos);
+	bool RayHit(class Ray& ray, Vec3f& HitPos);
 };

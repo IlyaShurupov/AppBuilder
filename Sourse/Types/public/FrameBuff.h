@@ -3,10 +3,10 @@
 #define CHANEL_CAPACITY unsigned char
 
 typedef struct Color4 {
-	CHANEL_CAPACITY R;
-	CHANEL_CAPACITY G;
-	CHANEL_CAPACITY B;
-	CHANEL_CAPACITY A;
+	CHANEL_CAPACITY R = 0;
+	CHANEL_CAPACITY G = 0;
+	CHANEL_CAPACITY B = 0;
+	CHANEL_CAPACITY A = 0;
 } Color4;
 
 
@@ -15,7 +15,7 @@ class FBuff
 public:
 	Color4* Buff;
 	size_t height, width;
-	FBuff(size_t height, size_t width);
+	FBuff(size_t width, size_t height);
 	~FBuff();
 
 	Color4* get(size_t x,  size_t y);

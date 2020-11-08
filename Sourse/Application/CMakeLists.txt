@@ -5,14 +5,17 @@ cmake_minimum_required(VERSION 3.8)
 project(Application)
 
 
-set (TYPES_HEADERS
-    "Logic/public/Logic.h"
+set (HEADERS
+    "Logic/public/Event.h"
+    "Logic/public/Operator.h"
+    "Logic/public/Context.h"
     "Window/public/Window.h"
 )
 
 # Source files
-set (TYPES_SOURCES
+set (SOURCES
     "Logic/Logic.cpp"
+    "Logic/Operator.cpp"
     "Window/Window.cpp"
     "Entry.cpp"
 )
@@ -20,13 +23,16 @@ set (TYPES_SOURCES
 link_directories(${CMAKE_BINARY_DIR}/bin)
 
 # Create proj
-add_executable(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types/public>
               $<INSTALL_INTERFACE:/Sourse/Types/public>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast/public>
+              $<INSTALL_INTERFACE:/Sourse/RenderEngines/RayCast/public>
 )
+target_link_libraries(${PROJECT_NAME} Types RayCast)
 
 #target_link_libraries (${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Sourse/Types)
-target_link_libraries(${PROJECT_NAME} Types)
+
 #install(TARGETS ${PROJECT_NAME} DESTINATION bin)

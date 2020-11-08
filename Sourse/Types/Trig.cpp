@@ -23,47 +23,41 @@ void Trig::Normal(Vec3f& dir)
 }
 
 
-bool Trig::RayHit(class Ray* ray, Vec3f& HitPos)
-{
+bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
+
 	Vec3f edge1, edge2, h, s, q;
 
 	float a, f, u, v;
-
 	edge1 = V1 - V0;
 	edge2 = V2 - V0;
 
-	h = ray->Dir.Cross(edge2);
+	h = ray.Dir.Cross(edge2);
 	a = edge1.Dot(h);
 
-	// This ray is parallel to this triangle.
 	if (a > -EPSILON && a < EPSILON) {
 		return false;
 	}
 
-	f = 1.f / a;
-	s = ray->Pos - V0;
+	f = 1.0 / a;
+	s = ray.Pos - V0;
 	u = f * s.Dot(h);
 
-	if (u < 0.f || u > 1.f) {
+	if (u < 0.0 || u > 1.0) {
 		return false;
 	}
 
 	q = s.Cross(edge1);
-	v = f * ray->Dir.Dot(q);
+	v = f * ray.Dir.Dot(q);
 
-	if (v < 0.f || u + v > 1.f) {
+	if (v < 0.0 || u + v > 1.0) {
 		return false;
 	}
 
-	// Now we can compute t to find out where the intersection point is on the line.
 	float t = f * edge2.Dot(q);
-
-	// ray intersection
 	if (t > EPSILON) {
-		HitPos = ray->Pos + (ray->Dir * t);
+		HitPos = ray.Pos + ray.Dir * t;
 		return true;
 	}
-	// There is a line intersection but not a ray intersection.
 	else {
 		return false;
 	}

@@ -4,7 +4,9 @@
 #define IDX3D(width, depth, x, y, z) (width * depth * y + depth * x + z)
 #define IDX2D(width, x, y) (width * y + x)
 
-FBuff::FBuff(size_t height, size_t width) {
+#define BUFF_GET(x, y, width, Buff) (Buff + width * y + x)
+
+FBuff::FBuff(size_t width, size_t height) {
 	this->height = height;
 	this->width = width;
 	Buff = new Color4[height * width];
@@ -15,11 +17,12 @@ FBuff::~FBuff() {
 }
 
 Color4* FBuff::get(size_t x, size_t y) {
-	return &Buff[IDX2D(width, x, y)];
+	return BUFF_GET(x, y, width, this->Buff);
 }
 
 void FBuff::set(size_t x, size_t y, Color4* color) {
-	Color4* Color = &Buff[IDX2D(width, x, y)];
+
+	Color4* Color = BUFF_GET(x, y, width, this->Buff);
 	Color->R = color->R;
 	Color->G = color->G;
 	Color->B = color->B;
@@ -38,7 +41,7 @@ void FBuff::clear() {
 
 void FBuff::DrawRect(size_t x, size_t y, Color4& color, int width, int height) {
 
-	assert((x + width < this->width) && (y + height < this->height));
+	assert((x + width <= this->width + 1) && (y + height <= this->height + 1));
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {

@@ -60,27 +60,24 @@ void print(Camera& cam) {
 
 void print(FBuff& buff, bool PrintText) {
 
-	HWND myconsole = GetConsoleWindow();
-	HDC mydc = GetDC(myconsole);
-	
-	ENTR COUT "Frame Buffer: " NL;
-	COUT TAB "Height: " << buff.height NL;
-	COUT TAB "Width: " << buff.width NL;
-
 	if (PrintText) {
+		HWND myconsole = GetConsoleWindow();
+		HDC mydc = GetDC(myconsole);
+
 		for (size_t j = 0; j < buff.height; j++) {
 			for (size_t i = 0; i < buff.width; i++) {
 				Color4* color = buff.get(i, j);
 				COLORREF COLOR = RGB(color->R, color->G, color->B);
 				//COLORREF COLOR = RGB(0, 255, 12);
-				SetPixel(mydc, (int)i, (int)j, COLOR);
+				SetPixel(mydc, (int)i + 30, (int)j + 30, COLOR);
 			}
 		}
-	}
-
-	ReleaseDC(myconsole, mydc);
-
-	if (PrintText) {
+		ReleaseDC(myconsole, mydc);
 		std::cin.ignore();
+	}
+	else {
+		ENTR COUT "Frame Buffer: " NL;
+		COUT TAB "Height: " << buff.height NL;
+		COUT TAB "Width: " << buff.width NL;
 	}
 }

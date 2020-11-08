@@ -6,6 +6,7 @@ Ray::Ray() {
 Ray::Ray(Vec3f& Dir, Vec3f& Pos) {
 	this->Dir = Dir;
 	this->Pos = Pos;
+	HitData.Hit = false;
 }
 
 Ray::~Ray() {
@@ -24,6 +25,8 @@ void WorldTransform(Trig* trig, Vec3f* pos, Mat3f* mat) {
 
 void Ray::Cast(List<Object>* objects, float ray_length)
 {
+	HitData.Hit = false;
+
 	FOREACH_NODE(Object, objects, ob_node) {
 		Object* obj = ob_node->Data;
 
@@ -40,7 +43,7 @@ void Ray::Cast(List<Object>* objects, float ray_length)
 			WorldTransform(&trig, &obj->Pos, &obj->TransformMat);
 
 			Vec3f HitPos;
-			if (!trig.RayHit(this, HitPos)) {
+			if (!trig.RayHit(*this, HitPos)) {
 				continue;
 			}
 
