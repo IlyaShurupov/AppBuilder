@@ -1,10 +1,6 @@
 #pragma once
 
-#include <math.h>
-
-#define Pi float(3.1415926535897932384626433832795)
-#define FMAX 3.40282e+038
-#define EPSILON_RAYCAST 0.0000001
+#include "MathMacros.h"
 
 class Vec3f
 {
@@ -28,12 +24,12 @@ public:
 
 	// Fundamental create on stack
 
-	Vec3f& operator+(Vec3f& vec);
-	Vec3f& operator-(Vec3f& vec);
-	Vec3f& operator+(float val);
-	Vec3f& operator-(float val);
-	Vec3f& operator*(float val);
-	Vec3f& operator/(float val);
+	Vec3f operator+(Vec3f& vec);
+	Vec3f operator-(Vec3f& vec);
+	Vec3f operator+(float val);
+	Vec3f operator-(float val);
+	Vec3f operator*(float val);
+	Vec3f operator/(float val);
 	// Fundamental write
 
 	void operator -= (float val);
@@ -48,9 +44,9 @@ public:
 	float Dot(Vec3f& vec);
 	double Length();
 	float LengthSqured();
-	Vec3f& Dir();
+	Vec3f Dir();
 	void Normalize();
-	Vec3f& Cross(Vec3f& vec);
+	Vec3f Cross(Vec3f& vec);
 
 	// Vector Transformation
 
@@ -120,7 +116,7 @@ inline void Vec3f::operator /= (float val) {
 	z /= val;
 }
 
-inline Vec3f& Vec3f::Cross(Vec3f& vec) {
+inline Vec3f Vec3f::Cross(Vec3f& vec) {
 	float x = this->y * vec.z - this->z * vec.y;
 	float y = this->z * vec.x - this->x * vec.z;
 	float z = this->x * vec.y - this->y * vec.x;
@@ -149,27 +145,27 @@ inline Vec3f& Vec3f::operator=(Vec3f& vec) {
 
 // Fundamental create on stack
 
-inline Vec3f& Vec3f::operator+(Vec3f& vec) {
+inline Vec3f Vec3f::operator+(Vec3f& vec) {
 	return Vec3f(x + vec.x, y + vec.y, z + vec.z);
 }
 
-inline Vec3f& Vec3f::operator-(Vec3f& vec) {
+inline Vec3f Vec3f::operator-(Vec3f& vec) {
 	return Vec3f(x - vec.x, y - vec.y, z - vec.z);
 }
 
-inline Vec3f& Vec3f::operator+(float val) {
+inline Vec3f Vec3f::operator+(float val) {
 	return Vec3f(x + val, y + val, z + val);
 }
 
-inline Vec3f& Vec3f::operator-(float val) {
+inline Vec3f Vec3f::operator-(float val) {
 	return Vec3f(x - val, y - val, z - val);
 }
 
-inline Vec3f& Vec3f::operator*(float val) {
+inline Vec3f Vec3f::operator*(float val) {
 	return Vec3f(x * val, y * val, z * val);
 }
 
-inline Vec3f& Vec3f::operator/(float val) {
+inline Vec3f Vec3f::operator/(float val) {
 	return Vec3f(x / val, y / val, z / val);
 }
 
@@ -188,7 +184,7 @@ inline float Vec3f::LengthSqured() {
 	return (x * x + y * y + z * z);
 }
 
-inline Vec3f& Vec3f::Dir() {
+inline Vec3f Vec3f::Dir() {
 	return Vec3f(*this / (float)this->Length());
 }
 

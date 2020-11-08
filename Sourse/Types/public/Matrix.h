@@ -19,12 +19,12 @@ public:
 
 	// Fundamental create on stack
 
-	Mat3f& operator+(Mat3f& Matx);
-	Mat3f& operator-(Mat3f& Matx);
-	Mat3f& operator+(float val);
-	Mat3f& operator-(float val);
-	Mat3f& operator*(float val);
-	Mat3f& operator/(float val);
+	Mat3f operator+(Mat3f& Matx);
+	Mat3f operator-(Mat3f& Matx);
+	Mat3f operator+(float val);
+	Mat3f operator-(float val);
+	Mat3f operator*(float val);
+	Mat3f operator/(float val);
 
 	// Fundamental write
 
@@ -71,27 +71,27 @@ inline void Mat3f::Assign(Vec3f& i, Vec3f& j, Vec3f& k) {
 
 // Fundamental create on stack
 
-inline Mat3f& Mat3f::operator+(Mat3f& Matx) {
+inline Mat3f Mat3f::operator+(Mat3f& Matx) {
 	return Mat3f(this->I + Matx.I, this->J + Matx.J, this->K + Matx.K);
 }
 
-inline Mat3f& Mat3f::operator-(Mat3f& Matx) {
+inline Mat3f Mat3f::operator-(Mat3f& Matx) {
 	return Mat3f(this->I - Matx.I, this->J - Matx.J, this->K - Matx.K);
 }
 
-inline Mat3f& Mat3f::operator+(float val) {
+inline Mat3f Mat3f::operator+(float val) {
 	return Mat3f(this->I + val, this->J + val, this->K + val);
 }
 
-inline Mat3f& Mat3f::operator-(float val) {
+inline Mat3f Mat3f::operator-(float val) {
 	return Mat3f(this->I - val, this->J - val, this->K - val);
 }
 
-inline Mat3f& Mat3f::operator*(float val) {
+inline Mat3f Mat3f::operator*(float val) {
 	return Mat3f(this->I * val, this->J * val, this->K * val);
 }
 
-inline Mat3f& Mat3f::operator/(float val) {
+inline Mat3f Mat3f::operator/(float val) {
 	return Mat3f(this->I / val, this->J / val, this->K / val);
 }
 

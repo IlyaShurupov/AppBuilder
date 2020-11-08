@@ -36,7 +36,7 @@ bool Trig::RayHit(class Ray* ray, Vec3f& HitPos)
 	a = edge1.Dot(h);
 
 	// This ray is parallel to this triangle.
-	if (a > -EPSILON_RAYCAST && a < EPSILON_RAYCAST) {
+	if (a > -EPSILON && a < EPSILON) {
 		return false;
 	}
 
@@ -59,9 +59,8 @@ bool Trig::RayHit(class Ray* ray, Vec3f& HitPos)
 	float t = f * edge2.Dot(q);
 
 	// ray intersection
-	if (t > EPSILON_RAYCAST) {
-		Vec3f tmp = ray->Dir * t;
-		HitPos = ray->Pos + tmp;
+	if (t > EPSILON) {
+		HitPos = ray->Pos + (ray->Dir * t);
 		return true;
 	}
 	// There is a line intersection but not a ray intersection.

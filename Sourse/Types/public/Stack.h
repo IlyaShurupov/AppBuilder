@@ -9,10 +9,10 @@ class StackNode
 {
 public:
 	StackNode<Type>* next;
-	Type data;
+	Type* data;
 
 public:
-	StackNode(Type data, StackNode<Type>* next) {
+	StackNode(Type* data, StackNode<Type>* next) {
 		this->next = next;
 		this->data = data;
 	}
@@ -38,27 +38,32 @@ public:
 	}
 
 	inline int MemSize() {
-		sizeof(StackNode<Type> * length);
+		return sizeof(StackNode<Type>) * length;
 	}
 
 	inline long Len() {
 		return length;
 	}
 
-	inline void Add(Type data) {
-		StackNode<Type>* NewNode = new StackNode<Type>(data, first);
+	inline void Add(Type& data) {
+		StackNode<Type>* NewNode = new StackNode<Type>(&data, first);
 		first = NewNode;
+		length++;
 	}
 
 	inline void Pop() {
 		StackNode<Type>* del = first;
 		first = first->next;
 		delete del;
+		length--;
 	}
 
 	inline void Free() {
-		FOREACH_STACK(node, Type, first) {
-			delete node;
+		StackNode<Type>* del = first;
+		for (size_t i = 0; i < length; i++) {
+			StackNode<Type>* next = del->next;
+			delete del;
+			del = next;
 		}
 	}
 };

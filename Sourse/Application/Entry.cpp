@@ -2,7 +2,8 @@
 #include "Types.h"
 #include <iostream>
 
-int main() {
+
+void test1() {
 	Object NewObj;
 	StaticMesh NewMesh;
 	NewObj.SetStaticMeshComponent(&NewMesh);
@@ -27,4 +28,26 @@ int main() {
 	NewRay.Cast(&Objects, 1000000.f);
 
 	std::cout << NewRay.HitData.HitPos.x << NewRay.HitData.HitPos.y << NewRay.HitData.HitPos.z;
+}
+
+int main() {
+	Mat3f mat = Mat3f(Vec3f(1, 2, 3), Vec3f(3, 2, 1), Vec3f());
+	print(mat);
+	List<Mat3f> matlist;
+
+	matlist.add(mat);
+	print(matlist);
+
+	Stack<List<Mat3f>> stack;
+	stack.Add(matlist);
+	print(stack);
+
+	Color4 color;
+	color.G = 255;
+	color.R = 0;
+	color.B = 0;
+
+	FBuff fbuff = FBuff(400, 400);
+	fbuff.DrawRect(100, 100, color, 100, 200);
+	print(fbuff, 1);
 }

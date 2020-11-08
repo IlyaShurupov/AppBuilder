@@ -18,6 +18,7 @@ public:
 	RayHitData HitData;
 
 public:
+	Ray(Vec3f& Dir, Vec3f& Pos);
 	Ray();
 	~Ray();
 	void Cast(List<Object>* objects, float ray_length);

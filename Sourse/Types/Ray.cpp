@@ -3,6 +3,11 @@
 Ray::Ray() {
 }
 
+Ray::Ray(Vec3f& Dir, Vec3f& Pos) {
+	this->Dir = Dir;
+	this->Pos = Pos;
+}
+
 Ray::~Ray() {
 }
 
@@ -39,8 +44,7 @@ void Ray::Cast(List<Object>* objects, float ray_length)
 				continue;
 			}
 
-			Vec3f tmp = (HitPos - Pos);
-			float dist = (float)tmp.Length();
+			float dist = (float)(HitPos - Pos).Length();
 			if (dist < ray_length) {
 				
 				HitData.Hit = true;

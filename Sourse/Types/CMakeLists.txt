@@ -5,6 +5,8 @@ project(Types)
 
 set (TYPES_HEADERS
     "public/Vec2.h"
+    "public/MathMacros.h"
+    "public/Property.h"
     "public/Vec3.h"
     "public/FrameBuff.h"
     "public/LinkedList.h"
@@ -16,19 +18,18 @@ set (TYPES_HEADERS
     "public/Matrix.h"
     "public/Object.h"
     "public/Trig.h"
+    "public/Print.h"
 )
 
 
 # Source files
 set (TYPES_SOURCES
-    "Vec2.cpp"
-    "Vec3.cpp"
+    "Print.cpp"
+    "Property.cpp"
     "FrameBuff.cpp"
-    "LinkedList.cpp"
     "Ray.cpp"
     "Timer.cpp"
     "Mesh.cpp"
-    "Matrix.cpp"
     "Object.cpp"
     "Trig.cpp"
 )
