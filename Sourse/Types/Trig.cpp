@@ -38,7 +38,7 @@ bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
 		return false;
 	}
 
-	f = 1.0 / a;
+	f = 1.f / a;
 	s = ray.Pos - V0;
 	u = f * s.Dot(h);
 

@@ -6,17 +6,17 @@ project(Application)
 
 
 set (HEADERS
-    "Logic/public/Event.h"
-    "Logic/public/Operator.h"
-    "Logic/public/Context.h"
-    "Window/public/Window.h"
+    "public/Event.h"
+    "public/Operator.h"
+    "public/Context.h"
+    "public/Window.h"
 )
 
 # Source files
 set (SOURCES
-    "Logic/Logic.cpp"
-    "Logic/Operator.cpp"
-    "Window/Window.cpp"
+    "Logic.cpp"
+    "Operator.cpp"
+    "Window.cpp"
     "Entry.cpp"
 )
 

@@ -13,6 +13,7 @@ typedef struct Color4 {
 class FBuff
 {
 public:
+	int ZDepth;
 	Color4* Buff;
 	size_t height, width;
 	FBuff(size_t width, size_t height);
