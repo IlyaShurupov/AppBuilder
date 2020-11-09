@@ -49,8 +49,8 @@ void RenderPass(RenderSettings* settings, Ray ray, Color4& color) {
 
 void WritePassToBuff(FBuff* Buff, int i, int j, CycleData& CData,
                      Color4& color) {
-  int pos_x = i * CData.pxl_size - (CData.pxl_size / 2.f);
-  int pos_y = j * CData.pxl_size - (CData.pxl_size / 2.f);
+  int pos_x = i * CData.pxl_size - floor(CData.pxl_size / 2.f);
+  int pos_y = j * CData.pxl_size - floor(CData.pxl_size / 2.f);
   CLAMP(pos_x, 0, INT_MAX);
   CLAMP(pos_y, 0, INT_MAX);
   Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
