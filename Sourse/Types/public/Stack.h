@@ -29,6 +29,8 @@ private:
 	StackNode<Type>* first;
 
 public:
+
+
 	Stack() {
 		length = 0;
 		first = nullptr;

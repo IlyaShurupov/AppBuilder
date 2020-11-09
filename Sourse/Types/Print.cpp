@@ -67,7 +67,9 @@ void print(FBuff& buff, bool PrintText) {
 		for (size_t j = 0; j < buff.height; j++) {
 			for (size_t i = 0; i < buff.width; i++) {
 				Color4* color = buff.get(i, j);
-				COLORREF COLOR = RGB(color->R, color->G, color->B);
+                          COLORREF COLOR =
+                                    RGB(color->R * 255, color->G * 255,
+                                        color->B * 255);
 				//COLORREF COLOR = RGB(0, 255, 12);
 				SetPixel(mydc, (int)i + 30, (int)j + 30, COLOR);
 			}

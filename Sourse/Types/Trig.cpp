@@ -38,7 +38,7 @@ bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
 		return false;
 	}
 
-	f = 1.0 / a;
+	f = 1.f / a;
 	s = ray.Pos - V0;
 	u = f * s.Dot(h);
 
@@ -49,7 +49,7 @@ bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
 	q = s.Cross(edge1);
 	v = f * ray.Dir.Dot(q);
 
-	if (v < 0.0 || u + v > 1.0) {
+	if (v < 0.f || u + v > 1.f) {
 		return false;
 	}
 

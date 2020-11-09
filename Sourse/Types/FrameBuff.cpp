@@ -10,6 +10,7 @@ FBuff::FBuff(size_t width, size_t height) {
 	this->height = height;
 	this->width = width;
 	Buff = new Color4[height * width];
+	ZDepth = 0;
 }
 
 FBuff::~FBuff() {
@@ -35,7 +36,7 @@ void FBuff::clear() {
 		Buff[i].R = 0;
 		Buff[i].G = 0;
 		Buff[i].B = 0;
-		Buff[i].A = 0;
+		Buff[i].A = 1.f;
 	}
 }
 
