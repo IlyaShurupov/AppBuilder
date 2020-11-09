@@ -4,6 +4,7 @@
 enum class OpState { RUNNING, FINISHED, CANCELED, EXECUTE, INVOKE };
 
 struct Operator {
+  Properties Props;
   OpState State;
 
   void (*Invoke)(class Context* C, Operator* op) = nullptr;
@@ -12,9 +13,6 @@ struct Operator {
   void (*Poll)(class Context* C, Operator* op) = nullptr;
 
   void* CustomData = nullptr;
-
-  List<PropertyFloat> IntProps;
-  List<PropertyInt> FloatProps;
 };
 
 void OpsInit(class Context* C);

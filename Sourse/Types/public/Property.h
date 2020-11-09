@@ -1,75 +1,58 @@
 #pragma once
 
-#include "MathMacros.h"
 #include "LinkedList.h"
+#include "MathMacros.h"
 
 // TODO: a lot to do
 
-template <typename Type>
-struct PropertyBoundaries {
-	Type min, max;
+class PropertyInt {
+ public:
+  char name[10];
+  char describtion[10];
+
+  PropertyInt();
+  PropertyInt(int val, int min, int max);
+  ~PropertyInt();
+
+  void setVal(int val);
+  void setMin(int min);
+  void setMax(int max);
+  int get();
+
+  int val;
+  int min, max;
 };
 
-template <typename Type>
-class Property {
-public:
-	Type val;
+class PropertyFloat {
+ public:
+  char name[10];
+  char describtion[10];
 
-	Property() {
-	}
-	Property(Type& val) {
-	}
-	~Property() {
-	}
+  PropertyFloat();
+  PropertyFloat(float val, float min, float max);
+  ~PropertyFloat();
 
-	void setVal(Type val) {
-	}
-	Type* getVal() {
-	}
+  void assign(float val, float min, float max);
+
+  void setVal(float val);
+  void setMin(float min);
+  void setMax(float max);
+  float get();
+
+  float val;
+  float min, max;
 };
 
+class PropertyFuncAdress {
+ public:
+  void* (*func)(void* arg);
 
-class PropertyInt
-{
-public:
-  char name[1];
-	PropertyInt();
-	PropertyInt(int val, int min, int max);
-	~PropertyInt();
-
-	void setVal(int val);
-	void setMin(int min);
-	void setMax(int max);
-	int get();
-
-	int val;
-	int min, max;
+  PropertyFuncAdress();
+  ~PropertyFuncAdress();
 };
 
-class PropertyFloat
-{
-public:
-	PropertyFloat();
-	PropertyFloat(float val, float min, float max);
-	~PropertyFloat();
-
-	void assign(float val, float min, float max);
-
-	void setVal(float val);
-	void setMin(float min);
-	void setMax(float max);
-	float get();
-
-	float val;
-	float min, max;
-};
-
-
-class PropertyFuncAdress
-{
-public:
-	void* (*func)(void* arg);
-
-	PropertyFuncAdress();
-	~PropertyFuncAdress();
+struct Properties {
+  List<PropertyInt> Ints;
+  List<PropertyFloat> Floats;
+  // List<PropertyFuncAdress> Funcs;
 };

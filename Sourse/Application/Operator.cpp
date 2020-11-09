@@ -7,7 +7,6 @@
   op->State = OpState::FINISHED; \
   return;
 
-
 // -----------  test Operetor ----------------------- //
 
 #include "Print.h"
@@ -56,10 +55,9 @@ void ObjectRotate_create(Context* C, Operator* op) {
 
 // -----------  test Operetor end ----------------------- //
 
-void AddOperator(Context* C,
-                 void (*OpCreate)(Context* C, Operator* op)) {
+void AddOperator(Context* C, void (*Create)(Context* C, Operator* op)) {
   Operator* op = new Operator;
-  OpCreate(C, op);
+  Create(C, op);
   C->Operators.add(op);
 }
 
