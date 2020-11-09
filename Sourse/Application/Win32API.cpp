@@ -271,3 +271,11 @@ void SystemHandler::SysOutput() {
 
   return;
 }
+
+void SystemHandler::GetEventSate(AppEvent *Event) {}
+
+void SysOutput(SystemHandler *SH) { SH->SysOutput(); }
+
+void GetEventSate(SystemHandler *SH, AppEvent *Event) {
+  SH->GetEventSate(Event);
+}

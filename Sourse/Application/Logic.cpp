@@ -7,7 +7,7 @@ int AppMainLoop(Context* C) {
 
   while (true) {
 
-    C->event.Update(&C->event);
+    C->SysInput(C->SysH, &C->event);
     if (!C->event.IsEvent()) {
       continue;  // TODO: go sleep
     }
@@ -41,7 +41,7 @@ int AppMainLoop(Context* C) {
     C->window.Draw(C);
 
     // Just show frame buff
-    C->window.SysOutput();
+    C->SysOutput(C->SysH);
   }
 
   return 0;

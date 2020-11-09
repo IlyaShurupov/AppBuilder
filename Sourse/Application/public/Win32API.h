@@ -53,3 +53,7 @@ class SystemHandler {
   ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
   ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
 };
+
+void SysOutput(SystemHandler * SH);
+
+void GetEventSate(SystemHandler* SH, class AppEvent* Event);

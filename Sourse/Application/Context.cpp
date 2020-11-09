@@ -1,7 +1,7 @@
 #pragma once
 #include "public/Context.h"
 
-AppEvent::AppEvent(void (*Update)(AppEvent* ThisEvent)) {
+AppEvent::AppEvent() {
   for (int i = 0; i < KeyNum; i++) {
     (&A)[i] = KeyState::EVENT_NONE;
   }
@@ -11,9 +11,9 @@ AppEvent::~AppEvent() {}
 
 bool AppEvent::IsEvent() { return true; }
 
-AppWindow::AppWindow(void (*SysOutput)(), FBuff* SysBuff) {
+AppWindow::AppWindow(FBuff* SysBuff) {
   fbuff = SysBuff;
-  this->SysOutput = SysOutput;
+  // this->SysOutput = SysOutput;
 }
 
 AppWindow::~AppWindow() {}
@@ -25,12 +25,16 @@ void AppWindow::Draw(class Context* C) {
   //}
 }
 
-Context::Context(void (*SysOutput)(), void (*Inputs)(AppEvent* Event),
-                 FBuff* SysBuff)
-    : window(SysOutput, SysBuff), event(Inputs) {
+Context::Context(void (*SysOutput)(SystemHandler* SysH),
+                 void (*Inputs)(SystemHandler* SysH, AppEvent* Event),
+                 FBuff* SysBuff, SystemHandler* SysH)
+    : window(SysBuff) {
 
+  this->SysH = SysH;
+  this->SysOutput = SysOutput;
+  this->SysInput = Inputs;
   /*
-  * void (*Inputs)(Event* Event)
+  void (*Inputs)(Event* Event)
   Screen* ActScr = new Screen;
   C->screen = ActScr;
   C->Screens.add(ActScr);

@@ -47,7 +47,8 @@ int main() {
       SystemHandler SysHdl = SystemHandler(500, 500);
       if (SUCCEEDED(SysHdl.Initialize())) {
 
-        Context C = Context(&SysHdl.SysOutput, &SysHdl.GetEventSate, SysHdl.getFBuff());
+        Context C =
+            Context(&SysOutput, &GetEventSate, SysHdl.getFBuff(), &SysHdl);
         AppMainLoop(&C);
       }
     }

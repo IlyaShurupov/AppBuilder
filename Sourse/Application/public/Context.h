@@ -33,16 +33,16 @@ class AppEvent {
   vec2<short> Cursor;
   vec2<short> PrevCursor;
 
-  AppEvent(void (*Update)(AppEvent* ThisEvent));
+  AppEvent();
   ~AppEvent();
   bool IsEvent();
-  void (*Update)(AppEvent* ThisEvent);
+  
 };
 
 
 class AppWindow {
  public:
-  AppWindow(void (*SysOutput)(), FBuff* Sysoutput);
+  AppWindow(FBuff* Sysoutput);
   ~AppWindow();
 
   // Screen buffer that will see the User
@@ -58,14 +58,19 @@ class AppWindow {
 
  public:
   void Draw(class Context* C);
-  void (*SysOutput)();
+
 };
 
 class Context {
  public:
-  Context(void (*SysOutput)(), void (*Inputs)(AppEvent* Event),
-          FBuff* Sysoutput);
+  Context(void (*SysOutput)(class SystemHandler* SysH),
+          void (*Inputs)(class SystemHandler* SysH, AppEvent* Event),
+          FBuff* SysBuff, class SystemHandler* SysH);
   ~Context();
+
+  class SystemHandler* SysH = nullptr;
+  void (*SysOutput)(class SystemHandler* SysH) = nullptr;
+  void (*SysInput)(class SystemHandler* SysH, AppEvent* ThisEvent) = nullptr;
 
   AppWindow window;
   AppEvent event;
