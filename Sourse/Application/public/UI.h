@@ -54,10 +54,12 @@ class Editor {
 
 class ScrArea {
  public:
-  RectPtr<short> Rect;
-  Editor* Editor;
+  RectPtr<short> rect;
+  Editor* editor;
   Properties Props;
 
-  ScrArea();
+  ScrArea(Editor* editor, RectPtr<short> rect);
   ~ScrArea();
 };
+
+void UI_Init(class Context* C);

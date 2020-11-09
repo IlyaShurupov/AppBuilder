@@ -1,5 +1,4 @@
 #include "public/UI.h"
-
 #include "public/Context.h"
 
 Button::Button() {}
@@ -23,8 +22,27 @@ void Editor::Draw(Context* C, RectPtr<short>* rect, FBuff* Buff) {
   }
 }
 
-ScrArea::ScrArea() {
-  Editor = nullptr;
+ScrArea::ScrArea(Editor* editor, RectPtr<short> rect) {
+  this->editor = editor;
+
+  this->rect.v0 = rect.v0;
+  this->rect.v1 = rect.v1;
+  this->rect.v2 = rect.v2;
+  this->rect.v3 = rect.v3;
 }
 
 ScrArea::~ScrArea() {}
+
+
+void RegionViewport(class Context* C, Region* region, FBuff* Buff) { 
+  RayCast::RenderToBuff(&C->RndrSets, Buff);
+}
+
+void UI_Init(Context* C) {
+  Editor * editor = new Editor;
+  C->editors.add(editor);
+
+  Region* reg = new Region;
+  reg->Draw = RegionViewport;
+  editor->Regions.add(reg);
+}

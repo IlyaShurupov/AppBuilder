@@ -1,5 +1,5 @@
 
-#include "RayCast.h"
+//#include "RayCast.h"
 #include "Types.h"
 #include "public/Logic.h"
 #include "public/Win32API.h"
@@ -44,7 +44,7 @@ int main() {
 
   if (SUCCEEDED(CoInitialize(NULL))) {
     {
-      SystemHandler SysHdl = SystemHandler(500, 500);
+      SystemHandler SysHdl = SystemHandler(800, 800);
       if (SUCCEEDED(SysHdl.Initialize())) {
 
         Context C =

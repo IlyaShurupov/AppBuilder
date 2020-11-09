@@ -7,6 +7,7 @@
 #include "Stack.h"
 #include "UI.h"
 #include "Vec2.h"
+#include "RayCast.h"
 
 enum class KeyState {
   EVENT_NONE = 0,
@@ -72,6 +73,7 @@ class Context {
   void (*SysOutput)(class SystemHandler* SysH) = nullptr;
   void (*SysInput)(class SystemHandler* SysH, AppEvent* ThisEvent) = nullptr;
 
+  RayCast::RenderSettings RndrSets;
   AppWindow window;
   AppEvent event;
   List<Editor> editors;
