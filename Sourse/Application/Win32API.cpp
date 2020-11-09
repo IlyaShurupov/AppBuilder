@@ -20,7 +20,34 @@
                                                D2D1_ALPHA_MODE_IGNORE)),       \
       &bmp)
 
-DemoApp::DemoApp(int Width, int Height) {
+#ifndef Assert
+#if defined(DEBUG) || defined(_DEBUG)
+#define Assert(b)                             \
+  do {                                        \
+    if (!(b)) {                               \
+      OutputDebugStringA("Assert: " #b "\n"); \
+    }                                         \
+  } while (0)
+#else
+#define Assert(b)
+#endif  // DEBUG || _DEBUG
+#endif
+
+#ifndef HINST_THISCOMPONENT
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
+#endif
+
+template <class Interface>
+inline void SafeRelease(Interface **ppInterfaceToRelease) {
+  if (*ppInterfaceToRelease != NULL) {
+    (*ppInterfaceToRelease)->Release();
+
+    (*ppInterfaceToRelease) = NULL;
+  }
+}
+
+SystemHandler::SystemHandler(int Width, int Height) {
   m_hwnd = (NULL);
   m_pDirect2dFactory = (NULL);
   m_pRenderTarget = (NULL);
@@ -29,14 +56,14 @@ DemoApp::DemoApp(int Width, int Height) {
   buff = new FBuff(Width, Height);
 }
 
-DemoApp::~DemoApp() {
+SystemHandler::~SystemHandler() {
   SafeRelease(&m_pDirect2dFactory);
   SafeRelease(&m_pRenderTarget);
   SafeRelease(&m_pLightSlateGrayBrush);
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-void DemoApp::RunMessageLoop() {
+void SystemHandler::RunMessageLoop() {
   MSG msg;
 
   while (GetMessage(&msg, NULL, 0, 0)) {
@@ -45,9 +72,9 @@ void DemoApp::RunMessageLoop() {
   }
 }
 
-FBuff *DemoApp::getFBuff() { return buff; }
+FBuff *SystemHandler::getFBuff() { return buff; }
 
-HRESULT DemoApp::Initialize() {
+HRESULT SystemHandler::Initialize() {
   HRESULT hr;
 
   // Initialize device-indpendent resources, such
@@ -58,7 +85,7 @@ HRESULT DemoApp::Initialize() {
     // Register the window class.
     WNDCLASSEX wcex = {sizeof(WNDCLASSEX)};
     wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = DemoApp::WndProc;
+    wcex.lpfnWndProc = SystemHandler::WndProc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = sizeof(LONG_PTR);
     wcex.hInstance = HINST_THISCOMPONENT;
@@ -94,7 +121,7 @@ HRESULT DemoApp::Initialize() {
   return hr;
 }
 
-HRESULT DemoApp::CreateDeviceIndependentResources() {
+HRESULT SystemHandler::CreateDeviceIndependentResources() {
   HRESULT hr = S_OK;
 
   // Create a Direct2D factory.
@@ -104,7 +131,7 @@ HRESULT DemoApp::CreateDeviceIndependentResources() {
   return hr;
 }
 
-HRESULT DemoApp::CreateDeviceResources() {
+HRESULT SystemHandler::CreateDeviceResources() {
   HRESULT hr = S_OK;
 
   if (!m_pRenderTarget) {
@@ -133,26 +160,26 @@ HRESULT DemoApp::CreateDeviceResources() {
   return hr;
 }
 
-void DemoApp::DiscardDeviceResources() {
+void SystemHandler::DiscardDeviceResources() {
   SafeRelease(&m_pRenderTarget);
   SafeRelease(&m_pLightSlateGrayBrush);
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam,
+LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
                                   LPARAM lParam) {
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-    DemoApp *pDemoApp = (DemoApp *)pcs->lpCreateParams;
+    SystemHandler *pDemoApp = (SystemHandler *)pcs->lpCreateParams;
 
     ::SetWindowLongPtrW(hwnd, GWLP_USERDATA,
                         reinterpret_cast<LONG_PTR>(pDemoApp));
 
     result = 1;
   } else {
-    DemoApp *pDemoApp = reinterpret_cast<DemoApp *>(
+    SystemHandler *pDemoApp = reinterpret_cast<SystemHandler *>(
         static_cast<LONG_PTR>(::GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
 
     bool wasHandled = false;
@@ -200,7 +227,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam,
   return result;
 }
 
-void DemoApp::OnResize(UINT width, UINT height) {
+void SystemHandler::OnResize(UINT width, UINT height) {
   if (m_pRenderTarget) {
     // Note: This method can fail, but it's okay to ignore the
     // error here, because the error will be returned again
@@ -209,7 +236,9 @@ void DemoApp::OnResize(UINT width, UINT height) {
   }
 }
 
-HRESULT DemoApp::OnRender() {
+
+
+HRESULT SystemHandler::OnRender() {
   HRESULT hr;
 
   hr = CreateDeviceResources();
@@ -242,44 +271,3 @@ HRESULT DemoApp::OnRender() {
 
   return hr;
 }
-
-/*
-void DemoApp::OnRender() {
-  HRESULT hr;
-
-  hr = CreateDeviceResources();
-
-  if (SUCCEEDED(hr)) {
-    // Retrieve the size of the render target.
-    D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
-
-    m_pRenderTarget->BeginDraw();
-    m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
-
-    // Create the bitmap and draw it on the screen
-    ID2D1Bitmap *bmp;
-    HRESULT hr;
-    D2D1_SIZE_U SIZE = D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height);
-    UINT32 Pitch = buff->width * sizeof(int) * 4;
-    D2D1_BITMAP_PROPERTIES PROPS = D2D1::BitmapProperties(
-        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-
-    hr = m_pRenderTarget->CreateBitmap(SIZE, buff->Buff, Pitch, PROPS, &bmp);
-
-    if (!bmp) {
-      return;
-    }
-
-    // Draw a bitmap.
-    m_pRenderTarget->DrawBitmap(bmp, D2D1::RectF(12, 12, 12 + 800, 12 + 800));
-
-    hr = m_pRenderTarget->EndDraw();
-
-    if (hr == D2DERR_RECREATE_TARGET) {
-      hr = S_OK;
-      DiscardDeviceResources();
-    }
-  }
-}
-*/

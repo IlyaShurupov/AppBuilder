@@ -4,56 +4,9 @@
 #include "public/Logic.h"
 #include "public/Win32API.h"
 
-void test1() {
-  Object NewObj;
-  StaticMesh NewMesh;
-  NewObj.SetStaticMeshComponent(&NewMesh);
 
-  Vec3f v0 = Vec3f();
-  Vec3f v1 = Vec3f(0.f, 0.f, 4.f);
-  Vec3f v2 = Vec3f(4.f, 0.f, 0.f);
-
-  Trig NewTrig = Trig(v0, v1, v2);
-
-  NewMesh.Trigs.add(&NewTrig);
-
-  List<Object> Objects;
-  Objects.add(&NewObj);
-
-  Ray NewRay;
-  NewRay.Dir.y = -1.f;
-  NewRay.Pos.z = 1.f;
-  NewRay.Pos.x = 1.f;
-  NewRay.Pos.y = 1.f;
-
-  NewRay.Cast(&Objects, 1000000.f);
-}
-
-void test2() {
-  Mat3f mat = Mat3f(Vec3f(1, 2, 3), Vec3f(3, 2, 1), Vec3f());
-  print(mat);
-  List<Mat3f> matlist;
-
-  matlist.add(&mat);
-  print(matlist);
-
-  Stack<List<Mat3f>> stack;
-  stack.Add(matlist);
-  print(stack);
-
-  Color4 color;
-  color.G = 255;
-  color.R = 0;
-  color.B = 0;
-
-  FBuff fbuff = FBuff(400, 400);
-  fbuff.DrawRect(100, 3, color, 100, 200);
-  print(fbuff, 1);
-}
-
-void test3(int w, int h, FBuff& buff) {
+void test3(FBuff& buff) {
   
-
   List<Object> Objects;
 
   Object NewMeshObj;
@@ -66,8 +19,8 @@ void test3(int w, int h, FBuff& buff) {
   NewCamObj.Pos.y += 8;
   // NewCamObj.Pos.z += 1;
   Camera camera;
-  camera.Height.setVal(h);
-  camera.Width.setVal(w);
+  camera.Height.setVal(buff.height);
+  camera.Width.setVal(buff.width);
   camera.Lens.setVal(1);
   NewCamObj.SetCameraComponent(&camera);
   NewCamObj.TransformMat.I.assign(-1, 0, 0);
@@ -83,26 +36,19 @@ void test3(int w, int h, FBuff& buff) {
   
   RayCast::RenderToBuff(&RND_set, &buff);
 
-  //print(buff, 1);
 }
 
 int main() {
-  int h, w;
-  h = 400;
-  w = 400;
-  //FBuff buff = FBuff(w, h);
-  //test3(w, h, buff);
-  //return 0;
 
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
   if (SUCCEEDED(CoInitialize(NULL))) {
     {
-      DemoApp app = DemoApp(500, 500);
+      SystemHandler app = SystemHandler(500, 500);
       if (SUCCEEDED(app.Initialize())) {
 
         FBuff* buff = app.getFBuff();
-        test3(w, h, *buff);
+        test3(*buff);
         app.OnRender();
         //app.out(&buff);
         //app.RunMessageLoop();
