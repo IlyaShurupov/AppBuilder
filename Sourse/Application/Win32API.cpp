@@ -203,7 +203,7 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
           break;
 
         case WM_PAINT: {
-          pDemoApp->OnRender();
+          pDemoApp->SysOutput();
           ValidateRect(hwnd, NULL);
         }
           result = 0;
@@ -238,13 +238,13 @@ void SystemHandler::OnResize(UINT width, UINT height) {
 
 
 
-HRESULT SystemHandler::OnRender() {
+void SystemHandler::SysOutput() {
   HRESULT hr;
 
   hr = CreateDeviceResources();
 
   if (!SUCCEEDED(hr)) {
-    return hr;
+    return;
   }
 
   // Retrieve the size of the render target.
@@ -269,5 +269,5 @@ HRESULT SystemHandler::OnRender() {
     DiscardDeviceResources();
   }
 
-  return hr;
+  return;
 }

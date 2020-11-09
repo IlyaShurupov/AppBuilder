@@ -8,15 +8,16 @@
 #include "UI.h"
 #include "Vec2.h"
 
-enum KeyState {
+enum class KeyState {
   EVENT_NONE = 0,
   PRESSED,
   RELEASED,
   HOLD,
-  DOUBLE,
+  //DOUBLE_CLICK,
 };
 
-struct EventState {
+class AppEvent {
+ public:
   KeyState A;
   KeyState B;
   KeyState C;
@@ -27,55 +28,48 @@ struct EventState {
   KeyState KEY_2;
   KeyState KEY_3;
   // ...
-  short num = 9;
+  short KeyNum = 9;
+
   vec2<short> Cursor;
-  vec2<short> dCursor;
+  vec2<short> PrevCursor;
+
+  AppEvent(void (*Update)(AppEvent* ThisEvent));
+  ~AppEvent();
+  bool IsEvent();
+  void (*Update)(AppEvent* ThisEvent);
 };
 
-typedef struct ScrEdge {
-  vec2<short> v1, v2;
-} ScrEdge;
 
-class Screen {
+class AppWindow {
  public:
-  Screen();
-  ~Screen();
-
-  // position & Size
-  RectPtr<short> Rect;
+  AppWindow(void (*SysOutput)(), FBuff* Sysoutput);
+  ~AppWindow();
 
   // Screen buffer that will see the User
-  FBuff* Fbuff;
+  FBuff* fbuff;
 
   // All execute commands from UI
-  Stack<Operator> OpExecQueue;
+  Stack<Operator> op_exec_queue;
 
   // Screen areas that represents any editor type
-  List<ScrArea> ScrAreas;
-  List<vec2<short>> ScrVerts;
-  List<ScrEdge> ScrEdges;
-
-  // Event state from user
-  EventState EventState;
+  List<ScrArea> scrAreas;
+  List<vec2<short>> scrVerts;
+  List<Edge<short>> scrEdges;
 
  public:
-  void UpdEventState();
-  bool IsEvent();
-
   void Draw(class Context* C);
+  void (*SysOutput)();
 };
 
 class Context {
  public:
-  Context();
+  Context(void (*SysOutput)(), void (*Inputs)(AppEvent* Event),
+          FBuff* Sysoutput);
   ~Context();
 
-  List<Screen> Screens;
-  List<Editor> Editors;
-  List<Operator> Operators;
-  List<Object> Collection;
-
-  Screen* ActiveWin = nullptr;
-
-  Screen* getActiveScreen();
+  AppWindow window;
+  AppEvent event;
+  List<Editor> editors;
+  List<Operator> operators;
+  List<Object> collection;
 };

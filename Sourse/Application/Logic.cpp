@@ -1,18 +1,21 @@
 #include "public/Logic.h"
-#include "public/Context.h"
 
-int MainLoop(Context* C) {
+#include "public/Context.h"
+#include "public/Win32API.h"
+
+int AppMainLoop(Context* C) {
+
   while (true) {
-    Screen* actw = C->getActiveScreen();
-    actw->UpdEventState();
-    if (actw->IsEvent()) {
+
+    C->event.Update(&C->event);
+    if (!C->event.IsEvent()) {
       continue;  // TODO: go sleep
     }
 
-    //FOREACH_STACK(ExecCommand, Operator, actw->OpExecQueue) {
+    // FOREACH_STACK(ExecCommand, Operator, actw->OpExecQueue) {
     //}
 
-    FOREACH_NODE(Operator, (&C->Operators), op_node) {
+    FOREACH_NODE(Operator, (&C->operators), op_node) {
       Operator* Op = op_node->Data;
 
       switch (Op->State) {
@@ -32,9 +35,13 @@ int MainLoop(Context* C) {
           Op->Invoke(C, Op);
           break;
       }
-
     }
-    actw->Draw(C);
+
+    // Draw all data into frame buffer
+    C->window.Draw(C);
+
+    // Just show frame buff
+    C->window.SysOutput();
   }
 
   return 0;

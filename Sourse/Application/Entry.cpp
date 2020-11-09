@@ -3,7 +3,7 @@
 #include "Types.h"
 #include "public/Logic.h"
 #include "public/Win32API.h"
-
+#include "public/Context.h"
 
 void test3(FBuff& buff) {
   
@@ -44,14 +44,11 @@ int main() {
 
   if (SUCCEEDED(CoInitialize(NULL))) {
     {
-      SystemHandler app = SystemHandler(500, 500);
-      if (SUCCEEDED(app.Initialize())) {
+      SystemHandler SysHdl = SystemHandler(500, 500);
+      if (SUCCEEDED(SysHdl.Initialize())) {
 
-        FBuff* buff = app.getFBuff();
-        test3(*buff);
-        app.OnRender();
-        //app.out(&buff);
-        //app.RunMessageLoop();
+        Context C = Context(&SysHdl.SysOutput, &SysHdl.GetEventSate, SysHdl.getFBuff());
+        AppMainLoop(&C);
       }
     }
     CoUninitialize();

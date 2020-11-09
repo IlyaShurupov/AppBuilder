@@ -1,3 +1,3 @@
 #pragma once
 
-int MainLoop(class Context* C);
+int AppMainLoop(class Context* C);

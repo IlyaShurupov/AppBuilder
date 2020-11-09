@@ -1,7 +1,6 @@
 #include "public/Operator.h"
 
 #include "public/Context.h"
-#define EVENT_FROM_CTX(C) EventState* enent = &C->getActiveScreen()->EventState;
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 #define RET_FINISHED(op)         \
   op->State = OpState::FINISHED; \
@@ -16,10 +15,10 @@ typedef struct ObjectRotateCData {
 } ObjectRotateCData;
 
 void ObjectRotate_modal(Context* C, Operator* op) {
-  EVENT_FROM_CTX(C);
+  AppEvent* enent = &C->event;
   OPDATA_FROM_OP(ObjectRotateCData, OpData);
 
-  if (enent->A == RELEASED) {
+  if (enent->A == KeyState::RELEASED) {
     RET_FINISHED(op);
   }
 
@@ -38,8 +37,8 @@ void ObjectRotate_invoke(Context* C, Operator* op) {
 // Checks if operator should be inveked
 // TODO:invent keymap
 void ObjectRotate_poll(Context* C, Operator* op) {
-  EVENT_FROM_CTX(C);
-  if (enent->A == PRESSED) {
+  AppEvent* enent = &C->event;
+  if (enent->A == KeyState::PRESSED) {
     op->State = OpState::INVOKE;
   }
 }
@@ -58,7 +57,7 @@ void ObjectRotate_create(Context* C, Operator* op) {
 void AddOperator(Context* C, void (*Create)(Context* C, Operator* op)) {
   Operator* op = new Operator;
   Create(C, op);
-  C->Operators.add(op);
+  C->operators.add(op);
 }
 
 void OpsInit(Context* C) { AddOperator(C, ObjectRotate_create); }

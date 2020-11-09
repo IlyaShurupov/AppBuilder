@@ -54,19 +54,6 @@ public:
 };
 
 template <typename Type>
-struct RectPtr {
-  vec2<Type>* v0 = nullptr;
-  vec2<Type>* v1 = nullptr;
-  vec2<Type>* v2 = nullptr;
-  vec2<Type>* v3 = nullptr;
-};
-
-template <typename Type>
-struct Rect {
-  vec2<Type>v0, v1, v2, v3;
-};
-
-template <typename Type>
 inline vec2<Type>::vec2(Type x, Type y) {
 	this->x = x;
 	this->y = y;
@@ -222,3 +209,22 @@ template <typename Type>
 inline vec2<Type>::~vec2() {
 
 }
+
+
+template <typename Type>
+struct RectPtr {
+  vec2<Type>* v0 = nullptr;
+  vec2<Type>* v1 = nullptr;
+  vec2<Type>* v2 = nullptr;
+  vec2<Type>* v3 = nullptr;
+};
+
+template <typename Type>
+struct Rect {
+  vec2<Type> v0, v1, v2, v3;
+};
+
+template <typename Type>
+struct Edge {
+  vec2<Type> v1, v2;
+};

@@ -4,6 +4,9 @@
 #include <d2d1.h>
 #include <windows.h>
 #include "FrameBuff.h"
+#include "Context.h"
+
+
 
 class SystemHandler {
  public:
@@ -20,7 +23,9 @@ class SystemHandler {
   FBuff *getFBuff();
 
   // Draw content.
-  HRESULT OnRender();
+  void SysOutput();
+
+  void GetEventSate(class AppEvent* Event);
 
  private:
   // Initialize device-independent resources.
