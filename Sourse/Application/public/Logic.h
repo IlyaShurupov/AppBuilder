@@ -1,4 +1,4 @@
 #pragma once
 #include "Context.h"
 
-int MainLoop(Context& C);
+int MainLoop(Context* C);

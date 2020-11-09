@@ -7,17 +7,15 @@ project(Application)
 
 set (HEADERS
     "public/Logic.h"
-    "public/Event.h"
     "public/Operator.h"
     "public/Context.h"
-    "public/Window.h"
 )
 
 # Source files
 set (SOURCES
     "Logic.cpp"
     "Operator.cpp"
-    "Window.cpp"
+    "Context.cpp"
     "Entry.cpp"
 )
 

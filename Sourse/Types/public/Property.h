@@ -32,6 +32,7 @@ public:
 class PropertyInt
 {
 public:
+  char name[1];
 	PropertyInt();
 	PropertyInt(int val, int min, int max);
 	~PropertyInt();

@@ -1,42 +1,66 @@
 #include "public/Operator.h"
+
 #include "public/Context.h"
+#define EVENT_FROM_CTX(C) EventState* enent = &C->getActiveWindow()->EventState;
+#define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
+#define RET_FINISHED(op)         \
+  op->State = OpState::FINISHED; \
+  return;
 
 
-void CreateOperatopRuntime_poll(Context* C, Operator* op) {
-	FOREACH_NODE(Operator, (&C->Operators), op_node) {
-		//args.op->Properties.;
-		if (1) {
+// -----------  test Operetor ----------------------- //
 
-		}
-	}
+#include "Print.h"
+
+typedef struct ObjectRotateCData {
+  Vec3f SomeVec;
+} ObjectRotateCData;
+
+void ObjectRotate_modal(Context* C, Operator* op) {
+  EVENT_FROM_CTX(C);
+  OPDATA_FROM_OP(ObjectRotateCData, OpData);
+
+  if (enent->A == RELEASED) {
+    RET_FINISHED(op);
+  }
+
+  OpData->SomeVec.x += 4;
+  print(OpData->SomeVec);
 }
 
-void CreateOperatopRuntime_ecec(Context* C, Operator* op) {
+void ObjectRotate_ecec(Context* C, Operator* op) {}
+
+void ObjectRotate_invoke(Context* C, Operator* op) {
+  OPDATA_FROM_OP(ObjectRotateCData, OpData);
+  OpData->SomeVec.x = 3;
+  op->State = OpState::RUNNING;
 }
 
-void CreateOperatopRuntime_modal(Context* C, Operator* op) {
+// Checks if operator should be inveked
+// TODO:invent keymap
+void ObjectRotate_poll(Context* C, Operator* op) {
+  EVENT_FROM_CTX(C);
+  if (enent->A == PRESSED) {
+    op->State = OpState::INVOKE;
+  }
 }
 
-void CreateOperatopRuntime_invoke(Context* C, Operator* op) {
+void ObjectRotate_create(Context* C, Operator* op) {
+  op->Poll = ObjectRotate_poll;
+  op->Invoke = ObjectRotate_invoke;
+  op->Modal = ObjectRotate_modal;
+
+  op->State = OpState::FINISHED;
+  op->CustomData = (void*)new ObjectRotateCData;
 }
 
-void CreateOperatopRuntime(Context* C, Operator* op) {
-	op->Poll = CreateOperatopRuntime_poll;
-	op->Execute = CreateOperatopRuntime_ecec;
-	op->Invoke = CreateOperatopRuntime_invoke;
-	op->Modal = CreateOperatopRuntime_modal;
-	op->State = FINISHED;
+// -----------  test Operetor end ----------------------- //
 
-	PropertyFuncAdress* prop = new PropertyFuncAdress();
-	op->FuncProps.add(prop);
-
+void AddOperator(Context* C,
+                 void (*OpCreate)(Context* C, Operator* op)) {
+  Operator* op = new Operator;
+  OpCreate(C, op);
+  C->Operators.add(op);
 }
 
-
-void OpsInit(Context* C) {
-	Operator* op = new Operator;
-	CreateOperatopRuntime(C, op);
-	C->Operators.add(op);
-
-
-}
+void OpsInit(Context* C) { AddOperator(C, ObjectRotate_create); }
