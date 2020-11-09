@@ -51,10 +51,8 @@ void test2() {
   print(fbuff, 1);
 }
 
-void test3() {
-  int h, w;
-  h = 400;
-  w = 400;
+void test3(int w, int h, FBuff& buff) {
+  
 
   List<Object> Objects;
 
@@ -82,16 +80,19 @@ void test3() {
   RND_set.setObjList(&Objects);
   RND_set.setCamera(&NewCamObj);
   RND_set.Resolution.setVal(0.5f);
-  FBuff buff = FBuff(w, h);
+  
   RayCast::RenderToBuff(&RND_set, &buff);
 
   print(buff, 1);
 }
 
 int main() {
-
-  test3();
-  return 0;
+  int h, w;
+  h = 400;
+  w = 400;
+  FBuff buff = FBuff(w, h);
+  //test3(w, h, buff);
+  //return 0;
 
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
