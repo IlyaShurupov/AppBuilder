@@ -1,7 +1,7 @@
 #pragma once
 #include "public/Context.h"
 
-Window::Window() {
+Screen::Screen() {
   for (int i = 0; i < EventState.num; i++) {
     (&EventState.A)[i] = EVENT_NONE;
   }
@@ -9,16 +9,21 @@ Window::Window() {
   Fbuff = nullptr;
 }
 
-Window::~Window() {}
+Screen::~Screen() {}
 
-void Window::UpdEventState() {}
+void Screen::UpdEventState() {}
 
-bool Window::IsEvent() { return true; }
+bool Screen::IsEvent() { return true; }
 
-void Window::Draw(class Context* C) {}
+void Screen::Draw(class Context* C) {
+  FOREACH_NODE(ScrArea, (&ScrAreas), edt_node) { 
+    Editor* edt = edt_node->Data->Editor;
+    edt->Draw(C, &edt_node->Data->Rect, Fbuff);
+  }
+}
 
 Context::Context() {}
 
 Context::~Context() {}
 
-Window* Context::getActiveWindow() { return ActiveWin; }
+Screen* Context::getActiveScreen() { return ActiveWin; }

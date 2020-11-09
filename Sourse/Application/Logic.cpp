@@ -4,11 +4,14 @@
 
 int MainLoop(Context* C) {
   while (true) {
-    Window* actw = C->getActiveWindow();
+    Screen* actw = C->getActiveScreen();
     actw->UpdEventState();
     if (actw->IsEvent()) {
       continue;  // TODO: go sleep
     }
+
+    //FOREACH_STACK(ExecCommand, Operator, actw->OpExecQueue) {
+    //}
 
     FOREACH_NODE(Operator, (&C->Operators), op_node) {
       Operator* Op = op_node->Data;

@@ -1,7 +1,7 @@
 #include "public/Operator.h"
 
 #include "public/Context.h"
-#define EVENT_FROM_CTX(C) EventState* enent = &C->getActiveWindow()->EventState;
+#define EVENT_FROM_CTX(C) EventState* enent = &C->getActiveScreen()->EventState;
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 #define RET_FINISHED(op)         \
   op->State = OpState::FINISHED; \

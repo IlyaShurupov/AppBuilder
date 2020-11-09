@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Event.h"
 #include "FrameBuff.h"
 #include "LinkedList.h"
 #include "Object.h"
 #include "Operator.h"
+#include "Stack.h"
+#include "UI.h"
 #include "Vec2.h"
 
 enum KeyState {
@@ -31,19 +32,36 @@ struct EventState {
   vec2<short> dCursor;
 };
 
-class Window {
- public:
-  vec2<short> WorldPos;
-  vec2<short> Size;
+typedef struct ScrEdge {
+  vec2<short> v1, v2;
+} ScrEdge;
 
-  EventState EventState;
+class Screen {
+ public:
+  Screen();
+  ~Screen();
+
+  // position & Size
+  RectPtr<short> Rect;
+
+  // Screen buffer that will see the User
   FBuff* Fbuff;
 
-  Window();
-  ~Window();
+  // All execute commands from UI
+  Stack<Operator> OpExecQueue;
 
+  // Screen areas that represents any editor type
+  List<ScrArea> ScrAreas;
+  List<vec2<short>> ScrVerts;
+  List<ScrEdge> ScrEdges;
+
+  // Event state from user
+  EventState EventState;
+
+ public:
   void UpdEventState();
   bool IsEvent();
+
   void Draw(class Context* C);
 };
 
@@ -52,11 +70,12 @@ class Context {
   Context();
   ~Context();
 
-  List<Window> Windows;
-  List<Object> Collection;
+  List<Screen> Screens;
+  List<Editor> Editors;
   List<Operator> Operators;
+  List<Object> Collection;
 
-  Window* ActiveWin = nullptr;
+  Screen* ActiveWin = nullptr;
 
-  Window* getActiveWindow();
+  Screen* getActiveScreen();
 };

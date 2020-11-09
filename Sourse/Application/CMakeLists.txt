@@ -9,6 +9,7 @@ set (HEADERS
     "public/Logic.h"
     "public/Operator.h"
     "public/Context.h"
+    "public/UI.h"
 )
 
 # Source files
@@ -17,6 +18,7 @@ set (SOURCES
     "Operator.cpp"
     "Context.cpp"
     "Entry.cpp"
+    "UI.cpp"
 )
 
 link_directories(${CMAKE_BINARY_DIR}/bin)
