@@ -1,6 +1,5 @@
 #include "public/Logic.h"
-
-#include "public/Operator.h"
+#include "public/Context.h"
 
 int MainLoop(Context* C) {
   while (true) {

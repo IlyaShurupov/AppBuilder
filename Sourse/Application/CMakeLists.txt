@@ -6,6 +6,7 @@ project(Application)
 
 
 set (HEADERS
+    "public/Win32API.h"
     "public/Logic.h"
     "public/Operator.h"
     "public/Context.h"
@@ -19,6 +20,7 @@ set (SOURCES
     "Context.cpp"
     "Entry.cpp"
     "UI.cpp"
+    "Win32API.cpp"
 )
 
 link_directories(${CMAKE_BINARY_DIR}/bin)
@@ -32,7 +34,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast/public>
               $<INSTALL_INTERFACE:/Sourse/RenderEngines/RayCast/public>
 )
-target_link_libraries(${PROJECT_NAME} Types RayCast)
+target_link_libraries(${PROJECT_NAME} "Types.lib" "RayCast.lib" "d2d1.lib")
 
 #target_link_libraries (${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Sourse/Types)
 

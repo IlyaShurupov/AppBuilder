@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHANEL_CAPACITY unsigned char
+#define CHANEL_CAPACITY float
 
 typedef struct Color4 {
 	CHANEL_CAPACITY R = 0;

@@ -41,7 +41,7 @@ void RenderPass(RenderSettings* settings, Ray ray, Color4& color) {
 
 	ray.Cast(settings->getObjList(), FLT_MAX);
 	if (ray.HitData.Hit) {
-		color.G = color.B = color.R = 255;
+		color.G = color.B = color.R = 1.f;
 	}
 }
 
