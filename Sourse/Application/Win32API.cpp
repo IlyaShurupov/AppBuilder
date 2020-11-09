@@ -10,12 +10,24 @@
 #include <wchar.h>
 #include <wincodec.h>
 
-DemoApp::DemoApp()
-    : m_hwnd(NULL),
-      m_pDirect2dFactory(NULL),
-      m_pRenderTarget(NULL),
-      m_pLightSlateGrayBrush(NULL),
-      m_pCornflowerBlueBrush(NULL) {}
+#include "FrameBuff.h"
+
+#define CREATE_BITMAP(buff, bmp)                                               \
+  m_pRenderTarget->CreateBitmap(                                               \
+      D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height), buff->Buff,      \
+      buff->width * 16,                                                        \
+      D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT, \
+                                               D2D1_ALPHA_MODE_IGNORE)),       \
+      &bmp)
+
+DemoApp::DemoApp(int Width, int Height) {
+  m_hwnd = (NULL);
+  m_pDirect2dFactory = (NULL);
+  m_pRenderTarget = (NULL);
+  m_pLightSlateGrayBrush = (NULL);
+  m_pCornflowerBlueBrush = (NULL);
+  buff = new FBuff(Width, Height);
+}
 
 DemoApp::~DemoApp() {
   SafeRelease(&m_pDirect2dFactory);
@@ -32,6 +44,8 @@ void DemoApp::RunMessageLoop() {
     DispatchMessage(&msg);
   }
 }
+
+FBuff *DemoApp::getFBuff() { return buff; }
 
 HRESULT DemoApp::Initialize() {
   HRESULT hr;
@@ -64,11 +78,12 @@ HRESULT DemoApp::Initialize() {
     m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 
     // Create the window.
-    m_hwnd = CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"),
-                          WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-                          static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
-                          static_cast<UINT>(ceil(480.f * dpiY / 96.f)), NULL,
-                          NULL, HINST_THISCOMPONENT, this);
+    m_hwnd =
+        CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"),
+                     WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+                     static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
+                     static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)),
+                     NULL, NULL, HINST_THISCOMPONENT, this);
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
       ShowWindow(m_hwnd, SW_SHOWNORMAL);
@@ -199,6 +214,41 @@ HRESULT DemoApp::OnRender() {
 
   hr = CreateDeviceResources();
 
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+
+  // Retrieve the size of the render target.
+  D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
+
+  m_pRenderTarget->BeginDraw();
+  m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+  // Create the bitmap and draw it on the screen
+  ID2D1Bitmap *bmp;
+  hr = CREATE_BITMAP(buff, bmp);
+
+  if (bmp) {
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, buff->width, buff->height);
+    m_pRenderTarget->DrawBitmap(bmp, rect);
+  }
+
+  hr = m_pRenderTarget->EndDraw();
+
+  if (hr == D2DERR_RECREATE_TARGET) {
+    hr = S_OK;
+    DiscardDeviceResources();
+  }
+
+  return hr;
+}
+
+/*
+void DemoApp::OnRender() {
+  HRESULT hr;
+
+  hr = CreateDeviceResources();
+
   if (SUCCEEDED(hr)) {
     // Retrieve the size of the render target.
     D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
@@ -207,20 +257,19 @@ HRESULT DemoApp::OnRender() {
     m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 
-    int width = 800, height = 800;
-    D2D1::ColorF *arr =
-        (D2D1::ColorF *)calloc(width * height * 4, sizeof(D2D1::ColorF));
-    for (int i = 0; i < width * height * 4; i++) {
-      arr[i] = D2D1::ColorF(0.0f, 1.0f, 0.0f);
-    }
     // Create the bitmap and draw it on the screen
     ID2D1Bitmap *bmp;
     HRESULT hr;
-    hr = m_pRenderTarget->CreateBitmap(
-        D2D1::SizeU(width, height), arr, width * sizeof(int) * 4,
-        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,
-                                                 D2D1_ALPHA_MODE_IGNORE)),
-        &bmp);
+    D2D1_SIZE_U SIZE = D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height);
+    UINT32 Pitch = buff->width * sizeof(int) * 4;
+    D2D1_BITMAP_PROPERTIES PROPS = D2D1::BitmapProperties(
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+    hr = m_pRenderTarget->CreateBitmap(SIZE, buff->Buff, Pitch, PROPS, &bmp);
+
+    if (!bmp) {
+      return;
+    }
 
     // Draw a bitmap.
     m_pRenderTarget->DrawBitmap(bmp, D2D1::RectF(12, 12, 12 + 800, 12 + 800));
@@ -232,6 +281,5 @@ HRESULT DemoApp::OnRender() {
       DiscardDeviceResources();
     }
   }
-
-  return hr;
 }
+*/

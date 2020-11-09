@@ -36,7 +36,7 @@ void FBuff::clear() {
 		Buff[i].R = 0;
 		Buff[i].G = 0;
 		Buff[i].B = 0;
-		Buff[i].A = 0;
+		Buff[i].A = 1.f;
 	}
 }
 

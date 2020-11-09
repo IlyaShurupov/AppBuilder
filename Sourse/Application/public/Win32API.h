@@ -1,8 +1,9 @@
 #pragma once
 
 // Windows Header Files:
-#include <windows.h>
 #include <d2d1.h>
+#include <windows.h>
+#include "FrameBuff.h"
 
 #ifndef Assert
 #if defined(DEBUG) || defined(_DEBUG)
@@ -33,7 +34,7 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 
 class DemoApp {
  public:
-  DemoApp();
+  DemoApp(int Width, int Height);
   ~DemoApp();
 
   // Register the win & call methods for instantiating drawing res
@@ -41,6 +42,12 @@ class DemoApp {
 
   // Process and dispatch messages
   void RunMessageLoop();
+
+  // Get Buffer to write
+  FBuff *getFBuff();
+
+  // Draw content.
+  HRESULT OnRender();
 
  private:
   // Initialize device-independent resources.
@@ -52,8 +59,6 @@ class DemoApp {
   // Release device-dependent resource.
   void DiscardDeviceResources();
 
-  // Draw content.
-  HRESULT OnRender();
 
   // Resize the render target.
   void OnResize(UINT width, UINT height);
@@ -63,6 +68,7 @@ class DemoApp {
                                   LPARAM lParam);
 
  private:
+  FBuff* buff;
   HWND m_hwnd;
   ID2D1Factory* m_pDirect2dFactory;
   ID2D1HwndRenderTarget* m_pRenderTarget;

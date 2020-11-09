@@ -83,14 +83,14 @@ void test3(int w, int h, FBuff& buff) {
   
   RayCast::RenderToBuff(&RND_set, &buff);
 
-  print(buff, 1);
+  //print(buff, 1);
 }
 
 int main() {
   int h, w;
   h = 400;
   w = 400;
-  FBuff buff = FBuff(w, h);
+  //FBuff buff = FBuff(w, h);
   //test3(w, h, buff);
   //return 0;
 
@@ -98,10 +98,14 @@ int main() {
 
   if (SUCCEEDED(CoInitialize(NULL))) {
     {
-      DemoApp app;
+      DemoApp app = DemoApp(500, 500);
       if (SUCCEEDED(app.Initialize())) {
 
-        app.RunMessageLoop();
+        FBuff* buff = app.getFBuff();
+        test3(w, h, *buff);
+        app.OnRender();
+        //app.out(&buff);
+        //app.RunMessageLoop();
       }
     }
     CoUninitialize();

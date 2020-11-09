@@ -6,7 +6,7 @@ typedef struct Color4 {
 	CHANEL_CAPACITY R = 0;
 	CHANEL_CAPACITY G = 0;
 	CHANEL_CAPACITY B = 0;
-	CHANEL_CAPACITY A = 0;
+	CHANEL_CAPACITY A = 1.f;
 } Color4;
 
 
