@@ -186,54 +186,44 @@ void DemoApp::OnResize(UINT width, UINT height) {
 }
 
 HRESULT DemoApp::OnRender() {
-  HRESULT hr = S_OK;
+  HRESULT hr;
 
   hr = CreateDeviceResources();
 
   if (SUCCEEDED(hr)) {
+    // Retrieve the size of the render target.
+    D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
+
     m_pRenderTarget->BeginDraw();
-
     m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
-    D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
-    // Draw a grid background.
-    int width = static_cast<int>(rtSize.width);
-    int height = static_cast<int>(rtSize.height);
 
-    for (int x = 0; x < width; x += 10) {
-      m_pRenderTarget->DrawLine(
-          D2D1::Point2F(static_cast<FLOAT>(x), 0.0f),
-          D2D1::Point2F(static_cast<FLOAT>(x), rtSize.height),
-          m_pLightSlateGrayBrush, 0.5f);
+    int width = 400, height = 400;
+    D2D1::ColorF *arr =
+        (D2D1::ColorF *)calloc(width * height * 4, sizeof(D2D1::ColorF));
+    for (int i = 0; i < width * height * 4; i++) {
+      arr[i] = D2D1::ColorF(0.0f, 1.0f, 0.0f);
     }
+    // Create the bitmap and draw it on the screen
+    ID2D1Bitmap *bmp;
+    HRESULT hr;
+    hr = m_pRenderTarget->CreateBitmap(
+        D2D1::SizeU(width, height), arr, width * sizeof(int) * 4,
+        D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,
+                                                 D2D1_ALPHA_MODE_IGNORE)),
+        &bmp);
 
-    for (int y = 0; y < height; y += 10) {
-      m_pRenderTarget->DrawLine(
-          D2D1::Point2F(0.0f, static_cast<FLOAT>(y)),
-          D2D1::Point2F(rtSize.width, static_cast<FLOAT>(y)),
-          m_pLightSlateGrayBrush, 0.5f);
-    }
+    // Draw a bitmap.
+    m_pRenderTarget->DrawBitmap(bmp, D2D1::RectF(12, 12, 12 + 200, 12 + 200));
 
-    // Draw two rectangles.
-    D2D1_RECT_F rectangle1 =
-        D2D1::RectF(rtSize.width / 2 - 50.0f, rtSize.height / 2 - 50.0f,
-                    rtSize.width / 2 + 50.0f, rtSize.height / 2 + 50.0f);
-
-    D2D1_RECT_F rectangle2 =
-        D2D1::RectF(rtSize.width / 2 - 100.0f, rtSize.height / 2 - 100.0f,
-                    rtSize.width / 2 + 100.0f, rtSize.height / 2 + 100.0f);
-    // Draw a filled rectangle.
-    m_pRenderTarget->FillRectangle(&rectangle1, m_pLightSlateGrayBrush);
-
-    // Draw the outline of a rectangle.
-    m_pRenderTarget->DrawRectangle(&rectangle2, m_pCornflowerBlueBrush);
     hr = m_pRenderTarget->EndDraw();
+
+    if (hr == D2DERR_RECREATE_TARGET) {
+      hr = S_OK;
+      DiscardDeviceResources();
+    }
   }
-  if (hr == D2DERR_RECREATE_TARGET) {
-    hr = S_OK;
-    DiscardDeviceResources();
-  }
+
   return hr;
 }
 
