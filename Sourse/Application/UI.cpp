@@ -19,7 +19,7 @@ Editor::~Editor() {}
 void Editor::Draw(Context* C, RectPtr<SCR_UINT>* rect, FBuff* Buff) {
   FOREACH_NODE(Region, (&Regions), reg_node) {
     Region* reg = reg_node->Data;
-    reg->Draw(C, reg, Buff);
+    reg->Draw(C, reg, rect, Buff);
   }
 }
 
@@ -34,15 +34,15 @@ ScrArea::ScrArea(Editor* editor, RectPtr<SCR_UINT> rect) {
 
 ScrArea::~ScrArea() {}
 
-void RegionViewport(class Context* C, Region* region, FBuff* Buff) {
+void RegionViewport(class Context* C, Region* region,
+                    RectPtr<SCR_UINT>* sa_rect, FBuff* Buff) {
 
-  region->rect.v0.assign(50, 50);
-  region->rect.v1.assign(50, 500 + 50);
-  region->rect.v2.assign(50 + 500, 50 + 500);
-  region->rect.v3.assign(50 + 500, 50);
+  int tmp = 50;
+  region->rect.v0.assign(sa_rect->v0->x + tmp, sa_rect->v0->y + tmp);
+  region->rect.v1.assign(sa_rect->v1->x + tmp, sa_rect->v1->y - tmp);
+  region->rect.v2.assign(sa_rect->v2->x - tmp, sa_rect->v2->y - tmp);
+  region->rect.v3.assign(sa_rect->v3->x - tmp, sa_rect->v3->y + tmp);
 
-  FBuff buff2;
-  //Buff->cast(buff2, &region->rect);
   Camera* cam = C->RndrSets.getCamera()->GetCameraComponent();
 
   /*
@@ -52,6 +52,9 @@ void RegionViewport(class Context* C, Region* region, FBuff* Buff) {
   RayCast::RenderToBuff(&C->RndrSets, Buff);
   */
 
+  FBuff buff2;
+  Buff->cast(buff2, region->rect);
+
   cam->Height.val = buff2.height;
   cam->Width.val = buff2.width;
 
@@ -59,10 +62,10 @@ void RegionViewport(class Context* C, Region* region, FBuff* Buff) {
 }
 
 void UI_Init(Context* C) {
-  Editor* editor = new Editor;
+  Editor* editor = DBG_NEW Editor;
   C->editors.add(editor);
 
-  Region* reg = new Region;
+  Region* reg = DBG_NEW Region;
   reg->editor = editor;
   reg->Draw = RegionViewport;
   editor->Regions.add(reg);

@@ -6,6 +6,7 @@
 #include <malloc.h>
 #include <math.h>
 #include <memory.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <wincodec.h>
@@ -53,7 +54,7 @@ SystemHandler::SystemHandler(int Width, int Height) {
   m_pRenderTarget = (NULL);
   m_pLightSlateGrayBrush = (NULL);
   m_pCornflowerBlueBrush = (NULL);
-  buff = new FBuff(Width, Height);
+  buff = DBG_NEW FBuff(Width, Height);
 }
 
 SystemHandler::~SystemHandler() {
@@ -62,8 +63,6 @@ SystemHandler::~SystemHandler() {
   SafeRelease(&m_pLightSlateGrayBrush);
   SafeRelease(&m_pCornflowerBlueBrush);
 }
-
-
 
 FBuff *SystemHandler::getFBuff() { return buff; }
 
@@ -168,16 +167,47 @@ void SystemHandler::RunMessageLoop() {
   }
 }
 
-void GetEventSate(SystemHandler *SH, AppEvent *Event) {
-  
-  GetMessage(&SH->msg, NULL, 0, 0);
+void UpdKeySate(KeyState &key, bool down) {
+  if ((int)key == down) {
+    return;
+  }
 
-  //SH->RunMessageLoop();
+  if (key == KeyState::EVENT_NONE) {
+    key = KeyState::PRESSED;
+  
+  } else if (key == KeyState::HOLD) {
+    key = KeyState::RELEASED;
+  } else {
+    key = KeyState(down);
+  }
 }
 
+void GetEventSate(SystemHandler *SH, AppEvent *Event) {
+
+  POINT cursor;
+
+  Event->PrevCursor = Event->Cursor;
+
+  GetCursorPos(&cursor);
+  ScreenToClient(SH->m_hwnd, &cursor);
+  Event->Cursor.x = cursor.x;
+  Event->Cursor.y = cursor.y;
+
+  SetTimer(SH->m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
+  GetMessage(&SH->msg, NULL, 0, 0);
+
+  UpdKeySate(Event->A, GetKeyState('A') & 0x800);
+  UpdKeySate(Event->B, GetKeyState('B') & 0x800);
+  UpdKeySate(Event->C, GetKeyState('C') & 0x800);
+  UpdKeySate(Event->D, GetKeyState('D') & 0x800);
+  //...
+  UpdKeySate(Event->LMB, GetKeyState(VK_LBUTTON) & 0x800);
+  UpdKeySate(Event->RMB, GetKeyState(VK_RBUTTON) & 0x800);
+  UpdKeySate(Event->LMB, GetKeyState(VK_MBUTTON) & 0x800);
+}
 
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
-                                  LPARAM lParam) {
+                                        LPARAM lParam) {
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
@@ -205,23 +235,12 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
           wasHandled = true;
           break;
 
-        case WM_DISPLAYCHANGE: {
-          InvalidateRect(hwnd, NULL, FALSE);
-        }
-          result = 0;
-          wasHandled = true;
-          break;
-
-        case WM_PAINT: {
-          pDemoApp->SysOutput();
-          ValidateRect(hwnd, NULL);
-        }
-          result = 0;
-          wasHandled = true;
+        case WM_TIMER:
           break;
 
         case WM_DESTROY: {
           PostQuitMessage(0);
+          KillTimer(hwnd, 10);
         }
           result = 1;
           wasHandled = true;
@@ -248,8 +267,6 @@ void SystemHandler::OnResize(UINT width, UINT height) {
   }
 }
 
-
-
 void SystemHandler::SysOutput() {
   HRESULT hr;
 
@@ -270,8 +287,8 @@ void SystemHandler::SysOutput() {
   hr = CREATE_BITMAP(buff, bmp);
 
   if (bmp) {
-    D2D1_RECT_F rect =
-        D2D1::RectF(10.f, 10.f, float(buff->width - 10), float(buff->height - 10));
+    D2D1_RECT_F rect = D2D1::RectF(10.f, 10.f, float(buff->width - 10),
+                                   float(buff->height - 10));
     m_pRenderTarget->DrawBitmap(bmp, rect);
   }
 
@@ -290,4 +307,3 @@ void SysOutput(SystemHandler *SH) {
   TranslateMessage(&SH->msg);
   DispatchMessage(&SH->msg);
 }
-

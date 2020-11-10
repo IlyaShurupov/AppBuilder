@@ -35,7 +35,8 @@ struct UIs {
 
 struct Region {
   Rect<SCR_UINT> rect;
-  void (*Draw)(class Context* C, Region* region, FBuff* Buff) = nullptr;
+  void (*Draw)(class Context* C, Region* region,
+               RectPtr<SCR_UINT>* sa_rect, FBuff* Buff) = nullptr;
   class Editor* editor;
   List<UIs> UIs;
   Properties Props;

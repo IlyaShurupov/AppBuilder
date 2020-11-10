@@ -12,6 +12,7 @@ int AppMainLoop(Context* C) {
     // FOREACH_STACK(ExecCommand, Operator, actw->OpExecQueue) {
     //}
 
+
     FOREACH_NODE(Operator, (&C->operators), op_node) {
       Operator* Op = op_node->Data;
 

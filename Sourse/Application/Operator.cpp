@@ -18,12 +18,9 @@ void ObjectRotate_modal(Context* C, Operator* op) {
   AppEvent* enent = &C->event;
   OPDATA_FROM_OP(ObjectRotateCData, OpData);
 
-  if (enent->A == KeyState::RELEASED) {
+  if (enent->B == KeyState::RELEASED) {
     RET_FINISHED(op);
   }
-
-  OpData->SomeVec.x += 4;
-  print(OpData->SomeVec);
 }
 
 void ObjectRotate_ecec(Context* C, Operator* op) {}
@@ -38,7 +35,7 @@ void ObjectRotate_invoke(Context* C, Operator* op) {
 // TODO:invent keymap
 void ObjectRotate_poll(Context* C, Operator* op) {
   AppEvent* enent = &C->event;
-  if (enent->A == KeyState::PRESSED) {
+  if (enent->B == KeyState::PRESSED) {
     op->State = OpState::INVOKE;
   }
 }
@@ -49,13 +46,13 @@ void ObjectRotate_create(Context* C, Operator* op) {
   op->Modal = ObjectRotate_modal;
 
   op->State = OpState::FINISHED;
-  op->CustomData = (void*)new ObjectRotateCData;
+  op->CustomData = (void*)DBG_NEW ObjectRotateCData;
 }
 
 // -----------  test Operetor end ----------------------- //
 
 void AddOperator(Context* C, void (*Create)(Context* C, Operator* op)) {
-  Operator* op = new Operator;
+  Operator* op = DBG_NEW Operator;
   Create(C, op);
   C->operators.add(op);
 }

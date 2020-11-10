@@ -25,6 +25,7 @@ class SystemHandler {
   void SysOutput();
 
   MSG msg;
+  HWND m_hwnd;
 
  private:
   // Initialize device-independent resources.
@@ -45,7 +46,6 @@ class SystemHandler {
 
  private:
   FBuff* buff;
-  HWND m_hwnd;
   ID2D1Factory* m_pDirect2dFactory;
   ID2D1HwndRenderTarget* m_pRenderTarget;
   ID2D1SolidColorBrush* m_pLightSlateGrayBrush;

@@ -14,6 +14,12 @@ class FBuff {
  public:
   int ZDepth;
   Color4* Buff;
+
+  //TODO: make use of z val & get rid of parents
+  // only one level of hierarchy!!!
+  vec2<SCR_UINT> pos;
+  FBuff* parent;
+
   SCR_UINT height, width;
   FBuff();
   FBuff(SCR_UINT width, SCR_UINT height);

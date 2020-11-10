@@ -9,35 +9,36 @@
 #include "Vec2.h"
 #include "RayCast.h"
 
+#define DKS = KeyState::EVENT_NONE;
+
 enum class KeyState {
   EVENT_NONE = 0,
+  HOLD,
   PRESSED,
   RELEASED,
-  HOLD,
   //DOUBLE_CLICK,
 };
 
-class AppEvent {
- public:
-  KeyState A;
-  KeyState B;
-  KeyState C;
-  KeyState D;
-  KeyState ENTER;
-  KeyState SPACE;
-  KeyState KEY_1;
-  KeyState KEY_2;
-  KeyState KEY_3;
+struct AppEvent {
+  KeyState LMB DKS;
+  KeyState RMB DKS;
+  KeyState MMB DKS;
+
+  KeyState A DKS;
+  KeyState B DKS;
+  KeyState C DKS;
+  KeyState D DKS;
+  KeyState ENTER DKS;
+  KeyState SPACE DKS;
+  KeyState KEY_1 DKS;
+  KeyState KEY_2 DKS;
+  KeyState KEY_3 DKS;
   // ...
-  short KeyNum = 9;
 
   vec2<SCR_UINT> Cursor;
   vec2<SCR_UINT> PrevCursor;
 
-  AppEvent();
-  ~AppEvent();
-  bool IsEvent();
-  
+  bool IsEvent = true;
 };
 
 

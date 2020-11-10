@@ -23,7 +23,7 @@ set (SOURCES
     "Win32API.cpp"
 )
 
-link_directories(${CMAKE_BINARY_DIR}/bin)
+link_directories(${CMAKE_BINARY_DIR}/bin )
 
 # Create proj
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
