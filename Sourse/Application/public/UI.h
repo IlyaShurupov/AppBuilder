@@ -36,7 +36,7 @@ struct UIs {
 struct Region {
   Rect<short> rect;
   void (*Draw)(class Context* C, Region* region, FBuff* Buff) = nullptr;
-
+  class Editor* editor;
   List<UIs> UIs;
   Properties Props;
 };

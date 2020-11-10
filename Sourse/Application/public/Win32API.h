@@ -3,10 +3,9 @@
 // Windows Header Files:
 #include <d2d1.h>
 #include <windows.h>
-#include "FrameBuff.h"
+
 #include "Context.h"
-
-
+#include "FrameBuff.h"
 
 class SystemHandler {
  public:
@@ -20,12 +19,12 @@ class SystemHandler {
   void RunMessageLoop();
 
   // Get Buffer to write
-  FBuff *getFBuff();
+  FBuff* getFBuff();
 
   // Draw content.
   void SysOutput();
 
-  void GetEventSate(class AppEvent* Event);
+  MSG msg;
 
  private:
   // Initialize device-independent resources.
@@ -36,7 +35,6 @@ class SystemHandler {
 
   // Release device-dependent resource.
   void DiscardDeviceResources();
-
 
   // Resize the render target.
   void OnResize(UINT width, UINT height);
@@ -54,6 +52,6 @@ class SystemHandler {
   ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
 };
 
-void SysOutput(SystemHandler * SH);
+void SysOutput(SystemHandler* SH);
 
 void GetEventSate(SystemHandler* SH, class AppEvent* Event);

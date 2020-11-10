@@ -63,14 +63,7 @@ SystemHandler::~SystemHandler() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-void SystemHandler::RunMessageLoop() {
-  MSG msg;
 
-  while (GetMessage(&msg, NULL, 0, 0)) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-}
 
 FBuff *SystemHandler::getFBuff() { return buff; }
 
@@ -166,6 +159,23 @@ void SystemHandler::DiscardDeviceResources() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
+void SystemHandler::RunMessageLoop() {
+  MSG msg;
+
+  while (GetMessage(&msg, NULL, 0, 0)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+}
+
+void GetEventSate(SystemHandler *SH, AppEvent *Event) {
+  
+  GetMessage(&SH->msg, NULL, 0, 0);
+
+  //SH->RunMessageLoop();
+}
+
+
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
                                   LPARAM lParam) {
   LRESULT result = 0;
@@ -233,6 +243,8 @@ void SystemHandler::OnResize(UINT width, UINT height) {
     // error here, because the error will be returned again
     // the next time EndDraw is called.
     m_pRenderTarget->Resize(D2D1::SizeU(width, height));
+    D2D1_SIZE_F TargetSize = m_pRenderTarget->GetSize();
+    this->buff->Resize(TargetSize.width, TargetSize.height);
   }
 }
 
@@ -258,7 +270,7 @@ void SystemHandler::SysOutput() {
   hr = CREATE_BITMAP(buff, bmp);
 
   if (bmp) {
-    D2D1_RECT_F rect = D2D1::RectF(0, 0, buff->width, buff->height);
+    D2D1_RECT_F rect = D2D1::RectF(10, 10, buff->width - 10, buff->height - 10);
     m_pRenderTarget->DrawBitmap(bmp, rect);
   }
 
@@ -272,10 +284,9 @@ void SystemHandler::SysOutput() {
   return;
 }
 
-void SystemHandler::GetEventSate(AppEvent *Event) {}
-
-void SysOutput(SystemHandler *SH) { SH->SysOutput(); }
-
-void GetEventSate(SystemHandler *SH, AppEvent *Event) {
-  SH->GetEventSate(Event);
+void SysOutput(SystemHandler *SH) {
+  SH->SysOutput();
+  TranslateMessage(&SH->msg);
+  DispatchMessage(&SH->msg);
 }
+

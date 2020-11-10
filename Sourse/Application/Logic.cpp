@@ -1,16 +1,13 @@
 #include "public/Logic.h"
 
+#include <cstdio>
+
 #include "public/Context.h"
 #include "public/Win32API.h"
 
 int AppMainLoop(Context* C) {
-
   while (true) {
-
     C->SysInput(C->SysH, &C->event);
-    if (!C->event.IsEvent()) {
-      continue;  // TODO: go sleep
-    }
 
     // FOREACH_STACK(ExecCommand, Operator, actw->OpExecQueue) {
     //}

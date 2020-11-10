@@ -4,10 +4,6 @@
 
 using namespace RayCast;
 
-#define FOREACH_YPASS(CData) \
-  for (int j = 0; j < CData.x_passes; UpdYPass(CData, j))
-#define FOREACH_XPASS(CData) \
-  for (int i = 0; i < CData.y_passes; UpdXPass(CData, i))
 
 struct CycleData;
 void RenderPass(RenderSettings* settings, Ray ray, Color4& color);
@@ -29,8 +25,8 @@ void RayCast::RenderToBuff(RenderSettings* Settings, FBuff* Buff) {
   CycleData CData;
   InitCycle(CData, Settings);
 
-  FOREACH_YPASS(CData) {
-    FOREACH_XPASS(CData) {
+  for (int j = 0; j < CData.y_passes; UpdYPass(CData, j)) {
+    for (int i = 0; i < CData.x_passes; UpdXPass(CData, i)) {
       Color4 Color;
       RenderPass(Settings, CData.CamRay, Color);
       WritePassToBuff(Buff, i, j, CData, Color);
@@ -43,14 +39,21 @@ void RenderPass(RenderSettings* settings, Ray ray, Color4& color) {
 
   ray.Cast(settings->getObjList(), FLT_MAX);
   if (ray.HitData.Hit) {
-    color.G = color.B = color.R = color.A = 1.f;
+    color.B = 1.f;
+  } else {
+    color.R = 1.f;
   }
 }
 
 void WritePassToBuff(FBuff* Buff, int i, int j, CycleData& CData,
                      Color4& color) {
-  int pos_x = i * CData.pxl_size - floor(CData.pxl_size / 2.f);
-  int pos_y = j * CData.pxl_size - floor(CData.pxl_size / 2.f);
+  if (CData.pxl_size == 1) {
+    Buff->set(i, j, &color);
+    return;
+  }
+
+  int pos_x = i * CData.pxl_size - (CData.pxl_size / 2);
+  int pos_y = j * CData.pxl_size - (CData.pxl_size / 2);
   CLAMP(pos_x, 0, INT_MAX);
   CLAMP(pos_y, 0, INT_MAX);
   Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
@@ -66,8 +69,13 @@ void InitCycle(CycleData& CData, RenderSettings* settings) {
   float cam_x = 1 / cam_y;
 
   int pxl_size = (int)floor(1.f / settings->Resolution.get());
-  CData.y_passes = (int)floor(CamAtrb->Height.get() / pxl_size);
-  CData.x_passes = (int)floor(CamAtrb->Width.get() / pxl_size);
+
+  if (pxl_size != 1 && pxl_size & 1) {
+    pxl_size++;
+  }
+
+  CData.y_passes = (int)floor(CamAtrb->Height.get() / pxl_size) - 1;
+  CData.x_passes = (int)floor(CamAtrb->Width.get() / pxl_size) - 1;
 
   CData.step_x = Rotation->I * (cam_x / CData.x_passes);
   CData.step_y = Rotation->J * (-cam_y / CData.y_passes);
