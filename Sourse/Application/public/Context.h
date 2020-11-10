@@ -31,8 +31,8 @@ class AppEvent {
   // ...
   short KeyNum = 9;
 
-  vec2<short> Cursor;
-  vec2<short> PrevCursor;
+  vec2<SCR_UINT> Cursor;
+  vec2<SCR_UINT> PrevCursor;
 
   AppEvent();
   ~AppEvent();
@@ -54,8 +54,8 @@ class AppWindow {
 
   // Screen areas that represents any editor type
   List<ScrArea> scrAreas;
-  List<vec2<short>> scrVerts;
-  List<Edge<short>> scrEdges;
+  List<vec2<SCR_UINT>> scrVerts;
+  List<Edge<SCR_UINT>> scrEdges;
 
  public:
   void Draw(class Context* C);

@@ -38,11 +38,11 @@ Context::Context(void (*SysOutput)(SystemHandler* SysH),
   OpsInit(this);
   UI_Init(this);
 
-  RectPtr<short> rect;
-  vec2<short>* v0 = new vec2<short>(0, 0);
-  vec2<short>* v1 = new vec2<short>(0, 800);
-  vec2<short>* v2 = new vec2<short>(800, 800);
-  vec2<short>* v3 = new vec2<short>(800, 0);
+  RectPtr<SCR_UINT> rect;
+  vec2<SCR_UINT>* v0 = new vec2<SCR_UINT>(0, 0);
+  vec2<SCR_UINT>* v1 = new vec2<SCR_UINT>(0, 800);
+  vec2<SCR_UINT>* v2 = new vec2<SCR_UINT>(800, 800);
+  vec2<SCR_UINT>* v3 = new vec2<SCR_UINT>(800, 0);
 
   ScrArea* area = new ScrArea(editors[0], rect);
   window.scrAreas.add(area);

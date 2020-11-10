@@ -16,14 +16,14 @@ Editor::Editor() { this->Type = EditorType::VIEWPORT; }
 
 Editor::~Editor() {}
 
-void Editor::Draw(Context* C, RectPtr<short>* rect, FBuff* Buff) {
+void Editor::Draw(Context* C, RectPtr<SCR_UINT>* rect, FBuff* Buff) {
   FOREACH_NODE(Region, (&Regions), reg_node) {
     Region* reg = reg_node->Data;
     reg->Draw(C, reg, Buff);
   }
 }
 
-ScrArea::ScrArea(Editor* editor, RectPtr<short> rect) {
+ScrArea::ScrArea(Editor* editor, RectPtr<SCR_UINT> rect) {
   this->editor = editor;
 
   this->rect.v0 = rect.v0;
@@ -44,6 +44,14 @@ void RegionViewport(class Context* C, Region* region, FBuff* Buff) {
   FBuff buff2;
   //Buff->cast(buff2, &region->rect);
   Camera* cam = C->RndrSets.getCamera()->GetCameraComponent();
+
+  /*
+  cam->Height.val = Buff->height;
+  cam->Width.val = Buff->width;
+
+  RayCast::RenderToBuff(&C->RndrSets, Buff);
+  */
+
   cam->Height.val = buff2.height;
   cam->Width.val = buff2.width;
 

@@ -14,18 +14,18 @@ class FBuff {
  public:
   int ZDepth;
   Color4* Buff;
-  size_t height, width;
+  SCR_UINT height, width;
   FBuff();
-  FBuff(size_t width, size_t height);
+  FBuff(SCR_UINT width, SCR_UINT height);
   ~FBuff();
 
-  Color4* get(size_t x, size_t y);
-  void set(size_t x, size_t y, Color4* color);
+  Color4* get(SCR_UINT x, SCR_UINT y);
+  void set(SCR_UINT x, SCR_UINT y, Color4* color);
   void clear();
   void delBuff();
-  void cast(FBuff& out, Rect<short>& bounds);
-  void Resize(size_t width, size_t height);
-  void DrawRect(size_t x, size_t y, Color4& color, int width, int height);
+  void cast(FBuff& out, Rect<SCR_UINT>& bounds);
+  void Resize(SCR_UINT width, SCR_UINT height);
+  void DrawRect(SCR_UINT x, SCR_UINT y, Color4& color, int width, int height);
 
  private:
 };

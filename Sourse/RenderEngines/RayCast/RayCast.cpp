@@ -7,17 +7,17 @@ using namespace RayCast;
 
 struct CycleData;
 void RenderPass(RenderSettings* settings, Ray ray, Color4& color);
-void WritePassToBuff(FBuff* Buff, int i, int j, CycleData& CData,
+void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData,
                      Color4& color);
 void InitCycle(CycleData& CData, RenderSettings* settings);
-inline void UpdYPass(CycleData& CData, int& i);
-inline void UpdXPass(CycleData& CData, int& i);
+inline void UpdYPass(CycleData& CData, SCR_UINT& i);
+inline void UpdXPass(CycleData& CData, SCR_UINT& i);
 
 struct CycleData {
-  int x_passes = 0, y_passes = 0;
+  SCR_UINT x_passes = 0, y_passes = 0;
   Vec3f step_x, step_y;
   Ray CamRay;
-  int pxl_size = 0;
+  SCR_UINT pxl_size = 0;
   Camera* CamAtrb = nullptr;
 };
 
@@ -25,8 +25,8 @@ void RayCast::RenderToBuff(RenderSettings* Settings, FBuff* Buff) {
   CycleData CData;
   InitCycle(CData, Settings);
 
-  for (int j = 0; j < CData.y_passes; UpdYPass(CData, j)) {
-    for (int i = 0; i < CData.x_passes; UpdXPass(CData, i)) {
+  for (SCR_UINT j = 0; j < CData.y_passes; UpdYPass(CData, j)) {
+    for (SCR_UINT i = 0; i < CData.x_passes; UpdXPass(CData, i)) {
       Color4 Color;
       RenderPass(Settings, CData.CamRay, Color);
       WritePassToBuff(Buff, i, j, CData, Color);
@@ -45,17 +45,17 @@ void RenderPass(RenderSettings* settings, Ray ray, Color4& color) {
   }
 }
 
-void WritePassToBuff(FBuff* Buff, int i, int j, CycleData& CData,
+void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData,
                      Color4& color) {
   if (CData.pxl_size == 1) {
     Buff->set(i, j, &color);
     return;
   }
 
-  int pos_x = i * CData.pxl_size - (CData.pxl_size / 2);
-  int pos_y = j * CData.pxl_size - (CData.pxl_size / 2);
-  CLAMP(pos_x, 0, INT_MAX);
-  CLAMP(pos_y, 0, INT_MAX);
+  SCR_UINT pos_x = i * CData.pxl_size - (CData.pxl_size / 2);
+  SCR_UINT pos_y = j * CData.pxl_size - (CData.pxl_size / 2);
+  CLAMP(pos_x, (SCR_UINT)0, SCR_UINT_MAX);
+  CLAMP(pos_y, (SCR_UINT)0, SCR_UINT_MAX);
   Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
 }
 
@@ -68,14 +68,14 @@ void InitCycle(CycleData& CData, RenderSettings* settings) {
       (float)sqrt(float(CamAtrb->Height.get()) / CamAtrb->Width.get());
   float cam_x = 1 / cam_y;
 
-  int pxl_size = (int)floor(1.f / settings->Resolution.get());
+  SCR_UINT pxl_size = (SCR_UINT)floor(1.f / settings->Resolution.get());
 
   if (pxl_size != 1 && pxl_size & 1) {
     pxl_size++;
   }
 
-  CData.y_passes = (int)floor(CamAtrb->Height.get() / pxl_size) - 1;
-  CData.x_passes = (int)floor(CamAtrb->Width.get() / pxl_size) - 1;
+  CData.y_passes = (SCR_UINT)floor(CamAtrb->Height.get() / pxl_size) - 1;
+  CData.x_passes = (SCR_UINT)floor(CamAtrb->Width.get() / pxl_size) - 1;
 
   CData.step_x = Rotation->I * (cam_x / CData.x_passes);
   CData.step_y = Rotation->J * (-cam_y / CData.y_passes);
@@ -92,13 +92,13 @@ void InitCycle(CycleData& CData, RenderSettings* settings) {
   CData.pxl_size = pxl_size;
 }
 
-inline void UpdYPass(CycleData& CData, int& i) {
+inline void UpdYPass(CycleData& CData, SCR_UINT& i) {
   i++;
   CData.CamRay.Dir -= CData.step_x * (float)(CData.x_passes + 1);
   CData.CamRay.Dir += CData.step_y;
 }
 
-inline void UpdXPass(CycleData& CData, int& i) {
+inline void UpdXPass(CycleData& CData, SCR_UINT& i) {
   i++;
   CData.CamRay.Dir += CData.step_x;
 }

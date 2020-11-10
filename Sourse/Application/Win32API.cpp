@@ -244,7 +244,7 @@ void SystemHandler::OnResize(UINT width, UINT height) {
     // the next time EndDraw is called.
     m_pRenderTarget->Resize(D2D1::SizeU(width, height));
     D2D1_SIZE_F TargetSize = m_pRenderTarget->GetSize();
-    this->buff->Resize(TargetSize.width, TargetSize.height);
+    this->buff->Resize((SCR_UINT)width, (SCR_UINT)height);
   }
 }
 
@@ -270,7 +270,8 @@ void SystemHandler::SysOutput() {
   hr = CREATE_BITMAP(buff, bmp);
 
   if (bmp) {
-    D2D1_RECT_F rect = D2D1::RectF(10, 10, buff->width - 10, buff->height - 10);
+    D2D1_RECT_F rect =
+        D2D1::RectF(10.f, 10.f, float(buff->width - 10), float(buff->height - 10));
     m_pRenderTarget->DrawBitmap(bmp, rect);
   }
 

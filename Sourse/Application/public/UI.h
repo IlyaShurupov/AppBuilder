@@ -15,7 +15,7 @@ class Button {
   Button();
   ~Button();
 
-  Rect<short> rect;
+  Rect<SCR_UINT> rect;
   struct Operator* op;
 
   void Poll(class Context* C);
@@ -34,7 +34,7 @@ struct UIs {
 };
 
 struct Region {
-  Rect<short> rect;
+  Rect<SCR_UINT> rect;
   void (*Draw)(class Context* C, Region* region, FBuff* Buff) = nullptr;
   class Editor* editor;
   List<UIs> UIs;
@@ -49,16 +49,16 @@ class Editor {
 
   Editor();
   ~Editor();
-  void Draw(class Context* C, RectPtr<short>* rect, class FBuff* Buff);
+  void Draw(class Context* C, RectPtr<SCR_UINT>* rect, class FBuff* Buff);
 };
 
 class ScrArea {
  public:
-  RectPtr<short> rect;
+  RectPtr<SCR_UINT> rect;
   Editor* editor;
   Properties Props;
 
-  ScrArea(Editor* editor, RectPtr<short> rect);
+  ScrArea(Editor* editor, RectPtr<SCR_UINT> rect);
   ~ScrArea();
 };
 

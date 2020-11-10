@@ -5,28 +5,29 @@
 #define IDX3D(width, depth, x, y, z) (width * depth * y + depth * x + z)
 #define IDX2D(width, x, y) (width * y + x)
 
-#define BUFF_GET(x, y, width, Buff) (Buff + width * y + x)
+#define BUFF_GET(x, y, width, Buff) (Buff + (__int64)width * y + x)
 
 FBuff::FBuff() {
   this->height = -1;
   this->width = -1;
   Buff = nullptr;
+  ZDepth = 0;
 }
 
-FBuff::FBuff(size_t width, size_t height) {
+FBuff::FBuff(SCR_UINT width, SCR_UINT height) {
   this->height = height;
   this->width = width;
-  Buff = new Color4[height * width];
+  Buff = new Color4[(__int64)height * width];
   ZDepth = 0;
 }
 
 FBuff::~FBuff() {}
 
-Color4* FBuff::get(size_t x, size_t y) {
+Color4* FBuff::get(SCR_UINT x, SCR_UINT y) {
   return BUFF_GET(x, y, width, this->Buff);
 }
 
-void FBuff::set(size_t x, size_t y, Color4* color) {
+void FBuff::set(SCR_UINT x, SCR_UINT y, Color4* color) {
   Color4* Color = BUFF_GET(x, y, width, this->Buff);
   Color->R = color->R;
   Color->G = color->G;
@@ -34,7 +35,7 @@ void FBuff::set(size_t x, size_t y, Color4* color) {
   Color->A = color->A;
 }
 
-void FBuff::cast(FBuff& out, Rect<short>& bounds) {
+void FBuff::cast(FBuff& out, Rect<SCR_UINT>& bounds) {
   //buff2.width = region->rect.width();
   //buff2.height = region->rect.height();
 
@@ -43,8 +44,8 @@ void FBuff::cast(FBuff& out, Rect<short>& bounds) {
 
 
 void FBuff::clear() {
-  size_t len = width * height;
-  for (size_t i = 0; i < len; i++) {
+  SCR_UINT len = width * height;
+  for (SCR_UINT i = 0; i < len; i++) {
     Buff[i].R = 0;
     Buff[i].G = 0;
     Buff[i].B = 0;
@@ -54,14 +55,14 @@ void FBuff::clear() {
 
 void FBuff::delBuff() { delete Buff; }
 
-void FBuff::Resize(size_t width, size_t height) {
+void FBuff::Resize(SCR_UINT width, SCR_UINT height) {
   delete Buff;
   this->height = height;
   this->width = width;
   Buff = new Color4[height * width];
 }
 
-void FBuff::DrawRect(size_t x, size_t y, Color4& color, int width, int height) {
+void FBuff::DrawRect(SCR_UINT x, SCR_UINT y, Color4& color, int width, int height) {
   assert((x + width <= this->width + 1) && (y + height <= this->height + 1));
 
   for (int i = 0; i < width; i++) {

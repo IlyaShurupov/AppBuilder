@@ -62,8 +62,8 @@ void print(FBuff& buff, bool PrintText) {
     HWND myconsole = GetConsoleWindow();
     HDC mydc = GetDC(myconsole);
 
-    for (int j = 0; j < buff.height; j++) {
-      for (int i = 0; i < buff.width; i++) {
+    for (SCR_UINT j = 0; j < buff.height; j++) {
+      for (SCR_UINT i = 0; i < buff.width; i++) {
         Color4* color = buff.get(i, j);
         COLORREF COLOR = RGB(color->R * 255, color->G * 255, color->B * 255);
         // COLORREF COLOR = RGB(0, 255, 12);
