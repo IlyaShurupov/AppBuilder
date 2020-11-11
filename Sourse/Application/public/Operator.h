@@ -4,11 +4,7 @@
 #define MAX_OP_EVENT_IDNAME 10
 #define MAX_OPERATOR_NAME_LENGTH 20
 
-struct ExecComand {
-  ExecComand(Operator* op, char* event_idname);
-  Operator* op;
-  char* event_idname;
-};
+
 
 struct Operator {
   char idname[MAX_OPERATOR_NAME_LENGTH];
@@ -16,12 +12,18 @@ struct Operator {
   //OpState State;
   class List<char[MAX_OP_EVENT_IDNAME]> op_events;
 
-  void (*Invoke)(class Seance* C, Operator* op, char* event_idname) = nullptr;
-  void (*Execute)(class Seance* C, Operator* op) = nullptr;
-  void (*Modal)(class Seance* C, Operator* op) = nullptr;
-  void (*Poll)(class Seance* C, Operator* op) = nullptr;
+  void (*Invoke)(struct Seance* C, Operator* op, char* event_idname) = nullptr;
+  void (*Execute)(struct Seance* C, Operator* op) = nullptr;
+  void (*Modal)(struct Seance* C, Operator* op) = nullptr;
+  void (*Poll)(struct Seance* C, Operator* op) = nullptr;
 
   void* CustomData = nullptr;
 };
 
-void OpsInit(class Context* C);
+struct ExecComand {
+  ExecComand(Operator* op, char* event_idname);
+  Operator* op;
+  char* event_idname;
+};
+
+void OpsInit(struct Seance* C);

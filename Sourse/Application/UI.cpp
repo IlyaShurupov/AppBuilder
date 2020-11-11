@@ -37,6 +37,7 @@ ScrArea::~ScrArea() {}
 void RegionViewport(Scene* C, Region* region,
                     RectPtr<SCR_UINT>* sa_rect, FBuff* Buff) {
 
+  /*
   int tmp = 50;
   region->rect.v0.assign(sa_rect->v0->x + tmp, sa_rect->v0->y + tmp);
   region->rect.v1.assign(sa_rect->v1->x + tmp, sa_rect->v1->y - tmp);
@@ -45,12 +46,10 @@ void RegionViewport(Scene* C, Region* region,
 
   Camera* cam = C->RndrSets.getCamera()->GetCameraComponent();
 
-  /*
   cam->Height.val = Buff->height;
   cam->Width.val = Buff->width;
 
   RayCast::RenderToBuff(&C->RndrSets, Buff);
-  */
 
   FBuff buff2;
   Buff->cast(buff2, region->rect);
@@ -59,9 +58,12 @@ void RegionViewport(Scene* C, Region* region,
   cam->Width.val = buff2.width;
 
   RayCast::RenderToBuff(&C->RndrSets, &buff2);
+  */
 }
 
-void UI_Init(Context* C) {
+void UI_Init(Seance* C) {
+
+  /*
   Editor* editor = DBG_NEW Editor;
   C->editors.add(editor);
 
@@ -69,4 +71,5 @@ void UI_Init(Context* C) {
   reg->editor = editor;
   reg->Draw = RegionViewport;
   editor->Regions.add(reg);
+  */
 }

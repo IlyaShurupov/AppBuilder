@@ -19,7 +19,7 @@ class SystemHandler {
   FBuff* getFBuff();
 
   // UserInputs
-  void getUserInputs(class UserInputs* user_inputs);
+  void getUserInputs(struct UserInputs* user_inputs);
 
   // Draw Fbuff.
   void SysOutput();

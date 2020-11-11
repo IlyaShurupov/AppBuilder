@@ -22,7 +22,7 @@ struct Window {
   void OnRead();
 
   // Maps user inputs into an executing commands
-  void ProcessEvents(class KeyMap* key_map, List<ExecComand>* exec_queue);
+  void ProcessEvents(struct KeyMap* key_map, List<struct ExecComand>* exec_queue);
 
   // Draws the UI only!! (Buttons, menus...)
   void Draw();

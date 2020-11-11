@@ -151,7 +151,7 @@ void SystemHandler::DiscardDeviceResources() {
 
 
 void UpdKeySate(InputState &key, bool down) {
-  if ((int)key == down) {
+  if ((int)key == (int)down) {
     return;
   }
 
@@ -174,8 +174,8 @@ void SystemHandler::getUserInputs(UserInputs *user_inputs) {
 
   GetCursorPos(&cursor);
   ScreenToClient(m_hwnd, &cursor);
-  usin.Cursor.x = cursor.x;
-  usin.Cursor.y = cursor.y;
+  usin.Cursor.x = (SCR_UINT)cursor.x;
+  usin.Cursor.y = (SCR_UINT)cursor.y;
 
   SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
   GetMessage(&msg, NULL, 0, 0);

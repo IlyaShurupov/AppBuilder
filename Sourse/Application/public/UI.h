@@ -63,4 +63,4 @@ class ScrArea {
   ~ScrArea();
 };
 
-void UI_Init(class Context* C);
+void UI_Init(struct Seance* C);

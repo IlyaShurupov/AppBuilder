@@ -39,9 +39,9 @@ struct OpEvent {
 
 struct OperatorBinfings {
   Stack<OpEvent> op_events;
-  class Operator* op_ptr;
+  struct Operator* op_ptr;
 
-  OperatorBinfings(char* operator_idname, List<class Operator>* operators);
+  OperatorBinfings(char* operator_idname, List<struct Operator>* operators);
 
   char* IsOPEvent(UserInputs* inputs);
 };
@@ -49,5 +49,5 @@ struct OperatorBinfings {
 struct KeyMap {
   std::map<char*, OperatorBinfings*> map;
 
-  void add(class Operator* op, OperatorBinfings* key_bidings);
+  void add(struct Operator* op, OperatorBinfings* key_bidings);
 };
