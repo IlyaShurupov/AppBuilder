@@ -21,7 +21,7 @@ int main() {
       win->ProcessEvents(&C.prefferences.key_map, &C.exec_queue);
     }
 
-    // TODO: prioritize operators by sorting them in the list
+    // TODO: prioritize commands by sorting them in the list
 
     // Run Operators from queu (This is where the fun happends)
     FOREACH_NODE(ExecComand, (&C.exec_queue), op_node) {
