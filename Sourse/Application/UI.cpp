@@ -6,17 +6,17 @@ Button::Button() {}
 
 Button::~Button() {}
 
-void Button::Poll(Context* C) {}
+//void Button::Poll(Context* C) {}
 
-void Button::Execute(Context* C) {}
+//void Button::Execute(Context* C) {}
 
-void Button::Draw(Contex* C, FBuff* Buff) {}
+//void Button::Draw(Contex* C, FBuff* Buff) {}
 
 Editor::Editor() { this->Type = EditorType::VIEWPORT; }
 
 Editor::~Editor() {}
 
-void Editor::Draw(Context* C, RectPtr<SCR_UINT>* rect, FBuff* Buff) {
+void Editor::Draw(Scene* C, RectPtr<SCR_UINT>* rect, FBuff* Buff) {
   FOREACH_NODE(Region, (&Regions), reg_node) {
     Region* reg = reg_node->Data;
     reg->Draw(C, reg, rect, Buff);
@@ -34,7 +34,7 @@ ScrArea::ScrArea(Editor* editor, RectPtr<SCR_UINT> rect) {
 
 ScrArea::~ScrArea() {}
 
-void RegionViewport(class Context* C, Region* region,
+void RegionViewport(Scene* C, Region* region,
                     RectPtr<SCR_UINT>* sa_rect, FBuff* Buff) {
 
   int tmp = 50;

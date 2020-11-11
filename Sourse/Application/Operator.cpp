@@ -15,12 +15,12 @@ typedef struct ObjectRotateCData {
 } ObjectRotateCData;
 
 void ObjectRotate_modal(Context* C, Operator* op) {
-  AppEvent* enent = &C->event;
+  //UserInputs* enent = &C->event;
   OPDATA_FROM_OP(ObjectRotateCData, OpData);
 
-  if (enent->B == KeyState::RELEASED) {
-    RET_FINISHED(op);
-  }
+  //if (enent->B == KeyState::RELEASED) {
+    //RET_FINISHED(op);
+  //}
 }
 
 void ObjectRotate_ecec(Context* C, Operator* op) {}
@@ -34,10 +34,10 @@ void ObjectRotate_invoke(Context* C, Operator* op) {
 // Checks if operator should be inveked
 // TODO:invent keymap
 void ObjectRotate_poll(Context* C, Operator* op) {
-  AppEvent* enent = &C->event;
-  if (enent->B == KeyState::PRESSED) {
-    op->State = OpState::INVOKE;
-  }
+  //UserInputs* enent = &C->event;
+  //if (enent->B == KeyState::PRESSED) {
+    //op->State = OpState::INVOKE;
+  //}
 }
 
 void ObjectRotate_create(Context* C, Operator* op) {

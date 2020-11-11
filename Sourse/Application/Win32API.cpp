@@ -11,6 +11,7 @@
 #include <wchar.h>
 #include <wincodec.h>
 
+#include "public/Window.h"
 #include "FrameBuff.h"
 
 #define CREATE_BITMAP(buff, bmp)                                               \
@@ -136,17 +137,6 @@ HRESULT SystemHandler::CreateDeviceResources() {
     hr = m_pDirect2dFactory->CreateHwndRenderTarget(
         D2D1::RenderTargetProperties(),
         D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
-
-    if (SUCCEEDED(hr)) {
-      // Create a gray brush.
-      hr = m_pRenderTarget->CreateSolidColorBrush(
-          D2D1::ColorF(D2D1::ColorF::LightSlateGray), &m_pLightSlateGrayBrush);
-    }
-    if (SUCCEEDED(hr)) {
-      // Create a blue brush.
-      hr = m_pRenderTarget->CreateSolidColorBrush(
-          D2D1::ColorF(D2D1::ColorF::CornflowerBlue), &m_pCornflowerBlueBrush);
-    }
   }
 
   return hr;
@@ -158,14 +148,6 @@ void SystemHandler::DiscardDeviceResources() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-void SystemHandler::RunMessageLoop() {
-  MSG msg;
-
-  while (GetMessage(&msg, NULL, 0, 0)) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-}
 
 void UpdKeySate(KeyState &key, bool down) {
   if ((int)key == down) {
@@ -182,28 +164,29 @@ void UpdKeySate(KeyState &key, bool down) {
   }
 }
 
-void GetEventSate(SystemHandler *SH, AppEvent *Event) {
+UserInputs* SystemHandler::getUserInputs() {
 
   POINT cursor;
+  UserInputs &usin = user_inputs;
 
-  Event->PrevCursor = Event->Cursor;
+  usin.PrevCursor = usin.Cursor;
 
   GetCursorPos(&cursor);
-  ScreenToClient(SH->m_hwnd, &cursor);
-  Event->Cursor.x = cursor.x;
-  Event->Cursor.y = cursor.y;
+  ScreenToClient(m_hwnd, &cursor);
+  usin.Cursor.x = cursor.x;
+  usin.Cursor.y = cursor.y;
 
-  SetTimer(SH->m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
-  GetMessage(&SH->msg, NULL, 0, 0);
+  SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
+  GetMessage(&msg, NULL, 0, 0);
 
-  UpdKeySate(Event->A, GetKeyState('A') & 0x800);
-  UpdKeySate(Event->B, GetKeyState('B') & 0x800);
-  UpdKeySate(Event->C, GetKeyState('C') & 0x800);
-  UpdKeySate(Event->D, GetKeyState('D') & 0x800);
+  UpdKeySate(usin.A, GetKeyState('A') & 0x800);
+  UpdKeySate(usin.B, GetKeyState('B') & 0x800);
+  UpdKeySate(usin.C, GetKeyState('C') & 0x800);
+  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
   //...
-  UpdKeySate(Event->LMB, GetKeyState(VK_LBUTTON) & 0x800);
-  UpdKeySate(Event->RMB, GetKeyState(VK_RBUTTON) & 0x800);
-  UpdKeySate(Event->LMB, GetKeyState(VK_MBUTTON) & 0x800);
+  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
+  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
+  UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
 }
 
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
@@ -299,11 +282,7 @@ void SystemHandler::SysOutput() {
     DiscardDeviceResources();
   }
 
+  TranslateMessage(&msg);
+  DispatchMessage(&msg);
   return;
-}
-
-void SysOutput(SystemHandler *SH) {
-  SH->SysOutput();
-  TranslateMessage(&SH->msg);
-  DispatchMessage(&SH->msg);
 }

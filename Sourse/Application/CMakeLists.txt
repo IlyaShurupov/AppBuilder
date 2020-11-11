@@ -7,18 +7,18 @@ project(Application)
 
 set (HEADERS
     "public/Win32API.h"
-    "public/Logic.h"
     "public/Operator.h"
     "public/Context.h"
+    "public/Window.h"
     "public/UI.h"
 )
 
 # Source files
 set (SOURCES
-    "Logic.cpp"
+    "Window.cpp"
     "Operator.cpp"
     "Context.cpp"
-    "Entry.cpp"
+    "Main.cpp"
     "UI.cpp"
     "Win32API.cpp"
 )

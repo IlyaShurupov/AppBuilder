@@ -18,10 +18,10 @@ class Button {
   Rect<SCR_UINT> rect;
   struct Operator* op;
 
-  void Poll(class Context* C);
-  void Execute(class Context* C);
+  //void Poll(class Context* C);
+  //void Execute(class Context* C);
 
-  void Draw(class Contex* C, class FBuff* Buff);
+  //void Draw(class Contex* C, class FBuff* Buff);
 
   Properties Props;
 
@@ -35,8 +35,8 @@ struct UIs {
 
 struct Region {
   Rect<SCR_UINT> rect;
-  void (*Draw)(class Context* C, Region* region,
-               RectPtr<SCR_UINT>* sa_rect, FBuff* Buff) = nullptr;
+  void (*Draw)(class Scene* C, Region* region,
+               RectPtr<SCR_UINT>* sa_rect, class FBuff* Buff) = nullptr;
   class Editor* editor;
   List<UIs> UIs;
   Properties Props;
@@ -50,7 +50,7 @@ class Editor {
 
   Editor();
   ~Editor();
-  void Draw(class Context* C, RectPtr<SCR_UINT>* rect, class FBuff* Buff);
+  void Draw(class Scene* C, RectPtr<SCR_UINT>* rect, class FBuff* Buff);
 };
 
 class ScrArea {
