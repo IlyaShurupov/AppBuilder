@@ -1,5 +1,7 @@
 
+#pragma once
 #include "UI.h"
+#include "KeyMap.h"
 
 struct Window {
   // UI layout of window
@@ -20,7 +22,7 @@ struct Window {
   void OnRead();
 
   // Maps user inputs into an executing commands
-  void ProcessEvents();
+  void ProcessEvents(class KeyMap* key_map, List<ExecComand>* exec_queue);
 
   // Draws the UI only!! (Buttons, menus...)
   void Draw();
@@ -32,4 +34,5 @@ struct Window {
   // This is where interactin with the system happends
   // Only things we need from the system are Fbuffer & user inputs
   class SystemHandler* SysH;
+  UserInputs user_inputs;
 };

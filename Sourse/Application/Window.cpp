@@ -1,7 +1,7 @@
 
 #include "public/Window.h"
 #include "public/Win32API.h"
-
+#include "public/Operator.h"
 
 void Window::Draw() {
 
@@ -33,8 +33,15 @@ void Window::OnWrite() {}
 
 void Window::OnRead() {}
 
-void Window::ProcessEvents() {
-  UserInputs* user_inputs = SysH->getUserInputs();
+void Window::ProcessEvents(KeyMap* key_map, List<ExecComand>* exec_queue) {
+  SysH->getUserInputs(&user_inputs);
+
+  for (auto op_key_map : key_map->map) {
+    char* op_event = op_key_map.second->IsOPEvent(&user_inputs);
+    if (op_event) {
+      exec_queue->add(new ExecComand(op_key_map.second->op_ptr, op_event));
+    }
+  }
 }
 
 void Window::SendBuffToSystem() { SysH->SysOutput(); }

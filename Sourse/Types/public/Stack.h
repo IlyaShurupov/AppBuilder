@@ -3,7 +3,7 @@
 #include "Memory.h"
 
 #define FOREACH_STACK(iter, type, first) \
-  for (StackNode<Type>* iter = first; iter; iter = iter->next)
+  for (StackNode<type>* iter = first; iter; iter = iter->next)
 
 template <typename Type>
 class StackNode {
@@ -23,9 +23,10 @@ template <typename Type>
 class Stack {
  private:
   long length;
-  StackNode<Type>* first;
 
  public:
+  StackNode<Type>* first;
+
   Stack() {
     length = 0;
     first = nullptr;

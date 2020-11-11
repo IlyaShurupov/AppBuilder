@@ -5,6 +5,9 @@
 #include "Types.h"
 #include "UI.h"
 #include "Window.h"
+#include "KeyMap.h"
+
+
 
 struct Project {
   // MeshObjects, Cameras, Renders...
@@ -21,7 +24,7 @@ struct Project {
 };
 
 struct Prefferences {
-  // KeyMap;
+  KeyMap key_map;
   List<Operator> operators;
   List<Editor> editors;
 
@@ -42,7 +45,7 @@ struct Seance {
   Project project;
 
   // All execute commands from UI (pointers to predefined operators)
-  List<Operator> exec_queue;
+  List<ExecComand> exec_queue;
 
   // Save current context
   void OnWrite(/*file path*/);

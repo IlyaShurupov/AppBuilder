@@ -11,8 +11,9 @@
 #include <wchar.h>
 #include <wincodec.h>
 
-#include "public/Window.h"
+//#include "public/Window.h"
 #include "FrameBuff.h"
+#include "public/KeyMap.h"
 
 #define CREATE_BITMAP(buff, bmp)                                               \
   m_pRenderTarget->CreateBitmap(                                               \
@@ -149,25 +150,25 @@ void SystemHandler::DiscardDeviceResources() {
 }
 
 
-void UpdKeySate(KeyState &key, bool down) {
+void UpdKeySate(InputState &key, bool down) {
   if ((int)key == down) {
     return;
   }
 
-  if (key == KeyState::EVENT_NONE) {
-    key = KeyState::PRESSED;
+  if (key == InputState::NONE) {
+    key = InputState::PRESSED;
   
-  } else if (key == KeyState::HOLD) {
-    key = KeyState::RELEASED;
+  } else if (key == InputState::HOLD) {
+    key = InputState::RELEASED;
   } else {
-    key = KeyState(down);
+    key = InputState(down);
   }
 }
 
-UserInputs* SystemHandler::getUserInputs() {
+void SystemHandler::getUserInputs(UserInputs *user_inputs) {
 
   POINT cursor;
-  UserInputs &usin = user_inputs;
+  UserInputs &usin = *user_inputs;
 
   usin.PrevCursor = usin.Cursor;
 
@@ -179,7 +180,10 @@ UserInputs* SystemHandler::getUserInputs() {
   SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
   GetMessage(&msg, NULL, 0, 0);
 
-  UpdKeySate(usin.A, GetKeyState('A') & 0x800);
+  char A[5] = {'A', '0', '0', '0', '0'};
+  UpdKeySate(usin.map.find(A)->second, GetKeyState('A') & 0x800);
+  
+  /*
   UpdKeySate(usin.B, GetKeyState('B') & 0x800);
   UpdKeySate(usin.C, GetKeyState('C') & 0x800);
   UpdKeySate(usin.D, GetKeyState('D') & 0x800);
@@ -187,6 +191,7 @@ UserInputs* SystemHandler::getUserInputs() {
   UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
   UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
   UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
+  */
 }
 
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,

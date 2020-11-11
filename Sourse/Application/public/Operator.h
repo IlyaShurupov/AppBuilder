@@ -1,16 +1,25 @@
 #pragma once
 #include "Property.h"
+//#include "LinkedList.h"
+#define MAX_OP_EVENT_IDNAME 10
+#define MAX_OPERATOR_NAME_LENGTH 20
 
-enum class OpState { RUNNING, FINISHED, CANCELED, EXECUTE, INVOKE };
+struct ExecComand {
+  ExecComand(Operator* op, char* event_idname);
+  Operator* op;
+  char* event_idname;
+};
 
 struct Operator {
+  char idname[MAX_OPERATOR_NAME_LENGTH];
   Properties Props;
-  OpState State;
+  //OpState State;
+  class List<char[MAX_OP_EVENT_IDNAME]> op_events;
 
-  void (*Invoke)(class Context* C, Operator* op) = nullptr;
-  void (*Execute)(class Context* C, Operator* op) = nullptr;
-  void (*Modal)(class Context* C, Operator* op) = nullptr;
-  void (*Poll)(class Context* C, Operator* op) = nullptr;
+  void (*Invoke)(class Seance* C, Operator* op, char* event_idname) = nullptr;
+  void (*Execute)(class Seance* C, Operator* op) = nullptr;
+  void (*Modal)(class Seance* C, Operator* op) = nullptr;
+  void (*Poll)(class Seance* C, Operator* op) = nullptr;
 
   void* CustomData = nullptr;
 };

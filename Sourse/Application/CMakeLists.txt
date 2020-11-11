@@ -11,6 +11,7 @@ set (HEADERS
     "public/Context.h"
     "public/Window.h"
     "public/UI.h"
+    "public/KeyMap.h"
 )
 
 # Source files
@@ -21,7 +22,9 @@ set (SOURCES
     "Main.cpp"
     "UI.cpp"
     "Win32API.cpp"
+    "KeyMap.cpp"
 )
+
 
 link_directories(${CMAKE_BINARY_DIR}/bin )
 

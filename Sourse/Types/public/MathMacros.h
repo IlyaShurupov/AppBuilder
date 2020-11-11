@@ -6,6 +6,7 @@
 //memory debug
 #include <crtdbg.h>
 #include <cstdlib>
+#include <map>
 
 #define EPSILON 0.0000001
 #define Pi float(3.1415926535897932384626433832795)
