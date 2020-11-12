@@ -1,10 +1,10 @@
 
 #include "public/Window.h"
-#include "public/Win32API.h"
+
 #include "public/Operator.h"
+#include "public/Win32API.h"
 
 void Window::Draw() {
-
   FOREACH_NODE(ScrArea, (&scrAreas), area_node) {
     Editor* edt = area_node->Data->editor;
 
@@ -15,7 +15,7 @@ void Window::Draw() {
     area_node->Data->rect.v2->assign(fbuff->width, fbuff->height);
     area_node->Data->rect.v3->assign(fbuff->width, 0);
 
-    //edt->Draw(scene, &area_node->Data->rect, fbuff);
+    // edt->Draw(scene, &area_node->Data->rect, fbuff);
   }
 }
 
@@ -37,9 +37,18 @@ void Window::ProcessEvents(KeyMap* key_map, List<ExecComand>* exec_queue) {
   SysH->getUserInputs(&user_inputs);
 
   for (auto op_key_map : key_map->map) {
-    char* op_event = op_key_map.second->IsOPEvent(&user_inputs);
-    if (op_event) {
-      exec_queue->add(new ExecComand(op_key_map.second->op_ptr, op_event));
+    OperatorBindings* bindings = op_key_map.second;
+    Operator* op = bindings->op_ptr;
+
+    if (op->state == OpState::RUNNING_MODAL) {
+      ModalEvent* mev = bindings->IsModalEvent(&user_inputs);
+      if (mev) {
+        exec_queue->add(new ExecComand(op, OpEventState::MODAL_EVENT, mev));
+      }
+    } else {
+      if (bindings->IsInvoked(&user_inputs)) {
+        exec_queue->add(new ExecComand(op, OpEventState::INVOKE, nullptr));
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "public/Context.h"
+#include "public/Seance.h"
 
 Seance::Seance(/*project file*/) {
 
@@ -9,6 +9,9 @@ Seance::Seance(/*project file*/) {
     OnRead(/*file path*/);
   } else {
     // Create dummy
+
+    //initOps(this);
+    //initOps();
   }
 }
 

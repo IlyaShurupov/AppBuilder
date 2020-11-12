@@ -8,7 +8,7 @@ project(Application)
 set (HEADERS
     "public/Win32API.h"
     "public/Operator.h"
-    "public/Context.h"
+    "public/Seance.h"
     "public/Window.h"
     "public/UI.h"
     "public/KeyMap.h"
@@ -18,7 +18,7 @@ set (HEADERS
 set (SOURCES
     "Window.cpp"
     "Operator.cpp"
-    "Context.cpp"
+    "Seance.cpp"
     "Main.cpp"
     "UI.cpp"
     "Win32API.cpp"

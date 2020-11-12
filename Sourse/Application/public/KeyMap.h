@@ -4,6 +4,7 @@
 #include "LinkedList.h"
 #include "Stack.h"
 #include "Vec2.h"
+#include "public/Operator.h"
 
 #define MAX_KEY_NAME_LENGTH 5
 
@@ -23,31 +24,33 @@ struct UserInputs {
   vec2<SCR_UINT> PrevCursor;
 };
 
-struct InputCondition {
+struct KeyCondition {
   char input_idkey[MAX_KEY_NAME_LENGTH];
   InputState trigger_state;
 
   bool IsMet(UserInputs* inputs);
 };
 
-struct OpEvent {
-  char* op_event_idname;
-  Stack<InputCondition> conditions;
+struct Shortcut {
+  Stack<KeyCondition> conditions;
+  struct ModalEvent modal_event;
 
-  bool IsMet(UserInputs* inputs);
+  bool IsShortcut(UserInputs* inputs);
 };
 
-struct OperatorBinfings {
-  Stack<OpEvent> op_events;
+struct OperatorBindings {
+  Shortcut invoke;
+  Stack<Shortcut> modal_keymap;
   struct Operator* op_ptr;
 
-  OperatorBinfings(char* operator_idname, List<struct Operator>* operators);
+  OperatorBindings(char* operator_idname, List<struct Operator>* operators);
 
-  char* IsOPEvent(UserInputs* inputs);
+  ModalEvent* IsModalEvent(UserInputs* inputs);
+  bool IsInvoked(UserInputs* inputs);
 };
 
 struct KeyMap {
-  std::map<char*, OperatorBinfings*> map;
+  std::map<char*, OperatorBindings*> map;
 
-  void add(struct Operator* op, OperatorBinfings* key_bidings);
+  void add(struct Operator* op, OperatorBindings* key_bidings);
 };

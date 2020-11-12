@@ -1,29 +1,56 @@
 #pragma once
 #include "Property.h"
-//#include "LinkedList.h"
+
 #define MAX_OP_EVENT_IDNAME 10
 #define MAX_OPERATOR_NAME_LENGTH 20
 
+enum class OpEventState {
+  NONE = 0,
+  EXECUTE,
+  INVOKE,
+  MODAL_EVENT,
+};
 
+enum class OpState {
+  NONE = 0,
+  RUNNING_MODAL,
+  FINISHED,
+  CANCELED,
+};
+
+struct ModalEvent {
+  char idname[MAX_OP_EVENT_IDNAME];
+};
 
 struct Operator {
+  // OP idname
   char idname[MAX_OPERATOR_NAME_LENGTH];
-  Properties Props;
-  //OpState State;
-  class List<char[MAX_OP_EVENT_IDNAME]> op_events;
 
-  void (*Invoke)(struct Seance* C, Operator* op, char* event_idname) = nullptr;
+  // Current state of op
+  OpState state;
+
+  // Modal Map event idnames
+  class List<ModalEvent> modal_events;
+
+  // Arguments
+  Properties Props;
+
+  // Callbacks
+  void (*Invoke)(struct Seance* C, Operator* op) = nullptr;
   void (*Execute)(struct Seance* C, Operator* op) = nullptr;
-  void (*Modal)(struct Seance* C, Operator* op) = nullptr;
+  void (*Modal)(struct Seance* C, Operator* op, ModalEvent* modal_ev) = nullptr;
   void (*Poll)(struct Seance* C, Operator* op) = nullptr;
 
+  // Modal cache data
   void* CustomData = nullptr;
 };
 
 struct ExecComand {
-  ExecComand(Operator* op, char* event_idname);
+  ExecComand(Operator* op, OpEventState op_event, ModalEvent* modal_event);
+
   Operator* op;
-  char* event_idname;
+  OpEventState op_event;
+  ModalEvent* modal_event;
 };
 
-void OpsInit(struct Seance* C);
+void initOps(struct Seance* C);
