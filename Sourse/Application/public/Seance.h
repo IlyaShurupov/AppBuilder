@@ -45,7 +45,7 @@ struct Seance {
   Project project;
 
   // All execute commands from UI (pointers to predefined operators)
-  List<ExecComand> exec_queue;
+  List<OpThread> op_threads;
 
   // Save current context
   void OnWrite(/*file path*/);

@@ -2,8 +2,8 @@
 
 #include "Memory.h"
 
-#define FOREACH_STACK(iter, type, first) \
-  for (StackNode<type>* iter = first; iter; iter = iter->next)
+#define FOREACH_STACK(type, stack, iter) \
+  for (StackNode<type>* iter = stack->first; iter; iter = iter->next)
 
 template <typename Type>
 class StackNode {
@@ -31,26 +31,26 @@ class Stack {
     length = 0;
     first = nullptr;
   }
-  ~Stack() { Free(); }
+  ~Stack() { free(); }
 
   inline int MemSize() { return sizeof(StackNode<Type>) * length; }
 
-  inline long Len() { return length; }
+  inline long len() { return length; }
 
-  inline void Add(Type& data) {
-    StackNode<Type>* NewNode = DBG_NEW StackNode<Type>(&data, first);
+  inline void add(Type* data) {
+    StackNode<Type>* NewNode = DBG_NEW StackNode<Type>(data, first);
     first = NewNode;
     length++;
   }
 
-  inline void Pop() {
+  inline void pop() {
     StackNode<Type>* del = first;
     first = first->next;
     delete del;
     length--;
   }
 
-  inline void Free() {
+  inline void free() {
     StackNode<Type>* del = first;
     for (size_t i = 0; i < length; i++) {
       StackNode<Type>* next = del->next;

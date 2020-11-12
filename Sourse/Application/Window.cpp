@@ -37,9 +37,9 @@ void Window::OnWrite() {}
 
 void Window::OnRead() {}
 
-void Window::ProcessEvents(List<ExecComand>* exec_queue) {
+void Window::ProcessEvents(List<OpThread>* op_threads) {
   SysH->getUserInputs(&user_inputs);
-  compiled_key_map.ProcEvents(exec_queue);
+  compiled_key_map.ProcEvents(op_threads);
 }
 
 void Window::SendBuffToSystem() { SysH->SysOutput(); }

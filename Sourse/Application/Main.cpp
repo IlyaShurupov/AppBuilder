@@ -17,30 +17,47 @@ int main() {
     // Handle events for each window
     FOREACH_NODE(Window, (&C.project.windows), win_node) {
       Window* win = win_node->Data;
-      win->ProcessEvents(&C.exec_queue);
+      win->ProcessEvents(&C.op_threads);
     }
 
     // TODO: prioritize commands by sorting them in the list
 
     // Run Operators from queu (This is where the fun happends)
-    FOREACH_NODE(ExecComand, (&C.exec_queue), op_node) {
-      ExecComand* command = op_node->Data;
+    FOREACH_NODE(OpThread, (&C.op_threads), thread_node) {
+      OpEventState* op_event = &thread_node->Data->op_event;
+      Operator* op = thread_node->Data->op;
 
-      switch (command->op_event) {
-        case OpEventState::MODAL_EVENT:
-          if (command->op->Modal)
-            command->op->Modal(&C, command->op, command->modal_event);
+      switch (op->state) {
+
+        case OpState::RUNNING_MODAL:
+          // keep running
+          op->Modal(&C, op, thread_node->Data->modal_event);
           break;
 
-        case OpEventState::INVOKE:
-          if (command->op->Invoke)
-            command->op->Invoke(&C, command->op);
+        case OpState::CANCELED:
+          C.op_threads.del(thread_node);
+          // Todo: undo system
           break;
 
-        case OpEventState::EXECUTE:
-          assert(command->op->Execute);
-          command->op->Execute(&C, command->op);
+        case OpState::FINISHED:
+          C.op_threads.del(thread_node);
           break;
+
+
+        case OpState::NONE: {
+          if (!op->Poll(&C, op)) {
+            C.op_threads.del(thread_node);
+            break;
+          }
+          switch (*op_event) {
+            case OpEventState::EXECUTE:   
+              op->Execute(&C, op);
+              break;
+
+            case OpEventState::INVOKE:
+              op->Invoke(&C, op);
+          }
+        }
       }
     }
 

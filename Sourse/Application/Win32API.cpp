@@ -42,7 +42,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
 template <class Interface>
-inline void SafeRelease(Interface **ppInterfaceToRelease) {
+inline void SafeRelease(Interface** ppInterfaceToRelease) {
   if (*ppInterfaceToRelease != NULL) {
     (*ppInterfaceToRelease)->Release();
 
@@ -66,7 +66,9 @@ SystemHandler::~SystemHandler() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-FBuff *SystemHandler::getFBuff() { return buff; }
+FBuff* SystemHandler::getFBuff() {
+  return buff;
+}
 
 HRESULT SystemHandler::Initialize() {
   HRESULT hr;
@@ -112,6 +114,8 @@ HRESULT SystemHandler::Initialize() {
     }
   }
 
+  CreateDeviceResources();
+  m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   return hr;
 }
 
@@ -149,15 +153,14 @@ void SystemHandler::DiscardDeviceResources() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-
-void UpdKeySate(Input &key, bool down) {
+void UpdKeySate(Input& key, bool down) {
   if ((int)key.state == (int)down) {
     return;
   }
 
   if (key.state == InputState::NONE) {
     key.state = InputState::PRESSED;
-  
+
   } else if (key.state == InputState::HOLD) {
     key.state = InputState::RELEASED;
   } else {
@@ -165,10 +168,9 @@ void UpdKeySate(Input &key, bool down) {
   }
 }
 
-void SystemHandler::getUserInputs(UserInputs *user_inputs) {
-
+void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   POINT cursor;
-  UserInputs &usin = *user_inputs;
+  UserInputs& usin = *user_inputs;
 
   usin.PrevCursor = usin.Cursor;
 
@@ -180,10 +182,7 @@ void SystemHandler::getUserInputs(UserInputs *user_inputs) {
   SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
   GetMessage(&msg, NULL, 0, 0);
 
-  char A[5] = {'A', '0', '0', '0', '0'};
   UpdKeySate(usin.A, GetKeyState('A') & 0x800);
-  
- 
   UpdKeySate(usin.B, GetKeyState('B') & 0x800);
   UpdKeySate(usin.C, GetKeyState('C') & 0x800);
 
@@ -193,23 +192,28 @@ void SystemHandler::getUserInputs(UserInputs *user_inputs) {
   UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
   UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
   UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
+
   */
+  TranslateMessage(&msg);
+  DispatchMessage(&msg);
 }
 
-LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam,
+LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd,
+                                        UINT message,
+                                        WPARAM wParam,
                                         LPARAM lParam) {
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-    SystemHandler *pDemoApp = (SystemHandler *)pcs->lpCreateParams;
+    SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
 
     ::SetWindowLongPtrW(hwnd, GWLP_USERDATA,
                         reinterpret_cast<LONG_PTR>(pDemoApp));
 
     result = 1;
   } else {
-    SystemHandler *pDemoApp = reinterpret_cast<SystemHandler *>(
+    SystemHandler* pDemoApp = reinterpret_cast<SystemHandler*>(
         static_cast<LONG_PTR>(::GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
 
     bool wasHandled = false;
@@ -260,26 +264,25 @@ void SystemHandler::OnResize(UINT width, UINT height) {
 void SystemHandler::SysOutput() {
   HRESULT hr;
 
-  hr = CreateDeviceResources();
-
-  if (!SUCCEEDED(hr)) {
-    return;
-  }
-
   // Retrieve the size of the render target.
   D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
 
   m_pRenderTarget->BeginDraw();
-  m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   // Create the bitmap and draw it on the screen
-  ID2D1Bitmap *bmp;
+  ID2D1Bitmap* bmp;
   hr = CREATE_BITMAP(buff, bmp);
 
-  if (bmp) {
-    D2D1_RECT_F rect = D2D1::RectF(10.f, 10.f, float(buff->width - 10),
-                                   float(buff->height - 10));
+  if ( SUCCEEDED(hr)) {
+    D2D1_RECT_F rect = 
+      D2D1::RectF(10.f, 10.f, float(buff->width - 10), float(buff->height - 10));
+
     m_pRenderTarget->DrawBitmap(bmp, rect);
+
+    //delete bmp;
+
+    //m_pRenderTarget
+    //ReleaseDC(m_hwnd, );
   }
 
   hr = m_pRenderTarget->EndDraw();
@@ -289,7 +292,5 @@ void SystemHandler::SysOutput() {
     DiscardDeviceResources();
   }
 
-  TranslateMessage(&msg);
-  DispatchMessage(&msg);
   return;
 }

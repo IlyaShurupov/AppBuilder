@@ -6,6 +6,7 @@
 //memory debug
 #include <crtdbg.h>
 #include <cstdlib>
+#include <string>
 #include <map>
 
 #define EPSILON 0.0000001
@@ -19,7 +20,7 @@ typedef unsigned short SCR_UINT;
   if (val < min) val = min
 
 #define _CRTDBG_MAP_ALLOC
-
+#define NAME(v) #v
 #ifdef _DEBUG
 #define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the

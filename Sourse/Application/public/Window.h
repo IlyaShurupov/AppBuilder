@@ -20,7 +20,7 @@ struct Window {
   void OnRead();
 
   // Maps user inputs into an executing commands
-  void ProcessEvents(List<struct ExecComand>* exec_queue);
+  void ProcessEvents(List<struct OpThread>* exec_queue);
 
   // Draws the UI only!! (Buttons, menus...)
   void Draw();
