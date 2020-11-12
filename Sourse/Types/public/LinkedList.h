@@ -209,3 +209,9 @@ List<Type>::~List() {
     del(0, length - 1);
   }
 }
+
+
+template <typename Type> struct Hierarchy {
+  List<Type> childs;
+  Type *parent = nullptr;
+};

@@ -10,7 +10,7 @@ set (HEADERS
     "public/Operator.h"
     "public/Seance.h"
     "public/Window.h"
-    "public/UI.h"
+    "public/UILayout.h"
     "public/KeyMap.h"
 )
 
@@ -20,7 +20,7 @@ set (SOURCES
     "Operator.cpp"
     "Seance.cpp"
     "Main.cpp"
-    "UI.cpp"
+    "UILayout.cpp"
     "Win32API.cpp"
     "KeyMap.cpp"
 )

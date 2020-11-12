@@ -150,18 +150,18 @@ void SystemHandler::DiscardDeviceResources() {
 }
 
 
-void UpdKeySate(InputState &key, bool down) {
-  if ((int)key == (int)down) {
+void UpdKeySate(Input &key, bool down) {
+  if ((int)key.state == (int)down) {
     return;
   }
 
-  if (key == InputState::NONE) {
-    key = InputState::PRESSED;
+  if (key.state == InputState::NONE) {
+    key.state = InputState::PRESSED;
   
-  } else if (key == InputState::HOLD) {
-    key = InputState::RELEASED;
+  } else if (key.state == InputState::HOLD) {
+    key.state = InputState::RELEASED;
   } else {
-    key = InputState(down);
+    key.state = InputState(down);
   }
 }
 
@@ -181,11 +181,13 @@ void SystemHandler::getUserInputs(UserInputs *user_inputs) {
   GetMessage(&msg, NULL, 0, 0);
 
   char A[5] = {'A', '0', '0', '0', '0'};
-  UpdKeySate(usin.map.find(A)->second, GetKeyState('A') & 0x800);
+  UpdKeySate(usin.A, GetKeyState('A') & 0x800);
   
-  /*
+ 
   UpdKeySate(usin.B, GetKeyState('B') & 0x800);
   UpdKeySate(usin.C, GetKeyState('C') & 0x800);
+
+  /*
   UpdKeySate(usin.D, GetKeyState('D') & 0x800);
   //...
   UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);

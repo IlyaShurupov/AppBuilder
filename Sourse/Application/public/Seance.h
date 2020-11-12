@@ -3,7 +3,7 @@
 #include "Operator.h"
 #include "RayCast.h"
 #include "Types.h"
-#include "UI.h"
+//#include "UIUILayout.h"
 #include "Window.h"
 #include "KeyMap.h"
 
@@ -24,9 +24,9 @@ struct Project {
 };
 
 struct Prefferences {
-  KeyMap key_map;
+  UserKeyMap key_map;
   List<Operator> operators;
-  List<Editor> editors;
+  //List<Editor> editors;
 
   // save prefs
   void OnWrite();

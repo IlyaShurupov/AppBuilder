@@ -17,7 +17,7 @@ int main() {
     // Handle events for each window
     FOREACH_NODE(Window, (&C.project.windows), win_node) {
       Window* win = win_node->Data;
-      win->ProcessEvents(&C.prefferences.key_map, &C.exec_queue);
+      win->ProcessEvents(&C.exec_queue);
     }
 
     // TODO: prioritize commands by sorting them in the list
@@ -34,7 +34,7 @@ int main() {
 
         case OpEventState::INVOKE:
           if (command->op->Invoke)
-          command->op->Invoke(&C, command->op);
+            command->op->Invoke(&C, command->op);
           break;
 
         case OpEventState::EXECUTE:
