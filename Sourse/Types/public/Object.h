@@ -5,6 +5,8 @@
 #include "Property.h"
 #include "FrameBuff.h"
 
+
+
 struct Camera {
 	PropertyInt Width;
 	PropertyInt Height;
@@ -21,8 +23,7 @@ class Object
 public:
 	Mat3f TransformMat;
 	Vec3f Pos;
-	Object* Parent;
-	List<Object> Childs;
+  Hierarchy<Object> hierarchy;
 
 	ObjVisibility Visibility;
 

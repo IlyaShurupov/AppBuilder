@@ -2,40 +2,32 @@
 #include "public/Mesh.h"
 
 Object::Object() {
-	StaticMeshComponent = nullptr;
-	Parent = nullptr;
-	CameraComponent = nullptr;
+  StaticMeshComponent = nullptr;
+  hierarchy.parent = nullptr;
+  CameraComponent = nullptr;
 }
 
-Object::~Object() {
+Object::~Object() {}
+
+void Object::SetStaticMeshComponent(StaticMesh *static_mesh) {
+  StaticMeshComponent = static_mesh;
 }
 
-void Object::SetStaticMeshComponent(StaticMesh* static_mesh) {
-	StaticMeshComponent = static_mesh;
+StaticMesh *Object::GetStaticMeshComponent() { return StaticMeshComponent; }
+
+void Object::SetCameraComponent(Camera *CameraComponent) {
+  this->CameraComponent = CameraComponent;
 }
 
-StaticMesh* Object::GetStaticMeshComponent() {
-	return StaticMeshComponent;
+Camera *Object::GetCameraComponent() { return CameraComponent; }
+
+void Object::getWorldLocation(Vec3f &out) {
+  out.assign(Pos);
+  Object *parent = hierarchy.parent;
+  while (parent) {
+    out += parent->Pos;
+    parent = parent->hierarchy.parent;
+  }
 }
 
-void Object::SetCameraComponent(Camera* CameraComponent) {
-	this->CameraComponent = CameraComponent;
-}
-
-Camera* Object::GetCameraComponent()
-{
-	return CameraComponent;
-}
-
-void Object::getWorldLocation(Vec3f& out) {
-	out.assign(Pos);
-	Object* parent = Parent;
-	while (parent) {
-		out += parent->Pos;
-		parent = parent->Parent;
-	}
-}
-
-void Object::getWorldTransform(Mat3f& out) {
-
-}
+void Object::getWorldTransform(Mat3f &out) {}

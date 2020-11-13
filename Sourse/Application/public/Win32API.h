@@ -4,8 +4,8 @@
 #include <d2d1.h>
 #include <windows.h>
 
-#include "Context.h"
 #include "FrameBuff.h"
+
 
 class SystemHandler {
  public:
@@ -15,17 +15,14 @@ class SystemHandler {
   // Register the win & call methods for instantiating drawing res
   HRESULT Initialize();
 
-  // Process and dispatch messages
-  void RunMessageLoop();
-
   // Get Buffer to write
   FBuff* getFBuff();
 
-  // Draw content.
-  void SysOutput();
+  // UserInputs
+  void getUserInputs(struct UserInputs* user_inputs);
 
-  MSG msg;
-  HWND m_hwnd;
+  // Draw Fbuff.
+  void SysOutput();
 
  private:
   // Initialize device-independent resources.
@@ -45,13 +42,12 @@ class SystemHandler {
                                   LPARAM lParam);
 
  private:
+  MSG msg;
+  HDC hdcMem;
+  HWND m_hwnd;
   FBuff* buff;
   ID2D1Factory* m_pDirect2dFactory;
   ID2D1HwndRenderTarget* m_pRenderTarget;
   ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
   ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
 };
-
-void SysOutput(SystemHandler* SH);
-
-void GetEventSate(SystemHandler* SH, class AppEvent* Event);

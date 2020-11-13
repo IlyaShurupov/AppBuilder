@@ -7,21 +7,24 @@ project(Application)
 
 set (HEADERS
     "public/Win32API.h"
-    "public/Logic.h"
     "public/Operator.h"
-    "public/Context.h"
-    "public/UI.h"
+    "public/Seance.h"
+    "public/Window.h"
+    "public/UILayout.h"
+    "public/KeyMap.h"
 )
 
 # Source files
 set (SOURCES
-    "Logic.cpp"
+    "Window.cpp"
     "Operator.cpp"
-    "Context.cpp"
-    "Entry.cpp"
-    "UI.cpp"
+    "Seance.cpp"
+    "Main.cpp"
+    "UILayout.cpp"
     "Win32API.cpp"
+    "KeyMap.cpp"
 )
+
 
 link_directories(${CMAKE_BINARY_DIR}/bin )
 

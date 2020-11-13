@@ -50,6 +50,7 @@ class List {
   size_t len();
   void del(size_t idx);
   void del(size_t idx_start, size_t idx_end);
+  void del(Node<Type>* node);
   Node<Type>& first();
   Node<Type>& last();
 };
@@ -170,11 +171,19 @@ void List<Type>::del(size_t index) {
 
   Node<Type>* del_node = SearchNode(index);
 
+  this->del(del_node);
+}
+
+template <typename Type>
+void List<Type>::del(Node<Type>* node) {
+  Node<Type>* del_node = node;
+
   if (del_node->Next) {
     del_node->Next->Prev = del_node->Prev;
 
     Buff = del_node;
-    for (size_t i = index; i < length; i++) {
+
+    for (size_t i = del_node->idx; i < length; i++) {
       Buff->idx -= 1;
       Buff = Buff->Next;
     }
@@ -209,3 +218,9 @@ List<Type>::~List() {
     del(0, length - 1);
   }
 }
+
+
+template <typename Type> struct Hierarchy {
+  List<Type> childs;
+  Type *parent = nullptr;
+};
