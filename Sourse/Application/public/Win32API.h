@@ -43,6 +43,7 @@ class SystemHandler {
 
  private:
   MSG msg;
+  HDC hdcMem;
   HWND m_hwnd;
   FBuff* buff;
   ID2D1Factory* m_pDirect2dFactory;

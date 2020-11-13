@@ -4,7 +4,7 @@
 #include "Vec2.h"
 
 typedef struct Color4 {
-  CHANEL_CAPACITY R = 0;
+  CHANEL_CAPACITY R = 1.f;
   CHANEL_CAPACITY G = 1.f;
   CHANEL_CAPACITY B = 0;
   CHANEL_CAPACITY A = 1.f;

@@ -116,6 +116,7 @@ HRESULT SystemHandler::Initialize() {
 
   CreateDeviceResources();
   m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
   return hr;
 }
 
@@ -261,29 +262,96 @@ void SystemHandler::OnResize(UINT width, UINT height) {
   }
 }
 
+ 
+void SystemHandler::SysOutput() {
+  HRESULT hr;
+ 
+  //m_pRenderTarget->BeginDraw();
+  //ID2D1Bitmap* bmp;
+  //hr = CREATE_BITMAP(buff, bmp);
+  
+
+  HBITMAP hbmMem =
+      CreateBitmap(buff->width/2.f, buff->height/2.f, 3, 32, (const void*)buff->Buff);
+  HANDLE hOld = SelectObject(hdcMem, hbmMem);  
+
+
+  BitBlt(GetDC(m_hwnd), -10, -10, buff->width - 20, buff->height - 20, hdcMem, 0, 0, SRCCOPY);
+  //hr = m_pRenderTarget->EndDraw();
+}
+
+/*
+* 
+* HBITMAP hBitmap = NULL;
+    unsigned char pixels[160*120*3]; 
+    for (int i=0; i<160*120*3; i++){
+        pixels[i] = (i%4==1)*255;        // An BGR (not RGB) 160x120 image.
+    }
+BITMAPINFOHEADER bmih;
+bmih.biSize     = sizeof(BITMAPINFOHEADER);
+bmih.biWidth    = 160;
+bmih.biHeight   = -120;
+bmih.biPlanes   = 1;
+bmih.biBitCount = 24;
+bmih.biCompression  = BI_RGB ;
+bmih.biSizeImage    = 0;
+bmih.biXPelsPerMeter    =   10;
+bmih.biYPelsPerMeter    =   10;
+bmih.biClrUsed    =0;
+bmih.biClrImportant =0;
+
+BITMAPINFO dbmi;
+ZeroMemory(&dbmi, sizeof(dbmi));  
+dbmi.bmiHeader = bmih;
+dbmi.bmiColors->rgbBlue = 0;
+dbmi.bmiColors->rgbGreen = 0;
+dbmi.bmiColors->rgbRed = 0;
+dbmi.bmiColors->rgbReserved = 0;
+void* bits = (void*)&(pixels[0]); 
+
+// Create DIB
+hBitmap = CreateDIBSection(localDC, &dbmi, DIB_RGB_COLORS, &bits, NULL, 0);
+if (hBitmap == NULL) {
+    ::MessageBox(NULL, __T("Could not load the desired image image"), __T("Error"), MB_OK);
+    return;
+}
+// copy pixels into DIB.
+memcpy(bits,pixels,sizeof(pixels));
+* 
 void SystemHandler::SysOutput() {
   HRESULT hr;
 
   // Retrieve the size of the render target.
-  D2D1_SIZE_F renderTargetSize = m_pRenderTarget->GetSize();
+  D2D1_SIZE_F Size = m_pRenderTarget->GetSize();
 
   m_pRenderTarget->BeginDraw();
 
-  // Create the bitmap and draw it on the screen
-  ID2D1Bitmap* bmp;
-  hr = CREATE_BITMAP(buff, bmp);
+  HDC hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+  HBITMAP hbmMem = CreateCompatibleBitmap(GetDC(m_hwnd), Size.width,
+Size.height); HANDLE hOld = SelectObject(hdcMem, hbmMem);
 
-  if ( SUCCEEDED(hr)) {
-    D2D1_RECT_F rect = 
-      D2D1::RectF(10.f, 10.f, float(buff->width - 10), float(buff->height - 10));
+  // Draw to the off-screen DC
+  HBITMAP bitmap = CreateBitmap(Size.width, Size.height, 2, 16, (const
+void*)buff->Buff);
 
-    m_pRenderTarget->DrawBitmap(bmp, rect);
 
-    //delete bmp;
+  HDC blockDC = CreateCompatibleDC(NULL);  // Create a DC to hold the .bmp
 
-    //m_pRenderTarget
-    //ReleaseDC(m_hwnd, );
-  }
+  SelectObject(blockDC, bitmap);  // Select the .bmp to the DC
+
+  //BitBlt(hdcMem, 0, 0, Size.width, Size.height, blockDC, 0, 0, SRCCOPY);
+
+  // Transfer off-screen DC to the screen
+  BitBlt(GetDC(m_hwnd), 0, 0, Size.width, Size.height, blockDC, 0, 0, SRCCOPY);
+
+  // Uninitialize and deallocate resources
+  SelectObject(hdcMem, hOld);
+  DeleteDC(hdcMem);
+  HANDLE hOld2 = SelectObject(blockDC, bitmap);
+  SelectObject(blockDC, hOld2);
+  DeleteDC(blockDC);
+  DeleteObject(bitmap);
+  DeleteObject(hbmMem);
 
   hr = m_pRenderTarget->EndDraw();
 
@@ -294,3 +362,4 @@ void SystemHandler::SysOutput() {
 
   return;
 }
+*/
