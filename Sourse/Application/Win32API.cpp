@@ -15,13 +15,12 @@
 #include "FrameBuff.h"
 #include "public/KeyMap.h"
 
-#define CREATE_BITMAP(buff, bmp)                                               \
-  m_pRenderTarget->CreateBitmap(                                               \
-      D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height), buff->Buff,      \
-      buff->width * 16,                                                        \
-      D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT, \
-                                               D2D1_ALPHA_MODE_IGNORE)),       \
-      &bmp)
+#define CREATE_BITMAP(buff, bmp)                                                              \
+  m_pRenderTarget->CreateBitmap(D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height),       \
+                                buff->Buff, buff->width * 16,                                 \
+                                D2D1::BitmapProperties(D2D1::PixelFormat(                     \
+                                    DXGI_FORMAT_R32G32B32A32_FLOAT, D2D1_ALPHA_MODE_IGNORE)), \
+                                &bmp)
 
 #ifndef Assert
 #if defined(DEBUG) || defined(_DEBUG)
@@ -102,11 +101,10 @@ HRESULT SystemHandler::Initialize() {
 
     // Create the window.
     m_hwnd =
-        CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"),
-                     WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-                     static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
-                     static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)),
-                     NULL, NULL, HINST_THISCOMPONENT, this);
+        CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                     CW_USEDEFAULT, static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
+                     static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)), NULL, NULL,
+                     HINST_THISCOMPONENT, this);
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
       ShowWindow(m_hwnd, SW_SHOWNORMAL);
@@ -124,8 +122,7 @@ HRESULT SystemHandler::CreateDeviceIndependentResources() {
   HRESULT hr = S_OK;
 
   // Create a Direct2D factory.
-  hr =
-      D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
+  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   return hr;
 }
@@ -140,9 +137,9 @@ HRESULT SystemHandler::CreateDeviceResources() {
     D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 
     // Create a Direct2D render target.
-    hr = m_pDirect2dFactory->CreateHwndRenderTarget(
-        D2D1::RenderTargetProperties(),
-        D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
+    hr = m_pDirect2dFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
+                                                    D2D1::HwndRenderTargetProperties(m_hwnd, size),
+                                                    &m_pRenderTarget);
   }
 
   return hr;
@@ -199,18 +196,14 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   DispatchMessage(&msg);
 }
 
-LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd,
-                                        UINT message,
-                                        WPARAM wParam,
-                                        LPARAM lParam) {
+LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
     SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
 
-    ::SetWindowLongPtrW(hwnd, GWLP_USERDATA,
-                        reinterpret_cast<LONG_PTR>(pDemoApp));
+    ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
 
     result = 1;
   } else {
@@ -262,104 +255,104 @@ void SystemHandler::OnResize(UINT width, UINT height) {
   }
 }
 
- 
-void SystemHandler::SysOutput() {
-  HRESULT hr;
- 
-  //m_pRenderTarget->BeginDraw();
-  //ID2D1Bitmap* bmp;
-  //hr = CREATE_BITMAP(buff, bmp);
-  
-
-  HBITMAP hbmMem =
-      CreateBitmap(buff->width/2.f, buff->height/2.f, 3, 32, (const void*)buff->Buff);
-  HANDLE hOld = SelectObject(hdcMem, hbmMem);  
-
-
-  BitBlt(GetDC(m_hwnd), -10, -10, buff->width - 20, buff->height - 20, hdcMem, 0, 0, SRCCOPY);
-  //hr = m_pRenderTarget->EndDraw();
-}
-
-/*
-* 
-* HBITMAP hBitmap = NULL;
-    unsigned char pixels[160*120*3]; 
-    for (int i=0; i<160*120*3; i++){
-        pixels[i] = (i%4==1)*255;        // An BGR (not RGB) 160x120 image.
-    }
-BITMAPINFOHEADER bmih;
-bmih.biSize     = sizeof(BITMAPINFOHEADER);
-bmih.biWidth    = 160;
-bmih.biHeight   = -120;
-bmih.biPlanes   = 1;
-bmih.biBitCount = 24;
-bmih.biCompression  = BI_RGB ;
-bmih.biSizeImage    = 0;
-bmih.biXPelsPerMeter    =   10;
-bmih.biYPelsPerMeter    =   10;
-bmih.biClrUsed    =0;
-bmih.biClrImportant =0;
-
-BITMAPINFO dbmi;
-ZeroMemory(&dbmi, sizeof(dbmi));  
-dbmi.bmiHeader = bmih;
-dbmi.bmiColors->rgbBlue = 0;
-dbmi.bmiColors->rgbGreen = 0;
-dbmi.bmiColors->rgbRed = 0;
-dbmi.bmiColors->rgbReserved = 0;
-void* bits = (void*)&(pixels[0]); 
-
-// Create DIB
-hBitmap = CreateDIBSection(localDC, &dbmi, DIB_RGB_COLORS, &bits, NULL, 0);
-if (hBitmap == NULL) {
-    ::MessageBox(NULL, __T("Could not load the desired image image"), __T("Error"), MB_OK);
-    return;
-}
-// copy pixels into DIB.
-memcpy(bits,pixels,sizeof(pixels));
-* 
-void SystemHandler::SysOutput() {
-  HRESULT hr;
-
-  // Retrieve the size of the render target.
-  D2D1_SIZE_F Size = m_pRenderTarget->GetSize();
-
-  m_pRenderTarget->BeginDraw();
-
-  HDC hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
-  HBITMAP hbmMem = CreateCompatibleBitmap(GetDC(m_hwnd), Size.width,
-Size.height); HANDLE hOld = SelectObject(hdcMem, hbmMem);
-
-  // Draw to the off-screen DC
-  HBITMAP bitmap = CreateBitmap(Size.width, Size.height, 2, 16, (const
-void*)buff->Buff);
-
-
-  HDC blockDC = CreateCompatibleDC(NULL);  // Create a DC to hold the .bmp
-
-  SelectObject(blockDC, bitmap);  // Select the .bmp to the DC
-
-  //BitBlt(hdcMem, 0, 0, Size.width, Size.height, blockDC, 0, 0, SRCCOPY);
-
-  // Transfer off-screen DC to the screen
-  BitBlt(GetDC(m_hwnd), 0, 0, Size.width, Size.height, blockDC, 0, 0, SRCCOPY);
-
-  // Uninitialize and deallocate resources
-  SelectObject(hdcMem, hOld);
-  DeleteDC(hdcMem);
-  HANDLE hOld2 = SelectObject(blockDC, bitmap);
-  SelectObject(blockDC, hOld2);
-  DeleteDC(blockDC);
-  DeleteObject(bitmap);
-  DeleteObject(hbmMem);
-
-  hr = m_pRenderTarget->EndDraw();
-
-  if (hr == D2DERR_RECREATE_TARGET) {
-    hr = S_OK;
-    DiscardDeviceResources();
+static HBITMAP Create8bppBitmap(HDC hdc, int width, int height, LPVOID pBits = NULL) {
+  BITMAPINFO* bmi = (BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
+  BITMAPINFOHEADER& bih(bmi->bmiHeader);
+  bih.biSize = sizeof(BITMAPINFOHEADER);
+  bih.biWidth = width;
+  bih.biHeight = -height;
+  bih.biPlanes = 1;
+  bih.biBitCount = 8;
+  bih.biCompression = BI_RGB;
+  bih.biSizeImage = 0;
+  bih.biXPelsPerMeter = 14173;
+  bih.biYPelsPerMeter = 14173;
+  bih.biClrUsed = 0;
+  bih.biClrImportant = 0;
+  for (int I = 0; I <= 255; I++) {
+    bmi->bmiColors[I].rgbBlue = bmi->bmiColors[I].rgbGreen = bmi->bmiColors[I].rgbRed = (BYTE)I;
+    bmi->bmiColors[I].rgbReserved = 0;
   }
 
-  return;
+  void* Pixels = NULL;
+  HBITMAP hbmp = CreateDIBSection(hdc, bmi, DIB_RGB_COLORS, &Pixels, NULL, 0);
+
+  if (pBits != NULL) {
+    // fill the bitmap
+    BYTE* pbBits = (BYTE*)pBits;
+    BYTE* Pix = (BYTE*)Pixels;
+    memcpy(Pix, pbBits, width * height);
+  }
+
+  free(bmi);
+
+  return hbmp;
 }
-*/
+
+static HBITMAP CreateBitmapFromPixels(HDC hDC,
+                                      UINT uWidth,
+                                      UINT uHeight,
+                                      UINT uBitsPerPixel,
+                                      LPVOID pBits) {
+  if (uBitsPerPixel < 8)  // NOT IMPLEMENTED YET
+    return NULL;
+
+  if (uBitsPerPixel == 8)
+    return Create8bppBitmap(hDC, uWidth, uHeight, pBits);
+
+  HBITMAP hBitmap = 0;
+  if (!uWidth || !uHeight || !uBitsPerPixel)
+    return hBitmap;
+  BITMAPINFO bmpInfo = {0};
+  bmpInfo.bmiHeader.biBitCount = uBitsPerPixel;
+  bmpInfo.bmiHeader.biHeight = uHeight;
+  bmpInfo.bmiHeader.biWidth = uWidth;
+  bmpInfo.bmiHeader.biPlanes = 1;
+  bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  // Pointer to access the pixels of bitmap
+  UINT* pPixels = 0;
+  hBitmap = CreateDIBSection(hDC, (BITMAPINFO*)&bmpInfo, DIB_RGB_COLORS, (void**)&pPixels, NULL, 0);
+
+  if (!hBitmap)
+    return hBitmap;  // return if invalid bitmaps
+
+  LONG lBmpSize = uWidth * uHeight * (uBitsPerPixel / 8);
+
+
+  SetBitmapBits(hBitmap, lBmpSize, pBits);
+  // Directly Write
+
+  //memcpy(pPixels, pBits, lBmpSize);
+
+  return hBitmap;
+}
+
+// int BitsPerPixel;
+
+void SystemHandler::SysOutput() {
+  // using namespace D2D1;
+   //GUID_WICPixelFormat32bppRGB
+
+  // Create a PixelFormat object.
+  // D2D1_PIXEL_FORMAT myPixelFormat = PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT,
+  // D2D1_ALPHA_MODE_IGNORE); myPixelFormat.format;
+
+  int len = buff->width * buff->height;
+  for (int i = 0; i < len; i++) {
+
+    *(buff->Buff + i) = (0x0000ff00);
+    //int8_t* color = (int8_t*)&buff->Buff[i];
+    //*(color) = 0;
+    //*(color + 1) = 255;
+    //*(color + 2) = 0;
+  }
+
+  HBITMAP hbmMem = CreateBitmapFromPixels(GetDC(m_hwnd), buff->width, buff->height, 32, buff->Buff);
+
+  // HBITMAP hbmMem = CreateBitmap(buff->width, buff->height, 3, 96, (const void*)buff->Buff);
+
+  HANDLE hOld = SelectObject(hdcMem, hbmMem);
+  BitBlt(GetDC(m_hwnd), 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
+
+  DeleteObject(hbmMem);
+}

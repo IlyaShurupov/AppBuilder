@@ -1,21 +1,25 @@
 #pragma once
 
-#define CHANEL_CAPACITY float
-#include "Vec2.h"
+#define COLOR_RGD_32 int32_t
+#define FBFF_COLOR COLOR_RGD_32
 
-typedef struct Color4 {
-  CHANEL_CAPACITY R = 1.f;
-  CHANEL_CAPACITY G = 1.f;
-  CHANEL_CAPACITY B = 0;
-  CHANEL_CAPACITY A = 1.f;
-} Color4;
+#define SET_RGB_32_R(val, ptr) *((int8_t)ptr) = val
+#define SET_RGB_32_G(val, ptr) *((int8_t)ptr + 1) = val
+#define SET_RGB_32_B(val, ptr) *((int8_t)ptr + 2) = val
+
+#define SET_RGB_32_RGB(R, G, B, ptr) \
+  SET_RGB_32_B(B, ptr);              \
+  SET_RGB_32_G(G, ptr);              \
+  SET_RGB_32_B(R, ptr);
+
+#include "Vec2.h"
 
 class FBuff {
  public:
   int ZDepth;
-  Color4* Buff;
+  FBFF_COLOR* Buff;
 
-  //TODO: make use of z val & get rid of parents
+  // TODO: make use of z val & get rid of parents
   // only one level of hierarchy!!!
   vec2<SCR_UINT> pos;
   FBuff* parent;
@@ -25,13 +29,13 @@ class FBuff {
   FBuff(SCR_UINT width, SCR_UINT height);
   ~FBuff();
 
-  Color4* get(SCR_UINT x, SCR_UINT y);
-  void set(SCR_UINT x, SCR_UINT y, Color4* color);
+  FBFF_COLOR* get(SCR_UINT x, SCR_UINT y);
+  void set(SCR_UINT x, SCR_UINT y, FBFF_COLOR* color);
   void clear();
   void delBuff();
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void Resize(SCR_UINT width, SCR_UINT height);
-  void DrawRect(SCR_UINT x, SCR_UINT y, Color4& color, int width, int height);
+  void DrawRect(SCR_UINT x, SCR_UINT y, FBFF_COLOR& color, int width, int height);
 
  private:
 };

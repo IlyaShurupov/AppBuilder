@@ -1,3 +1,7 @@
 # Visual Studio generated .clang-format file
 
 BasedOnStyle: Chromium
+
+ColumnLimit: 100
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: true
