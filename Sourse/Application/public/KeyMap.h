@@ -1,7 +1,6 @@
 
 #pragma once
 
-
 #include "LinkedList.h"
 #include "Stack.h"
 #include "Vec2.h"
@@ -21,6 +20,19 @@ struct Input {
   Input(std::string idname, InputState state = InputState::NONE);
   std::string idname;
   InputState state = InputState::NONE;
+};
+
+typedef long long int strloc;
+
+struct Bounds {
+  strloc len() { return end - strt;}
+  Bounds(){}
+  Bounds(strloc strt, strloc end) {
+    this->strt = strt;
+    this->end = end;
+  }
+  strloc strt = -1;
+  strloc end = -1;
 };
 
 struct UserInputs {
@@ -79,7 +91,6 @@ struct UserInputs {
   USRINPUT_DECL(ALT_L);
   USRINPUT_DECL(ALT_R);
 
-
   USRINPUT_DECL(ARROW_UP);
   USRINPUT_DECL(ARROW_DOWN);
   USRINPUT_DECL(ARROW_LEFT);
@@ -96,35 +107,13 @@ struct UserInputs {
   vec2<SCR_UINT> PrevCursor;
 };
 
-// User defined key map
-struct KeyCondition {
-  std::string input_idname;
-  InputState trigger_state;
-};
-
-struct Shortcut {
-  Stack<KeyCondition> conditions;
-  struct ModalEvent modal_event;
-};
-
-struct OpBindings {
-  std::string op_name;
-  Shortcut invoke;
-  Stack<Shortcut> modal_keymap;
-};
-
-struct UserKeyMap {
-  List<OpBindings> map;
-};
-
-
 
 // compiled map for practical use
 struct CKeyCondition {
   InputState* input_ptr;
   InputState trigger_state;
 
-  bool Compile(UserInputs* usr_inputs, KeyCondition* usr_cond);
+  bool Compile(UserInputs* usins, std::string* str, Bounds& bnds);
 
   bool IsTrue();
 };
@@ -133,7 +122,7 @@ struct CShortcut {
   Stack<CKeyCondition> conditions;
   struct ModalEvent modal_event;
 
-  bool Compile(UserInputs* usr_inputs, Shortcut* shortcut);
+  bool Compile(UserInputs* usins, std::string* str, Bounds& bnds);
 
   bool IsShortcut();
 };
@@ -144,10 +133,7 @@ struct COpBindings {
   struct Operator* op_ptr;
   struct OpThread* thread_ptr;
 
-  bool Compile(std::string* operator_idname,
-               List<struct Operator>* operators,
-               UserInputs* usr_inputs,
-               OpBindings* user_op_bindings);
+  bool Compile(List<Operator>* ops, UserInputs* usins, std::string* str, Bounds bnds);
 
   ModalEvent* IsModalEvent();
   bool IsInvoked();
@@ -157,9 +143,7 @@ struct COpBindings {
 struct CompiledKeyMap {
   Stack<COpBindings> op_bindings;
 
-  void Compile(List<struct Operator>* operators,
-               UserKeyMap* user_key_bidings,
-               UserInputs* usr_inputs);
+  void Compile(List<Operator>* ops, UserInputs* usins, std::string* filipath);
 
   void ProcEvents(List<OpThread>* exec_queue);
 };

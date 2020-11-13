@@ -11,6 +11,9 @@ Seance::Seance(/*project file*/) {
     // Create dummy
     initOps(this);
 
+    std::string filepath;
+    filepath = "C:\\Users\\shuru\\Desktop\\keymap.txt";
+    /*
     // Create dummy user keymap
     KeyCondition* kc1 = new KeyCondition();
     kc1->input_idname = "SPACE";
@@ -31,10 +34,11 @@ Seance::Seance(/*project file*/) {
     opb->op_name = "dummy_op";
 
     prefferences.key_map.map.add(opb);
+    */
 
 
     // window
-    Window* win = new Window(&prefferences.key_map, &prefferences.operators);
+    Window* win = new Window(&filepath, &prefferences.operators);
     project.windows.add(win);
     //win.
 
