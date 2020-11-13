@@ -8,7 +8,7 @@ struct Window {
   List<UIItem> areas;
 
   // Creates empty window 
-  Window(UserKeyMap* usr_key_map, List<Operator>* operators);
+  Window(std::string* keymap_path, List<Operator>* operators);
 
   // Closes the window
   ~Window();

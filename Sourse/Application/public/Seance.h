@@ -24,7 +24,7 @@ struct Project {
 };
 
 struct Prefferences {
-  UserKeyMap key_map;
+  //UserKeyMap key_map;
   List<Operator> operators;
   //List<Editor> editors;
 

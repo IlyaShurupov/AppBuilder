@@ -21,14 +21,14 @@ void Window::Draw() {
   }
 }
 
-Window::Window(UserKeyMap* usr_key_map, List<Operator> *operators) {
+Window::Window(std::string* keymap_path, List<Operator>* operators) {
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
   assert(SUCCEEDED(CoInitialize(NULL)));
   SystemHandler* SysHdl = new SystemHandler(800, 800);
   assert(SUCCEEDED(SysHdl->Initialize()));
   this->SysH = SysHdl;
 
-  compiled_key_map.Compile(operators, usr_key_map, &user_inputs);
+  compiled_key_map.Compile(operators, &user_inputs, keymap_path);
 }
 
 Window::~Window() { CoUninitialize(); }
