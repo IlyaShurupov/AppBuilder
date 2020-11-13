@@ -14,6 +14,12 @@ enum class OpState {
   CANCELED,
 };
 
+enum class ThreadState {
+  RUNNING, 
+  CLOSED,
+  DENIED,
+};
+
 struct ModalEvent {
   std::string idname;
 };
@@ -44,6 +50,7 @@ struct Operator {
 struct OpThread {
   OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event);
 
+  ThreadState state;
   Operator* op;
   OpEventState op_event;
   ModalEvent* modal_event;

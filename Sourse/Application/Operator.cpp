@@ -50,7 +50,10 @@ void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
 }
 
 OpThread::OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event)
-    : op(op), modal_event(modal_event), op_event(op_event) {}
+    : op(op), modal_event(modal_event), op_event(op_event) {
+
+  state = ThreadState::RUNNING;
+}
 
 void initOps(Seance* C) {
   AddOperator(C, DummySeance_create);

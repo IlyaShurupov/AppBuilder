@@ -1,9 +1,8 @@
 #pragma once
 #include <cassert>
 #include "MathMacros.h"
-#define FOREACH_NODE(NodeType, List, iter_node)               \
-  for (Node<NodeType>* iter_node = &List->first(); iter_node; \
-       iter_node = iter_node->Next)
+#define FOREACH_NODE(NodeType, List, iter_node) \
+  for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
 
 template <typename Type>
 class Node {
@@ -28,6 +27,7 @@ class Node {
     this->idx = idx;
   }
 
+  void free() { delete Data; }
   ~Node() {}
 };
 
@@ -46,11 +46,23 @@ class List {
   ~List();
   void add(Type* data);
   Type* operator[](size_t idx);
-  void pop();
   size_t len();
+
+  void pop(bool recursice);
+  void del(size_t idx, bool recursice);
+  void del(size_t idx_start, size_t idx_end, bool recursice);
+  void del(Node<Type>* node, bool recursice);
+
+  void pop();
   void del(size_t idx);
   void del(size_t idx_start, size_t idx_end);
   void del(Node<Type>* node);
+
+  void popnode();
+  void delnode(size_t idx);
+  void delnode(size_t idx_start, size_t idx_end);
+  void delnode(Node<Type>* node);
+
   Node<Type>& first();
   Node<Type>& last();
 };
@@ -107,7 +119,7 @@ Node<Type>* List<Type>::SearchNode(size_t index) {
 }
 
 template <typename Type>
-void List<Type>::del(size_t index_start, size_t index_end) {
+void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
   assert(index_end < length);
 
   Node<Type>* first = SearchNode(index_start);
@@ -123,6 +135,9 @@ void List<Type>::del(size_t index_start, size_t index_end) {
   for (size_t i = index_start; i <= index_end; i++) {
     del_node = Buff;
     Buff = Buff->Next;
+    if (recursice) {
+      del_node->free();
+    }
     delete del_node;
   }
 
@@ -156,26 +171,16 @@ void List<Type>::del(size_t index_start, size_t index_end) {
 }
 
 template <typename Type>
-Node<Type>& List<Type>::last() {
-  return *this->Last;
-}
-
-template <typename Type>
-Node<Type>& List<Type>::first() {
-  return *this->First;
-}
-
-template <typename Type>
-void List<Type>::del(size_t index) {
+void List<Type>::del(size_t index, bool recursice) {
   assert(index < length);
 
   Node<Type>* del_node = SearchNode(index);
 
-  this->del(del_node);
+  this->del(del_node, recursice);
 }
 
 template <typename Type>
-void List<Type>::del(Node<Type>* node) {
+void List<Type>::del(Node<Type>* node, bool recursice) {
   Node<Type>* del_node = node;
 
   if (del_node->Next) {
@@ -193,18 +198,88 @@ void List<Type>::del(Node<Type>* node) {
     del_node->Prev->Next = del_node->Next;
   }
 
+  if (del_node == this->First) {
+    this->First = del_node->Next;
+  }
+
+  if (del_node == this->Last) {
+    this->Last = del_node->Prev;
+  }
+
+  if (recursice) {
+    del_node->free();
+  }
   delete del_node;
 
   length -= 1;
 }
 
 template <typename Type>
-void List<Type>::pop() {
+void List<Type>::pop(bool recursice) {
   Node<Type>* prev_item = Last->Prev;
+  if (recursice) {
+    Last->free();
+  }
   delete Last;
   Last = prev_item;
   prev_item->Next = 0;
   length -= 1;
+}
+
+//  -------------------------
+
+template <typename Type>
+void List<Type>::del(size_t index_start, size_t index_end) {
+  del(index_start, index_end, true);
+}
+
+template <typename Type>
+void List<Type>::del(size_t index) {
+  del(index, true);
+}
+
+template <typename Type>
+void List<Type>::del(Node<Type>* node) {
+  del(node, true);
+}
+
+template <typename Type>
+void List<Type>::pop() {
+  pop(true);
+}
+
+//  -------------------------
+
+template <typename Type>
+void List<Type>::delnode(size_t index_start, size_t index_end) {
+  del(index_start, index_end, false);
+}
+
+template <typename Type>
+void List<Type>::delnode(size_t index) {
+  del(index, false);
+}
+
+template <typename Type>
+void List<Type>::delnode(Node<Type>* node) {
+  del(node, false);
+}
+
+template <typename Type>
+void List<Type>::popnode() {
+  pop(false);
+}
+
+//  -------------------------
+
+template <typename Type>
+Node<Type>& List<Type>::last() {
+  return *this->Last;
+}
+
+template <typename Type>
+Node<Type>& List<Type>::first() {
+  return *this->First;
 }
 
 template <typename Type>
@@ -215,12 +290,12 @@ size_t List<Type>::len() {
 template <typename Type>
 List<Type>::~List() {
   if (length) {
-    del(0, length - 1);
+    delnode(0, length - 1);
   }
 }
 
-
-template <typename Type> struct Hierarchy {
+template <typename Type>
+struct Hierarchy {
   List<Type> childs;
-  Type *parent = nullptr;
+  Type* parent = nullptr;
 };

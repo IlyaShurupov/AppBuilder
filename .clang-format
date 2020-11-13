@@ -2,6 +2,6 @@
 
 BasedOnStyle: Chromium
 
-ColumnLimit: 100
+ColumnLimit: 110
 MaxEmptyLinesToKeep: 1
 KeepEmptyLinesAtTheStartOfBlocks: true

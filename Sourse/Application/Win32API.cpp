@@ -326,8 +326,6 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC,
   return hBitmap;
 }
 
-// int BitsPerPixel;
-
 void SystemHandler::SysOutput() {
 
   FBFF_COLOR color = int32_t(0x0000ff00);

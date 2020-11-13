@@ -20,37 +20,41 @@ int main() {
       win->ProcessEvents(&C.op_threads);
     }
 
+    // Run Operators from queu (This is where the fun happends)
     // TODO: prioritize commands by sorting them in the list
 
-    // Run Operators from queu (This is where the fun happends)
-    FOREACH_NODE(OpThread, (&C.op_threads), thread_node) {
-      OpEventState* op_event = &thread_node->Data->op_event;
-      Operator* op = thread_node->Data->op;
+    for (Node<OpThread>* node = &C.op_threads.first(); node;) {
+
+      OpThread* thread = node->Data;
+      OpEventState* op_event = &thread->op_event;
+      Operator* op = thread->op;
 
       switch (op->state) {
 
         case OpState::RUNNING_MODAL:
           // keep running
-          op->Modal(&C, op, thread_node->Data->modal_event);
+          op->Modal(&C, op, node->Data->modal_event);
           break;
 
         case OpState::CANCELED:
-          C.op_threads.del(thread_node);
+          thread->state = ThreadState::CLOSED;
+          op->state = OpState::NONE;
           // Todo: undo system
           break;
 
         case OpState::FINISHED:
-          C.op_threads.del(thread_node);
+          thread->state = ThreadState::CLOSED;
+          op->state = OpState::NONE;
           break;
-
 
         case OpState::NONE: {
           if (!op->Poll(&C, op)) {
-            C.op_threads.del(thread_node);
+            thread->state = ThreadState::DENIED;
+            op->state = OpState::NONE;
             break;
           }
           switch (*op_event) {
-            case OpEventState::EXECUTE:   
+            case OpEventState::EXECUTE:
               op->Execute(&C, op);
               break;
 
@@ -58,6 +62,12 @@ int main() {
               op->Invoke(&C, op);
           }
         }
+      }
+      // Go to the next thread
+      Node<OpThread>* del_node = node;
+      node = node->Next;
+      if (thread->state == ThreadState::DENIED || thread->state == ThreadState::CLOSED) {
+        C.op_threads.del(del_node);
       }
     }
 
