@@ -320,7 +320,6 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC,
 
 
   SetBitmapBits(hBitmap, lBmpSize, pBits);
-  // Directly Write
 
   //memcpy(pPixels, pBits, lBmpSize);
 
@@ -330,26 +329,11 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC,
 // int BitsPerPixel;
 
 void SystemHandler::SysOutput() {
-  // using namespace D2D1;
-   //GUID_WICPixelFormat32bppRGB
 
-  // Create a PixelFormat object.
-  // D2D1_PIXEL_FORMAT myPixelFormat = PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT,
-  // D2D1_ALPHA_MODE_IGNORE); myPixelFormat.format;
-
-  int len = buff->width * buff->height;
-  for (int i = 0; i < len; i++) {
-
-    *(buff->Buff + i) = (0x0000ff00);
-    //int8_t* color = (int8_t*)&buff->Buff[i];
-    //*(color) = 0;
-    //*(color + 1) = 255;
-    //*(color + 2) = 0;
-  }
+  FBFF_COLOR color = int32_t(0x0000ff00);
+  buff->clear(&color);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(GetDC(m_hwnd), buff->width, buff->height, 32, buff->Buff);
-
-  // HBITMAP hbmMem = CreateBitmap(buff->width, buff->height, 3, 96, (const void*)buff->Buff);
 
   HANDLE hOld = SelectObject(hdcMem, hbmMem);
   BitBlt(GetDC(m_hwnd), 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);

@@ -6,9 +6,8 @@ using namespace RayCast;
 
 
 struct CycleData;
-void RenderPass(RenderSettings* settings, Ray ray, Color4& color);
-void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData,
-                     Color4& color);
+void RenderPass(RenderSettings* settings, Ray ray, FBFF_COLOR& color);
+void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color);
 void InitCycle(CycleData& CData, RenderSettings* settings);
 inline void UpdYPass(CycleData& CData, SCR_UINT& i);
 inline void UpdXPass(CycleData& CData, SCR_UINT& i);
@@ -27,26 +26,25 @@ void RayCast::RenderToBuff(RenderSettings* Settings, FBuff* Buff) {
 
   for (SCR_UINT j = 0; j < CData.y_passes; UpdYPass(CData, j)) {
     for (SCR_UINT i = 0; i < CData.x_passes; UpdXPass(CData, i)) {
-      Color4 Color;
+      FBFF_COLOR Color;
       RenderPass(Settings, CData.CamRay, Color);
       WritePassToBuff(Buff, i, j, CData, Color);
     }
   }
 }
 
-void RenderPass(RenderSettings* settings, Ray ray, Color4& color) {
+void RenderPass(RenderSettings* settings, Ray ray, FBFF_COLOR& color) {
   ray.Dir.Normalize();
 
   ray.Cast(settings->getObjList(), FLT_MAX);
   if (ray.HitData.Hit) {
-    color.B = 1.f;
+    color = 0x000000ff;
   } else {
-    color.R = 1.f;
+    color = 0x00ff0000;
   }
 }
 
-void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData,
-                     Color4& color) {
+void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color) {
   if (CData.pxl_size == 1) {
     Buff->set(i, j, &color);
     return;

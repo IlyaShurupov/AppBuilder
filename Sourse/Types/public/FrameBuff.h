@@ -1,16 +1,7 @@
 #pragma once
 
-#define COLOR_RGD_32 int32_t
-#define FBFF_COLOR COLOR_RGD_32
-
-#define SET_RGB_32_R(val, ptr) *((int8_t)ptr) = val
-#define SET_RGB_32_G(val, ptr) *((int8_t)ptr + 1) = val
-#define SET_RGB_32_B(val, ptr) *((int8_t)ptr + 2) = val
-
-#define SET_RGB_32_RGB(R, G, B, ptr) \
-  SET_RGB_32_B(B, ptr);              \
-  SET_RGB_32_G(G, ptr);              \
-  SET_RGB_32_B(R, ptr);
+#define COLOR_RGDA_32 int32_t
+#define FBFF_COLOR COLOR_RGDA_32
 
 #include "Vec2.h"
 
@@ -31,7 +22,7 @@ class FBuff {
 
   FBFF_COLOR* get(SCR_UINT x, SCR_UINT y);
   void set(SCR_UINT x, SCR_UINT y, FBFF_COLOR* color);
-  void clear();
+  void clear(FBFF_COLOR* color);
   void delBuff();
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void Resize(SCR_UINT width, SCR_UINT height);

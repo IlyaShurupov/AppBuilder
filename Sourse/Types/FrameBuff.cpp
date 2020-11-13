@@ -55,10 +55,10 @@ void FBuff::cast(FBuff& out, Rect<SCR_UINT>& bounds) {
   out.Buff = get(bounds.v0.x, this->height - bounds.v1.y);
 }
 
-void FBuff::clear() {
-  SCR_UINT len = width * height;
-  for (SCR_UINT i = 0; i < len; i++) {
-    Buff[i] = 0;
+void FBuff::clear(FBFF_COLOR* color) {
+  int len = width * height;
+  for (int i = 0; i < len; i++) {
+    Buff[i] = *color;
   }
 }
 
