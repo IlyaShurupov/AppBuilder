@@ -23,9 +23,16 @@ void Window::Draw() {
 
 Window::Window(std::string* keymap_path, List<Operator>* operators) {
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-  assert(SUCCEEDED(CoInitialize(NULL)));
   SystemHandler* SysHdl = new SystemHandler(800, 800);
-  assert(SUCCEEDED(SysHdl->Initialize()));
+
+  if (!SUCCEEDED(CoInitialize(NULL))) {
+    printf("ERROR: imma about to crash\n");
+  }
+
+  if (!SUCCEEDED(SysHdl->Initialize())){
+    printf("ERROR: system handler is out of his mind\n");
+  }
+  
   this->SysH = SysHdl;
 
   compiled_key_map.Compile(operators, &user_inputs, keymap_path);
