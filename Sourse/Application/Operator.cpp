@@ -10,9 +10,9 @@
 // -----------  test Operetor ----------------------- //
 
 void InitSeance_modal(Seance* C, Operator* op, ModalEvent* modal_ev) {
-  if (modal_ev && modal_ev->idname == "CANCEL") {
-    op->state = OpState::CANCELED;
-    printf("CANCEL\n");
+  if (modal_ev && modal_ev->idname == "FINISHED") {
+    op->state = OpState::FINISHED;
+    printf("FINISHED\n");
     return;
   }
   printf("RUNNING MODAL\n");

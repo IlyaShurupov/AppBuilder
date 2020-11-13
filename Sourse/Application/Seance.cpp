@@ -13,17 +13,17 @@ Seance::Seance(/*project file*/) {
 
     // Create dummy user keymap
     KeyCondition* kc1 = new KeyCondition();
-    kc1->input_idname = "A";
+    kc1->input_idname = "SPACE";
     kc1->trigger_state = InputState::PRESSED;
 
     KeyCondition* kc2 = new KeyCondition();
-    kc2->input_idname = "B";
+    kc2->input_idname = "SPACE";
     kc2->trigger_state = InputState::RELEASED;
 
 
     Shortcut* shcut2 = new Shortcut();
     shcut2->conditions.add(kc2);
-    shcut2->modal_event.idname = "CANCEL";
+    shcut2->modal_event.idname = "FINISHED";
 
     OpBindings* opb = new OpBindings();
     opb->invoke.conditions.add(kc1);
