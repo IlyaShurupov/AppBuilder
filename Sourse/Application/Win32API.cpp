@@ -134,22 +134,6 @@ void SystemHandler::DiscardDeviceResources() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-void UpdKeySate(Input& key, bool down) {
-  if ((int)key.state == (int)down) {
-    return;
-  }
-
-  if (key.state == InputState::NONE) {
-    key.state = InputState::PRESSED;
-  } else if (key.state == InputState::HOLD) {
-    key.state = InputState::RELEASED;
-  } else {
-    key.state = InputState(down);
-  }
-}
-
-
-
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   LRESULT result = 0;
 
@@ -293,6 +277,20 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect) {
 
 FBuff* SystemHandler::getFBuff() {
   return buff;
+}
+
+void UpdKeySate(Input& key, bool down) {
+  if ((int)key.state == (int)down) {
+    return;
+  }
+
+  if (key.state == InputState::NONE) {
+    key.state = InputState::PRESSED;
+  } else if (key.state == InputState::HOLD) {
+    key.state = InputState::RELEASED;
+  } else {
+    key.state = InputState(down);
+  }
 }
 
 void SystemHandler::getUserInputs(UserInputs* user_inputs) {

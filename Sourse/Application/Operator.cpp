@@ -112,9 +112,6 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
   int dx = -(data->win->user_inputs.PrevCursor.x - data->win->user_inputs.Cursor.x);
   int dy = -(data->win->user_inputs.PrevCursor.y - data->win->user_inputs.Cursor.y);
 
-  printf("\n %i ", dy);
-  printf("%i ", dx);
-
   Rect<SCR_UINT> rect;
   data->win->getWinRect(rect);
 
@@ -144,7 +141,7 @@ void WindowResize_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
   op->CustomData = DBG_NEW WinResizeData();
 
-  op->idname = "Resize window";
+  op->idname = "Resize Window";
   op->Poll = WindowResize_poll;
   op->Invoke = WindowResize_invoke;
   op->Modal = WindowResize_modal;
@@ -153,6 +150,57 @@ void WindowResize_create(Seance* C, Operator* op) {
 }
 
 // -----------  Window Resize Operator end ----------------------- //
+
+// -----------  Window Drag Operator ----------------------- //
+
+void WindowDrag_ecec(Seance* C, Operator* op) {}
+
+void WindowDrag_invoke(Seance* C, Operator* op) {
+  op->state = OpState::RUNNING_MODAL;
+}
+
+// Checks if operator can be inveked
+bool WindowDrag_poll(Seance* C, Operator* op) {
+  return op->CustomData = C->project.C_actWin();
+}
+
+void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
+  if (event && event->idname == "FINISH") {
+    op->state = OpState::FINISHED;
+    return;
+  }
+
+  Window* data = (Window*)op->CustomData;
+  UserInputs* usin = &data->user_inputs;
+
+  int dx = -(usin->PrevCursor.x - usin->Cursor.x);
+  int dy = -(usin->PrevCursor.y - usin->Cursor.y);
+
+  Rect<SCR_UINT> rect;
+  data->getWinRect(rect);
+
+  rect.v1.x += dx;
+  rect.v1.y += dy;
+
+  rect.v3.x += dx;
+  rect.v3.y += dy;
+
+  data->setWinRect(rect);
+
+  usin->Cursor.x -= dx;
+  usin->Cursor.y -= dy;
+}
+
+void WindowDrag_create(Seance* C, Operator* op) {
+  op->idname = "Move Window";
+  op->Poll = WindowDrag_poll;
+  op->Modal = WindowDrag_modal;
+  op->Invoke = WindowDrag_invoke;
+
+  op->state = OpState::NONE;
+}
+
+// -----------  Window Drag Operator end ----------------------- //
 
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = DBG_NEW Operator;
@@ -170,4 +218,5 @@ void initOps(Seance* C) {
   AddOperator(C, EndSeance_create);
   AddOperator(C, ToggleConcole_create);
   AddOperator(C, WindowResize_create);
+  AddOperator(C, WindowDrag_create);
 }
