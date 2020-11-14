@@ -20,7 +20,7 @@ Seance::Seance(std::string* basePath) {
     //win1->ToggleConsole();
 
     Window* win2 = new Window(&filepath, &prefferences.operators);
-    win2->ToggleConsole();
+    //win2->ToggleConsole();
     //project.windows.add(win1);
     project.windows.add(win2);
     //win.

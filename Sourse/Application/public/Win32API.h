@@ -31,8 +31,6 @@ class SystemHandler {
   void destroy();
 
  private:
-  // Initialize device-independent resources.
-  HRESULT CreateDeviceIndependentResources();
 
   // Initialize device-dependent resources.
   HRESULT CreateDeviceResources();

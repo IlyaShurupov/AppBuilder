@@ -10,30 +10,10 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <wincodec.h>
-//#include <inttypes.h>
 
-//#include "public/Window.h"
 #include "FrameBuff.h"
 #include "public/KeyMap.h"
 
-#define CREATE_BITMAP(buff, bmp)                                                                         \
-  m_pRenderTarget->CreateBitmap(                                                                         \
-      D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height), buff->Buff, buff->width * 16,              \
-      D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT, D2D1_ALPHA_MODE_IGNORE)), \
-      &bmp)
-
-#ifndef Assert
-#if defined(DEBUG) || defined(_DEBUG)
-#define Assert(b)                             \
-  do {                                        \
-    if (!(b)) {                               \
-      OutputDebugStringA("Assert: " #b "\n"); \
-    }                                         \
-  } while (0)
-#else
-#define Assert(b)
-#endif  // DEBUG || _DEBUG
-#endif
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -69,17 +49,16 @@ SystemHandler::~SystemHandler() {
   SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-FBuff* SystemHandler::getFBuff() {
-  return buff;
-}
-
 
 HRESULT SystemHandler::Initialize() {
   HRESULT hr;
 
+  ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
+  consolehidden = !consolehidden;
+
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
-  hr = CreateDeviceIndependentResources();
+  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   if (SUCCEEDED(hr)) {
     // Register the window class.
@@ -123,31 +102,11 @@ HRESULT SystemHandler::Initialize() {
   m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
 
-  SetWindowLong(m_hwnd, GWL_STYLE, 0);  // remove all window styles, check MSDN for details
+  // remove all window styles, check MSDN for details
+  SetWindowLong(m_hwnd, GWL_STYLE, 0);  
 
-  ShowWindow(m_hwnd, SW_SHOW);  // display window
+  ShowWindow(m_hwnd, SW_SHOW); 
 
-  HANDLE hIcon = LoadImage(HINST_THISCOMPONENT,
-                           LPCSTR("D:\\dev\\intern\\MaRef\\Sourse\\Application\\Configuration\\icon.png"),
-                           IMAGE_ICON, 10, 10, LR_DEFAULTSIZE | LR_LOADFROMFILE);
-  if (hIcon) {
-    // Change both icons to the same icon handle.
-    // SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, hIcon);
-    // SendMessage(m_hwnd, WM_SETICON, ICON_BIG, hIcon);
-
-    // This will ensure that the application icon gets changed too.
-    SendMessage(GetWindow(m_hwnd, GW_OWNER), WM_SETICON, ICON_SMALL, LPARAM(hIcon));
-    SendMessage(GetWindow(m_hwnd, GW_OWNER), WM_SETICON, ICON_BIG, LPARAM(hIcon));
-  }
-
-  return hr;
-}
-
-HRESULT SystemHandler::CreateDeviceIndependentResources() {
-  HRESULT hr = S_OK;
-
-  // Create a Direct2D factory.
-  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   return hr;
 }
@@ -189,96 +148,7 @@ void UpdKeySate(Input& key, bool down) {
   }
 }
 
-void SystemHandler::getUserInputs(UserInputs* user_inputs) {
-  POINT cursor;
-  UserInputs& usin = *user_inputs;
 
-  usin.PrevCursor = usin.Cursor;
-
-  GetCursorPos(&cursor);
-  ScreenToClient(m_hwnd, &cursor);
-  usin.Cursor.x = (SCR_UINT)cursor.x;
-  usin.Cursor.y = (SCR_UINT)cursor.y;
-
-  SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
-  GetMessage(&msg, NULL, 0, 0);
-
-  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
-  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
-  UpdKeySate(usin.MMB, GetKeyState(VK_MBUTTON) & 0x800);
-
-  UpdKeySate(usin.K0, GetKeyState('0') & 0x800);
-  UpdKeySate(usin.K1, GetKeyState('1') & 0x800);
-  UpdKeySate(usin.K2, GetKeyState('2') & 0x800);
-  UpdKeySate(usin.K3, GetKeyState('3') & 0x800);
-  UpdKeySate(usin.K4, GetKeyState('4') & 0x800);
-  UpdKeySate(usin.K5, GetKeyState('5') & 0x800);
-  UpdKeySate(usin.K6, GetKeyState('6') & 0x800);
-  UpdKeySate(usin.K7, GetKeyState('7') & 0x800);
-  UpdKeySate(usin.K8, GetKeyState('8') & 0x800);
-  UpdKeySate(usin.K9, GetKeyState('9') & 0x800);
-
-  UpdKeySate(usin.Q, GetKeyState('Q') & 0x800);
-  UpdKeySate(usin.W, GetKeyState('W') & 0x800);
-  UpdKeySate(usin.E, GetKeyState('E') & 0x800);
-  UpdKeySate(usin.R, GetKeyState('R') & 0x800);
-  UpdKeySate(usin.T, GetKeyState('T') & 0x800);
-  UpdKeySate(usin.Y, GetKeyState('Y') & 0x800);
-  UpdKeySate(usin.U, GetKeyState('U') & 0x800);
-  UpdKeySate(usin.I, GetKeyState('I') & 0x800);
-  UpdKeySate(usin.O, GetKeyState('O') & 0x800);
-  UpdKeySate(usin.P, GetKeyState('P') & 0x800);
-
-  UpdKeySate(usin.A, GetKeyState('A') & 0x800);
-  UpdKeySate(usin.S, GetKeyState('S') & 0x800);
-  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
-  UpdKeySate(usin.F, GetKeyState('F') & 0x800);
-  UpdKeySate(usin.G, GetKeyState('G') & 0x800);
-  UpdKeySate(usin.H, GetKeyState('H') & 0x800);
-  UpdKeySate(usin.J, GetKeyState('J') & 0x800);
-  UpdKeySate(usin.K, GetKeyState('K') & 0x800);
-  UpdKeySate(usin.L, GetKeyState('L') & 0x800);
-
-  UpdKeySate(usin.Z, GetKeyState('Z') & 0x800);
-  UpdKeySate(usin.X, GetKeyState('X') & 0x800);
-  UpdKeySate(usin.C, GetKeyState('C') & 0x800);
-  UpdKeySate(usin.V, GetKeyState('V') & 0x800);
-  UpdKeySate(usin.B, GetKeyState('B') & 0x800);
-  UpdKeySate(usin.N, GetKeyState('N') & 0x800);
-  UpdKeySate(usin.M, GetKeyState('M') & 0x800);
-
-  UpdKeySate(usin.SPACE, GetKeyState(VK_SPACE) & 0x800);
-  UpdKeySate(usin.ENTER, GetKeyState(VK_SEPARATOR) & 0x800);
-  UpdKeySate(usin.DEL, GetKeyState(VK_DELETE) & 0x800);
-  UpdKeySate(usin.EREASE, GetKeyState(VK_BACK) & 0x800);
-  UpdKeySate(usin.ESCAPE, GetKeyState(VK_ESCAPE) & 0x800);
-  UpdKeySate(usin.TAB, GetKeyState(VK_TAB) & 0x800);
-
-  UpdKeySate(usin.SHIFT_L, GetKeyState(VK_LSHIFT) & 0x800);
-  UpdKeySate(usin.SHIFT_R, GetKeyState(VK_RSHIFT) & 0x800);
-  UpdKeySate(usin.CTR_L, GetKeyState(VK_LCONTROL) & 0x800);
-  UpdKeySate(usin.CTR_R, GetKeyState(VK_RCONTROL) & 0x800);
-  UpdKeySate(usin.ALT_L, GetKeyState(VK_MENU) & 0x800);
-  UpdKeySate(usin.ALT_R, GetKeyState(VK_MENU) & 0x800);
-
-  usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
-
-  // USRINPUT_DECL(ARROW_UP);
-  // USRINPUT_DECL(ARROW_DOWN);
-  // USRINPUT_DECL(ARROW_LEFT);
-  // USRINPUT_DECL(ARROW_RIGHT);
-
-  /*
-  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
-  //...
-  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
-  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
-  UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
-
-  */
-  TranslateMessage(&msg);
-  DispatchMessage(&msg);
-}
 
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   LRESULT result = 0;
@@ -422,14 +292,62 @@ void SystemHandler::SysOutput() {
   FBFF_COLOR color = int32_t(0x001b1b1f);
   buff->clear(&color);
 
-  HBITMAP hbmMem = CreateBitmapFromPixels(GetDC(m_hwnd), buff->width, buff->height, 32, buff->Buff);
+  PAINTSTRUCT ps;
+  HDC hdcWindow = GetDC(m_hwnd);
+
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->width, buff->height, 32, buff->Buff);
 
   HANDLE hOld = SelectObject(hdcMem, hbmMem);
-  BitBlt(GetDC(m_hwnd), 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
+  BitBlt(hdcWindow, 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
 
-  DeleteObject(hOld);
-  DeleteObject(hbmMem);
+  ReleaseDC(m_hwnd, hdcWindow);
 }
+
+
+int CaptureAnImage(HWND hWnd) {
+  HDC hdcScreen;
+  HDC hdcWindow;
+  HDC hdcMemDC = NULL;
+  HBITMAP hbmScreen = NULL;
+  BITMAP bmpScreen;
+
+  // Retrieve the handle to a display device context for the client
+  // area of the window.
+  hdcScreen = GetDC(NULL);
+  hdcWindow = GetDC(hWnd);
+
+  // Create a compatible DC which is used in a BitBlt from the window DC
+  hdcMemDC = CreateCompatibleDC(hdcWindow);
+
+
+  // Get the client area for size calculation
+  RECT rcClient;
+  GetClientRect(hWnd, &rcClient);
+
+
+  // Create a compatible bitmap from the Window DC
+  hbmScreen =
+      CreateCompatibleBitmap(hdcWindow, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
+
+
+  // Select the compatible bitmap into the compatible memory DC.
+  SelectObject(hdcMemDC, hbmScreen);
+
+  // Bit block transfer into our compatible memory DC.
+  BitBlt(hdcMemDC, 0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, hdcWindow, 0, 0, SRCCOPY);
+
+  // Get the BITMAP from the HBITMAP
+  GetObject(hbmScreen, sizeof(BITMAP), &bmpScreen);
+
+
+
+  DeleteObject(hbmScreen);
+  DeleteObject(hdcMemDC);
+  ReleaseDC(NULL, hdcScreen);
+  ReleaseDC(hWnd, hdcWindow);
+  return 0;
+}
+
 
 void SystemHandler::consoletoggle() {
   ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
@@ -443,4 +361,99 @@ bool SystemHandler::active() {
 void SystemHandler::destroy() {
   KillTimer(m_hwnd, 10);
   PostQuitMessage(0);
+}
+
+FBuff* SystemHandler::getFBuff() {
+  return buff;
+}
+
+void SystemHandler::getUserInputs(UserInputs* user_inputs) {
+  POINT cursor;
+  UserInputs& usin = *user_inputs;
+
+  usin.PrevCursor = usin.Cursor;
+
+  GetCursorPos(&cursor);
+  ScreenToClient(m_hwnd, &cursor);
+  usin.Cursor.x = (SCR_UINT)cursor.x;
+  usin.Cursor.y = (SCR_UINT)cursor.y;
+
+  SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
+  GetMessage(&msg, NULL, 0, 0);
+
+  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
+  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
+  UpdKeySate(usin.MMB, GetKeyState(VK_MBUTTON) & 0x800);
+
+  UpdKeySate(usin.K0, GetKeyState('0') & 0x800);
+  UpdKeySate(usin.K1, GetKeyState('1') & 0x800);
+  UpdKeySate(usin.K2, GetKeyState('2') & 0x800);
+  UpdKeySate(usin.K3, GetKeyState('3') & 0x800);
+  UpdKeySate(usin.K4, GetKeyState('4') & 0x800);
+  UpdKeySate(usin.K5, GetKeyState('5') & 0x800);
+  UpdKeySate(usin.K6, GetKeyState('6') & 0x800);
+  UpdKeySate(usin.K7, GetKeyState('7') & 0x800);
+  UpdKeySate(usin.K8, GetKeyState('8') & 0x800);
+  UpdKeySate(usin.K9, GetKeyState('9') & 0x800);
+
+  UpdKeySate(usin.Q, GetKeyState('Q') & 0x800);
+  UpdKeySate(usin.W, GetKeyState('W') & 0x800);
+  UpdKeySate(usin.E, GetKeyState('E') & 0x800);
+  UpdKeySate(usin.R, GetKeyState('R') & 0x800);
+  UpdKeySate(usin.T, GetKeyState('T') & 0x800);
+  UpdKeySate(usin.Y, GetKeyState('Y') & 0x800);
+  UpdKeySate(usin.U, GetKeyState('U') & 0x800);
+  UpdKeySate(usin.I, GetKeyState('I') & 0x800);
+  UpdKeySate(usin.O, GetKeyState('O') & 0x800);
+  UpdKeySate(usin.P, GetKeyState('P') & 0x800);
+
+  UpdKeySate(usin.A, GetKeyState('A') & 0x800);
+  UpdKeySate(usin.S, GetKeyState('S') & 0x800);
+  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
+  UpdKeySate(usin.F, GetKeyState('F') & 0x800);
+  UpdKeySate(usin.G, GetKeyState('G') & 0x800);
+  UpdKeySate(usin.H, GetKeyState('H') & 0x800);
+  UpdKeySate(usin.J, GetKeyState('J') & 0x800);
+  UpdKeySate(usin.K, GetKeyState('K') & 0x800);
+  UpdKeySate(usin.L, GetKeyState('L') & 0x800);
+
+  UpdKeySate(usin.Z, GetKeyState('Z') & 0x800);
+  UpdKeySate(usin.X, GetKeyState('X') & 0x800);
+  UpdKeySate(usin.C, GetKeyState('C') & 0x800);
+  UpdKeySate(usin.V, GetKeyState('V') & 0x800);
+  UpdKeySate(usin.B, GetKeyState('B') & 0x800);
+  UpdKeySate(usin.N, GetKeyState('N') & 0x800);
+  UpdKeySate(usin.M, GetKeyState('M') & 0x800);
+
+  UpdKeySate(usin.SPACE, GetKeyState(VK_SPACE) & 0x800);
+  UpdKeySate(usin.ENTER, GetKeyState(VK_SEPARATOR) & 0x800);
+  UpdKeySate(usin.DEL, GetKeyState(VK_DELETE) & 0x800);
+  UpdKeySate(usin.EREASE, GetKeyState(VK_BACK) & 0x800);
+  UpdKeySate(usin.ESCAPE, GetKeyState(VK_ESCAPE) & 0x800);
+  UpdKeySate(usin.TAB, GetKeyState(VK_TAB) & 0x800);
+
+  UpdKeySate(usin.SHIFT_L, GetKeyState(VK_LSHIFT) & 0x800);
+  UpdKeySate(usin.SHIFT_R, GetKeyState(VK_RSHIFT) & 0x800);
+  UpdKeySate(usin.CTR_L, GetKeyState(VK_LCONTROL) & 0x800);
+  UpdKeySate(usin.CTR_R, GetKeyState(VK_RCONTROL) & 0x800);
+  UpdKeySate(usin.ALT_L, GetKeyState(VK_MENU) & 0x800);
+  UpdKeySate(usin.ALT_R, GetKeyState(VK_MENU) & 0x800);
+
+  usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
+
+  // USRINPUT_DECL(ARROW_UP);
+  // USRINPUT_DECL(ARROW_DOWN);
+  // USRINPUT_DECL(ARROW_LEFT);
+  // USRINPUT_DECL(ARROW_RIGHT);
+
+  /*
+  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
+  //...
+  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
+  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
+  UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
+
+  */
+  TranslateMessage(&msg);
+  DispatchMessage(&msg);
 }
