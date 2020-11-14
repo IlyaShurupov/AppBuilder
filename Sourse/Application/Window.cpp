@@ -46,7 +46,24 @@ void Window::OnRead() {}
 
 void Window::ProcessEvents(List<OpThread>* op_threads) {
   SysH->getUserInputs(&user_inputs);
+  if (this->IsActive()) {
   compiled_key_map.ProcEvents(op_threads);
+  }
 }
 
-void Window::SendBuffToSystem() { SysH->SysOutput(); }
+void Window::SendBuffToSystem() {
+  SysH->SysOutput();
+}
+
+bool Window::IsActive() {
+  return SysH->active();
+}
+
+void Window::Destroy() {
+  SysH->destroy();
+}
+
+void Window::ToggleConsole() {
+
+  SysH->consoletoggle();
+}

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <wincodec.h>
+//#include <inttypes.h>
 
 //#include "public/Window.h"
 #include "FrameBuff.h"
@@ -38,6 +39,8 @@
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
+
+bool consolehidden = false;
 
 template <class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease) {
@@ -70,6 +73,7 @@ FBuff* SystemHandler::getFBuff() {
   return buff;
 }
 
+
 HRESULT SystemHandler::Initialize() {
   HRESULT hr;
 
@@ -88,7 +92,7 @@ HRESULT SystemHandler::Initialize() {
     wcex.hbrBackground = NULL;
     wcex.lpszMenuName = NULL;
     wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
-    wcex.lpszClassName = LPCSTR("D2DDemoApp");
+    wcex.lpszClassName = LPCSTR("Gamuncool");
 
     RegisterClassEx(&wcex);
 
@@ -104,7 +108,7 @@ HRESULT SystemHandler::Initialize() {
 #pragma warning(pop)
 
     // Create the window.
-    m_hwnd = CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+    m_hwnd = CreateWindow(LPCSTR("Gamuncool"), LPCSTR("Gamuncool"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                           CW_USEDEFAULT, static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
                           static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)), NULL, NULL,
                           HINST_THISCOMPONENT, this);
@@ -118,6 +122,24 @@ HRESULT SystemHandler::Initialize() {
   CreateDeviceResources();
   m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+
+  SetWindowLong(m_hwnd, GWL_STYLE, 0);  // remove all window styles, check MSDN for details
+
+  ShowWindow(m_hwnd, SW_SHOW);  // display window
+
+  HANDLE hIcon = LoadImage(HINST_THISCOMPONENT,
+                           LPCSTR("D:\\dev\\intern\\MaRef\\Sourse\\Application\\Configuration\\icon.png"),
+                           IMAGE_ICON, 10, 10, LR_DEFAULTSIZE | LR_LOADFROMFILE);
+  if (hIcon) {
+    // Change both icons to the same icon handle.
+    // SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, hIcon);
+    // SendMessage(m_hwnd, WM_SETICON, ICON_BIG, hIcon);
+
+    // This will ensure that the application icon gets changed too.
+    SendMessage(GetWindow(m_hwnd, GW_OWNER), WM_SETICON, ICON_SMALL, LPARAM(hIcon));
+    SendMessage(GetWindow(m_hwnd, GW_OWNER), WM_SETICON, ICON_BIG, LPARAM(hIcon));
+  }
+
   return hr;
 }
 
@@ -160,7 +182,6 @@ void UpdKeySate(Input& key, bool down) {
 
   if (key.state == InputState::NONE) {
     key.state = InputState::PRESSED;
-
   } else if (key.state == InputState::HOLD) {
     key.state = InputState::RELEASED;
   } else {
@@ -240,10 +261,12 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   UpdKeySate(usin.ALT_L, GetKeyState(VK_MENU) & 0x800);
   UpdKeySate(usin.ALT_R, GetKeyState(VK_MENU) & 0x800);
 
-  //USRINPUT_DECL(ARROW_UP);
-  //USRINPUT_DECL(ARROW_DOWN);
-  //USRINPUT_DECL(ARROW_LEFT);
-  //USRINPUT_DECL(ARROW_RIGHT);
+  usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
+
+  // USRINPUT_DECL(ARROW_UP);
+  // USRINPUT_DECL(ARROW_DOWN);
+  // USRINPUT_DECL(ARROW_LEFT);
+  // USRINPUT_DECL(ARROW_RIGHT);
 
   /*
   UpdKeySate(usin.D, GetKeyState('D') & 0x800);
@@ -284,16 +307,16 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
           wasHandled = true;
           break;
 
-        case WM_TIMER:
-          break;
+        case WM_CLOSE: {
+          pDemoApp->close = true;
+          return 0;
+        }
 
         case WM_DESTROY: {
-          PostQuitMessage(0);
-          KillTimer(hwnd, 10);
-        }
           result = 1;
           wasHandled = true;
           break;
+        }
       }
     }
 
@@ -393,9 +416,10 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
   return hBitmap;
 }
 
+
 void SystemHandler::SysOutput() {
 
-  FBFF_COLOR color = int32_t(0x0000ff00);
+  FBFF_COLOR color = int32_t(0x001b1b1f);
   buff->clear(&color);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(GetDC(m_hwnd), buff->width, buff->height, 32, buff->Buff);
@@ -403,5 +427,20 @@ void SystemHandler::SysOutput() {
   HANDLE hOld = SelectObject(hdcMem, hbmMem);
   BitBlt(GetDC(m_hwnd), 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
 
+  DeleteObject(hOld);
   DeleteObject(hbmMem);
+}
+
+void SystemHandler::consoletoggle() {
+  ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
+  consolehidden = !consolehidden;
+}
+
+bool SystemHandler::active() {
+  return GetForegroundWindow() == m_hwnd;
+}
+
+void SystemHandler::destroy() {
+  KillTimer(m_hwnd, 10);
+  PostQuitMessage(0);
 }

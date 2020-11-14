@@ -7,41 +7,59 @@
   op->State = OpState::FINISHED; \
   return;
 
-// -----------  test Operetor ----------------------- //
+// -----------  End Seance Operator ----------------------- //
 
-void InitSeance_modal(Seance* C, Operator* op, ModalEvent* modal_ev) {
-  if (modal_ev && modal_ev->idname == "CANCEL") {
-    op->state = OpState::FINISHED;
-    printf("FINISHED\n");
-    return;
-  }
-  printf("RUNNING MODAL\n");
+void EndSeance_ecec(Seance* C, Operator* op) {
+  FOREACH_NODE(Window, (&C->project.windows), win_node) { win_node->Data->Destroy(); }
+  exit(0);
 }
 
-void InitSeance_ecec(Seance* C, Operator* op) {}
-
-void InitSeance_invoke(Seance* C, Operator* op) {
-  op->state = OpState::RUNNING_MODAL;
+void EndSeance_invoke(Seance* C, Operator* op) {
+  EndSeance_ecec(C, op);
+  op->state = OpState::FINISHED;
 }
 
 // Checks if operator can be inveked
-bool InitSeance_poll(Seance* C, Operator* op) {
-  if (true) {
-    printf("Poll\n");
-    return true;
-  }
+bool EndSeance_poll(Seance* C, Operator* op) {
+  return true;
 }
 
-void DummySeance_create(Seance* C, Operator* op) {
-  op->idname = "dummy_op";
-  op->Poll = InitSeance_poll;
-  op->Invoke = InitSeance_invoke;
-  op->Modal = InitSeance_modal;
+void EndSeance_create(Seance* C, Operator* op) {
+  op->idname = "End Seance";
+  op->Poll = EndSeance_poll;
+  op->Invoke = EndSeance_invoke;
 
   op->state = OpState::NONE;
 }
 
-// -----------  test Operetor end ----------------------- //
+// -----------  End Seance Operator end ----------------------- //
+
+// -----------  Console Toggle Operator ----------------------- //
+
+void ToggleConcole_ecec(Seance* C, Operator* op) {
+  if (C->project.windows.len())
+    C->project.windows[0]->ToggleConsole();
+}
+
+void ToggleConcole_invoke(Seance* C, Operator* op) {
+  ToggleConcole_ecec(C, op);
+  op->state = OpState::FINISHED;
+}
+
+// Checks if operator can be inveked
+bool ToggleConcole_poll(Seance* C, Operator* op) {
+  return true;
+}
+
+void ToggleConcole_create(Seance* C, Operator* op) {
+  op->idname = "Toggle Console";
+  op->Poll = ToggleConcole_poll;
+  op->Invoke = ToggleConcole_invoke;
+
+  op->state = OpState::NONE;
+}
+
+// -----------  Console Toggle Operator end ----------------------- //
 
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = DBG_NEW Operator;
@@ -56,5 +74,6 @@ OpThread::OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event)
 }
 
 void initOps(Seance* C) {
-  AddOperator(C, DummySeance_create);
+  AddOperator(C, EndSeance_create);
+  AddOperator(C, ToggleConcole_create);
 }

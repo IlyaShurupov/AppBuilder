@@ -1,13 +1,13 @@
 
 #pragma once
-#include "UILayout.h"
 #include "KeyMap.h"
+#include "UILayout.h"
 
 struct Window {
   // UI layout of window
   List<UIItem> areas;
 
-  // Creates empty window 
+  // Creates empty window
   Window(std::string* keymap_path, List<Operator>* operators);
 
   // Closes the window
@@ -27,6 +27,16 @@ struct Window {
 
   // Just shows the buff to the user
   void SendBuffToSystem();
+
+  // window processing methods
+ public:
+  bool IsActive();
+
+  // terminates the window
+  void Destroy();
+
+  // toggles window conole
+  void ToggleConsole();
 
  private:
   // This is where interactin with the system happends

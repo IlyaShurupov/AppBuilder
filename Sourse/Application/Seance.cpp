@@ -1,7 +1,7 @@
 #pragma once
 #include "public/Seance.h"
 
-Seance::Seance(/*project file*/) {
+Seance::Seance(std::string* basePath) {
 
   if (/*file specified*/ false) {
 
@@ -11,35 +11,18 @@ Seance::Seance(/*project file*/) {
     // Create dummy
     initOps(this);
 
-    std::string filepath;
-    filepath = "C:\\Users\\shuru\\Desktop\\keymap.txt";
-    /*
-    // Create dummy user keymap
-    KeyCondition* kc1 = new KeyCondition();
-    kc1->input_idname = "SPACE";
-    kc1->trigger_state = InputState::PRESSED;
-
-    KeyCondition* kc2 = new KeyCondition();
-    kc2->input_idname = "SPACE";
-    kc2->trigger_state = InputState::RELEASED;
-
-
-    Shortcut* shcut2 = new Shortcut();
-    shcut2->conditions.add(kc2);
-    shcut2->modal_event.idname = "FINISHED";
-
-    OpBindings* opb = new OpBindings();
-    opb->invoke.conditions.add(kc1);
-    opb->modal_keymap.add(shcut2);
-    opb->op_name = "dummy_op";
-
-    prefferences.key_map.map.add(opb);
-    */
+    basePath->erase(basePath->rfind('\\') + 1);
+    std::string filepath = *basePath + "\\Configuration\\KeyMaps\\Default.txt";
 
 
     // window
-    Window* win = new Window(&filepath, &prefferences.operators);
-    project.windows.add(win);
+    //Window* win1 = new Window(&filepath, &prefferences.operators);
+    //win1->ToggleConsole();
+
+    Window* win2 = new Window(&filepath, &prefferences.operators);
+    win2->ToggleConsole();
+    //project.windows.add(win1);
+    project.windows.add(win2);
     //win.
 
     //initOps();
@@ -51,3 +34,16 @@ Seance::~Seance() {}
 void Seance::OnWrite(/*file path*/) {}
 
 void Seance::OnRead(/*file path*/) {}
+
+Window* Project::C_actWin() {
+
+  //return windows[0];
+
+  FOREACH_NODE(Window, (&windows), win_node) {
+    if (win_node->Data->IsActive()) {
+      return win_node->Data;
+    }
+  }
+  post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
+  return nullptr;
+}

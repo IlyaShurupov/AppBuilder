@@ -24,6 +24,12 @@ class SystemHandler {
   // Draw Fbuff.
   void SysOutput();
 
+  void consoletoggle();
+
+  bool active();
+
+  void destroy();
+
  private:
   // Initialize device-independent resources.
   HRESULT CreateDeviceIndependentResources();
@@ -38,8 +44,10 @@ class SystemHandler {
   void OnResize(UINT width, UINT height);
 
   // The windows procedure.
-  static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
-                                  LPARAM lParam);
+  static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+ public:
+  bool close = false;
 
  private:
   MSG msg;
