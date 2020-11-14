@@ -107,7 +107,7 @@ HRESULT SystemHandler::Initialize() {
 
   ShowWindow(m_hwnd, SW_SHOW); 
 
-
+  //SetMapMode(GetDC(m_hwnd), MM_LOMETRIC);
   return hr;
 }
 
@@ -241,7 +241,6 @@ void SystemHandler::SysOutput() {
   FBFF_COLOR color = int32_t(0x001b1b1f);
   buff->clear(&color);
 
-  PAINTSTRUCT ps;
   HDC hdcWindow = GetDC(m_hwnd);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->width, buff->height, 32, buff->Buff);
@@ -251,8 +250,6 @@ void SystemHandler::SysOutput() {
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
-
-  SetWindowPos(m_hwnd, HWND_TOP, 10, 10, 100, 100, SWP_NOACTIVATE);
 }
 
 
@@ -268,6 +265,30 @@ bool SystemHandler::active() {
 void SystemHandler::destroy() {
   KillTimer(m_hwnd, 10);
   PostQuitMessage(0);
+}
+
+void SystemHandler::getRect(Rect<SCR_UINT>& rect) {
+  LPRECT wrect_p = &RECT();
+  GetWindowRect(m_hwnd, wrect_p);
+
+  rect.v1.y = wrect_p->top;
+  rect.v1.x = wrect_p->left;
+
+  
+  rect.v3.y = wrect_p->bottom;
+  rect.v3.x = wrect_p->right;
+
+  rect.v2.y = rect.v1.y;
+  rect.v2.x = rect.v3.x;
+
+  rect.v0.y = rect.v3.y;
+  rect.v0.x = rect.v1.x;
+
+}
+
+void SystemHandler::setRect(Rect<SCR_UINT>& rect) {
+  SetWindowPos(m_hwnd, HWND_TOP, rect.v1.x, rect.v1.y, rect.v3.x - rect.v1.x, rect.v3.y - rect.v1.y,
+               SWP_NOACTIVATE);
 }
 
 FBuff* SystemHandler::getFBuff() {
@@ -339,6 +360,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   UpdKeySate(usin.ESCAPE, GetKeyState(VK_ESCAPE) & 0x800);
   UpdKeySate(usin.TAB, GetKeyState(VK_TAB) & 0x800);
 
+  UpdKeySate(usin.WIN_KEY, GetKeyState(VK_LWIN) & 0x800);
   UpdKeySate(usin.SHIFT_L, GetKeyState(VK_LSHIFT) & 0x800);
   UpdKeySate(usin.SHIFT_R, GetKeyState(VK_RSHIFT) & 0x800);
   UpdKeySate(usin.CTR_L, GetKeyState(VK_LCONTROL) & 0x800);
@@ -363,4 +385,20 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   */
   TranslateMessage(&msg);
   DispatchMessage(&msg);
+}
+
+void SystemHandler::SetIcon(std::string stricon) {
+  if (hWindowIcon != NULL)
+    DestroyIcon(hWindowIcon);
+  if (hWindowIconBig != NULL)
+    DestroyIcon(hWindowIconBig);
+  if (stricon == "") {
+    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
+    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
+  } else {
+    hWindowIcon = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    hWindowIconBig = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
+    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
+  }
 }

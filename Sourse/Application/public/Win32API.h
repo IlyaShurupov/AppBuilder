@@ -30,6 +30,11 @@ class SystemHandler {
 
   void destroy();
 
+  void getRect(Rect<SCR_UINT>& rect);
+  void setRect(Rect<SCR_UINT>& rect);
+
+  void SetIcon(std::string stricon);
+
  private:
 
   // Initialize device-dependent resources.
@@ -48,6 +53,8 @@ class SystemHandler {
   bool close = false;
 
  private:
+  HICON hWindowIcon = NULL;
+  HICON hWindowIconBig = NULL;
   MSG msg;
   HDC hdcMem;
   HWND m_hwnd;

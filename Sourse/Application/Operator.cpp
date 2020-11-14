@@ -61,6 +61,99 @@ void ToggleConcole_create(Seance* C, Operator* op) {
 
 // -----------  Console Toggle Operator end ----------------------- //
 
+// -----------  Window Resize Operator ----------------------- //
+
+struct WinResizeData {
+  bool top = false;
+  bool right = false;
+  bool bottom = false;
+  bool left = false;
+  Window* win = nullptr;
+};
+
+
+void WindowResize_ecec(Seance* C, Operator* op) {}
+
+void WindowResize_invoke(Seance* C, Operator* op) {
+  WinResizeData* data = (WinResizeData*)op->CustomData;
+
+  vec2<SCR_UINT>* crsr = &data->win->user_inputs.Cursor;
+  Rect<SCR_UINT> rect;
+  data->win->getWinRect(rect);
+
+  SCR_UINT winw = rect.width();
+  SCR_UINT winh = -rect.height();
+
+  float fracx = winw / 3.f;
+  float fracy = winh / 3.f;
+
+  data->top = crsr->y < fracy;
+  data->right = crsr->x > fracx * 2.f;
+  data->bottom = crsr->y > fracy * 2.f;
+  data->left = crsr->x < fracx;
+
+  op->state = OpState::RUNNING_MODAL;
+}
+
+// Checks if operator can be inveked
+bool WindowResize_poll(Seance* C, Operator* op) {
+  WinResizeData* data = (WinResizeData*)op->CustomData;
+  return data->win = C->project.C_actWin();
+}
+
+void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
+  WinResizeData* data = (WinResizeData*)op->CustomData;
+
+  if (event && event->idname == "FINISH") {
+    op->state = OpState::FINISHED;
+    return;
+  }
+
+  int dx = -(data->win->user_inputs.PrevCursor.x - data->win->user_inputs.Cursor.x);
+  int dy = -(data->win->user_inputs.PrevCursor.y - data->win->user_inputs.Cursor.y);
+
+  printf("\n %i ", dy);
+  printf("%i ", dx);
+
+  Rect<SCR_UINT> rect;
+  data->win->getWinRect(rect);
+
+  if (data->top) {
+    rect.v1.y += dy;
+    rect.v2.y += dy;
+    data->win->user_inputs.Cursor.y -= dy;
+  }
+  if (data->right) {
+    rect.v2.x += dx;
+    rect.v3.x += dx;
+  }
+  if (data->bottom) {
+    rect.v0.y += dy;
+    rect.v3.y += dy;
+  }
+  if (data->left) {
+    rect.v0.x += dx;
+    rect.v1.x += dx;
+    data->win->user_inputs.Cursor.x -= dx;
+  }
+
+  data->win->setWinRect(rect);
+}
+
+void WindowResize_create(Seance* C, Operator* op) {
+  op->state = OpState::NONE;
+  op->CustomData = DBG_NEW WinResizeData();
+
+  op->idname = "Resize window";
+  op->Poll = WindowResize_poll;
+  op->Invoke = WindowResize_invoke;
+  op->Modal = WindowResize_modal;
+
+  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+}
+
+// -----------  Window Resize Operator end ----------------------- //
+
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = DBG_NEW Operator;
   Create(C, op);
@@ -76,4 +169,5 @@ OpThread::OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event)
 void initOps(Seance* C) {
   AddOperator(C, EndSeance_create);
   AddOperator(C, ToggleConcole_create);
+  AddOperator(C, WindowResize_create);
 }

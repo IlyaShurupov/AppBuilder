@@ -12,14 +12,14 @@ Seance::Seance(std::string* basePath) {
     initOps(this);
 
     basePath->erase(basePath->rfind('\\') + 1);
-    std::string filepath = *basePath + "\\Configuration\\KeyMaps\\Default.txt";
+    std::string configfolder = *basePath + "\\Configuration\\";
 
 
     // window
     //Window* win1 = new Window(&filepath, &prefferences.operators);
     //win1->ToggleConsole();
 
-    Window* win2 = new Window(&filepath, &prefferences.operators);
+    Window* win2 = new Window(&configfolder, &prefferences.operators);
     //win2->ToggleConsole();
     //project.windows.add(win1);
     project.windows.add(win2);

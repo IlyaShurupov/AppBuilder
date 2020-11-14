@@ -21,7 +21,7 @@ void Window::Draw() {
   }
 }
 
-Window::Window(std::string* keymap_path, List<Operator>* operators) {
+Window::Window(std::string* configfolder, List<Operator>* operators) {
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
   SystemHandler* SysHdl = new SystemHandler(800, 800);
 
@@ -35,7 +35,10 @@ Window::Window(std::string* keymap_path, List<Operator>* operators) {
   
   this->SysH = SysHdl;
 
-  compiled_key_map.Compile(operators, &user_inputs, keymap_path);
+  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
+  std::string icon_path = *configfolder + "icon.ico";
+  SysH->SetIcon(icon_path);
+  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 }
 
 Window::~Window() { CoUninitialize(); }
@@ -47,7 +50,7 @@ void Window::OnRead() {}
 void Window::ProcessEvents(List<OpThread>* op_threads) {
   SysH->getUserInputs(&user_inputs);
   if (this->IsActive()) {
-  compiled_key_map.ProcEvents(op_threads);
+    compiled_key_map.ProcEvents(op_threads);
   }
 }
 
@@ -66,4 +69,12 @@ void Window::Destroy() {
 void Window::ToggleConsole() {
 
   SysH->consoletoggle();
+}
+
+void Window::getWinRect(Rect<SCR_UINT>& rect) {
+  SysH->getRect(rect);
+}
+
+void Window::setWinRect(Rect<SCR_UINT>& rect) {
+  SysH->setRect(rect);
 }

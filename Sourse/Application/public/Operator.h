@@ -21,6 +21,11 @@ enum class ThreadState {
 };
 
 struct ModalEvent {
+  ModalEvent(){
+  };
+  ModalEvent(std::string idname){
+    this->idname = idname;
+  }
   std::string idname;
 };
 
