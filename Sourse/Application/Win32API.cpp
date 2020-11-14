@@ -200,64 +200,13 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 void SystemHandler::OnResize(UINT width, UINT height) {
   if (m_pRenderTarget) {
-    // Note: This method can fail, but it's okay to ignore the
-    // error here, because the error will be returned again
-    // the next time EndDraw is called.
     m_pRenderTarget->Resize(D2D1::SizeU(width, height));
     D2D1_SIZE_F TargetSize = m_pRenderTarget->GetSize();
     this->buff->Resize((SCR_UINT)width, (SCR_UINT)height);
   }
 }
 
-static HBITMAP Create8bppBitmap(HDC hdc, int width, int height, LPVOID pBits = NULL) {
-  BITMAPINFO* bmi = (BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
-  if (!bmi) {
-    return nullptr;
-  }
-  BITMAPINFOHEADER& bih(bmi->bmiHeader);
-  bih.biSize = sizeof(BITMAPINFOHEADER);
-  bih.biWidth = width;
-  bih.biHeight = -height;
-  bih.biPlanes = 1;
-  bih.biBitCount = 8;
-  bih.biCompression = BI_RGB;
-  bih.biSizeImage = 0;
-  bih.biXPelsPerMeter = 14173;
-  bih.biYPelsPerMeter = 14173;
-  bih.biClrUsed = 0;
-  bih.biClrImportant = 0;
-  for (int I = 0; I <= 255; I++) {
-    bmi->bmiColors[I].rgbBlue = bmi->bmiColors[I].rgbGreen = bmi->bmiColors[I].rgbRed = (BYTE)I;
-    bmi->bmiColors[I].rgbReserved = 0;
-  }
-
-  void* Pixels = NULL;
-  if (!bmi) {
-    return nullptr;
-  }
-
-  HBITMAP hbmp = CreateDIBSection(hdc, bmi, DIB_RGB_COLORS, &Pixels, NULL, 0);
-
-  if (pBits != NULL) {
-    // fill the bitmap
-    BYTE* pbBits = (BYTE*)pBits;
-    BYTE* Pix = (BYTE*)Pixels;
-    memcpy(Pix, pbBits, (int64_t)width * height);
-  }
-
-  free(bmi);
-
-  return hbmp;
-}
-
 static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, LPVOID pBits) {
-  if (uBitsPerPixel < 8) {
-    return NULL;
-  }  // NOT IMPLEMENTED YET
-
-  if (uBitsPerPixel == 8) {
-    return Create8bppBitmap(hDC, uWidth, uHeight, pBits);
-  }
 
   HBITMAP hBitmap = 0;
   if (!uWidth || !uHeight || !uBitsPerPixel) {
@@ -300,52 +249,10 @@ void SystemHandler::SysOutput() {
   HANDLE hOld = SelectObject(hdcMem, hbmMem);
   BitBlt(hdcWindow, 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
 
+  DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
-}
 
-
-int CaptureAnImage(HWND hWnd) {
-  HDC hdcScreen;
-  HDC hdcWindow;
-  HDC hdcMemDC = NULL;
-  HBITMAP hbmScreen = NULL;
-  BITMAP bmpScreen;
-
-  // Retrieve the handle to a display device context for the client
-  // area of the window.
-  hdcScreen = GetDC(NULL);
-  hdcWindow = GetDC(hWnd);
-
-  // Create a compatible DC which is used in a BitBlt from the window DC
-  hdcMemDC = CreateCompatibleDC(hdcWindow);
-
-
-  // Get the client area for size calculation
-  RECT rcClient;
-  GetClientRect(hWnd, &rcClient);
-
-
-  // Create a compatible bitmap from the Window DC
-  hbmScreen =
-      CreateCompatibleBitmap(hdcWindow, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
-
-
-  // Select the compatible bitmap into the compatible memory DC.
-  SelectObject(hdcMemDC, hbmScreen);
-
-  // Bit block transfer into our compatible memory DC.
-  BitBlt(hdcMemDC, 0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, hdcWindow, 0, 0, SRCCOPY);
-
-  // Get the BITMAP from the HBITMAP
-  GetObject(hbmScreen, sizeof(BITMAP), &bmpScreen);
-
-
-
-  DeleteObject(hbmScreen);
-  DeleteObject(hdcMemDC);
-  ReleaseDC(NULL, hdcScreen);
-  ReleaseDC(hWnd, hdcWindow);
-  return 0;
+  SetWindowPos(m_hwnd, HWND_TOP, 10, 10, 100, 100, SWP_NOACTIVATE);
 }
 
 
