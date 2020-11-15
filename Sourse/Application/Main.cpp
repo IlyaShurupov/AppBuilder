@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
   // Create Seance
   Seance& C = *new Seance(&getExecutablePath());
 
-  Timer timer = Timer(0 * int(1000/60.f));
+  Timer timer = Timer(1 * int(1000/60.f));
 
   // Main loop: Handle events -> run operators -> show result
   while (true) {
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (!timer.timeout()) {
-      printf("sleep \ n");
+      //printf("sleep \ n");
       THREAD_SLEEP(timer.remain());
     }
   }

@@ -5,8 +5,6 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  printf("\n %i ", user_inputs.Cdelta.x);
-  printf(" %i ", user_inputs.Cdelta.y);
 }
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
