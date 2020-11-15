@@ -76,6 +76,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
     if (newrect.pos.x > rect.pos.x) {
       // left -> right
       newrect.pos.x = rect.size_vec_w().x - minsize.x;
+      newrect.size.x = minsize.x;
 
     } else {
       // left <- right
@@ -87,6 +88,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
     if (newrect.pos.y > rect.pos.y) {
       // top <- bottom
       newrect.pos.y = rect.size_vec_w().y - minsize.y;
+      newrect.size.y = minsize.y;
 
     } else {
       // top -> bottom

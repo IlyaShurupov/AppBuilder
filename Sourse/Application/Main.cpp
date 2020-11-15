@@ -1,6 +1,8 @@
 
 #include "public/Seance.h"
 
+#define FPS 5
+
 int main(int argc, char* argv[]) {
 
   // enable memory debuging
@@ -11,8 +13,13 @@ int main(int argc, char* argv[]) {
   // Create Seance
   Seance& C = *new Seance(&getExecutablePath());
 
+  Timer timer = Timer(0 * int(1000/60.f));
+
   // Main loop: Handle events -> run operators -> show result
   while (true) {
+
+    timer.reset();
+
     // Handle events for each window
     FOREACH_NODE(Window, (&C.project.windows), win_node) {
       Window* win = win_node->Data;
@@ -75,6 +82,11 @@ int main(int argc, char* argv[]) {
       Window* win = win_node->Data;
       win->Draw();
       win->SendBuffToSystem();
+    }
+
+    if (!timer.timeout()) {
+      printf("sleep \ n");
+      THREAD_SLEEP(timer.remain());
     }
   }
 

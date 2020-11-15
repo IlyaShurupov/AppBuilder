@@ -89,26 +89,12 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
 
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
-      ShowWindow(m_hwnd, SW_SHOWNORMAL);
-      UpdateWindow(m_hwnd);
 
-      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
-
-      // remove all window styles, check MSDN for details
       SetWindowLong(m_hwnd, GWL_STYLE, 0);
+      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+      ShowWindow(m_hwnd, SW_SHOWNORMAL);
 
-      //SetMapMode(GetDC(m_hwnd), MM_TEXT);
-
-      //GetGraphicsMode(hdcMem);
-
-      //GetDC(m_hwnd)->TranslateTransform(0, clientRect.Bottom);
-      //GetDC(m_hwnd)->ScaleTransform(1.0f, -1.0f);
-
-      //LPRECT clientrect = &RECT();
-      //GetClientRect(m_hwnd, clientrect);
-      //SetWindowOrgEx(GetDC(m_hwnd), 0, -clientrect->bottom, NULL);
-
-      ShowWindow(m_hwnd, SW_SHOW);
+      UpdateWindow(m_hwnd);
     }
   }
 
@@ -132,15 +118,8 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
     bool wasHandled = false;
 
     if (pDemoApp) {
-      switch (message) {
 
-        default: {
-          //Rect<SCR_UINT> rect;
-          //pDemoApp->getRect(rect);
-          //pDemoApp->setRect(rect);
-          wasHandled = true;
-          break;
-        }
+      switch (message) {
 
         case WM_CLOSE: {
           pDemoApp->close = true;
@@ -152,6 +131,11 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
           wasHandled = true;
           break;
         }
+
+        //default: {
+          //wasHandled = true;
+          //break;
+        //}
       }
     }
 
@@ -204,6 +188,8 @@ void SystemHandler::SysOutput(FBuff* buff) {
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
+
+  //Sleep(100);
 }
 
 
@@ -289,8 +275,11 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
   usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
-  SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
+
+  SetTimer(m_hwnd, 10, 1000/60, (TIMERPROC)NULL);
+
   GetMessage(&msg, NULL, 0, 0);
+
 
   UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
   UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);

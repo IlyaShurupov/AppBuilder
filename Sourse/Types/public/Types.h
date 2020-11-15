@@ -10,5 +10,5 @@
 #include "FrameBuff.h"
 #include "Object.h"
 #include "Rect.h"
-
+#include "Timer.h"
 //#include "Print.h"

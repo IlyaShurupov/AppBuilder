@@ -6,7 +6,7 @@
 //memory debug
 #include <crtdbg.h>
 #include <cstdlib>
-
+#include <time.h>
 #include <string>
 //#include <map>
 
