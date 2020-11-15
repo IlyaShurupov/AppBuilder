@@ -1,6 +1,6 @@
 #include "public/Operator.h"
 
-#include "Print.h"
+#include "public/Print.h"
 #include "public/Seance.h"
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 #define RET_FINISHED(op)         \

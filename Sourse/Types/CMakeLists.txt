@@ -18,13 +18,11 @@ set (TYPES_HEADERS
     "public/Matrix.h"
     "public/Object.h"
     "public/Trig.h"
-    "public/Print.h"
 )
 
 
 # Source files
 set (TYPES_SOURCES
-    "Print.cpp"
     "Property.cpp"
     "FrameBuff.cpp"
     "Ray.cpp"

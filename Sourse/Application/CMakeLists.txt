@@ -7,6 +7,7 @@ project(Gamuncool)
 
 set (HEADERS
     "public/Win32API.h"
+    "public/Print.h"
     "public/Operator.h"
     "public/Seance.h"
     "public/Window.h"
@@ -23,6 +24,7 @@ set (SOURCES
     "UILayout.cpp"
     "Win32API.cpp"
     "KeyMap.cpp"
+    "Print.cpp"
 )
 
 
@@ -44,3 +46,14 @@ target_link_libraries(${PROJECT_NAME} "Types.lib" "RayCast.lib" "d2d1.lib")
 #target_link_libraries (${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Sourse/Types)
 
 #install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Debug/Configuration)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Release/Configuration)
+
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/Sourse/Application/Configuration/ ${CMAKE_BINARY_DIR}/bin/Release/Configuration)
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/Sourse/Application/Configuration/ ${CMAKE_BINARY_DIR}/bin/Debug/Configuration)
