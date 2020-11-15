@@ -31,10 +31,9 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-SystemHandler::SystemHandler(int Width, int Height) {
+SystemHandler::SystemHandler() {
   m_hwnd = (NULL);
   m_pDirect2dFactory = (NULL);
-  buff = DBG_NEW FBuff(Width, Height);
   msg = MSG();
   hdcMem = nullptr;
 }
@@ -44,7 +43,7 @@ SystemHandler::~SystemHandler() {
 }
 
 
-HRESULT SystemHandler::Initialize() {
+HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
   HRESULT hr;
 
   ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
@@ -83,8 +82,8 @@ HRESULT SystemHandler::Initialize() {
 
     // Create the window.
     LPCSTR name = LPCSTR("Gamuncool");
-    UINT sizex = static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f));
-    UINT sizey = static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f));
+    UINT sizex = static_cast<UINT>(ceil(float(size.x) * dpiX / 96.f));
+    UINT sizey = static_cast<UINT>(ceil(float(size.y) * dpiY / 96.f));
     m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, sizex, sizey, NULL,
                           NULL, HINST_THISCOMPONENT, this);
 
@@ -97,6 +96,17 @@ HRESULT SystemHandler::Initialize() {
 
       // remove all window styles, check MSDN for details
       SetWindowLong(m_hwnd, GWL_STYLE, 0);
+
+      //SetMapMode(GetDC(m_hwnd), MM_TEXT);
+
+      //GetGraphicsMode(hdcMem);
+
+      //GetDC(m_hwnd)->TranslateTransform(0, clientRect.Bottom);
+      //GetDC(m_hwnd)->ScaleTransform(1.0f, -1.0f);
+
+      //LPRECT clientrect = &RECT();
+      //GetClientRect(m_hwnd, clientrect);
+      //SetWindowOrgEx(GetDC(m_hwnd), 0, -clientrect->bottom, NULL);
 
       ShowWindow(m_hwnd, SW_SHOW);
     }
@@ -124,10 +134,10 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
     if (pDemoApp) {
       switch (message) {
 
-        case WM_SIZE: {
-          Rect<SCR_UINT> rect;
-          pDemoApp->getRect(rect);
-          pDemoApp->setRect(rect);
+        default: {
+          //Rect<SCR_UINT> rect;
+          //pDemoApp->getRect(rect);
+          //pDemoApp->setRect(rect);
           wasHandled = true;
           break;
         }
@@ -180,7 +190,7 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
 }
 
 
-void SystemHandler::SysOutput() {
+void SystemHandler::SysOutput(FBuff* buff) {
 
   FBFF_COLOR color = int32_t(0x001b1b1f);
   buff->clear(&color);
@@ -211,65 +221,36 @@ void SystemHandler::destroy() {
   PostQuitMessage(0);
 }
 
-void SystemHandler::getRect(Rect<SCR_UINT>& rect) {
+// very slow!!!!!
+void SystemHandler::getScreenSize(vec2<SCR_UINT>& rect) {
+  rect.y = GetDeviceCaps(GetDC(NULL), VERTRES);
+  rect.x = GetDeviceCaps(GetDC(NULL), HORZRES);
+}
+
+void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+
   LPRECT wrect_p = &RECT();
   GetWindowRect(m_hwnd, wrect_p);
 
-  rect.v1.y = wrect_p->top;
-  rect.v1.x = wrect_p->left;
+  rect.pos.x = wrect_p->left;
+  rect.pos.y = wrect_p->top;
 
+  rect.size.y = wrect_p->bottom - wrect_p->top;
+  rect.size.x = wrect_p->right - wrect_p->left;
 
-  rect.v3.y = wrect_p->bottom;
-  rect.v3.x = wrect_p->right;
-
-  rect.v2.y = rect.v1.y;
-  rect.v2.x = rect.v3.x;
-
-  rect.v0.y = rect.v3.y;
-  rect.v0.x = rect.v1.x;
+  //vec2<SCR_UINT> scr_size;
+  //getScreenSize(scr_size);
+  rect.inv_y(scry);
 }
 
-void SystemHandler::setRect(Rect<SCR_UINT>& rect) {
+void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+  Rect<SCR_UINT> cprect = rect;
+  vec2<SCR_UINT> scr_size;
 
-  Rect<SCR_UINT> prevrect;
-  getRect(prevrect);
 
-  int limitx = 26; 
-  int limity = 26; 
+  cprect.inv_y(scry);
 
-  if (rect.width() < limitx) {
-    // left -> center
-    if (rect.v0.x > prevrect.v0.x) {
-      rect.v0.x = prevrect.v2.x - limitx; 
-      rect.v1.x = prevrect.v3.x - limitx;
-
-    // right -> center
-    } else {
-      rect.v2.x = prevrect.v1.x + limitx;
-      rect.v3.x = prevrect.v0.x + limitx;
-    }
-  }
-
-  if (-rect.height() < limity) {
-    // top -> center
-    if (rect.v1.y > prevrect.v1.y) {
-      rect.v1.y = prevrect.v0.y - limity;
-      rect.v2.y = prevrect.v3.y - limity;
-
-      // bottom -> center
-    } else {
-      rect.v0.y = prevrect.v1.y + limitx;
-      rect.v3.y = prevrect.v2.y + limitx;
-    }
-  }
-
-  SetWindowPos(m_hwnd, HWND_TOP, rect.v1.x, rect.v1.y, rect.width(), -rect.height(), SWP_NOACTIVATE);
-
-  this->buff->Resize(rect.width(), -rect.height());
-}
-
-FBuff* SystemHandler::getFBuff() {
-  return buff;
+  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_NOACTIVATE);
 }
 
 void UpdKeySate(Input& key, bool down) {
@@ -286,16 +267,27 @@ void UpdKeySate(Input& key, bool down) {
   }
 }
 
-void SystemHandler::getUserInputs(UserInputs* user_inputs) {
+void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
+
   POINT cursor;
   UserInputs& usin = *user_inputs;
 
   usin.PrevCursor = usin.Cursor;
 
   GetCursorPos(&cursor);
-  ScreenToClient(m_hwnd, &cursor);
+  cursor.y = scry - cursor.y;
   usin.Cursor.x = (SCR_UINT)cursor.x;
-  usin.Cursor.y = (SCR_UINT)cursor.y;
+  usin.Cursor.y = (SCR_UINT)(cursor.y);
+
+  Rect<SCR_UINT> rect;
+  getRect(rect, scry);
+
+  rect.pos.x;
+  usin.Cursor = usin.Cursor - rect.pos;
+  
+
+  usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
+  usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
   SetTimer(m_hwnd, 10, 1000 / 60, (TIMERPROC)NULL);
   GetMessage(&msg, NULL, 0, 0);
@@ -366,14 +358,6 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   // USRINPUT_DECL(ARROW_LEFT);
   // USRINPUT_DECL(ARROW_RIGHT);
 
-  /*
-  UpdKeySate(usin.D, GetKeyState('D') & 0x800);
-  //...
-  UpdKeySate(usin.LMB, GetKeyState(VK_LBUTTON) & 0x800);
-  UpdKeySate(usin.RMB, GetKeyState(VK_RBUTTON) & 0x800);
-  UpdKeySate(usin.LMB, GetKeyState(VK_MBUTTON) & 0x800);
-
-  */
   TranslateMessage(&msg);
   DispatchMessage(&msg);
 }

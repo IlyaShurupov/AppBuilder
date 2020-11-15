@@ -109,7 +109,7 @@ struct UserInputs {
   // ...
   USRINPUT_DECL(END_OF_INPUTS);
 
-
+  vec2<SCR_UINT> Cdelta;
   vec2<SCR_UINT> Cursor;
   vec2<SCR_UINT> PrevCursor;
 };

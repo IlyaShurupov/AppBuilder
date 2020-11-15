@@ -3,7 +3,7 @@
 #define COLOR_RGDA_32 int32_t
 #define FBFF_COLOR COLOR_RGDA_32
 
-#include "Vec2.h"
+#include "Rect.h"
 
 class FBuff {
  public:

@@ -1,5 +1,6 @@
 #pragma once
 #include "public/Seance.h"
+#include "public/Print.h"
 
 Seance::Seance(std::string* basePath) {
 

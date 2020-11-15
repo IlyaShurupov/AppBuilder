@@ -79,17 +79,14 @@ void WindowResize_invoke(Seance* C, Operator* op) {
 
   vec2<SCR_UINT>* crsr = &data->win->user_inputs.Cursor;
   Rect<SCR_UINT> rect;
-  data->win->getWinRect(rect);
+  data->win->getRect(rect);
 
-  SCR_UINT winw = rect.width();
-  SCR_UINT winh = -rect.height();
+  float fracx = rect.size.x / 3.f;
+  float fracy = rect.size.y / 3.f;
 
-  float fracx = winw / 3.f;
-  float fracy = winh / 3.f;
-
-  data->top = crsr->y < fracy;
+  data->top = crsr->y > fracy * 2.f;
   data->right = crsr->x > fracx * 2.f;
-  data->bottom = crsr->y > fracy * 2.f;
+  data->bottom = crsr->y < fracy;
   data->left = crsr->x < fracx;
 
   op->state = OpState::RUNNING_MODAL;
@@ -109,32 +106,26 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
     return;
   }
 
-  int dx = -(data->win->user_inputs.PrevCursor.x - data->win->user_inputs.Cursor.x);
-  int dy = -(data->win->user_inputs.PrevCursor.y - data->win->user_inputs.Cursor.y);
+  int dx = data->win->user_inputs.Cdelta.x;
+  int dy = data->win->user_inputs.Cdelta.y;
 
   Rect<SCR_UINT> rect;
-  data->win->getWinRect(rect);
+  data->win->getRect(rect);
 
-  if (data->top) {
-    rect.v1.y += dy;
-    rect.v2.y += dy;
-    data->win->user_inputs.Cursor.y -= dy;
-  }
-  if (data->right) {
-    rect.v2.x += dx;
-    rect.v3.x += dx;
-  }
+  rect.size.y += dy * data->top;
+  rect.size.x += dx * data->right;
+
   if (data->bottom) {
-    rect.v0.y += dy;
-    rect.v3.y += dy;
-  }
-  if (data->left) {
-    rect.v0.x += dx;
-    rect.v1.x += dx;
-    data->win->user_inputs.Cursor.x -= dx;
+    rect.pos.y += dy;
+    rect.size.y -= dy;
   }
 
-  data->win->setWinRect(rect);
+  if (data->left) {
+    rect.pos.x += dx;
+    rect.size.x -= dx;
+  }
+
+  data->win->setRect(rect);
 }
 
 void WindowResize_create(Seance* C, Operator* op) {
@@ -165,34 +156,17 @@ bool WindowDrag_poll(Seance* C, Operator* op) {
 }
 
 void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
+  Window* data = (Window*)op->CustomData;
+
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
     return;
   }
 
-  Window* data = (Window*)op->CustomData;
-  UserInputs* usin = &data->user_inputs;
-
-  int dx = -(usin->PrevCursor.x - usin->Cursor.x);
-  int dy = -(usin->PrevCursor.y - usin->Cursor.y);
-
   Rect<SCR_UINT> rect;
-  data->getWinRect(rect);
-
-  rect.v0.x += dx;
-  rect.v1.x += dx;
-  rect.v2.x += dx;
-  rect.v3.x += dx;
-
-  rect.v0.y += dy;
-  rect.v1.y += dy;
-  rect.v2.y += dy;
-  rect.v3.y += dy;
-
-  data->setWinRect(rect);
-
-  usin->Cursor.x -= dx;
-  usin->Cursor.y -= dy;
+  data->getRect(rect);
+  rect.move(data->user_inputs.Cdelta.x, data->user_inputs.Cdelta.y);
+  data->setRect(rect);
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {

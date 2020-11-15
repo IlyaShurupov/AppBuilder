@@ -3,26 +3,23 @@
 // Windows Header Files:
 #include <d2d1.h>
 #include <windows.h>
-
+#include "Rect.h"
 #include "FrameBuff.h"
 
 
 class SystemHandler {
  public:
-  SystemHandler(int Width, int Height);
+  SystemHandler();
   ~SystemHandler();
 
   // Register the win & call methods for instantiating drawing res
-  HRESULT Initialize();
-
-  // Get Buffer to write
-  FBuff* getFBuff();
+  HRESULT Initialize(vec2<SCR_UINT>& size);
 
   // UserInputs
-  void getUserInputs(struct UserInputs* user_inputs);
+  void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
-  void SysOutput();
+  void SysOutput(FBuff* buff);
 
   void consoletoggle();
 
@@ -30,8 +27,9 @@ class SystemHandler {
 
   void destroy();
 
-  void getRect(Rect<SCR_UINT>& rect);
-  void setRect(Rect<SCR_UINT>& rect);
+  void getScreenSize(vec2<SCR_UINT>& rect);
+  void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
+  void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
 
   void SetIcon(std::string stricon);
 
@@ -49,6 +47,5 @@ class SystemHandler {
   MSG msg;
   HDC hdcMem;
   HWND m_hwnd;
-  FBuff* buff;
   ID2D1Factory* m_pDirect2dFactory;
 };

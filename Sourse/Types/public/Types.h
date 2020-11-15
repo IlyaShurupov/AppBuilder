@@ -9,5 +9,6 @@
 #include "LinkedList.h"
 #include "FrameBuff.h"
 #include "Object.h"
+#include "Rect.h"
 
-#include "Print.h"
+//#include "Print.h"

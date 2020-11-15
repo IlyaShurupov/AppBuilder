@@ -1,6 +1,6 @@
 #include "public/FrameBuff.h"
 #include <cassert>
-#include "public/Vec2.h"
+#include "public/Rect.h"
 
 #define IDX3D(width, depth, x, y, z) (width * depth * y + depth * x + z)
 #define IDX2D(width, x, y) (width * y + x)
@@ -46,13 +46,14 @@ void FBuff::set(SCR_UINT x, SCR_UINT y, FBFF_COLOR* color) {
 }
 
 void FBuff::cast(FBuff& out, Rect<SCR_UINT>& bounds) {
+  /*
   assert((bounds.height() <= this->height) && (bounds.width() <= this->width));
-
   out.parent = this;
   out.pos.assign(bounds.v0.x, this->height - bounds.v1.y);
   out.width = bounds.width();
   out.height = bounds.height();
   out.Buff = get(bounds.v0.x, this->height - bounds.v1.y);
+  */
 }
 
 void FBuff::clear(FBFF_COLOR* color) {

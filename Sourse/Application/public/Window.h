@@ -2,8 +2,17 @@
 #pragma once
 #include "KeyMap.h"
 #include "UILayout.h"
+#include "Rect.h"
 
 struct Window {
+
+  FBuff buff;
+
+  // dimentions & loc of window
+  Rect<SCR_UINT> rect;
+  vec2<SCR_UINT> scr_size;
+  vec2<SCR_UINT> minsize;
+
   // UI layout of window
   List<UIItem> areas;
   UserInputs user_inputs;
@@ -30,7 +39,6 @@ struct Window {
   void SendBuffToSystem();
 
   // window processing methods
- public:
   bool IsActive();
 
   // terminates the window
@@ -39,9 +47,9 @@ struct Window {
   // toggles window conole
   void ToggleConsole();
 
-  void getWinRect(Rect<SCR_UINT>& rect);
+  void getRect(Rect<SCR_UINT>& rect);
 
-  void setWinRect(Rect<SCR_UINT>& rect);
+  void setRect(Rect<SCR_UINT>& rect);
 
 
  private:

@@ -202,31 +202,3 @@ inline void vec2<Type>::Rot(float cosa, float sina) {
 
 template <typename Type>
 inline vec2<Type>::~vec2() {}
-
-template <typename Type>
-class RectPtr {
- public:
-  vec2<Type>* v0 = nullptr;
-  vec2<Type>* v1 = nullptr;
-  vec2<Type>* v2 = nullptr;
-  vec2<Type>* v3 = nullptr;
-  RectPtr() {}
-  Type width() { return v2->x - v1->x; }
-  Type height() { return v1->y - v0->y; }
-};
-
-template <typename Type>
-class Rect {
- public:
-  vec2<Type> v0, v1, v2, v3;
-
-  Rect() {}
-  Type width() { return v2.x - v1.x; }
-  Type height() { return v1.y - v0.y; }
-};
-
-template <typename Type>
-struct Edge {
-  vec2<Type> v1, v2;
-  // Type width() { return v2.x - v1.x; }
-};
