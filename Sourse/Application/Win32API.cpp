@@ -34,9 +34,6 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 SystemHandler::SystemHandler(int Width, int Height) {
   m_hwnd = (NULL);
   m_pDirect2dFactory = (NULL);
-  m_pRenderTarget = (NULL);
-  m_pLightSlateGrayBrush = (NULL);
-  m_pCornflowerBlueBrush = (NULL);
   buff = DBG_NEW FBuff(Width, Height);
   msg = MSG();
   hdcMem = nullptr;
@@ -44,9 +41,6 @@ SystemHandler::SystemHandler(int Width, int Height) {
 
 SystemHandler::~SystemHandler() {
   SafeRelease(&m_pDirect2dFactory);
-  SafeRelease(&m_pRenderTarget);
-  SafeRelease(&m_pLightSlateGrayBrush);
-  SafeRelease(&m_pCornflowerBlueBrush);
 }
 
 
@@ -61,6 +55,7 @@ HRESULT SystemHandler::Initialize() {
   hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   if (SUCCEEDED(hr)) {
+
     // Register the window class.
     WNDCLASSEX wcex = {sizeof(WNDCLASSEX)};
     wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -79,59 +74,35 @@ HRESULT SystemHandler::Initialize() {
     // obtain the system DPI and use it to scale the window size.
     FLOAT dpiX, dpiY;
 
-#pragma warning(push)
-#pragma warning(disable : 4996)
     // The factory returns the current system DPI. This is also the value it
     // will use to create its own windows.
+#pragma warning(push)
+#pragma warning(disable : 4996)
     m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 #pragma warning(pop)
 
     // Create the window.
-    m_hwnd = CreateWindow(LPCSTR("Gamuncool"), LPCSTR("Gamuncool"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
-                          CW_USEDEFAULT, static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
-                          static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)), NULL, NULL,
-                          HINST_THISCOMPONENT, this);
+    LPCSTR name = LPCSTR("Gamuncool");
+    UINT sizex = static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f));
+    UINT sizey = static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f));
+    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, sizex, sizey, NULL,
+                          NULL, HINST_THISCOMPONENT, this);
+
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
       ShowWindow(m_hwnd, SW_SHOWNORMAL);
       UpdateWindow(m_hwnd);
+
+      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+
+      // remove all window styles, check MSDN for details
+      SetWindowLong(m_hwnd, GWL_STYLE, 0);
+
+      ShowWindow(m_hwnd, SW_SHOW);
     }
   }
 
-  CreateDeviceResources();
-  m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
-
-  // remove all window styles, check MSDN for details
-  SetWindowLong(m_hwnd, GWL_STYLE, 0);  
-
-  ShowWindow(m_hwnd, SW_SHOW); 
-
-  //SetMapMode(GetDC(m_hwnd), MM_LOMETRIC);
   return hr;
-}
-
-HRESULT SystemHandler::CreateDeviceResources() {
-  HRESULT hr = S_OK;
-
-  if (!m_pRenderTarget) {
-    RECT rc;
-    GetClientRect(m_hwnd, &rc);
-
-    D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-
-    // Create a Direct2D render target.
-    hr = m_pDirect2dFactory->CreateHwndRenderTarget(
-        D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
-  }
-
-  return hr;
-}
-
-void SystemHandler::DiscardDeviceResources() {
-  SafeRelease(&m_pRenderTarget);
-  SafeRelease(&m_pLightSlateGrayBrush);
-  SafeRelease(&m_pCornflowerBlueBrush);
 }
 
 LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -140,26 +111,26 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
     SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
-
-    ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
-
+    SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
     result = 1;
+
   } else {
-    SystemHandler* pDemoApp =
-        reinterpret_cast<SystemHandler*>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
+
+    LONG_PTR pDemoAppptr = static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+    SystemHandler* pDemoApp = reinterpret_cast<SystemHandler*>(pDemoAppptr);
 
     bool wasHandled = false;
 
     if (pDemoApp) {
       switch (message) {
+
         case WM_SIZE: {
-          UINT width = LOWORD(lParam);
-          UINT height = HIWORD(lParam);
-          pDemoApp->OnResize(width, height);
-        }
-          result = 0;
+          Rect<SCR_UINT> rect;
+          pDemoApp->getRect(rect);
+          pDemoApp->setRect(rect);
           wasHandled = true;
           break;
+        }
 
         case WM_CLOSE: {
           pDemoApp->close = true;
@@ -182,27 +153,16 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
   return result;
 }
 
-void SystemHandler::OnResize(UINT width, UINT height) {
-  if (m_pRenderTarget) {
-    m_pRenderTarget->Resize(D2D1::SizeU(width, height));
-    D2D1_SIZE_F TargetSize = m_pRenderTarget->GetSize();
-    this->buff->Resize((SCR_UINT)width, (SCR_UINT)height);
-  }
-}
-
 static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, LPVOID pBits) {
 
   HBITMAP hBitmap = 0;
-  if (!uWidth || !uHeight || !uBitsPerPixel) {
-    return hBitmap;
-  }
-
   BITMAPINFO bmpInfo = {0};
   bmpInfo.bmiHeader.biBitCount = uBitsPerPixel;
   bmpInfo.bmiHeader.biHeight = uHeight;
   bmpInfo.bmiHeader.biWidth = uWidth;
   bmpInfo.bmiHeader.biPlanes = 1;
   bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+
   // Pointer to access the pixels of bitmap
   UINT* pPixels = 0;
   hBitmap = CreateDIBSection(hDC, (BITMAPINFO*)&bmpInfo, DIB_RGB_COLORS, (void**)&pPixels, NULL, 0);
@@ -212,9 +172,9 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
 
   LONG lBmpSize = uWidth * uHeight * (uBitsPerPixel / 8);
 
-  SetBitmapBits(hBitmap, lBmpSize, pBits);
+  // SetBitmapBits(hBitmap, lBmpSize, pBits);
 
-  // memcpy(pPixels, pBits, lBmpSize);
+  memcpy(pPixels, pBits, lBmpSize);
 
   return hBitmap;
 }
@@ -258,7 +218,7 @@ void SystemHandler::getRect(Rect<SCR_UINT>& rect) {
   rect.v1.y = wrect_p->top;
   rect.v1.x = wrect_p->left;
 
-  
+
   rect.v3.y = wrect_p->bottom;
   rect.v3.x = wrect_p->right;
 
@@ -267,12 +227,45 @@ void SystemHandler::getRect(Rect<SCR_UINT>& rect) {
 
   rect.v0.y = rect.v3.y;
   rect.v0.x = rect.v1.x;
-
 }
 
 void SystemHandler::setRect(Rect<SCR_UINT>& rect) {
-  SetWindowPos(m_hwnd, HWND_TOP, rect.v1.x, rect.v1.y, rect.v3.x - rect.v1.x, rect.v3.y - rect.v1.y,
-               SWP_NOACTIVATE);
+
+  Rect<SCR_UINT> prevrect;
+  getRect(prevrect);
+
+  int limitx = 26; 
+  int limity = 26; 
+
+  if (rect.width() < limitx) {
+    // left -> center
+    if (rect.v0.x > prevrect.v0.x) {
+      rect.v0.x = prevrect.v2.x - limitx; 
+      rect.v1.x = prevrect.v3.x - limitx;
+
+    // right -> center
+    } else {
+      rect.v2.x = prevrect.v1.x + limitx;
+      rect.v3.x = prevrect.v0.x + limitx;
+    }
+  }
+
+  if (-rect.height() < limity) {
+    // top -> center
+    if (rect.v1.y > prevrect.v1.y) {
+      rect.v1.y = prevrect.v0.y - limity;
+      rect.v2.y = prevrect.v3.y - limity;
+
+      // bottom -> center
+    } else {
+      rect.v0.y = prevrect.v1.y + limitx;
+      rect.v3.y = prevrect.v2.y + limitx;
+    }
+  }
+
+  SetWindowPos(m_hwnd, HWND_TOP, rect.v1.x, rect.v1.y, rect.width(), -rect.height(), SWP_NOACTIVATE);
+
+  this->buff->Resize(rect.width(), -rect.height());
 }
 
 FBuff* SystemHandler::getFBuff() {

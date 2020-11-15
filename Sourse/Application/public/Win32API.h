@@ -37,15 +37,6 @@ class SystemHandler {
 
  private:
 
-  // Initialize device-dependent resources.
-  HRESULT CreateDeviceResources();
-
-  // Release device-dependent resource.
-  void DiscardDeviceResources();
-
-  // Resize the render target.
-  void OnResize(UINT width, UINT height);
-
   // The windows procedure.
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -60,7 +51,4 @@ class SystemHandler {
   HWND m_hwnd;
   FBuff* buff;
   ID2D1Factory* m_pDirect2dFactory;
-  ID2D1HwndRenderTarget* m_pRenderTarget;
-  ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
-  ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
 };

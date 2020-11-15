@@ -179,10 +179,14 @@ void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
   Rect<SCR_UINT> rect;
   data->getWinRect(rect);
 
+  rect.v0.x += dx;
   rect.v1.x += dx;
-  rect.v1.y += dy;
-
+  rect.v2.x += dx;
   rect.v3.x += dx;
+
+  rect.v0.y += dy;
+  rect.v1.y += dy;
+  rect.v2.y += dy;
   rect.v3.y += dy;
 
   data->setWinRect(rect);
