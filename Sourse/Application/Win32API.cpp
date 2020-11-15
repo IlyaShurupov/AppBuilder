@@ -11,33 +11,16 @@
 #include <wchar.h>
 #include <wincodec.h>
 
-//#include "public/Window.h"
 #include "FrameBuff.h"
 #include "public/KeyMap.h"
 
-#define CREATE_BITMAP(buff, bmp)                                                                         \
-  m_pRenderTarget->CreateBitmap(                                                                         \
-      D2D1::SizeU((UINT32)buff->width, (UINT32)buff->height), buff->Buff, buff->width * 16,              \
-      D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_R32G32B32A32_FLOAT, D2D1_ALPHA_MODE_IGNORE)), \
-      &bmp)
-
-#ifndef Assert
-#if defined(DEBUG) || defined(_DEBUG)
-#define Assert(b)                             \
-  do {                                        \
-    if (!(b)) {                               \
-      OutputDebugStringA("Assert: " #b "\n"); \
-    }                                         \
-  } while (0)
-#else
-#define Assert(b)
-#endif  // DEBUG || _DEBUG
-#endif
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
+
+bool consolehidden = false;
 
 template <class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease) {
@@ -51,9 +34,6 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 SystemHandler::SystemHandler(int Width, int Height) {
   m_hwnd = (NULL);
   m_pDirect2dFactory = (NULL);
-  m_pRenderTarget = (NULL);
-  m_pLightSlateGrayBrush = (NULL);
-  m_pCornflowerBlueBrush = (NULL);
   buff = DBG_NEW FBuff(Width, Height);
   msg = MSG();
   hdcMem = nullptr;
@@ -61,23 +41,21 @@ SystemHandler::SystemHandler(int Width, int Height) {
 
 SystemHandler::~SystemHandler() {
   SafeRelease(&m_pDirect2dFactory);
-  SafeRelease(&m_pRenderTarget);
-  SafeRelease(&m_pLightSlateGrayBrush);
-  SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-FBuff* SystemHandler::getFBuff() {
-  return buff;
-}
 
 HRESULT SystemHandler::Initialize() {
   HRESULT hr;
 
+  ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
+  consolehidden = !consolehidden;
+
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
-  hr = CreateDeviceIndependentResources();
+  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   if (SUCCEEDED(hr)) {
+
     // Register the window class.
     WNDCLASSEX wcex = {sizeof(WNDCLASSEX)};
     wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -88,7 +66,7 @@ HRESULT SystemHandler::Initialize() {
     wcex.hbrBackground = NULL;
     wcex.lpszMenuName = NULL;
     wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
-    wcex.lpszClassName = LPCSTR("D2DDemoApp");
+    wcex.lpszClassName = LPCSTR("Gamuncool");
 
     RegisterClassEx(&wcex);
 
@@ -96,61 +74,202 @@ HRESULT SystemHandler::Initialize() {
     // obtain the system DPI and use it to scale the window size.
     FLOAT dpiX, dpiY;
 
-#pragma warning(push)
-#pragma warning(disable : 4996)
     // The factory returns the current system DPI. This is also the value it
     // will use to create its own windows.
+#pragma warning(push)
+#pragma warning(disable : 4996)
     m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 #pragma warning(pop)
 
     // Create the window.
-    m_hwnd = CreateWindow(LPCSTR("D2DDemoApp"), LPCSTR("D2DDemoApp"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
-                          CW_USEDEFAULT, static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f)),
-                          static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f)), NULL, NULL,
-                          HINST_THISCOMPONENT, this);
+    LPCSTR name = LPCSTR("Gamuncool");
+    UINT sizex = static_cast<UINT>(ceil(float(buff->width) * dpiX / 96.f));
+    UINT sizey = static_cast<UINT>(ceil(float(buff->height) * dpiY / 96.f));
+    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, sizex, sizey, NULL,
+                          NULL, HINST_THISCOMPONENT, this);
+
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
       ShowWindow(m_hwnd, SW_SHOWNORMAL);
       UpdateWindow(m_hwnd);
+
+      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+
+      // remove all window styles, check MSDN for details
+      SetWindowLong(m_hwnd, GWL_STYLE, 0);
+
+      ShowWindow(m_hwnd, SW_SHOW);
     }
   }
 
-  CreateDeviceResources();
-  m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
   return hr;
 }
 
-HRESULT SystemHandler::CreateDeviceIndependentResources() {
-  HRESULT hr = S_OK;
+LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+  LRESULT result = 0;
 
-  // Create a Direct2D factory.
-  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
+  if (message == WM_CREATE) {
+    LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
+    SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
+    SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
+    result = 1;
 
-  return hr;
-}
+  } else {
 
-HRESULT SystemHandler::CreateDeviceResources() {
-  HRESULT hr = S_OK;
+    LONG_PTR pDemoAppptr = static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+    SystemHandler* pDemoApp = reinterpret_cast<SystemHandler*>(pDemoAppptr);
 
-  if (!m_pRenderTarget) {
-    RECT rc;
-    GetClientRect(m_hwnd, &rc);
+    bool wasHandled = false;
 
-    D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
+    if (pDemoApp) {
+      switch (message) {
 
-    // Create a Direct2D render target.
-    hr = m_pDirect2dFactory->CreateHwndRenderTarget(
-        D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
+        case WM_SIZE: {
+          Rect<SCR_UINT> rect;
+          pDemoApp->getRect(rect);
+          pDemoApp->setRect(rect);
+          wasHandled = true;
+          break;
+        }
+
+        case WM_CLOSE: {
+          pDemoApp->close = true;
+          return 0;
+        }
+
+        case WM_DESTROY: {
+          result = 1;
+          wasHandled = true;
+          break;
+        }
+      }
+    }
+
+    if (!wasHandled) {
+      result = DefWindowProc(hwnd, message, wParam, lParam);
+    }
   }
 
-  return hr;
+  return result;
 }
 
-void SystemHandler::DiscardDeviceResources() {
-  SafeRelease(&m_pRenderTarget);
-  SafeRelease(&m_pLightSlateGrayBrush);
-  SafeRelease(&m_pCornflowerBlueBrush);
+static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, LPVOID pBits) {
+
+  HBITMAP hBitmap = 0;
+  BITMAPINFO bmpInfo = {0};
+  bmpInfo.bmiHeader.biBitCount = uBitsPerPixel;
+  bmpInfo.bmiHeader.biHeight = uHeight;
+  bmpInfo.bmiHeader.biWidth = uWidth;
+  bmpInfo.bmiHeader.biPlanes = 1;
+  bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+
+  // Pointer to access the pixels of bitmap
+  UINT* pPixels = 0;
+  hBitmap = CreateDIBSection(hDC, (BITMAPINFO*)&bmpInfo, DIB_RGB_COLORS, (void**)&pPixels, NULL, 0);
+
+  if (!hBitmap)
+    return hBitmap;  // return if invalid bitmaps
+
+  LONG lBmpSize = uWidth * uHeight * (uBitsPerPixel / 8);
+
+  // SetBitmapBits(hBitmap, lBmpSize, pBits);
+
+  memcpy(pPixels, pBits, lBmpSize);
+
+  return hBitmap;
+}
+
+
+void SystemHandler::SysOutput() {
+
+  FBFF_COLOR color = int32_t(0x001b1b1f);
+  buff->clear(&color);
+
+  HDC hdcWindow = GetDC(m_hwnd);
+
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->width, buff->height, 32, buff->Buff);
+
+  HANDLE hOld = SelectObject(hdcMem, hbmMem);
+  BitBlt(hdcWindow, 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
+
+  DeleteObject(hbmMem);
+  ReleaseDC(m_hwnd, hdcWindow);
+}
+
+
+void SystemHandler::consoletoggle() {
+  ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
+  consolehidden = !consolehidden;
+}
+
+bool SystemHandler::active() {
+  return GetForegroundWindow() == m_hwnd;
+}
+
+void SystemHandler::destroy() {
+  KillTimer(m_hwnd, 10);
+  PostQuitMessage(0);
+}
+
+void SystemHandler::getRect(Rect<SCR_UINT>& rect) {
+  LPRECT wrect_p = &RECT();
+  GetWindowRect(m_hwnd, wrect_p);
+
+  rect.v1.y = wrect_p->top;
+  rect.v1.x = wrect_p->left;
+
+
+  rect.v3.y = wrect_p->bottom;
+  rect.v3.x = wrect_p->right;
+
+  rect.v2.y = rect.v1.y;
+  rect.v2.x = rect.v3.x;
+
+  rect.v0.y = rect.v3.y;
+  rect.v0.x = rect.v1.x;
+}
+
+void SystemHandler::setRect(Rect<SCR_UINT>& rect) {
+
+  Rect<SCR_UINT> prevrect;
+  getRect(prevrect);
+
+  int limitx = 26; 
+  int limity = 26; 
+
+  if (rect.width() < limitx) {
+    // left -> center
+    if (rect.v0.x > prevrect.v0.x) {
+      rect.v0.x = prevrect.v2.x - limitx; 
+      rect.v1.x = prevrect.v3.x - limitx;
+
+    // right -> center
+    } else {
+      rect.v2.x = prevrect.v1.x + limitx;
+      rect.v3.x = prevrect.v0.x + limitx;
+    }
+  }
+
+  if (-rect.height() < limity) {
+    // top -> center
+    if (rect.v1.y > prevrect.v1.y) {
+      rect.v1.y = prevrect.v0.y - limity;
+      rect.v2.y = prevrect.v3.y - limity;
+
+      // bottom -> center
+    } else {
+      rect.v0.y = prevrect.v1.y + limitx;
+      rect.v3.y = prevrect.v2.y + limitx;
+    }
+  }
+
+  SetWindowPos(m_hwnd, HWND_TOP, rect.v1.x, rect.v1.y, rect.width(), -rect.height(), SWP_NOACTIVATE);
+
+  this->buff->Resize(rect.width(), -rect.height());
+}
+
+FBuff* SystemHandler::getFBuff() {
+  return buff;
 }
 
 void UpdKeySate(Input& key, bool down) {
@@ -160,7 +279,6 @@ void UpdKeySate(Input& key, bool down) {
 
   if (key.state == InputState::NONE) {
     key.state = InputState::PRESSED;
-
   } else if (key.state == InputState::HOLD) {
     key.state = InputState::RELEASED;
   } else {
@@ -233,6 +351,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   UpdKeySate(usin.ESCAPE, GetKeyState(VK_ESCAPE) & 0x800);
   UpdKeySate(usin.TAB, GetKeyState(VK_TAB) & 0x800);
 
+  UpdKeySate(usin.WIN_KEY, GetKeyState(VK_LWIN) & 0x800);
   UpdKeySate(usin.SHIFT_L, GetKeyState(VK_LSHIFT) & 0x800);
   UpdKeySate(usin.SHIFT_R, GetKeyState(VK_RSHIFT) & 0x800);
   UpdKeySate(usin.CTR_L, GetKeyState(VK_LCONTROL) & 0x800);
@@ -240,10 +359,12 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   UpdKeySate(usin.ALT_L, GetKeyState(VK_MENU) & 0x800);
   UpdKeySate(usin.ALT_R, GetKeyState(VK_MENU) & 0x800);
 
-  //USRINPUT_DECL(ARROW_UP);
-  //USRINPUT_DECL(ARROW_DOWN);
-  //USRINPUT_DECL(ARROW_LEFT);
-  //USRINPUT_DECL(ARROW_RIGHT);
+  usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
+
+  // USRINPUT_DECL(ARROW_UP);
+  // USRINPUT_DECL(ARROW_DOWN);
+  // USRINPUT_DECL(ARROW_LEFT);
+  // USRINPUT_DECL(ARROW_RIGHT);
 
   /*
   UpdKeySate(usin.D, GetKeyState('D') & 0x800);
@@ -257,151 +378,18 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs) {
   DispatchMessage(&msg);
 }
 
-LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-  LRESULT result = 0;
-
-  if (message == WM_CREATE) {
-    LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-    SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
-
-    ::SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
-
-    result = 1;
+void SystemHandler::SetIcon(std::string stricon) {
+  if (hWindowIcon != NULL)
+    DestroyIcon(hWindowIcon);
+  if (hWindowIconBig != NULL)
+    DestroyIcon(hWindowIconBig);
+  if (stricon == "") {
+    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
+    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
   } else {
-    SystemHandler* pDemoApp =
-        reinterpret_cast<SystemHandler*>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
-
-    bool wasHandled = false;
-
-    if (pDemoApp) {
-      switch (message) {
-        case WM_SIZE: {
-          UINT width = LOWORD(lParam);
-          UINT height = HIWORD(lParam);
-          pDemoApp->OnResize(width, height);
-        }
-          result = 0;
-          wasHandled = true;
-          break;
-
-        case WM_TIMER:
-          break;
-
-        case WM_DESTROY: {
-          PostQuitMessage(0);
-          KillTimer(hwnd, 10);
-        }
-          result = 1;
-          wasHandled = true;
-          break;
-      }
-    }
-
-    if (!wasHandled) {
-      result = DefWindowProc(hwnd, message, wParam, lParam);
-    }
+    hWindowIcon = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    hWindowIconBig = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
+    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
   }
-
-  return result;
-}
-
-void SystemHandler::OnResize(UINT width, UINT height) {
-  if (m_pRenderTarget) {
-    // Note: This method can fail, but it's okay to ignore the
-    // error here, because the error will be returned again
-    // the next time EndDraw is called.
-    m_pRenderTarget->Resize(D2D1::SizeU(width, height));
-    D2D1_SIZE_F TargetSize = m_pRenderTarget->GetSize();
-    this->buff->Resize((SCR_UINT)width, (SCR_UINT)height);
-  }
-}
-
-static HBITMAP Create8bppBitmap(HDC hdc, int width, int height, LPVOID pBits = NULL) {
-  BITMAPINFO* bmi = (BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
-  if (!bmi) {
-    return nullptr;
-  }
-  BITMAPINFOHEADER& bih(bmi->bmiHeader);
-  bih.biSize = sizeof(BITMAPINFOHEADER);
-  bih.biWidth = width;
-  bih.biHeight = -height;
-  bih.biPlanes = 1;
-  bih.biBitCount = 8;
-  bih.biCompression = BI_RGB;
-  bih.biSizeImage = 0;
-  bih.biXPelsPerMeter = 14173;
-  bih.biYPelsPerMeter = 14173;
-  bih.biClrUsed = 0;
-  bih.biClrImportant = 0;
-  for (int I = 0; I <= 255; I++) {
-    bmi->bmiColors[I].rgbBlue = bmi->bmiColors[I].rgbGreen = bmi->bmiColors[I].rgbRed = (BYTE)I;
-    bmi->bmiColors[I].rgbReserved = 0;
-  }
-
-  void* Pixels = NULL;
-  if (!bmi) {
-    return nullptr;
-  }
-
-  HBITMAP hbmp = CreateDIBSection(hdc, bmi, DIB_RGB_COLORS, &Pixels, NULL, 0);
-
-  if (pBits != NULL) {
-    // fill the bitmap
-    BYTE* pbBits = (BYTE*)pBits;
-    BYTE* Pix = (BYTE*)Pixels;
-    memcpy(Pix, pbBits, (int64_t)width * height);
-  }
-
-  free(bmi);
-
-  return hbmp;
-}
-
-static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT uBitsPerPixel, LPVOID pBits) {
-  if (uBitsPerPixel < 8) {
-    return NULL;
-  }  // NOT IMPLEMENTED YET
-
-  if (uBitsPerPixel == 8) {
-    return Create8bppBitmap(hDC, uWidth, uHeight, pBits);
-  }
-
-  HBITMAP hBitmap = 0;
-  if (!uWidth || !uHeight || !uBitsPerPixel) {
-    return hBitmap;
-  }
-
-  BITMAPINFO bmpInfo = {0};
-  bmpInfo.bmiHeader.biBitCount = uBitsPerPixel;
-  bmpInfo.bmiHeader.biHeight = uHeight;
-  bmpInfo.bmiHeader.biWidth = uWidth;
-  bmpInfo.bmiHeader.biPlanes = 1;
-  bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  // Pointer to access the pixels of bitmap
-  UINT* pPixels = 0;
-  hBitmap = CreateDIBSection(hDC, (BITMAPINFO*)&bmpInfo, DIB_RGB_COLORS, (void**)&pPixels, NULL, 0);
-
-  if (!hBitmap)
-    return hBitmap;  // return if invalid bitmaps
-
-  LONG lBmpSize = uWidth * uHeight * (uBitsPerPixel / 8);
-
-  SetBitmapBits(hBitmap, lBmpSize, pBits);
-
-  // memcpy(pPixels, pBits, lBmpSize);
-
-  return hBitmap;
-}
-
-void SystemHandler::SysOutput() {
-
-  FBFF_COLOR color = int32_t(0x0000ff00);
-  buff->clear(&color);
-
-  HBITMAP hbmMem = CreateBitmapFromPixels(GetDC(m_hwnd), buff->width, buff->height, 32, buff->Buff);
-
-  HANDLE hOld = SelectObject(hdcMem, hbmMem);
-  BitBlt(GetDC(m_hwnd), 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
-
-  DeleteObject(hbmMem);
 }

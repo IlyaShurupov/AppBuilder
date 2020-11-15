@@ -37,6 +37,10 @@ struct Bounds {
 
 struct UserInputs {
 
+  USRINPUT_DECL(SYS_DESTROY_COMMAND);
+
+  USRINPUT_DECL(WIN_KEY);
+
   USRINPUT_DECL(K0);
   USRINPUT_DECL(K1);
   USRINPUT_DECL(K2);
@@ -59,9 +63,11 @@ struct UserInputs {
   USRINPUT_DECL(O);
   USRINPUT_DECL(P);
 
-  USRINPUT_DECL(A);
+  Input A = Input("A", InputState::NONE);
+  Input D = Input("D", InputState::NONE);
+  //USRINPUT_DECL(A);
   USRINPUT_DECL(S);
-  USRINPUT_DECL(D);
+  //USRINPUT_DECL(D);
   USRINPUT_DECL(F);
   USRINPUT_DECL(G);
   USRINPUT_DECL(H);
@@ -103,6 +109,7 @@ struct UserInputs {
   // ...
   USRINPUT_DECL(END_OF_INPUTS);
 
+
   vec2<SCR_UINT> Cursor;
   vec2<SCR_UINT> PrevCursor;
 };
@@ -141,9 +148,12 @@ struct COpBindings {
 
 // one per window
 struct CompiledKeyMap {
+  
   Stack<COpBindings> op_bindings;
 
   void Compile(List<Operator>* ops, UserInputs* usins, std::string* filipath);
 
   void ProcEvents(List<OpThread>* exec_queue);
 };
+
+std::string getExecutablePath();

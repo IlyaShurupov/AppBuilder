@@ -74,7 +74,8 @@ void FBuff::Resize(SCR_UINT width, SCR_UINT height) {
 }
 
 void FBuff::DrawRect(SCR_UINT x, SCR_UINT y, FBFF_COLOR& color, int width, int height) {
-  assert((x + width <= this->width + 1) && (y + height <= this->height + 1));
+  
+  ((x + width <= this->width + 1) && (y + height <= this->height + 1));
 
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {

@@ -1,10 +1,32 @@
 #pragma once
 
 #include <iostream>
-
 #include "Types.h"
 
 #define CLASS_NAME(Type) << typeid(Type).name()
+
+enum class CMSGType {
+  DEFAULT = 7,
+  SUCCEED = 0x0002,
+  WARNING = 14,
+  ERRORtype = 0x0004,
+};
+
+inline void DBG_print(std::string str = std::string(), float val = 0) {
+#ifdef _DEBUG
+
+  if (str.length()) {
+    std::cout << str;
+  }
+  if (val) {
+    std::cout << "  " << str;
+  }
+  std::cout << "\n";
+
+#endif  // _DEBUG
+}
+
+void post_MSG(CMSGType MSGtype = CMSGType::DEFAULT, std::string str = std::string(), float val = 0);
 
 void print(Vec3f& vec);
 void print(Mat3f& mat);
@@ -34,6 +56,5 @@ void print(vec2<Type>& ce) {
 template <typename Type>
 void print(List<Type>& list) {
   std::cout << "\n";
-  std::cout << "Double Linked List with " << list.len() << " " CLASS_NAME(Type)
-            << "\n";
+  std::cout << "Double Linked List with " << list.len() << " " CLASS_NAME(Type) << "\n";
 }

@@ -1,8 +1,7 @@
 
 #include "public/Seance.h"
 
-int main() {
-  // TOD: Redesign operator logic, Handle args
+int main(int argc, char* argv[]) {
 
   // enable memory debuging
 #ifdef _DEBUG
@@ -10,7 +9,7 @@ int main() {
 #endif
 
   // Create Seance
-  Seance& C = *new Seance(/*project file if user opens .proj file*/);
+  Seance& C = *new Seance(&getExecutablePath());
 
   // Main loop: Handle events -> run operators -> show result
   while (true) {

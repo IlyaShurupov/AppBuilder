@@ -21,6 +21,8 @@ struct Project {
 
   // load project
   void OnRead();
+
+  Window* C_actWin();
 };
 
 struct Prefferences {
@@ -36,7 +38,7 @@ struct Prefferences {
 };
 
 struct Seance {
-  Seance();
+  Seance(std::string* basePath);
   ~Seance();
 
   Prefferences prefferences;

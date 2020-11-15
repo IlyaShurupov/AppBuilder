@@ -7,13 +7,14 @@
 #define NL << "\n"
 #define SPC << " " <<
 #define VEC(vec) vec.x SPC vec.y SPC vec.z
-#define TRG(trig) \
-  "v0:" << VEC(trig.V0) << "v1:" << VEC(trig.V1) << "v2:" << VEC(trig.V2)
+#define TRG(trig) "v0:" << VEC(trig.V0) << "v1:" << VEC(trig.V1) << "v2:" << VEC(trig.V2)
 #define ENTR COUT "\n";
 #define CLASS_NAME(Type) << typeid(Type).name()
 #define PROP(prop) prop.get()
 
-void print(Vec3f& vec) { ENTR COUT "Vec3f: " << VEC(vec) NL; }
+void print(Vec3f& vec) {
+  ENTR COUT "Vec3f: " << VEC(vec) NL;
+}
 
 void print(Mat3f& mat) {
   ENTR COUT "Mat3f: \n";
@@ -64,10 +65,10 @@ void print(FBuff& buff, bool PrintText) {
 
     for (SCR_UINT j = 0; j < buff.height; j++) {
       for (SCR_UINT i = 0; i < buff.width; i++) {
-        //Color4* color = buff.get(i, j);
-        //COLORREF COLOR = RGB(color->R * 255, color->G * 255, color->B * 255);
+        // Color4* color = buff.get(i, j);
+        // COLORREF COLOR = RGB(color->R * 255, color->G * 255, color->B * 255);
         // COLORREF COLOR = RGB(0, 255, 12);
-        //SetPixel(mydc, (int)i + 30, (int)j + 30, COLOR);
+        // SetPixel(mydc, (int)i + 30, (int)j + 30, COLOR);
       }
     }
     ReleaseDC(myconsole, mydc);
@@ -77,4 +78,41 @@ void print(FBuff& buff, bool PrintText) {
     COUT TAB "Height: " << buff.height NL;
     COUT TAB "Width: " << buff.width NL;
   }
+}
+
+void post_MSG(CMSGType MSGtype, std::string str, float val) {
+  HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  SetConsoleTextAttribute(hStdOut, WORD(MSGtype));
+
+  ENTR;
+  
+  switch (MSGtype) {
+    case CMSGType::DEFAULT:
+      break;
+
+    case CMSGType::SUCCEED:
+      COUT "SUCCEED: ";
+      break;
+
+    case CMSGType::WARNING:
+      COUT "WIRNING: ";
+      break;
+
+    case CMSGType::ERRORtype:
+      COUT "ERROR: ";
+      break;
+
+    default:
+      break;
+  }
+
+  if (str.length()) {
+    std::cout << str;
+  }
+  if (val) {
+    std::cout << "  " << str;
+  }
+  std::cout << "\n";
+
+  SetConsoleTextAttribute(hStdOut, WORD(CMSGType::DEFAULT));
 }

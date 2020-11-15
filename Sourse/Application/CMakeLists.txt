@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 # Project configuration
-project(Application)
+project(Gamuncool)
 
 
 set (HEADERS
@@ -30,6 +30,8 @@ link_directories(${CMAKE_BINARY_DIR}/bin )
 
 # Create proj
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types/public>

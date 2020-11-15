@@ -24,30 +24,31 @@ class SystemHandler {
   // Draw Fbuff.
   void SysOutput();
 
+  void consoletoggle();
+
+  bool active();
+
+  void destroy();
+
+  void getRect(Rect<SCR_UINT>& rect);
+  void setRect(Rect<SCR_UINT>& rect);
+
+  void SetIcon(std::string stricon);
+
  private:
-  // Initialize device-independent resources.
-  HRESULT CreateDeviceIndependentResources();
-
-  // Initialize device-dependent resources.
-  HRESULT CreateDeviceResources();
-
-  // Release device-dependent resource.
-  void DiscardDeviceResources();
-
-  // Resize the render target.
-  void OnResize(UINT width, UINT height);
 
   // The windows procedure.
-  static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
-                                  LPARAM lParam);
+  static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+ public:
+  bool close = false;
 
  private:
+  HICON hWindowIcon = NULL;
+  HICON hWindowIconBig = NULL;
   MSG msg;
   HDC hdcMem;
   HWND m_hwnd;
   FBuff* buff;
   ID2D1Factory* m_pDirect2dFactory;
-  ID2D1HwndRenderTarget* m_pRenderTarget;
-  ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
-  ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
 };
