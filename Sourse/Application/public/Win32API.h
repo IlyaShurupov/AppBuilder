@@ -33,6 +33,8 @@ class SystemHandler {
 
   void SetIcon(std::string stricon);
 
+  void ShowInitializedWindow();
+
  private:
 
   // The windows procedure.

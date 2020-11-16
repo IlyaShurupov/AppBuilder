@@ -84,7 +84,7 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, sizex, sizey, NULL,
+    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL,
                           NULL, HINST_THISCOMPONENT, this);
 
     hr = m_hwnd ? S_OK : E_FAIL;
@@ -92,9 +92,9 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
 
       SetWindowLong(m_hwnd, GWL_STYLE, 0);
       hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
-      ShowWindow(m_hwnd, SW_SHOWNORMAL);
-
-      UpdateWindow(m_hwnd);
+      //ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
+      //SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
+      
     }
   }
 
@@ -179,9 +179,6 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
 
 void SystemHandler::SysOutput(FBuff* buff) {
 
-  FBFF_COLOR color = int32_t(0x001b1b1f);
-  buff->clear(&color);
-
   HDC hdcWindow = GetDC(m_hwnd);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->width, buff->height, 32, buff->Buff);
@@ -236,7 +233,6 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   Rect<SCR_UINT> cprect = rect;
   vec2<SCR_UINT> scr_size;
 
-
   cprect.inv_y(scry);
 
   SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_NOACTIVATE);
@@ -257,7 +253,6 @@ void UpdKeySate(Input& key, bool down, bool &IsEvent) {
     key.state = InputState(down);
   }
 }
-
 
 void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
 
@@ -370,4 +365,9 @@ void SystemHandler::SetIcon(std::string stricon) {
     SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
     SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
   }
+}
+
+void SystemHandler::ShowInitializedWindow() {
+  ShowWindow(m_hwnd, SW_SHOWNORMAL);
+  UpdateWindow(m_hwnd);
 }

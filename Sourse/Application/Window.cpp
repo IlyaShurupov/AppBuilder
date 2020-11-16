@@ -5,30 +5,47 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
+  FBFF_COLOR color = int32_t(0x001b1b1f);
+  buff.clear(&color);
 }
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
-  HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-  SystemHandler* SysHdl = new SystemHandler();
 
+   
+  rect.size.assign(800, 500);
+  rect.pos.assign(600, 250);
+  minsize.y = 60;
+  minsize.x = 100;
+
+  // init sys handler
+  SysH = DBG_NEW SystemHandler();
+
+  HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: imma bout to crash\n");
   }
-
-  if (!SUCCEEDED(SysHdl->Initialize(vec2<SCR_UINT>(800, 800)))){
+  if (!SUCCEEDED(SysH->Initialize(vec2<SCR_UINT>(1, 1)))){
     printf("ERROR: system handler is out of his mind\n");
   }
-  
-  this->SysH = SysHdl;
 
-  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
+  // Set icon
   std::string icon_path = *configfolder + "icon.ico";
   SysH->SetIcon(icon_path);
-
-  minsize.y = minsize.x = 30;
-  buff.Resize(800, 800);
-  SysH->getScreenSize(scr_size);
+  
+  // compile kmap
+  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
+
+  
+  SysH->getScreenSize(scr_size);
+
+  // draw initialized window
+  buff.Resize(rect.size.x, rect.size.y);
+  Draw();
+
+  SysH->setRect(rect, scr_size.y);
+  SysH->ShowInitializedWindow();
+  SendBuffToSystem();
 }
 
 Window::~Window() { CoUninitialize(); }
