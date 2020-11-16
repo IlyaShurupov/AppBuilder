@@ -135,10 +135,10 @@ void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
 
   out.local_hrchy.parent = this;
 
-  FBuff& root = local_hrchy.root();
+  FBuff* root = local_hrchy.root();
 
-  out.root_height = &root.size.y;
-  out.root_width = &root.size.x;
+  out.root_height = &root->size.y;
+  out.root_width = &root->size.x;
   out.pxls = get(rect.pos.x, rect.pos.y);
 }
 

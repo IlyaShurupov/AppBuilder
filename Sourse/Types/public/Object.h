@@ -22,6 +22,7 @@ class Object
 {
 public:
   Hierarchy<Object, List<Object>, 0> hrchy;
+	Hierarchy<Object, List<Object>, 1> hrchy_dbg;
 
 	Mat3f TransformMat;
 	Vec3f Pos;

@@ -15,6 +15,16 @@ struct Hierarchy {
   }
 
   Hierarchy(Type* parent) {
+    join(parent);
+  }
+
+  void add(Type* chld) {
+    childs.add(chld);
+    ((Hierarchy*)chld + hrch_idx)->parent = (Type*)(this - hrch_idx);
+  }
+
+  void join(Type* parent) {
+    ((Hierarchy*)parent + hrch_idx)->childs.add((Type*)(this - hrch_idx));
     this->parent = parent;
   }
 
@@ -24,7 +34,7 @@ struct Hierarchy {
     }
   }
 
-  Type& root() {
+  Type* root() {
     Hierarchy* root = (Hierarchy*)parent;
     while (true) {
       if ((root + hrch_idx)->parent) {
@@ -33,7 +43,7 @@ struct Hierarchy {
       }
       break;
     }
-    return *(Type*)root;
+    return (Type*)root;
   }
 };
 
@@ -280,7 +290,7 @@ void List<Type>::pop(bool recursice) {
 
 template <typename Type>
 void List<Type>::del(Type* node_data) {
-  Node<Type>* del_node = SearchNode(-1, node_data);
+  Node<Type>* del_node = SearchNode(0, node_data);
   this->delnode(del_node);
 }
 

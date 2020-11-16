@@ -3,12 +3,16 @@
 
 #define FPS 120.f
 
+void test();
+
 int main(int argc, char* argv[]) {
 
   // enable memory debuging
 #ifdef _DEBUG
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+  test();
 
   {
     // Create Seance
@@ -97,4 +101,25 @@ int main(int argc, char* argv[]) {
 #ifdef _DEBUG
   _CrtDumpMemoryLeaks();
 #endif
+}
+
+void test() {
+  Object root;
+  root.Pos.assign(1, 1, 1);
+
+  Object ch11, ch13;
+  Object ch111, ch112;
+
+  root.hrchy_dbg.add(&ch13);
+  
+  ch13.hrchy_dbg.join(&root);
+
+  ch112.hrchy_dbg.join(&root);
+  ch111.hrchy_dbg.join(&ch112);
+
+  Object* rootptr = ch111.hrchy_dbg.root();
+  rootptr->Pos.assign(0, 0, 0);
+  
+  ch111.hrchy_dbg.leave();
+
 }
