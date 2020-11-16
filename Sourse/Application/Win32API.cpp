@@ -39,6 +39,7 @@ SystemHandler::SystemHandler() {
 }
 
 SystemHandler::~SystemHandler() {
+  KillTimer(m_hwnd, 10);
   SafeRelease(&m_pDirect2dFactory);
 }
 
@@ -84,17 +85,15 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL,
-                          NULL, HINST_THISCOMPONENT, this);
+    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, HINST_THISCOMPONENT, this);
 
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
       SetWindowLong(m_hwnd, GWL_STYLE, 0);
       hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
-      //ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
-      //SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
-      
+      // ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
+      // SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
     }
   }
 
@@ -135,10 +134,7 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
         }
 
         case WM_ACTIVATE: {
-
-
         }
-        
       }
     }
 
@@ -177,19 +173,17 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
 }
 
 
-void SystemHandler::SysOutput(FBuff* buff) {
+void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 
   HDC hdcWindow = GetDC(m_hwnd);
 
-  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->width, buff->height, 32, buff->Buff);
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
   HANDLE hOld = SelectObject(hdcMem, hbmMem);
-  BitBlt(hdcWindow, 0, 0, buff->width, buff->height, hdcMem, 0, 0, SRCCOPY);
+   BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
-
-  // Sleep(100);
 }
 
 
@@ -200,11 +194,6 @@ void SystemHandler::consoletoggle() {
 
 bool SystemHandler::active() {
   return GetForegroundWindow() == m_hwnd;
-}
-
-void SystemHandler::destroy() {
-  KillTimer(m_hwnd, 10);
-  PostQuitMessage(0);
 }
 
 // very slow!!!!!
@@ -235,10 +224,11 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   cprect.inv_y(scry);
 
-  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_NOACTIVATE);
+  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y,
+               SWP_ASYNCWINDOWPOS);
 }
 
-void UpdKeySate(Input& key, bool down, bool &IsEvent) {
+void UpdKeySate(Input& key, bool down, bool& IsEvent) {
   if ((int)key.state == (int)down) {
     return;
   }
@@ -278,7 +268,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
   usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y;
-  
+
   UpdKeySate(usin.LMB, GetAsyncKeyState(VK_LBUTTON) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) & 0x8000, usin.IsEvent);

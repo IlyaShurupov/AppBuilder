@@ -15,17 +15,17 @@ enum struct UIInputState {
 
 struct UIItem {
 
+  // All ui items wich this item is build of
+  Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
+
   // location & size in the parent frame of reference
   Rect<SCR_UINT> rect;
   
   // Own buffer to daraw
-  FBuff *buffer;
+  FBuff<RGBA_32> *buffer;
 
   // current input state of ui item
   UIInputState input_state;
-
-  // All ui items wich this item is build of
-  Hierarchy<UIItem> hierarchy;
 
   void (*ProcEvent)(UIItem *This, struct UserInputs *user_inputs);
   void (*Draw)(UIItem *This);

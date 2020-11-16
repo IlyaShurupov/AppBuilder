@@ -6,7 +6,7 @@
 
 struct Window {
 
-  FBuff buff;
+  FBuff<RGBA_32> buff;
 
   // dimentions & loc of window
   Rect<SCR_UINT> rect;
@@ -40,9 +40,6 @@ struct Window {
 
   // window processing methods
   bool IsActive();
-
-  // terminates the window
-  void Destroy();
 
   // toggles window conole
   void ToggleConsole();

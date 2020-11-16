@@ -20,7 +20,7 @@ Seance::Seance(std::string* basePath) {
     //Window* win1 = new Window(&filepath, &prefferences.operators);
     //win1->ToggleConsole();
 
-    Window* win2 = new Window(&configfolder, &prefferences.operators);
+    Window* win2 = DBG_NEW Window(&configfolder, &prefferences.operators);
     //win2->ToggleConsole();
     //project.windows.add(win1);
     project.windows.add(win2);
@@ -30,7 +30,12 @@ Seance::Seance(std::string* basePath) {
   }
 }
 
-Seance::~Seance() {}
+Seance::~Seance() {
+  op_threads.del();
+  project.collection.del();
+  project.windows.del();
+  prefferences.operators.del();
+}
 
 void Seance::OnWrite(/*file path*/) {}
 

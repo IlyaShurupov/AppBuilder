@@ -50,6 +50,8 @@ struct Operator {
 
   // Modal cache data
   void* CustomData = nullptr;
+
+  ~Operator();
 };
 
 struct OpThread {

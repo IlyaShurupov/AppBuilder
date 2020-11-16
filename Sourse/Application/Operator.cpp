@@ -10,7 +10,8 @@
 // -----------  End Seance Operator ----------------------- //
 
 void EndSeance_ecec(Seance* C, Operator* op) {
-  FOREACH_NODE(Window, (&C->project.windows), win_node) { win_node->Data->Destroy(); }
+  // save &
+  delete C;
   exit(0);
 }
 
@@ -160,6 +161,7 @@ void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
+    op->CustomData = nullptr;
     return;
   }
 
@@ -197,4 +199,11 @@ void initOps(Seance* C) {
   AddOperator(C, ToggleConcole_create);
   AddOperator(C, WindowResize_create);
   AddOperator(C, WindowDrag_create);
+}
+
+Operator::~Operator() {
+  if (CustomData) {
+    delete CustomData;
+  }
+  modal_events.del();
 }

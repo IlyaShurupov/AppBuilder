@@ -3,7 +3,6 @@
 
 Object::Object() {
   StaticMeshComponent = nullptr;
-  hierarchy.parent = nullptr;
   CameraComponent = nullptr;
 }
 
@@ -23,10 +22,10 @@ Camera *Object::GetCameraComponent() { return CameraComponent; }
 
 void Object::getWorldLocation(Vec3f &out) {
   out.assign(Pos);
-  Object *parent = hierarchy.parent;
+  Object *parent = hrchy.parent;
   while (parent) {
     out += parent->Pos;
-    parent = parent->hierarchy.parent;
+    parent = parent->hrchy.parent;
   }
 }
 

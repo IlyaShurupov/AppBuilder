@@ -134,6 +134,7 @@ struct CShortcut {
   bool Compile(UserInputs* usins, std::string* str, Bounds& bnds);
 
   bool IsShortcut();
+  ~CShortcut();
 };
 
 struct COpBindings {
@@ -146,6 +147,7 @@ struct COpBindings {
 
   ModalEvent* IsModalEvent();
   bool IsInvoked();
+  ~COpBindings();
 };
 
 // one per window
@@ -156,6 +158,8 @@ struct CompiledKeyMap {
   void Compile(List<Operator>* ops, UserInputs* usins, std::string* filipath);
 
   void ProcEvents(List<OpThread>* exec_queue);
+
+  ~CompiledKeyMap();
 };
 
 std::string getExecutablePath();

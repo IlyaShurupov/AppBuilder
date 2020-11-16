@@ -35,7 +35,7 @@ void print(PropertyInt& prp);
 void print(RayHitData& HD);
 void print(Ray& ray);
 void print(Camera& cam);
-void print(FBuff& buff, bool PrintTexture = false);
+void print(FBuff<RGBA_32>& buff, bool PrintTexture = false);
 
 template <typename Type>
 void print(Stack<Type>& stack) {

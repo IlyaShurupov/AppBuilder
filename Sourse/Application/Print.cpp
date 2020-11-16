@@ -58,13 +58,13 @@ void print(Camera& cam) {
   COUT TAB "Lens" << PROP(cam.Lens) NL;
 }
 
-void print(FBuff& buff, bool PrintText) {
+void print(FBuff<RGBA_32>& buff, bool PrintText) {
   if (PrintText) {
     HWND myconsole = GetConsoleWindow();
     HDC mydc = GetDC(myconsole);
 
-    for (SCR_UINT j = 0; j < buff.height; j++) {
-      for (SCR_UINT i = 0; i < buff.width; i++) {
+    for (SCR_UINT j = 0; j < buff.size.y; j++) {
+      for (SCR_UINT i = 0; i < buff.size.x; i++) {
         // Color4* color = buff.get(i, j);
         // COLORREF COLOR = RGB(color->R * 255, color->G * 255, color->B * 255);
         // COLORREF COLOR = RGB(0, 255, 12);
@@ -75,8 +75,8 @@ void print(FBuff& buff, bool PrintText) {
     std::cin.ignore();
   } else {
     ENTR COUT "Frame Buffer: " NL;
-    COUT TAB "Height: " << buff.height NL;
-    COUT TAB "Width: " << buff.width NL;
+    COUT TAB "Height: " << buff.size.y NL;
+    COUT TAB "Width: " << buff.size.x NL;
   }
 }
 

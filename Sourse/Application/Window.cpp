@@ -11,7 +11,7 @@ void Window::Draw() {
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
 
-   
+
   rect.size.assign(800, 500);
   rect.pos.assign(600, 250);
   minsize.y = 60;
@@ -24,23 +24,23 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: imma bout to crash\n");
   }
-  if (!SUCCEEDED(SysH->Initialize(vec2<SCR_UINT>(1, 1)))){
+  if (!SUCCEEDED(SysH->Initialize(vec2<SCR_UINT>(1, 1)))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
   // Set icon
   std::string icon_path = *configfolder + "icon.ico";
   SysH->SetIcon(icon_path);
-  
+
   // compile kmap
   std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
-  
+
   SysH->getScreenSize(scr_size);
 
   // draw initialized window
-  buff.Resize(rect.size.x, rect.size.y);
+  buff.resize(rect.size.x, rect.size.y);
   Draw();
 
   SysH->setRect(rect, scr_size.y);
@@ -48,7 +48,11 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   SendBuffToSystem();
 }
 
-Window::~Window() { CoUninitialize(); }
+Window::~Window() {
+  //compiled_key_map.op_bindings.free();
+  delete SysH;
+  CoUninitialize();
+}
 
 void Window::OnWrite() {}
 
@@ -67,10 +71,6 @@ void Window::SendBuffToSystem() {
 
 bool Window::IsActive() {
   return SysH->active();
-}
-
-void Window::Destroy() {
-  SysH->destroy();
 }
 
 void Window::ToggleConsole() {
@@ -110,7 +110,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
       newrect.size.y = minsize.y;
     }
   }
-  
+
   // update cursor pos
   user_inputs.Cursor.x -= newrect.pos.x - rect.pos.x;
   user_inputs.Cursor.y -= newrect.pos.y - rect.pos.y;
@@ -118,7 +118,8 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   this->rect = newrect;
 
   // upd buffer
-  this->buff.Resize(rect.size.x, rect.size.y);
+  this->buff.resize(rect.size.x, rect.size.y);
 
   SysH->setRect(rect, scr_size.y);
+  // SendBuffToSystem();
 }

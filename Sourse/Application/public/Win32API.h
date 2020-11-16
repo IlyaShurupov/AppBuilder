@@ -19,13 +19,11 @@ class SystemHandler {
   void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
-  void SysOutput(FBuff* buff);
+  void SysOutput(FBuff<RGBA_32>* buff);
 
   void consoletoggle();
 
   bool active();
-
-  void destroy();
 
   void getScreenSize(vec2<SCR_UINT>& rect);
   void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);

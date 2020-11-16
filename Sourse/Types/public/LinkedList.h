@@ -4,6 +4,40 @@
 #define FOREACH_NODE(NodeType, List, iter_node) \
   for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
 
+// idx tmpl param is the idx of hrchy member in the struct
+template <typename Type, typename ListType, int hrch_idx>
+struct Hierarchy {
+
+  ListType childs;
+  Type* parent = nullptr;
+
+  Hierarchy() {
+  }
+
+  Hierarchy(Type* parent) {
+    this->parent = parent;
+  }
+
+  void leave() {
+    if (parent) {
+      ((Hierarchy*)parent + hrch_idx)->childs.del((Type*)(this  - hrch_idx));
+    }
+  }
+
+  Type& root() {
+    Hierarchy* root = (Hierarchy*)parent;
+    while (true) {
+      if ((root + hrch_idx)->parent) {
+        root = (Hierarchy*)(root + hrch_idx)->parent;
+        continue;
+      }
+      break;
+    }
+    return *(Type*)root;
+  }
+};
+
+
 template <typename Type>
 class Node {
  public:
@@ -39,7 +73,7 @@ class List {
   Node<Type>* Buff;
   size_t length;
 
-  Node<Type>* SearchNode(size_t index);
+  Node<Type>* SearchNode(size_t index, Type* data);
 
  public:
   List();
@@ -48,7 +82,10 @@ class List {
   Type* operator[](size_t idx);
   size_t len();
 
+  void del();
+
   void pop(bool recursice);
+  void del(Type* node_data);
   void del(size_t idx, bool recursice);
   void del(size_t idx_start, size_t idx_end, bool recursice);
   void del(Node<Type>* node, bool recursice);
@@ -89,13 +126,13 @@ void List<Type>::add(Type* data) {
 
 template <typename Type>
 Type* List<Type>::operator[](size_t idx) {
-  Node<Type>* item = SearchNode(idx);
+  Node<Type>* item = SearchNode(idx, nullptr);
   Buff = item->Next;
   return item->Data;
 }
 
 template <typename Type>
-Node<Type>* List<Type>::SearchNode(size_t index) {
+Node<Type>* List<Type>::SearchNode(size_t index, Type* data) {
   assert(index < length);
 
   if (Buff && index == Buff->idx) {
@@ -105,13 +142,28 @@ Node<Type>* List<Type>::SearchNode(size_t index) {
   bool invert = index > length / 2;
   Node<Type>* item = (&First)[invert];
 
-  if (!invert) {
-    while (item->idx != index) {
-      item = item->Next;
+  // search by data
+  if (data) {
+    if (!invert) {
+      while (item->Data != data) {
+        item = item->Next;
+      }
+    } else {
+      while (item->Data != data) {
+        item = item->Prev;
+      }
     }
+
   } else {
-    while (item->idx != index) {
-      item = item->Prev;
+    // search by idx
+    if (!invert) {
+      while (item->idx != index) {
+        item = item->Next;
+      }
+    } else {
+      while (item->idx != index) {
+        item = item->Prev;
+      }
     }
   }
 
@@ -122,8 +174,8 @@ template <typename Type>
 void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
   assert(index_end < length);
 
-  Node<Type>* first = SearchNode(index_start);
-  Node<Type>* last = SearchNode(index_end);
+  Node<Type>* first = SearchNode(index_start, nullptr);
+  Node<Type>* last = SearchNode(index_end, nullptr);
   Node<Type>* next = last->Next;
   Node<Type>* prev = first->Prev;
 
@@ -174,7 +226,7 @@ template <typename Type>
 void List<Type>::del(size_t index, bool recursice) {
   assert(index < length);
 
-  Node<Type>* del_node = SearchNode(index);
+  Node<Type>* del_node = SearchNode(index, nullptr);
 
   this->del(del_node, recursice);
 }
@@ -224,6 +276,12 @@ void List<Type>::pop(bool recursice) {
   Last = prev_item;
   prev_item->Next = 0;
   length -= 1;
+}
+
+template <typename Type>
+void List<Type>::del(Type* node_data) {
+  Node<Type>* del_node = SearchNode(-1, node_data);
+  this->delnode(del_node);
 }
 
 //  -------------------------
@@ -287,15 +345,16 @@ size_t List<Type>::len() {
   return length;
 }
 
+template<typename Type>
+inline void List<Type>::del() {
+  if (length) {
+    del(0, length - 1, true);
+  }
+}
+
 template <typename Type>
 List<Type>::~List() {
   if (length) {
     delnode(0, length - 1);
   }
 }
-
-template <typename Type>
-struct Hierarchy {
-  List<Type> childs;
-  Type* parent = nullptr;
-};

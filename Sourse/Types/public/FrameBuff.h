@@ -1,32 +1,149 @@
+
 #pragma once
 
-#define COLOR_RGDA_32 int32_t
-#define FBFF_COLOR COLOR_RGDA_32
-
 #include "Rect.h"
+#include "LinkedList.h"
+#include <cassert>
 
-class FBuff {
- public:
-  int ZDepth;
-  FBFF_COLOR* Buff;
+#define RGBA_32 int32_t
+#define FBFF_COLOR RGBA_32
 
-  // TODO: make use of z val & get rid of parents
-  // only one level of hierarchy!!!
+//#define IDX3D(width, depth, x, y, z) (width * depth * y + depth * x + z)
+//#define IDX2D(width, x, y) (width * y + x)
+//#define AR2D_GET(x, y, fBuff) (fBuff->Buff + (__int64)fBuff->pitch * y + x)
+
+
+
+template <typename Color_t>
+struct FBuff {
+
+  // world buffers have their own buffers while local share one 
+  Hierarchy<FBuff, List<FBuff>, 0> wrld_hrchy;
+  Hierarchy<FBuff, List<FBuff>, 1> local_hrchy;
+
+  // dimentions
+  vec2<SCR_UINT> size;
+
+  // pixel array
+  Color_t* pxls = nullptr;
+
+  // z order val
+  int z_depth;
+
+  // ------  cast properties ---------  //
+  
+  // position in parent fbuffer
   vec2<SCR_UINT> pos;
-  FBuff* parent;
 
-  SCR_UINT height, width;
-  FBuff();
+  // dimentions of the root fbuffer
+  SCR_UINT* root_width = nullptr; 
+  SCR_UINT* root_height = nullptr;
+
   FBuff(SCR_UINT width, SCR_UINT height);
+  FBuff();
   ~FBuff();
 
-  FBFF_COLOR* get(SCR_UINT x, SCR_UINT y);
-  void set(SCR_UINT x, SCR_UINT y, FBFF_COLOR* color);
-  void clear(FBFF_COLOR* color);
-  void delBuff();
+  Color_t* get(SCR_UINT x, SCR_UINT y);
+  void set(SCR_UINT x, SCR_UINT y, Color_t* color);
+  
+  void resize(SCR_UINT width, SCR_UINT height);
+  
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
-  void Resize(SCR_UINT width, SCR_UINT height);
-  void DrawRect(SCR_UINT x, SCR_UINT y, FBFF_COLOR& color, int width, int height);
+  void move(SCR_UINT dx, SCR_UINT dy);
 
- private:
+  // simple draw methods
+  void DrawRect(Rect<SCR_UINT>& rect, Color_t& color);
+  void clear(Color_t* color);
 };
+
+template <typename Color_t>
+FBuff<Color_t>::FBuff() {
+  size.assign(0, 0);
+  z_depth = 0;
+}
+
+template <typename Color_t>
+FBuff<Color_t>::FBuff(SCR_UINT width, SCR_UINT height) {
+  size.assign(width, height);
+  pxls = DBG_NEW Color_t[(__int64)height * width];
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::set(SCR_UINT x, SCR_UINT y, Color_t* color) {
+  *get(x, y) = *color;
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::clear(Color_t* color) {
+  long int len = size.x * size.y;
+  for (int i = 0; i < len; i++) {
+    pxls[i] = *color;
+  }
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
+  delete pxls;
+  pxls = DBG_NEW Color_t[height * (__int64)width];
+  size.assign(width, height);
+}
+
+template<typename Color_t>
+void FBuff<Color_t>::move(SCR_UINT dx, SCR_UINT dy) {
+  pos.x += dx;
+  pos.y += dy;
+
+  FOREACH_NODE(FBuff, (&local_hrchy.childs), cld_node) {
+    cld_node->Data->move(dx, dy);
+  }
+
+  FOREACH_NODE(FBuff, (&wrld_hrchy.childs), cld_node) {
+    cld_node->Data->move(dx, dy);
+  }
+}
+
+// NO CLAMPING
+template <typename Color_t>
+void FBuff<Color_t>::DrawRect(Rect<SCR_UINT>& rect, Color_t& color) {
+  
+  SCR_UINT lastpxlx = rect.pos.x + rect.size.x;
+  SCR_UINT lastpxly = rect.pos.y + rect.size.y;
+
+  for (SCR_UINT i = rect.pos.x; i < lastpxlx; i++) {
+    for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
+      set(i, j, &color);
+    }
+  }
+}
+
+template <typename Color_t>
+Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
+
+  if (!local_hrchy.parent) {
+    return pxls + (__int64)size.x * y + x;
+  }
+
+  return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + (x + pos.x);
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
+  
+  assert((rect.size.y <= size.y) && (rect.size.x <= size.y));
+
+  local_hrchy.childs.add(&out);
+
+  out.local_hrchy.parent = this;
+
+  FBuff& root = local_hrchy.root();
+
+  out.root_height = &root.size.y;
+  out.root_width = &root.size.x;
+  out.pxls = get(rect.pos.x, rect.pos.y);
+}
+
+template <typename Color_t>
+FBuff<Color_t>::~FBuff() {
+  delete pxls;
+  local_hrchy.leave();
+}

@@ -108,6 +108,12 @@ bool COpBindings::IsInvoked() {
   return invoke.IsShortcut();
 }
 
+COpBindings::~COpBindings() {
+  //invoke.conditions.free();
+  modal_keymap.free();
+  //delete thread_ptr;
+}
+
 void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {
 
   FOREACH_STACK(COpBindings, (&op_bindings), op_map_node) {
@@ -121,7 +127,7 @@ void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {
       }
     } else {
       if (op_map->IsInvoked()) {
-        OpThread* new_tread = new OpThread(op, OpEventState::INVOKE, nullptr);
+        OpThread* new_tread = DBG_NEW OpThread(op, OpEventState::INVOKE, nullptr);
         op_map->thread_ptr = new_tread;
         op_threads->add(new_tread);
       }
@@ -198,7 +204,7 @@ bool CShortcut::Compile(UserInputs* usins, string* str, Bounds& bnds) {
 
     cursor = cond_bnds.strt;
 
-    CKeyCondition* cond = new CKeyCondition();
+    CKeyCondition* cond = DBG_NEW CKeyCondition();
 
     if (cond->Compile(usins, str, cond_bnds)) {
       this->conditions.add(cond);
@@ -212,6 +218,10 @@ bool CShortcut::Compile(UserInputs* usins, string* str, Bounds& bnds) {
   } while (true);
 
   return (bool)this->conditions.len();
+}
+
+CShortcut::~CShortcut() {
+  conditions.free();
 }
 
 bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, Bounds bnds) {
@@ -275,7 +285,7 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, B
     mmp_cursor = mmp_item.strt;
 
 
-    CShortcut* modal_shcut = new CShortcut();
+    CShortcut* modal_shcut = DBG_NEW CShortcut();
 
     // find event identifier
     Bounds modal_event_name =
@@ -330,7 +340,7 @@ void CompiledKeyMap::Compile(List<Operator>* ops, UserInputs* usins, std::string
 
     cursor = bds.strt;
 
-    COpBindings* new_bdgs = new COpBindings();
+    COpBindings* new_bdgs = DBG_NEW COpBindings();
     if (new_bdgs->Compile(ops, usins, &kmap, bds)) {
       this->op_bindings.add(new_bdgs);
     } else {
@@ -342,4 +352,8 @@ void CompiledKeyMap::Compile(List<Operator>* ops, UserInputs* usins, std::string
   } while (true);
 
   keymap_file.close();
+}
+
+CompiledKeyMap::~CompiledKeyMap() {
+  op_bindings.free();
 }

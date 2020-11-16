@@ -16,7 +16,9 @@ class StackNode {
     this->next = next;
     this->data = data;
   }
-  ~StackNode() {}
+  ~StackNode() {
+    delete data;
+  }
 };
 
 template <typename Type>
@@ -31,7 +33,7 @@ class Stack {
     length = 0;
     first = nullptr;
   }
-  ~Stack() { free(); }
+  ~Stack() {}
 
   inline int MemSize() { return sizeof(StackNode<Type>) * length; }
 

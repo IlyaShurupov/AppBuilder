@@ -23,5 +23,5 @@ namespace RayCast {
 		Object* Camera;
 	};
 
-	void RenderToBuff(RenderSettings* settings, FBuff* Buff);
+	void RenderToBuff(RenderSettings* settings, FBuff<RGBA_32>* Buff);
 }

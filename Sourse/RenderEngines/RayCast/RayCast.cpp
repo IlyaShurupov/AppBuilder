@@ -7,7 +7,7 @@ using namespace RayCast;
 
 struct CycleData;
 void RenderPass(RenderSettings* settings, Ray ray, FBFF_COLOR& color);
-void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color);
+void WritePassToBuff(FBuff<RGBA_32>* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color);
 void InitCycle(CycleData& CData, RenderSettings* settings);
 inline void UpdYPass(CycleData& CData, SCR_UINT& i);
 inline void UpdXPass(CycleData& CData, SCR_UINT& i);
@@ -20,7 +20,7 @@ struct CycleData {
   Camera* CamAtrb = nullptr;
 };
 
-void RayCast::RenderToBuff(RenderSettings* Settings, FBuff* Buff) {
+void RayCast::RenderToBuff(RenderSettings* Settings, FBuff<RGBA_32>* Buff) {
   CycleData CData;
   InitCycle(CData, Settings);
 
@@ -44,7 +44,7 @@ void RenderPass(RenderSettings* settings, Ray ray, FBFF_COLOR& color) {
   }
 }
 
-void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color) {
+void WritePassToBuff(FBuff<RGBA_32>* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color) {
   if (CData.pxl_size == 1) {
     Buff->set(i, j, &color);
     return;
@@ -54,7 +54,9 @@ void WritePassToBuff(FBuff* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF
   SCR_UINT pos_y = j * CData.pxl_size - (CData.pxl_size / 2);
   CLAMP(pos_x, (SCR_UINT)0, SCR_UINT_MAX);
   CLAMP(pos_y, (SCR_UINT)0, SCR_UINT_MAX);
-  Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
+
+
+  //Buff->DrawRect(pos_x, pos_y, color, CData.pxl_size, CData.pxl_size);
 }
 
 void InitCycle(CycleData& CData, RenderSettings* settings) {

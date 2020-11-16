@@ -21,9 +21,11 @@ struct ObjVisibility {
 class Object
 {
 public:
+  Hierarchy<Object, List<Object>, 0> hrchy;
+
 	Mat3f TransformMat;
 	Vec3f Pos;
-  Hierarchy<Object> hierarchy;
+
 
 	ObjVisibility Visibility;
 
