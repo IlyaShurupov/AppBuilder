@@ -1,7 +1,7 @@
 
 #include "public/Seance.h"
 
-#define FPS 5
+#define FPS 120.f
 
 int main(int argc, char* argv[]) {
 
@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
   // Create Seance
   Seance& C = *new Seance(&getExecutablePath());
 
-  Timer timer = Timer(1 * int(1000/60.f));
+  Timer timer = Timer(1 * int(1000/FPS));
 
   // Main loop: Handle events -> run operators -> show result
   while (true) {
@@ -85,7 +85,6 @@ int main(int argc, char* argv[]) {
     }
 
     if (!timer.timeout()) {
-      //printf("sleep \ n");
       THREAD_SLEEP(timer.remain());
     }
   }

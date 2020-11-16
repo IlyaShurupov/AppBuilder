@@ -1,6 +1,7 @@
 
 #include "public/Win32API.h"
 
+#include <conio.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
 #include <malloc.h>
@@ -10,7 +11,6 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <wincodec.h>
-#include <conio.h>
 #include "FrameBuff.h"
 #include "public/KeyMap.h"
 
@@ -123,6 +123,8 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
         case WM_CLOSE: {
           pDemoApp->close = true;
+          result = 1;
+          wasHandled = true;
           return 0;
         }
 
@@ -132,10 +134,11 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
           break;
         }
 
-        //default: {
-          //wasHandled = true;
-          //break;
-        //}
+        case WM_ACTIVATE: {
+
+
+        }
+        
       }
     }
 
@@ -189,7 +192,7 @@ void SystemHandler::SysOutput(FBuff* buff) {
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
 
-  //Sleep(100);
+  // Sleep(100);
 }
 
 
@@ -224,8 +227,8 @@ void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   rect.size.y = wrect_p->bottom - wrect_p->top;
   rect.size.x = wrect_p->right - wrect_p->left;
 
-  //vec2<SCR_UINT> scr_size;
-  //getScreenSize(scr_size);
+  // vec2<SCR_UINT> scr_size;
+  // getScreenSize(scr_size);
   rect.inv_y(scry);
 }
 
@@ -270,71 +273,70 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
 
   rect.pos.x;
   usin.Cursor = usin.Cursor - rect.pos;
-  
+
 
   usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
   usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
 
-
   UpdKeySate(usin.LMB, GetAsyncKeyState(VK_LBUTTON) & 0x8000);
-  UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) &  0x8000);
-  UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) &  0x8000);
+  UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) & 0x8000);
+  UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) & 0x8000);
 
   UpdKeySate(usin.K0, GetAsyncKeyState('0') & 0x8000);
-  UpdKeySate(usin.K1, GetAsyncKeyState('1') &  0x8000);
-  UpdKeySate(usin.K2, GetAsyncKeyState('2') &  0x8000);
-  UpdKeySate(usin.K3, GetAsyncKeyState('3') &  0x8000);
-  UpdKeySate(usin.K4, GetAsyncKeyState('4') &  0x8000);
-  UpdKeySate(usin.K5, GetAsyncKeyState('5') &  0x8000);
-  UpdKeySate(usin.K6, GetAsyncKeyState('6') &  0x8000);
-  UpdKeySate(usin.K7, GetAsyncKeyState('7') &  0x8000);
-  UpdKeySate(usin.K8, GetAsyncKeyState('8') &  0x8000);
-  UpdKeySate(usin.K9, GetAsyncKeyState('9') &  0x8000);
+  UpdKeySate(usin.K1, GetAsyncKeyState('1') & 0x8000);
+  UpdKeySate(usin.K2, GetAsyncKeyState('2') & 0x8000);
+  UpdKeySate(usin.K3, GetAsyncKeyState('3') & 0x8000);
+  UpdKeySate(usin.K4, GetAsyncKeyState('4') & 0x8000);
+  UpdKeySate(usin.K5, GetAsyncKeyState('5') & 0x8000);
+  UpdKeySate(usin.K6, GetAsyncKeyState('6') & 0x8000);
+  UpdKeySate(usin.K7, GetAsyncKeyState('7') & 0x8000);
+  UpdKeySate(usin.K8, GetAsyncKeyState('8') & 0x8000);
+  UpdKeySate(usin.K9, GetAsyncKeyState('9') & 0x8000);
 
-  UpdKeySate(usin.Q, GetAsyncKeyState('Q') &  0x8000);
-  UpdKeySate(usin.W, GetAsyncKeyState('W') &  0x8000);
-  UpdKeySate(usin.E, GetAsyncKeyState('E') &  0x8000);
-  UpdKeySate(usin.R, GetAsyncKeyState('R') &  0x8000);
-  UpdKeySate(usin.T, GetAsyncKeyState('T') &  0x8000);
-  UpdKeySate(usin.Y, GetAsyncKeyState('Y') &  0x8000);
-  UpdKeySate(usin.U, GetAsyncKeyState('U') &  0x8000);
-  UpdKeySate(usin.I, GetAsyncKeyState('I') &  0x8000);
-  UpdKeySate(usin.O, GetAsyncKeyState('O') &  0x8000);
-  UpdKeySate(usin.P, GetAsyncKeyState('P') &  0x8000);
+  UpdKeySate(usin.Q, GetAsyncKeyState('Q') & 0x8000);
+  UpdKeySate(usin.W, GetAsyncKeyState('W') & 0x8000);
+  UpdKeySate(usin.E, GetAsyncKeyState('E') & 0x8000);
+  UpdKeySate(usin.R, GetAsyncKeyState('R') & 0x8000);
+  UpdKeySate(usin.T, GetAsyncKeyState('T') & 0x8000);
+  UpdKeySate(usin.Y, GetAsyncKeyState('Y') & 0x8000);
+  UpdKeySate(usin.U, GetAsyncKeyState('U') & 0x8000);
+  UpdKeySate(usin.I, GetAsyncKeyState('I') & 0x8000);
+  UpdKeySate(usin.O, GetAsyncKeyState('O') & 0x8000);
+  UpdKeySate(usin.P, GetAsyncKeyState('P') & 0x8000);
 
-  UpdKeySate(usin.A, GetAsyncKeyState('A') &  0x8000);
-  UpdKeySate(usin.S, GetAsyncKeyState('S') &  0x8000);
-  UpdKeySate(usin.D, GetAsyncKeyState('D') &  0x8000);
-  UpdKeySate(usin.F, GetAsyncKeyState('F') &  0x8000);
-  UpdKeySate(usin.G, GetAsyncKeyState('G') &  0x8000);
-  UpdKeySate(usin.H, GetAsyncKeyState('H') &  0x8000);
-  UpdKeySate(usin.J, GetAsyncKeyState('J') &  0x8000);
-  UpdKeySate(usin.K, GetAsyncKeyState('K') &  0x8000);
-  UpdKeySate(usin.L, GetAsyncKeyState('L') &  0x8000);
+  UpdKeySate(usin.A, GetAsyncKeyState('A') & 0x8000);
+  UpdKeySate(usin.S, GetAsyncKeyState('S') & 0x8000);
+  UpdKeySate(usin.D, GetAsyncKeyState('D') & 0x8000);
+  UpdKeySate(usin.F, GetAsyncKeyState('F') & 0x8000);
+  UpdKeySate(usin.G, GetAsyncKeyState('G') & 0x8000);
+  UpdKeySate(usin.H, GetAsyncKeyState('H') & 0x8000);
+  UpdKeySate(usin.J, GetAsyncKeyState('J') & 0x8000);
+  UpdKeySate(usin.K, GetAsyncKeyState('K') & 0x8000);
+  UpdKeySate(usin.L, GetAsyncKeyState('L') & 0x8000);
 
-  UpdKeySate(usin.Z, GetAsyncKeyState('Z') &  0x8000);
-  UpdKeySate(usin.X, GetAsyncKeyState('X') &  0x8000);
-  UpdKeySate(usin.C, GetAsyncKeyState('C') &  0x8000);
-  UpdKeySate(usin.V, GetAsyncKeyState('V') &  0x8000);
-  UpdKeySate(usin.B, GetAsyncKeyState('B') &  0x8000);
-  UpdKeySate(usin.N, GetAsyncKeyState('N') &  0x8000);
-  UpdKeySate(usin.M, GetAsyncKeyState('M') &  0x8000);
+  UpdKeySate(usin.Z, GetAsyncKeyState('Z') & 0x8000);
+  UpdKeySate(usin.X, GetAsyncKeyState('X') & 0x8000);
+  UpdKeySate(usin.C, GetAsyncKeyState('C') & 0x8000);
+  UpdKeySate(usin.V, GetAsyncKeyState('V') & 0x8000);
+  UpdKeySate(usin.B, GetAsyncKeyState('B') & 0x8000);
+  UpdKeySate(usin.N, GetAsyncKeyState('N') & 0x8000);
+  UpdKeySate(usin.M, GetAsyncKeyState('M') & 0x8000);
 
-  UpdKeySate(usin.SPACE, GetAsyncKeyState(VK_SPACE) &  0x8000);
-  UpdKeySate(usin.ENTER, GetAsyncKeyState(VK_SEPARATOR) &  0x8000);
-  UpdKeySate(usin.DEL, GetAsyncKeyState(VK_DELETE) &  0x8000);
-  UpdKeySate(usin.EREASE, GetAsyncKeyState(VK_BACK) &  0x8000);
-  UpdKeySate(usin.ESCAPE, GetAsyncKeyState(VK_ESCAPE) &  0x8000);
-  UpdKeySate(usin.TAB, GetAsyncKeyState(VK_TAB) &  0x8000);
+  UpdKeySate(usin.SPACE, GetAsyncKeyState(VK_SPACE) & 0x8000);
+  UpdKeySate(usin.ENTER, GetAsyncKeyState(VK_SEPARATOR) & 0x8000);
+  UpdKeySate(usin.DEL, GetAsyncKeyState(VK_DELETE) & 0x8000);
+  UpdKeySate(usin.EREASE, GetAsyncKeyState(VK_BACK) & 0x8000);
+  UpdKeySate(usin.ESCAPE, GetAsyncKeyState(VK_ESCAPE) & 0x8000);
+  UpdKeySate(usin.TAB, GetAsyncKeyState(VK_TAB) & 0x8000);
 
-  UpdKeySate(usin.WIN_KEY, GetAsyncKeyState(VK_LWIN) &  0x8000);
-  UpdKeySate(usin.SHIFT_L, GetAsyncKeyState(VK_LSHIFT) &  0x8000);
-  UpdKeySate(usin.SHIFT_R, GetAsyncKeyState(VK_RSHIFT) &  0x8000);
-  UpdKeySate(usin.CTR_L, GetAsyncKeyState(VK_LCONTROL) &  0x8000);
-  UpdKeySate(usin.CTR_R, GetAsyncKeyState(VK_RCONTROL) &  0x8000);
-  UpdKeySate(usin.ALT_L, GetAsyncKeyState(VK_MENU) &  0x8000);
-  UpdKeySate(usin.ALT_R, GetAsyncKeyState(VK_MENU) &  0x8000);
+  UpdKeySate(usin.WIN_KEY, GetAsyncKeyState(VK_LWIN) & 0x8000);
+  UpdKeySate(usin.SHIFT_L, GetAsyncKeyState(VK_LSHIFT) & 0x8000);
+  UpdKeySate(usin.SHIFT_R, GetAsyncKeyState(VK_RSHIFT) & 0x8000);
+  UpdKeySate(usin.CTR_L, GetAsyncKeyState(VK_LCONTROL) & 0x8000);
+  UpdKeySate(usin.CTR_R, GetAsyncKeyState(VK_RCONTROL) & 0x8000);
+  UpdKeySate(usin.ALT_L, GetAsyncKeyState(VK_MENU) & 0x8000);
+  UpdKeySate(usin.ALT_R, GetAsyncKeyState(VK_MENU) & 0x8000);
 
   usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
 
@@ -343,15 +345,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   // USRINPUT_DECL(ARROW_LEFT);
   // USRINPUT_DECL(ARROW_RIGHT);
 
-  //GetMessage(&msg, m_hwnd, 0, 0);
-  
-  PostMessage(m_hwnd, WM_SETICON, 0, 0);
-  while (GetMessage(&msg, m_hwnd, 0, 0)) {
-   
-    if (msg.message == WM_SETICON) {
-      //printf("cleaned\n");
-      break;
-    }
+  while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE)) {
 
     DispatchMessage(&msg);
     TranslateMessage(&msg);

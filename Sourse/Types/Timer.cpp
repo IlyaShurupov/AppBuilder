@@ -1,23 +1,25 @@
 
 #include "public/Timer.h"
 
+
+
 Timer::Timer(TIME_MS duration) {
-  start = clock();
+  start = GETTIMEMSC();
   this->duration = duration;
 }
 
 bool Timer::timeout() {
-  return duration < clock() - start;
+  return duration < GETTIMEMSC() - start;
 }
 
 void Timer::reset() {
-  start = clock();
+  start = GETTIMEMSC();
 }
 
 TIME_MS Timer::past() {
-  return clock() - start;
+  return GETTIMEMSC() - start;
 }
 
 TIME_MS Timer::remain() {
-  return duration - (clock() - start);
+  return duration - (GETTIMEMSC() - start);
 }

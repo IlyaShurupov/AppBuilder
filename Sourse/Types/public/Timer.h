@@ -3,17 +3,11 @@
 #include "MathMacros.h"
 #include <thread>
 #include <time.h>
-//#include <ctime>
-//#include <chrono>
 
-
+#define GETTIMEMSC() (TIME_MS)((long double)time(0)*1000)
 #define THREAD_SLEEP(time_ms) std::this_thread::sleep_for(std::chrono::milliseconds(time_ms));
 
-//#define T_MSC(sec) ((long long int)(sec * 1000))
-//#define T_SEC(msc) ((TIME_SEC)(msc / 1000.f))
-
 typedef long long int TIME_MS;
-
 
 struct Timer {
 	
