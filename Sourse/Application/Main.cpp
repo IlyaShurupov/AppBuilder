@@ -104,6 +104,9 @@ int main(int argc, char* argv[]) {
 }
 
 void test() {
+#ifdef _DEBUG
+
+
   Object root;
   root.Pos.assign(1, 1, 1);
 
@@ -122,4 +125,5 @@ void test() {
   
   ch111.hrchy_dbg.leave();
 
+#endif // _DEBUG
 }
