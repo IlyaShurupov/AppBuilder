@@ -39,7 +39,7 @@ void Window::OnRead() {}
 
 void Window::ProcessEvents(List<OpThread>* op_threads) {
   SysH->getUserInputs(&user_inputs, scr_size.y);
-  if (this->IsActive()) {
+  if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
 }

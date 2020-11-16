@@ -37,6 +37,8 @@ struct Bounds {
 
 struct UserInputs {
 
+  bool IsEvent = false;
+
   USRINPUT_DECL(SYS_DESTROY_COMMAND);
 
   USRINPUT_DECL(WIN_KEY);

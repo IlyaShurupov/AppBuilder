@@ -77,11 +77,13 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    // Draw each window & show updates
-    FOREACH_NODE(Window, (&C.project.windows), win_node) {
-      Window* win = win_node->Data;
-      win->Draw();
-      win->SendBuffToSystem();
+    if (C.op_threads.len()) {
+      // Draw each window & show updates
+      FOREACH_NODE(Window, (&C.project.windows), win_node) {
+        Window* win = win_node->Data;
+        win->Draw();
+        win->SendBuffToSystem();
+      }
     }
 
     if (!timer.timeout()) {

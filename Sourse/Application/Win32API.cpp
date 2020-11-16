@@ -242,10 +242,12 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_NOACTIVATE);
 }
 
-void UpdKeySate(Input& key, bool down) {
+void UpdKeySate(Input& key, bool down, bool &IsEvent) {
   if ((int)key.state == (int)down) {
     return;
   }
+
+  IsEvent = true;
 
   if (key.state == InputState::NONE) {
     key.state = InputState::PRESSED;
@@ -256,10 +258,13 @@ void UpdKeySate(Input& key, bool down) {
   }
 }
 
+
 void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
 
   POINT cursor;
   UserInputs& usin = *user_inputs;
+
+  usin.IsEvent = false;
 
   usin.PrevCursor = usin.Cursor;
 
@@ -274,69 +279,69 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   rect.pos.x;
   usin.Cursor = usin.Cursor - rect.pos;
 
-
   usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
   usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
+  usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y;
+  
+  UpdKeySate(usin.LMB, GetAsyncKeyState(VK_LBUTTON) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.LMB, GetAsyncKeyState(VK_LBUTTON) & 0x8000);
-  UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) & 0x8000);
-  UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) & 0x8000);
+  UpdKeySate(usin.K0, GetAsyncKeyState('0') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K1, GetAsyncKeyState('1') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K2, GetAsyncKeyState('2') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K3, GetAsyncKeyState('3') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K4, GetAsyncKeyState('4') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K5, GetAsyncKeyState('5') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K6, GetAsyncKeyState('6') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K7, GetAsyncKeyState('7') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K8, GetAsyncKeyState('8') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K9, GetAsyncKeyState('9') & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.K0, GetAsyncKeyState('0') & 0x8000);
-  UpdKeySate(usin.K1, GetAsyncKeyState('1') & 0x8000);
-  UpdKeySate(usin.K2, GetAsyncKeyState('2') & 0x8000);
-  UpdKeySate(usin.K3, GetAsyncKeyState('3') & 0x8000);
-  UpdKeySate(usin.K4, GetAsyncKeyState('4') & 0x8000);
-  UpdKeySate(usin.K5, GetAsyncKeyState('5') & 0x8000);
-  UpdKeySate(usin.K6, GetAsyncKeyState('6') & 0x8000);
-  UpdKeySate(usin.K7, GetAsyncKeyState('7') & 0x8000);
-  UpdKeySate(usin.K8, GetAsyncKeyState('8') & 0x8000);
-  UpdKeySate(usin.K9, GetAsyncKeyState('9') & 0x8000);
+  UpdKeySate(usin.Q, GetAsyncKeyState('Q') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.W, GetAsyncKeyState('W') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.E, GetAsyncKeyState('E') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.R, GetAsyncKeyState('R') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.T, GetAsyncKeyState('T') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.Y, GetAsyncKeyState('Y') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.U, GetAsyncKeyState('U') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.I, GetAsyncKeyState('I') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.O, GetAsyncKeyState('O') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.P, GetAsyncKeyState('P') & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.Q, GetAsyncKeyState('Q') & 0x8000);
-  UpdKeySate(usin.W, GetAsyncKeyState('W') & 0x8000);
-  UpdKeySate(usin.E, GetAsyncKeyState('E') & 0x8000);
-  UpdKeySate(usin.R, GetAsyncKeyState('R') & 0x8000);
-  UpdKeySate(usin.T, GetAsyncKeyState('T') & 0x8000);
-  UpdKeySate(usin.Y, GetAsyncKeyState('Y') & 0x8000);
-  UpdKeySate(usin.U, GetAsyncKeyState('U') & 0x8000);
-  UpdKeySate(usin.I, GetAsyncKeyState('I') & 0x8000);
-  UpdKeySate(usin.O, GetAsyncKeyState('O') & 0x8000);
-  UpdKeySate(usin.P, GetAsyncKeyState('P') & 0x8000);
+  UpdKeySate(usin.A, GetAsyncKeyState('A') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.S, GetAsyncKeyState('S') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.D, GetAsyncKeyState('D') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.F, GetAsyncKeyState('F') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.G, GetAsyncKeyState('G') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.H, GetAsyncKeyState('H') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.J, GetAsyncKeyState('J') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.K, GetAsyncKeyState('K') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.L, GetAsyncKeyState('L') & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.A, GetAsyncKeyState('A') & 0x8000);
-  UpdKeySate(usin.S, GetAsyncKeyState('S') & 0x8000);
-  UpdKeySate(usin.D, GetAsyncKeyState('D') & 0x8000);
-  UpdKeySate(usin.F, GetAsyncKeyState('F') & 0x8000);
-  UpdKeySate(usin.G, GetAsyncKeyState('G') & 0x8000);
-  UpdKeySate(usin.H, GetAsyncKeyState('H') & 0x8000);
-  UpdKeySate(usin.J, GetAsyncKeyState('J') & 0x8000);
-  UpdKeySate(usin.K, GetAsyncKeyState('K') & 0x8000);
-  UpdKeySate(usin.L, GetAsyncKeyState('L') & 0x8000);
+  UpdKeySate(usin.Z, GetAsyncKeyState('Z') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.X, GetAsyncKeyState('X') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.C, GetAsyncKeyState('C') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.V, GetAsyncKeyState('V') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.B, GetAsyncKeyState('B') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.N, GetAsyncKeyState('N') & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.M, GetAsyncKeyState('M') & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.Z, GetAsyncKeyState('Z') & 0x8000);
-  UpdKeySate(usin.X, GetAsyncKeyState('X') & 0x8000);
-  UpdKeySate(usin.C, GetAsyncKeyState('C') & 0x8000);
-  UpdKeySate(usin.V, GetAsyncKeyState('V') & 0x8000);
-  UpdKeySate(usin.B, GetAsyncKeyState('B') & 0x8000);
-  UpdKeySate(usin.N, GetAsyncKeyState('N') & 0x8000);
-  UpdKeySate(usin.M, GetAsyncKeyState('M') & 0x8000);
+  UpdKeySate(usin.SPACE, GetAsyncKeyState(VK_SPACE) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.ENTER, GetAsyncKeyState(VK_SEPARATOR) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.DEL, GetAsyncKeyState(VK_DELETE) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.EREASE, GetAsyncKeyState(VK_BACK) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.ESCAPE, GetAsyncKeyState(VK_ESCAPE) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.TAB, GetAsyncKeyState(VK_TAB) & 0x8000, usin.IsEvent);
 
-  UpdKeySate(usin.SPACE, GetAsyncKeyState(VK_SPACE) & 0x8000);
-  UpdKeySate(usin.ENTER, GetAsyncKeyState(VK_SEPARATOR) & 0x8000);
-  UpdKeySate(usin.DEL, GetAsyncKeyState(VK_DELETE) & 0x8000);
-  UpdKeySate(usin.EREASE, GetAsyncKeyState(VK_BACK) & 0x8000);
-  UpdKeySate(usin.ESCAPE, GetAsyncKeyState(VK_ESCAPE) & 0x8000);
-  UpdKeySate(usin.TAB, GetAsyncKeyState(VK_TAB) & 0x8000);
-
-  UpdKeySate(usin.WIN_KEY, GetAsyncKeyState(VK_LWIN) & 0x8000);
-  UpdKeySate(usin.SHIFT_L, GetAsyncKeyState(VK_LSHIFT) & 0x8000);
-  UpdKeySate(usin.SHIFT_R, GetAsyncKeyState(VK_RSHIFT) & 0x8000);
-  UpdKeySate(usin.CTR_L, GetAsyncKeyState(VK_LCONTROL) & 0x8000);
-  UpdKeySate(usin.CTR_R, GetAsyncKeyState(VK_RCONTROL) & 0x8000);
-  UpdKeySate(usin.ALT_L, GetAsyncKeyState(VK_MENU) & 0x8000);
-  UpdKeySate(usin.ALT_R, GetAsyncKeyState(VK_MENU) & 0x8000);
+  UpdKeySate(usin.WIN_KEY, GetAsyncKeyState(VK_LWIN) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.SHIFT_L, GetAsyncKeyState(VK_LSHIFT) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.SHIFT_R, GetAsyncKeyState(VK_RSHIFT) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.CTR_L, GetAsyncKeyState(VK_LCONTROL) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.CTR_R, GetAsyncKeyState(VK_RCONTROL) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.ALT_L, GetAsyncKeyState(VK_MENU) & 0x8000, usin.IsEvent);
+  UpdKeySate(usin.ALT_R, GetAsyncKeyState(VK_MENU) & 0x8000, usin.IsEvent);
 
   usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
 
@@ -346,7 +351,6 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   // USRINPUT_DECL(ARROW_RIGHT);
 
   while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE)) {
-
     DispatchMessage(&msg);
     TranslateMessage(&msg);
   }
