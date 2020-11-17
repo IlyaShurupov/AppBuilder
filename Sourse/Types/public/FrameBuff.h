@@ -13,59 +13,6 @@
 #define COL32_G 0x0000ff00
 #define COL32_B 0x000000ff
 
-namespace COLOR_RGBA_32 {
-  inline void set_A(RGBA_32& color, unsigned char val) {
-    color &= 0x00ffffff;
-    color |= (RGBA_32(val) << 24);
-  }
-
-  inline void set_R(RGBA_32& color, unsigned char val) {
-    color &= 0xff00ffff;
-    color |= (RGBA_32(val) << 16);
-  }
-
-  inline void set_G(RGBA_32& color, unsigned char val) {
-    color &= 0xffff00ff;
-    color |= (RGBA_32(val) << 8);
-  }
-
-  inline void set_B(RGBA_32& color, unsigned char val) {
-    color &= 0xffffff00;
-    color |= (RGBA_32(val));
-  }
-
-  inline unsigned char get_A(RGBA_32& color) {
-    unsigned char out = color;
-    out = (color & 0xff000000) >> 24;
-    return out;
-  }
-
-  inline unsigned char get_R(RGBA_32& color) {
-    unsigned char out = color;
-    out = (color & 0x00ff0000) >> 16;
-    return out;
-  }
-
-  inline unsigned char get_G(RGBA_32& color) {
-    unsigned char out = color;
-    out = (color & 0x0000ff00) >> 8;
-    return out;
-  }
-
-  inline unsigned char get_B(RGBA_32& color) {
-    unsigned char out = color;
-    out = (color & 0x000000ff);
-    return out;
-  }
-
-  inline void premultiply(RGBA_32& color) {
-    unsigned char A = get_A(color);
-    set_R(color, unsigned char((get_R(color) * A) / 255.f));
-    set_G(color, unsigned char((get_G(color) * A) / 255.f));
-    set_B(color, unsigned char((get_B(color) * A) / 255.f));
-  }
-};
-
 template <typename Color_t>
 struct FBuff {
 
@@ -81,6 +28,8 @@ struct FBuff {
 
   // z order val
   int z_depth;
+
+  bool usealpha = false;
 
   // ------  cast properties ---------  //
   
@@ -210,3 +159,56 @@ FBuff<Color_t>::~FBuff() {
   delete pxls;
   local_hrchy.leave();
 }
+
+namespace COLOR_RGBA_32 {
+  inline void set_A(RGBA_32& color, unsigned char val) {
+    color &= 0x00ffffff;
+    color |= (RGBA_32(val) << 24);
+  }
+
+  inline void set_R(RGBA_32& color, unsigned char val) {
+    color &= 0xff00ffff;
+    color |= (RGBA_32(val) << 16);
+  }
+
+  inline void set_G(RGBA_32& color, unsigned char val) {
+    color &= 0xffff00ff;
+    color |= (RGBA_32(val) << 8);
+  }
+
+  inline void set_B(RGBA_32& color, unsigned char val) {
+    color &= 0xffffff00;
+    color |= (RGBA_32(val));
+  }
+
+  inline unsigned char get_A(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0xff000000) >> 24;
+    return out;
+  }
+
+  inline unsigned char get_R(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x00ff0000) >> 16;
+    return out;
+  }
+
+  inline unsigned char get_G(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x0000ff00) >> 8;
+    return out;
+  }
+
+  inline unsigned char get_B(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x000000ff);
+    return out;
+  }
+
+  inline void premultiply(RGBA_32& color) {
+    unsigned char A = get_A(color);
+    set_R(color, unsigned char((get_R(color) * A) / 255.f));
+    set_G(color, unsigned char((get_G(color) * A) / 255.f));
+    set_B(color, unsigned char((get_B(color) * A) / 255.f));
+  }
+};

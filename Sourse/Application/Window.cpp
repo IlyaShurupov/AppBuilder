@@ -6,12 +6,21 @@
 
 void Window::Draw() {
   FBFF_COLOR color = int32_t(0xff1b1b1f);
-  //COLOR_RGBA_32::set_A(color, 255 * timer.ease_in());
+  if (timer.remain() > 0) {
+    COLOR_RGBA_32::set_A(color, 255 * timer.ease_in());
+    buff.usealpha = true;
+
+    //rect.size.y += 8;
+    rect.pos.y -= 0.06 * timer.ease_out();
+    SysH->setRect(rect, scr_size.y);
+  } else {
+    buff.usealpha = false;
+  }
+
   buff.clear(&color);
 }
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
-
 
   rect.size.assign(800, 500);
   rect.pos.assign(600, 250);
@@ -23,7 +32,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
 
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
   if (!SUCCEEDED(CoInitialize(NULL))) {
-    printf("ERROR: imma bout to crash\n");
+    printf("ERROR: im about to crash\n");
   }
   if (!SUCCEEDED(SysH->Initialize(vec2<SCR_UINT>(1, 1)))) {
     printf("ERROR: system handler is out of his mind\n");
@@ -37,9 +46,9 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
-  timer.duration = 1000;
+  timer.duration = 300;
   timer.reset();
-  timer.start -= 500;
+  //timer.start -= 500;
 
   SysH->getScreenSize(scr_size);
 

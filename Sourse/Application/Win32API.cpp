@@ -210,7 +210,9 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
 
 void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 
-  //buff->premultiply();
+  if (buff->usealpha) {
+    buff->premultiply();
+  }
 
   HDC hdcWindow = GetDC(m_hwnd);
 
@@ -261,7 +263,7 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   cprect.inv_y(scry);
 
   SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y,
-               SWP_ASYNCWINDOWPOS);
+               SWP_DRAWFRAME);
 }
 
 void UpdKeySate(Input& key, bool down, bool& IsEvent) {
