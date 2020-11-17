@@ -8,11 +8,63 @@
 #define RGBA_32 int32_t
 #define FBFF_COLOR RGBA_32
 
-//#define IDX3D(width, depth, x, y, z) (width * depth * y + depth * x + z)
-//#define IDX2D(width, x, y) (width * y + x)
-//#define AR2D_GET(x, y, fBuff) (fBuff->Buff + (__int64)fBuff->pitch * y + x)
+#define COL32_A 0xff000000
+#define COL32_R 0x00ff0000
+#define COL32_G 0x0000ff00
+#define COL32_B 0x000000ff
 
+namespace COLOR_RGBA_32 {
+  inline void set_A(RGBA_32& color, unsigned char val) {
+    color &= 0x00ffffff;
+    color |= (RGBA_32(val) << 24);
+  }
 
+  inline void set_R(RGBA_32& color, unsigned char val) {
+    color &= 0xff00ffff;
+    color |= (RGBA_32(val) << 16);
+  }
+
+  inline void set_G(RGBA_32& color, unsigned char val) {
+    color &= 0xffff00ff;
+    color |= (RGBA_32(val) << 8);
+  }
+
+  inline void set_B(RGBA_32& color, unsigned char val) {
+    color &= 0xffffff00;
+    color |= (RGBA_32(val));
+  }
+
+  inline unsigned char get_A(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0xff000000) >> 24;
+    return out;
+  }
+
+  inline unsigned char get_R(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x00ff0000) >> 16;
+    return out;
+  }
+
+  inline unsigned char get_G(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x0000ff00) >> 8;
+    return out;
+  }
+
+  inline unsigned char get_B(RGBA_32& color) {
+    unsigned char out = color;
+    out = (color & 0x000000ff);
+    return out;
+  }
+
+  inline void premultiply(RGBA_32& color) {
+    unsigned char A = get_A(color);
+    set_R(color, unsigned char((get_R(color) * A) / 255.f));
+    set_G(color, unsigned char((get_G(color) * A) / 255.f));
+    set_B(color, unsigned char((get_B(color) * A) / 255.f));
+  }
+};
 
 template <typename Color_t>
 struct FBuff {
@@ -50,6 +102,8 @@ struct FBuff {
   
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void move(SCR_UINT dx, SCR_UINT dy);
+
+  void premultiply();
 
   // simple draw methods
   void DrawRect(Rect<SCR_UINT>& rect, Color_t& color);
@@ -140,6 +194,15 @@ void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
   out.root_height = &root->size.y;
   out.root_width = &root->size.x;
   out.pxls = get(rect.pos.x, rect.pos.y);
+}
+
+template<typename Color_t>
+void FBuff<Color_t>::premultiply() {
+  for (SCR_UINT i = 0; i < size.x; i++) {
+    for (SCR_UINT j = 0; j < size.y; j++) {
+      COLOR_RGBA_32::premultiply(*get(i, j));
+    }
+  }
 }
 
 template <typename Color_t>

@@ -5,7 +5,8 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  FBFF_COLOR color = int32_t(0x001b1b1f);
+  FBFF_COLOR color = int32_t(0xff1b1b1f);
+  //COLOR_RGBA_32::set_A(color, 255 * timer.ease_in());
   buff.clear(&color);
 }
 
@@ -36,6 +37,9 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
+  timer.duration = 1000;
+  timer.reset();
+  timer.start -= 500;
 
   SysH->getScreenSize(scr_size);
 
@@ -46,6 +50,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   SysH->setRect(rect, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
+
 }
 
 Window::~Window() {

@@ -82,7 +82,8 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      if (C.op_threads.len()) {
+      if (C.op_threads.len()) 
+      {
         // Draw each window & show updates
         FOREACH_NODE(Window, (&C.project.windows), win_node) {
           Window* win = win_node->Data;

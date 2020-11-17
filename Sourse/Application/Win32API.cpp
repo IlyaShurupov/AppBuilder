@@ -13,7 +13,8 @@
 #include <wincodec.h>
 #include "FrameBuff.h"
 #include "public/KeyMap.h"
-
+#include "wingdi.h"
+#include "d2d1_1.h"
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -85,13 +86,15 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, HINST_THISCOMPONENT, this);
+    m_hwnd = CreateWindow(name, name, WS_POPUP, 0, 0, 0, 0, NULL, NULL, HINST_THISCOMPONENT, this);
 
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
-      SetWindowLong(m_hwnd, GWL_STYLE, 0);
+      SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
       hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+
+      SetMenu(m_hwnd, NULL);
       // ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
       // SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
     }
@@ -172,15 +175,48 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
   return hBitmap;
 }
 
+void drawbmp(HWND hwnd, HBITMAP hbmp) {
+
+  // get the size of the bitmap
+  BITMAP bm;
+  GetObject(hbmp, sizeof(bm), &bm);
+  SIZE size = {bm.bmWidth, bm.bmHeight};
+
+  // create a memory DC holding the splash bitmap
+  HDC hdcScr = GetDC(NULL);
+  HDC hdcMem = CreateCompatibleDC(hdcScr);
+  HBITMAP hbmpOld = (HBITMAP)SelectObject(hdcMem, hbmp);
+
+  // use the source image's alpha channel for blending
+  BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  
+  LPRECT wrect_p = &RECT();
+  GetWindowRect(hwnd, wrect_p);
+
+  POINT pos;
+  pos.y = wrect_p->top;
+  pos.x = wrect_p->left;
+
+  POINT ptZero = {0};
+
+  // paint the window (in the right location) with the alpha-blended bitmap
+  UpdateLayeredWindow(hwnd, hdcScr, &pos, &size, hdcMem, &ptZero, RGB(0, 0, 0), &bf, 2);
+
+  // delete temporary objects
+  SelectObject(hdcMem, hbmpOld);
+  DeleteDC(hdcMem);
+  ReleaseDC(NULL, hdcScr);
+}
 
 void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
+
+  //buff->premultiply();
 
   HDC hdcWindow = GetDC(m_hwnd);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
-  HANDLE hOld = SelectObject(hdcMem, hbmMem);
-   BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
+  drawbmp(m_hwnd, hbmMem);
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);

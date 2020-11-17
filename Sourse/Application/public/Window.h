@@ -3,6 +3,7 @@
 #include "KeyMap.h"
 #include "UILayout.h"
 #include "Rect.h"
+#include "Timer.h"
 
 struct Window {
 
@@ -16,6 +17,8 @@ struct Window {
   // UI layout of window
   List<UIItem> areas;
   UserInputs user_inputs;
+
+  Timer timer;
 
   // Creates empty window
   Window(std::string* configfolder, List<Operator>* operators);
