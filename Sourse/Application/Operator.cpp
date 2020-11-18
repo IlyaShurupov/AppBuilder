@@ -113,6 +113,8 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
   Rect<SCR_UINT> rect;
   data->win->getRect(rect);
 
+  //rect.size.y += 2;
+  //rect.pos.y += -1;
   rect.size.y += dy * data->top;
   rect.size.x += dx * data->right;
 
@@ -125,6 +127,8 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
     rect.pos.x += dx;
     rect.size.x -= dx;
   }
+  /*
+  */
 
   data->win->setRect(rect);
 }

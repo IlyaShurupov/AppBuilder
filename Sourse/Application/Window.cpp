@@ -7,14 +7,16 @@
 void Window::Draw() {
   FBFF_COLOR color = int32_t(0xff1b1b1f);
   if (timer.remain() > 0) {
-    COLOR_RGBA_32::set_A(color, 255 * timer.ease_in());
+    RGBA_SET((&color), unsigned char(255 * timer.ease_in()), 3);
     buff.usealpha = true;
 
+    //rect.size.y += 20;
+    rect.pos.y += -10;
     //rect.size.y += 8;
-    rect.pos.y -= 0.06 * timer.ease_out();
-    SysH->setRect(rect, scr_size.y);
+    //rect.pos.y -= 0.01 * timer.ease_out();
+    //setRect(rect);
   } else {
-    buff.usealpha = false;
+    //buff.usealpha = false;
   }
 
   buff.clear(&color);
@@ -34,7 +36,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
-  if (!SUCCEEDED(SysH->Initialize(vec2<SCR_UINT>(1, 1)))) {
+  if (!SUCCEEDED(SysH->Initialize(rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
@@ -46,7 +48,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
-  timer.duration = 300;
+  timer.duration = 400;
   timer.reset();
   //timer.start -= 500;
 

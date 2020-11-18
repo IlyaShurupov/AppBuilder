@@ -13,7 +13,7 @@ class SystemHandler {
   ~SystemHandler();
 
   // Register the win & call methods for instantiating drawing res
-  HRESULT Initialize(vec2<SCR_UINT>& size);
+  HRESULT Initialize(Rect<SCR_UINT>& rect);
 
   // UserInputs
   void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);

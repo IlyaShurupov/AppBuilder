@@ -45,8 +45,10 @@ SystemHandler::~SystemHandler() {
 }
 
 
-HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
+HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
   HRESULT hr;
+
+  rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
 
   ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
   consolehidden = !consolehidden;
@@ -56,6 +58,7 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
   hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
 
   if (SUCCEEDED(hr)) {
+
 
     // Register the window class.
     WNDCLASSEX wcex = {sizeof(WNDCLASSEX)};
@@ -84,9 +87,9 @@ HRESULT SystemHandler::Initialize(vec2<SCR_UINT>& size) {
 
     // Create the window.
     LPCSTR name = LPCSTR("Gamuncool");
-    UINT sizex = static_cast<UINT>(ceil(float(size.x) * dpiX / 96.f));
-    UINT sizey = static_cast<UINT>(ceil(float(size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_POPUP, 0, 0, 0, 0, NULL, NULL, HINST_THISCOMPONENT, this);
+    UINT sizex = static_cast<UINT>(ceil(float(rect.size.x) * dpiX / 96.f));
+    UINT sizey = static_cast<UINT>(ceil(float(rect.size.y) * dpiY / 96.f));
+    m_hwnd = CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL, HINST_THISCOMPONENT, this);
 
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
@@ -122,6 +125,10 @@ LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
     if (pDemoApp) {
 
       switch (message) {
+
+        case WM_SIZE:
+          wasHandled = true;
+          break;
 
         case WM_CLOSE: {
           pDemoApp->close = true;
