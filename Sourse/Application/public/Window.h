@@ -7,7 +7,7 @@
 
 struct Window {
 
-  FBuff<RGBA_32> buff;
+  FBuff<RGBAf> buff;
 
   // dimentions & loc of window
   Rect<SCR_UINT> rect;
@@ -17,8 +17,6 @@ struct Window {
   // UI layout of window
   List<UIItem> areas;
   UserInputs user_inputs;
-
-  Timer timer;
 
   // Creates empty window
   Window(std::string* configfolder, List<Operator>* operators);

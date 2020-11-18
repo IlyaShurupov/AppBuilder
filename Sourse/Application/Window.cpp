@@ -5,20 +5,8 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  FBFF_COLOR color = int32_t(0xff1b1b1f);
-  if (timer.remain() > 0) {
-    RGBA_SET((&color), unsigned char(255 * timer.ease_in()), 3);
-    buff.usealpha = true;
-
-    //rect.size.y += 20;
-    rect.pos.y += -10;
-    //rect.size.y += 8;
-    //rect.pos.y -= 0.01 * timer.ease_out();
-    //setRect(rect);
-  } else {
-    //buff.usealpha = false;
-  }
-
+  RGBAf color = RGBAf();
+  
   buff.clear(&color);
 }
 
@@ -47,10 +35,6 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   // compile kmap
   std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
-
-  timer.duration = 400;
-  timer.reset();
-  //timer.start -= 500;
 
   SysH->getScreenSize(scr_size);
 

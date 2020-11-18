@@ -13,7 +13,12 @@
 #define COL32_G 0x0000ff00
 #define COL32_B 0x000000ff
 
-
+typedef struct RGBAf {
+  float R = 1.f;
+  float G = 1.f;
+  float B = 1.f;
+  float A = 1.f;
+} RGBAf;
 
 template <typename Color_t>
 struct FBuff {
@@ -51,6 +56,7 @@ struct FBuff {
 
   void resize(SCR_UINT width, SCR_UINT height);
 
+  void coppy(FBuff<RGBAf>* fbuff);
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void move(SCR_UINT dx, SCR_UINT dy);
 
@@ -125,6 +131,21 @@ Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
   }
 
   return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + (x + pos.x);
+}
+
+template<typename Color_t>
+void FBuff<Color_t>::coppy(FBuff<RGBAf>* fbuff) {
+  resize(fbuff->size.x, fbuff->size.y);
+  unsigned char r, g, b;
+  SCR_UINT len = size.x * size.y;
+  for (SCR_UINT i = 0; i < len; i++) {
+    r = (fbuff->pxls + i)->R * 255;
+    g = (fbuff->pxls + i)->G * 255;
+    b = (fbuff->pxls + i)->B * 255;
+
+    *(pxls + i) = 0xff000000 | ((RGBA_32)r << 16) | ((RGBA_32)g << 8) | (RGBA_32)b;
+  }
+
 }
 
 template <typename Color_t>

@@ -21,6 +21,9 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
 
+#define TRANSPARENTCY
+#undef TRANSPARENTCY
+
 bool consolehidden = false;
 
 template <class Interface>
@@ -94,7 +97,12 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
+      #ifdef TRANSPARENTCY
       SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+      #else
+      SetWindowLong(m_hwnd, GWL_EXSTYLE, 0);
+      #endif
+
       hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
 
       SetMenu(m_hwnd, NULL);
@@ -215,17 +223,21 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   ReleaseDC(NULL, hdcScr);
 }
 
-void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
+void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
 
-  if (buff->usealpha) {
-    buff->premultiply();
-  }
+  FBuff<RGBA_32> rgba32bit;
+  rgba32bit.coppy(buff);
 
   HDC hdcWindow = GetDC(m_hwnd);
 
-  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, rgba32bit.pxls);
 
+  #ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
+  #else
+  SelectObject(hdcMem, hbmMem);
+  BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
+  #endif
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);

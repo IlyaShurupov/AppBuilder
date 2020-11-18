@@ -19,7 +19,7 @@ class SystemHandler {
   void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
-  void SysOutput(FBuff<RGBA_32>* buff);
+  void SysOutput(FBuff<RGBAf>* buff);
 
   void consoletoggle();
 
