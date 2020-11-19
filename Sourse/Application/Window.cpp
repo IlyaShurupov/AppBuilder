@@ -5,8 +5,8 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  RGBAf color = RGBAf();
-  
+  RGBA_32 color = 0xff1d1d1d;
+  SysH->drawRect(Rect<SCR_UINT>());
   buff.clear(&color);
 }
 
@@ -66,7 +66,7 @@ void Window::ProcessEvents(List<OpThread>* op_threads) {
 }
 
 void Window::SendBuffToSystem() {
-  SysH->SysOutput(&buff);
+  //SysH->SysOutput(&buff);
 }
 
 bool Window::IsActive() {

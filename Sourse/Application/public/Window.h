@@ -7,7 +7,7 @@
 
 struct Window {
 
-  FBuff<RGBAf> buff;
+  FBuff<RGBA_32> buff;
 
   // dimentions & loc of window
   Rect<SCR_UINT> rect;

@@ -139,9 +139,9 @@ void FBuff<Color_t>::coppy(FBuff<RGBAf>* fbuff) {
   unsigned char r, g, b;
   SCR_UINT len = size.x * size.y;
   for (SCR_UINT i = 0; i < len; i++) {
-    r = (fbuff->pxls + i)->R * 255;
-    g = (fbuff->pxls + i)->G * 255;
-    b = (fbuff->pxls + i)->B * 255;
+    r = unsigned char((fbuff->pxls + i)->R * 255);
+    g = unsigned char((fbuff->pxls + i)->G * 255);
+    b = unsigned char((fbuff->pxls + i)->B * 255);
 
     *(pxls + i) = 0xff000000 | ((RGBA_32)r << 16) | ((RGBA_32)g << 8) | (RGBA_32)b;
   }

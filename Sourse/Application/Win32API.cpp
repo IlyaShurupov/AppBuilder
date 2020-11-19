@@ -228,9 +228,14 @@ void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
   FBuff<RGBA_32> rgba32bit;
   rgba32bit.coppy(buff);
 
+  SysOutput(&rgba32bit);
+}
+
+void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
+
   HDC hdcWindow = GetDC(m_hwnd);
 
-  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, rgba32bit.pxls);
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
   #ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
@@ -241,6 +246,50 @@ void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
+}
+
+void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
+  HDC hdc = BeginPaint(m_hwnd, &ps);
+  //hdc = BeginPaint(m_hWnd, &ps);
+  //    Initializing original object
+  HGDIOBJ original = NULL;
+
+  //    Saving the original object
+  original = SelectObject(hdc, GetStockObject(DC_PEN));
+
+  //    Rectangle function is defined as...
+  //    BOOL Rectangle(hdc, xLeft, yTop, yRight, yBottom);
+
+  //    Drawing a rectangle with just a black pen
+  //    The black pen object is selected and sent to the current device context
+  //  The default brush is WHITE_BRUSH
+  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  Rectangle(hdc, 0, 0, 200, 200);
+
+  //    Select DC_PEN so you can change the color of the pen with
+  //    COLORREF SetDCPenColor(HDC hdc, COLORREF color)
+  SelectObject(hdc, GetStockObject(DC_PEN));
+
+  //    Select DC_BRUSH so you can change the brush color from the 
+  //    default WHITE_BRUSH to any other color
+  SelectObject(hdc, GetStockObject(DC_BRUSH));
+
+  //    Set the DC Brush to Red
+  //    The RGB macro is declared in "Windowsx.h"
+  SetDCBrushColor(hdc, RGB(255, 0, 0));
+
+  //    Set the Pen to Blue
+  SetDCPenColor(hdc, RGB(0, 0, 255));
+
+  //    Drawing a rectangle with the current Device Context    
+  Rectangle(hdc, 100, 300, 200, 400);
+
+  //    Changing the color of the brush to Green
+  SetDCBrushColor(hdc, RGB(0, 255, 0));
+  Rectangle(hdc, 300, 150, 500, 300);
+
+  //    Restoring the original object
+  SelectObject(hdc, original);
 }
 
 

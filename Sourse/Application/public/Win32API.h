@@ -14,12 +14,14 @@ class SystemHandler {
 
   // Register the win & call methods for instantiating drawing res
   HRESULT Initialize(Rect<SCR_UINT>& rect);
+  void ShowInitializedWindow();
 
   // UserInputs
   void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
   void SysOutput(FBuff<RGBAf>* buff);
+  void SysOutput(FBuff<RGBA_32>* buff);
 
   void consoletoggle();
 
@@ -31,7 +33,7 @@ class SystemHandler {
 
   void SetIcon(std::string stricon);
 
-  void ShowInitializedWindow();
+  void drawRect(Rect<SCR_UINT>& rect);
 
  private:
 
