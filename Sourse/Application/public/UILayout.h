@@ -15,7 +15,7 @@ enum struct UIInputState {
 };
 
 enum struct UIType {
-  NONE = 0,
+  BUTTON = 0,
   ROOT,
   AREA,
   REGION,
@@ -29,9 +29,6 @@ struct UIItem {
 
   void* CustomData = nullptr;
 
-  // location & size in the parent frame of reference
-  Rect<SCR_UINT> rect;
-  
   void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs) = nullptr;
   void (*Draw)(UIItem *This) = nullptr;
 
@@ -40,4 +37,4 @@ struct UIItem {
   }
 };
 
-UIItem* UIroot_Init(List<Operator>* operators);
+UIItem* UI_compile(List<Operator>* operators, std::string *ui_path);

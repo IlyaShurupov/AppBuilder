@@ -39,7 +39,8 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
 
   SysH->getScreenSize(scr_size);
 
-  UIroot = UIroot_Init(operators);
+  std::string ui_path = *configfolder + "UIs\\Default.txt";
+  UIroot = UI_compile(operators, ui_path);
 
   // draw initialized window
   buff.resize(rect.size.x, rect.size.y);
