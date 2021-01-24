@@ -1,0 +1,126 @@
+\hypertarget{class_ray}{}\doxysection{Ray Class Reference}
+\label{class_ray}\index{Ray@{Ray}}
+
+
+{\ttfamily \#include $<$Ray.\+h$>$}
+
+
+
+Collaboration diagram for Ray\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_ray_aa0856d933383e7105849fc91f4b30d7b}{Ray}} (\mbox{\hyperlink{class_vec3f}{Vec3f}} \&\mbox{\hyperlink{class_ray_a0f21b077eea8954d068d6a5b4e9dfcdb}{Dir}}, \mbox{\hyperlink{class_vec3f}{Vec3f}} \&\mbox{\hyperlink{class_ray_ae9f23b6a65cef211cb77a061b73b7ea4}{Pos}})
+\item 
+\mbox{\hyperlink{class_ray_a2e3d2c29f2df4ab3da10da79d4acb852}{Ray}} ()
+\item 
+\mbox{\hyperlink{class_ray_a8b0e575ce5df046c0c7615c32a96a46f}{$\sim$\+Ray}} ()
+\item 
+void \mbox{\hyperlink{class_ray_a950de13a4539d64bc706956ed103ba89}{Cast}} (\mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{class_object}{Object}} $>$ $\ast$objects, float ray\+\_\+length)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_vec3f}{Vec3f}} \mbox{\hyperlink{class_ray_a0f21b077eea8954d068d6a5b4e9dfcdb}{Dir}}
+\item 
+\mbox{\hyperlink{class_vec3f}{Vec3f}} \mbox{\hyperlink{class_ray_ae9f23b6a65cef211cb77a061b73b7ea4}{Pos}}
+\item 
+\mbox{\hyperlink{struct_ray_hit_data}{Ray\+Hit\+Data}} \mbox{\hyperlink{class_ray_a93f6a08711b1b62933ba053fb24f96a0}{Hit\+Data}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 12 of file Ray.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_ray_aa0856d933383e7105849fc91f4b30d7b}\label{class_ray_aa0856d933383e7105849fc91f4b30d7b}} 
+\index{Ray@{Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Ray\+::\+Ray (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vec3f}{Vec3f}} \&}]{Dir,  }\item[{\mbox{\hyperlink{class_vec3f}{Vec3f}} \&}]{Pos }\end{DoxyParamCaption})}
+
+
+
+Definition at line 6 of file Ray.\+cpp.
+
+\mbox{\Hypertarget{class_ray_a2e3d2c29f2df4ab3da10da79d4acb852}\label{class_ray_a2e3d2c29f2df4ab3da10da79d4acb852}} 
+\index{Ray@{Ray}!Ray@{Ray}}
+\index{Ray@{Ray}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{Ray()}{Ray()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Ray\+::\+Ray (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 3 of file Ray.\+cpp.
+
+\mbox{\Hypertarget{class_ray_a8b0e575ce5df046c0c7615c32a96a46f}\label{class_ray_a8b0e575ce5df046c0c7615c32a96a46f}} 
+\index{Ray@{Ray}!````~Ray@{$\sim$Ray}}
+\index{````~Ray@{$\sim$Ray}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{$\sim$Ray()}{~Ray()}}
+{\footnotesize\ttfamily Ray\+::$\sim$\+Ray (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 12 of file Ray.\+cpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_ray_a950de13a4539d64bc706956ed103ba89}\label{class_ray_a950de13a4539d64bc706956ed103ba89}} 
+\index{Ray@{Ray}!Cast@{Cast}}
+\index{Cast@{Cast}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{Cast()}{Cast()}}
+{\footnotesize\ttfamily void Ray\+::\+Cast (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{class_object}{Object}} $>$ $\ast$}]{objects,  }\item[{float}]{ray\+\_\+length }\end{DoxyParamCaption})}
+
+
+
+Definition at line 26 of file Ray.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 1
+Here is the caller graph for this function\+:
+% FIG 2
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_ray_a0f21b077eea8954d068d6a5b4e9dfcdb}\label{class_ray_a0f21b077eea8954d068d6a5b4e9dfcdb}} 
+\index{Ray@{Ray}!Dir@{Dir}}
+\index{Dir@{Dir}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{Dir}{Dir}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vec3f}{Vec3f}} Ray\+::\+Dir}
+
+
+
+Definition at line 15 of file Ray.\+h.
+
+\mbox{\Hypertarget{class_ray_a93f6a08711b1b62933ba053fb24f96a0}\label{class_ray_a93f6a08711b1b62933ba053fb24f96a0}} 
+\index{Ray@{Ray}!HitData@{HitData}}
+\index{HitData@{HitData}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{HitData}{HitData}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_ray_hit_data}{Ray\+Hit\+Data}} Ray\+::\+Hit\+Data}
+
+
+
+Definition at line 18 of file Ray.\+h.
+
+\mbox{\Hypertarget{class_ray_ae9f23b6a65cef211cb77a061b73b7ea4}\label{class_ray_ae9f23b6a65cef211cb77a061b73b7ea4}} 
+\index{Ray@{Ray}!Pos@{Pos}}
+\index{Pos@{Pos}!Ray@{Ray}}
+\doxysubsubsection{\texorpdfstring{Pos}{Pos}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vec3f}{Vec3f}} Ray\+::\+Pos}
+
+
+
+Definition at line 16 of file Ray.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sourse/\+Types/public/\mbox{\hyperlink{_ray_8h}{Ray.\+h}}\item 
+Sourse/\+Types/\mbox{\hyperlink{_ray_8cpp}{Ray.\+cpp}}\end{DoxyCompactItemize}

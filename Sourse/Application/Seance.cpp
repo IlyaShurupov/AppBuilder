@@ -9,24 +9,17 @@ Seance::Seance(std::string* basePath) {
     // load project
     OnRead(/*file path*/);
   } else {
+
     // Create dummy
     initOps(this);
 
     basePath->erase(basePath->rfind('\\') + 1);
     std::string configfolder = *basePath + "\\Configuration\\";
 
-
-    // window
-    //Window* win1 = new Window(&filepath, &prefferences.operators);
-    //win1->ToggleConsole();
-
     Window* win2 = DBG_NEW Window(&configfolder, &prefferences.operators);
-    //win2->ToggleConsole();
-    //project.windows.add(win1);
-    project.windows.add(win2);
-    //win.
 
-    //initOps();
+    project.windows.add(win2);
+
   }
 }
 

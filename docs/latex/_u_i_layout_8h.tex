@@ -1,0 +1,80 @@
+\hypertarget{_u_i_layout_8h}{}\doxysection{Sourse/\+Application/public/\+U\+I\+Layout.h File Reference}
+\label{_u_i_layout_8h}\index{Sourse/Application/public/UILayout.h@{Sourse/Application/public/UILayout.h}}
+{\ttfamily \#include \char`\"{}Linked\+List.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Property.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vec2.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Frame\+Buff.\+h\char`\"{}}\newline
+Include dependency graph for U\+I\+Layout.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_u_i_item}{U\+I\+Item}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6}{U\+I\+Input\+State}} \{ \newline
+\mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ab50339a10e1de285ac99d4c3990b8693}{U\+I\+Input\+State\+::\+N\+O\+NE}} = 0, 
+\mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a0c6d9dfb485b43c6fba87439f9f73ac4}{U\+I\+Input\+State\+::\+H\+O\+LD}}, 
+\mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a5381dc876ab002103a027265bc14ae52}{U\+I\+Input\+State\+::\+P\+R\+E\+S\+S\+ED}}, 
+\mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a109d54efbb64d71f9a6ab18d0fb8add8}{U\+I\+Input\+State\+::\+R\+E\+L\+E\+A\+S\+ED}}, 
+\newline
+\mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ada95feece334f0612031adf21d057ab9}{U\+I\+Input\+State\+::\+H\+O\+V\+ER}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_u_i_layout_8h_a9a0033f44553acf015a59da606d39cb8}{U\+I\+\_\+\+Init}} (struct \mbox{\hyperlink{struct_seance}{Seance}} $\ast$C)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6}} 
+\index{UILayout.h@{UILayout.h}!UIInputState@{UIInputState}}
+\index{UIInputState@{UIInputState}!UILayout.h@{UILayout.h}}
+\doxysubsubsection{\texorpdfstring{UIInputState}{UIInputState}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6}{U\+I\+Input\+State}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NONE@{NONE}!UILayout.h@{UILayout.h}}\index{UILayout.h@{UILayout.h}!NONE@{NONE}}}\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ab50339a10e1de285ac99d4c3990b8693}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ab50339a10e1de285ac99d4c3990b8693}} 
+N\+O\+NE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HOLD@{HOLD}!UILayout.h@{UILayout.h}}\index{UILayout.h@{UILayout.h}!HOLD@{HOLD}}}\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a0c6d9dfb485b43c6fba87439f9f73ac4}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a0c6d9dfb485b43c6fba87439f9f73ac4}} 
+H\+O\+LD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRESSED@{PRESSED}!UILayout.h@{UILayout.h}}\index{UILayout.h@{UILayout.h}!PRESSED@{PRESSED}}}\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a5381dc876ab002103a027265bc14ae52}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a5381dc876ab002103a027265bc14ae52}} 
+P\+R\+E\+S\+S\+ED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RELEASED@{RELEASED}!UILayout.h@{UILayout.h}}\index{UILayout.h@{UILayout.h}!RELEASED@{RELEASED}}}\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a109d54efbb64d71f9a6ab18d0fb8add8}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6a109d54efbb64d71f9a6ab18d0fb8add8}} 
+R\+E\+L\+E\+A\+S\+ED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HOVER@{HOVER}!UILayout.h@{UILayout.h}}\index{UILayout.h@{UILayout.h}!HOVER@{HOVER}}}\mbox{\Hypertarget{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ada95feece334f0612031adf21d057ab9}\label{_u_i_layout_8h_a57c2f62a5214da50e2f553b272cceed6ada95feece334f0612031adf21d057ab9}} 
+H\+O\+V\+ER&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 8 of file U\+I\+Layout.\+h.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_u_i_layout_8h_a9a0033f44553acf015a59da606d39cb8}\label{_u_i_layout_8h_a9a0033f44553acf015a59da606d39cb8}} 
+\index{UILayout.h@{UILayout.h}!UI\_Init@{UI\_Init}}
+\index{UI\_Init@{UI\_Init}!UILayout.h@{UILayout.h}}
+\doxysubsubsection{\texorpdfstring{UI\_Init()}{UI\_Init()}}
+{\footnotesize\ttfamily void U\+I\+\_\+\+Init (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C }\end{DoxyParamCaption})}
+
+
+
+Definition at line 9 of file U\+I\+Layout.\+cpp.
+

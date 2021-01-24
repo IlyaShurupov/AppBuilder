@@ -1,0 +1,202 @@
+\hypertarget{class_object}{}\doxysection{Object Class Reference}
+\label{class_object}\index{Object@{Object}}
+
+
+{\ttfamily \#include $<$Object.\+h$>$}
+
+
+
+Collaboration diagram for Object\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_object_a40860402e64d8008fb42329df7097cdb}{Object}} ()
+\item 
+\mbox{\hyperlink{class_object_ae8f5483f459e46687bd01e6f9977afd3}{$\sim$\+Object}} ()
+\item 
+void \mbox{\hyperlink{class_object_a1414ffb218e6152a1ec253d818dc1275}{Set\+Static\+Mesh\+Component}} (\mbox{\hyperlink{class_static_mesh}{Static\+Mesh}} $\ast$\mbox{\hyperlink{class_static_mesh}{Static\+Mesh}})
+\item 
+\mbox{\hyperlink{class_static_mesh}{Static\+Mesh}} $\ast$ \mbox{\hyperlink{class_object_a2e29548a1851e26412091276221d71f1}{Get\+Static\+Mesh\+Component}} ()
+\item 
+void \mbox{\hyperlink{class_object_a36c61682a5f5bb03542f2c23f0ffcb7b}{Set\+Camera\+Component}} (\mbox{\hyperlink{struct_camera}{Camera}} $\ast$Camera\+Component)
+\item 
+\mbox{\hyperlink{struct_camera}{Camera}} $\ast$ \mbox{\hyperlink{class_object_aa7da6cff4113ee076fe648939c03c1c6}{Get\+Camera\+Component}} ()
+\item 
+void \mbox{\hyperlink{class_object_ace26abbd93917688500d7003c06726c0}{get\+World\+Location}} (\mbox{\hyperlink{class_vec3f}{Vec3f}} \&out)
+\item 
+void \mbox{\hyperlink{class_object_a646440e19588a72e593b1153bd816748}{get\+World\+Transform}} (\mbox{\hyperlink{class_mat3f}{Mat3f}} \&out)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_hierarchy}{Hierarchy}}$<$ \mbox{\hyperlink{class_object}{Object}}, \mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{class_object}{Object}} $>$, 0 $>$ \mbox{\hyperlink{class_object_a590d25d980dcb52f90e5c542baa9c73d}{hrchy}}
+\item 
+\mbox{\hyperlink{struct_hierarchy}{Hierarchy}}$<$ \mbox{\hyperlink{class_object}{Object}}, \mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{class_object}{Object}} $>$, 1 $>$ \mbox{\hyperlink{class_object_a89ae313aa4ac14d7a9c45cbdabd21001}{hrchy\+\_\+dbg}}
+\item 
+\mbox{\hyperlink{class_mat3f}{Mat3f}} \mbox{\hyperlink{class_object_aa33bd9fcba98b68b94975ad369b1ac3a}{Transform\+Mat}}
+\item 
+\mbox{\hyperlink{class_vec3f}{Vec3f}} \mbox{\hyperlink{class_object_a9591b09cb9855a3bbf3e35cc860ab557}{Pos}}
+\item 
+\mbox{\hyperlink{struct_obj_visibility}{Obj\+Visibility}} \mbox{\hyperlink{class_object_a8288220757646acdec9e8d6180e0402a}{Visibility}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 21 of file Object.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_object_a40860402e64d8008fb42329df7097cdb}\label{class_object_a40860402e64d8008fb42329df7097cdb}} 
+\index{Object@{Object}!Object@{Object}}
+\index{Object@{Object}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{Object()}{Object()}}
+{\footnotesize\ttfamily Object\+::\+Object (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 4 of file Object.\+cpp.
+
+\mbox{\Hypertarget{class_object_ae8f5483f459e46687bd01e6f9977afd3}\label{class_object_ae8f5483f459e46687bd01e6f9977afd3}} 
+\index{Object@{Object}!````~Object@{$\sim$Object}}
+\index{````~Object@{$\sim$Object}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{$\sim$Object()}{~Object()}}
+{\footnotesize\ttfamily Object\+::$\sim$\+Object (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 9 of file Object.\+cpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_object_aa7da6cff4113ee076fe648939c03c1c6}\label{class_object_aa7da6cff4113ee076fe648939c03c1c6}} 
+\index{Object@{Object}!GetCameraComponent@{GetCameraComponent}}
+\index{GetCameraComponent@{GetCameraComponent}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{GetCameraComponent()}{GetCameraComponent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_camera}{Camera}} $\ast$ Object\+::\+Get\+Camera\+Component (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 21 of file Object.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{class_object_a2e29548a1851e26412091276221d71f1}\label{class_object_a2e29548a1851e26412091276221d71f1}} 
+\index{Object@{Object}!GetStaticMeshComponent@{GetStaticMeshComponent}}
+\index{GetStaticMeshComponent@{GetStaticMeshComponent}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{GetStaticMeshComponent()}{GetStaticMeshComponent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_static_mesh}{Static\+Mesh}} $\ast$ Object\+::\+Get\+Static\+Mesh\+Component (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 15 of file Object.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_object_ace26abbd93917688500d7003c06726c0}\label{class_object_ace26abbd93917688500d7003c06726c0}} 
+\index{Object@{Object}!getWorldLocation@{getWorldLocation}}
+\index{getWorldLocation@{getWorldLocation}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{getWorldLocation()}{getWorldLocation()}}
+{\footnotesize\ttfamily void Object\+::get\+World\+Location (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vec3f}{Vec3f}} \&}]{out }\end{DoxyParamCaption})}
+
+
+
+Definition at line 23 of file Object.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 3
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{class_object_a646440e19588a72e593b1153bd816748}\label{class_object_a646440e19588a72e593b1153bd816748}} 
+\index{Object@{Object}!getWorldTransform@{getWorldTransform}}
+\index{getWorldTransform@{getWorldTransform}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{getWorldTransform()}{getWorldTransform()}}
+{\footnotesize\ttfamily void Object\+::get\+World\+Transform (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_mat3f}{Mat3f}} \&}]{out }\end{DoxyParamCaption})}
+
+
+
+Definition at line 32 of file Object.\+cpp.
+
+\mbox{\Hypertarget{class_object_a36c61682a5f5bb03542f2c23f0ffcb7b}\label{class_object_a36c61682a5f5bb03542f2c23f0ffcb7b}} 
+\index{Object@{Object}!SetCameraComponent@{SetCameraComponent}}
+\index{SetCameraComponent@{SetCameraComponent}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{SetCameraComponent()}{SetCameraComponent()}}
+{\footnotesize\ttfamily void Object\+::\+Set\+Camera\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_camera}{Camera}} $\ast$}]{Camera\+Component }\end{DoxyParamCaption})}
+
+
+
+Definition at line 17 of file Object.\+cpp.
+
+\mbox{\Hypertarget{class_object_a1414ffb218e6152a1ec253d818dc1275}\label{class_object_a1414ffb218e6152a1ec253d818dc1275}} 
+\index{Object@{Object}!SetStaticMeshComponent@{SetStaticMeshComponent}}
+\index{SetStaticMeshComponent@{SetStaticMeshComponent}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{SetStaticMeshComponent()}{SetStaticMeshComponent()}}
+{\footnotesize\ttfamily void Object\+::\+Set\+Static\+Mesh\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_static_mesh}{Static\+Mesh}} $\ast$}]{Static\+Mesh }\end{DoxyParamCaption})}
+
+
+
+Definition at line 11 of file Object.\+cpp.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_object_a590d25d980dcb52f90e5c542baa9c73d}\label{class_object_a590d25d980dcb52f90e5c542baa9c73d}} 
+\index{Object@{Object}!hrchy@{hrchy}}
+\index{hrchy@{hrchy}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{hrchy}{hrchy}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_hierarchy}{Hierarchy}}$<$\mbox{\hyperlink{class_object}{Object}}, \mbox{\hyperlink{class_list}{List}}$<$\mbox{\hyperlink{class_object}{Object}}$>$, 0$>$ Object\+::hrchy}
+
+
+
+Definition at line 24 of file Object.\+h.
+
+\mbox{\Hypertarget{class_object_a89ae313aa4ac14d7a9c45cbdabd21001}\label{class_object_a89ae313aa4ac14d7a9c45cbdabd21001}} 
+\index{Object@{Object}!hrchy\_dbg@{hrchy\_dbg}}
+\index{hrchy\_dbg@{hrchy\_dbg}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{hrchy\_dbg}{hrchy\_dbg}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_hierarchy}{Hierarchy}}$<$\mbox{\hyperlink{class_object}{Object}}, \mbox{\hyperlink{class_list}{List}}$<$\mbox{\hyperlink{class_object}{Object}}$>$, 1$>$ Object\+::hrchy\+\_\+dbg}
+
+
+
+Definition at line 25 of file Object.\+h.
+
+\mbox{\Hypertarget{class_object_a9591b09cb9855a3bbf3e35cc860ab557}\label{class_object_a9591b09cb9855a3bbf3e35cc860ab557}} 
+\index{Object@{Object}!Pos@{Pos}}
+\index{Pos@{Pos}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{Pos}{Pos}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vec3f}{Vec3f}} Object\+::\+Pos}
+
+
+
+Definition at line 28 of file Object.\+h.
+
+\mbox{\Hypertarget{class_object_aa33bd9fcba98b68b94975ad369b1ac3a}\label{class_object_aa33bd9fcba98b68b94975ad369b1ac3a}} 
+\index{Object@{Object}!TransformMat@{TransformMat}}
+\index{TransformMat@{TransformMat}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{TransformMat}{TransformMat}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_mat3f}{Mat3f}} Object\+::\+Transform\+Mat}
+
+
+
+Definition at line 27 of file Object.\+h.
+
+\mbox{\Hypertarget{class_object_a8288220757646acdec9e8d6180e0402a}\label{class_object_a8288220757646acdec9e8d6180e0402a}} 
+\index{Object@{Object}!Visibility@{Visibility}}
+\index{Visibility@{Visibility}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{Visibility}{Visibility}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_obj_visibility}{Obj\+Visibility}} Object\+::\+Visibility}
+
+
+
+Definition at line 31 of file Object.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sourse/\+Types/public/\mbox{\hyperlink{_object_8h}{Object.\+h}}\item 
+Sourse/\+Types/\mbox{\hyperlink{_object_8cpp}{Object.\+cpp}}\end{DoxyCompactItemize}

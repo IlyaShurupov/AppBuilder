@@ -1,0 +1,240 @@
+\hypertarget{_print_8cpp}{}\doxysection{Sourse/\+Application/\+Print.cpp File Reference}
+\label{_print_8cpp}\index{Sourse/Application/Print.cpp@{Sourse/Application/Print.cpp}}
+{\ttfamily \#include \char`\"{}public/\+Print.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$windows.\+h$>$}\newline
+Include dependency graph for Print.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a8c54b10b84183429bcbcbc82c92fcca9}{C\+O\+UT}}~std\+::cout $<$$<$
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_ad58a1fbfc85c7e4790fc55e654f50221}{T\+AB}}~\char`\"{}	\char`\"{} $<$$<$
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a4fc34b120ed3bd1120c1eb36abbcd6af}{NL}}~$<$$<$ \char`\"{}\textbackslash{}n\char`\"{}
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}{S\+PC}}~$<$$<$ \char`\"{} \char`\"{} $<$$<$
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a5fb4f0a952ebf9705fac83c7bc02c692}{V\+EC}}(vec)~vec.\+x \mbox{\hyperlink{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}{S\+PC}} vec.\+y \mbox{\hyperlink{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}{S\+PC}} vec.\+z
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a7608efdc0d77aa8f1f07f181022ff86e}{T\+RG}}(trig)~\char`\"{}v0\+:\char`\"{} $<$$<$ V\+EC(trig.\+V0) $<$$<$ \char`\"{}v1\+:\char`\"{} $<$$<$ V\+EC(trig.\+V1) $<$$<$ \char`\"{}v2\+:\char`\"{} $<$$<$ V\+EC(trig.\+V2)
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a7278a3f51f882e4c76cb5ecb83935cb8}{E\+N\+TR}}~\mbox{\hyperlink{_print_8cpp_a8c54b10b84183429bcbcbc82c92fcca9}{C\+O\+UT}} \char`\"{}\textbackslash{}n\char`\"{};
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_aa5e5e2075c7f84ba7ae4d914b48ebe22}{C\+L\+A\+S\+S\+\_\+\+N\+A\+ME}}(Type)~$<$$<$ typeid(Type).name()
+\item 
+\#define \mbox{\hyperlink{_print_8cpp_a2f6ab229cdd7ca820b302155b5324739}{P\+R\+OP}}(prop)~prop.\+get()
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_print_8cpp_a858928c3f221709ddbfb74d628963ba8}{print}} (\mbox{\hyperlink{class_vec3f}{Vec3f}} \&vec)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a6bae2d567ea118be71f00c1d1c8e53d4}{print}} (\mbox{\hyperlink{class_mat3f}{Mat3f}} \&mat)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a4fd88d7e318460cd36b52d9fb43eba66}{print}} (\mbox{\hyperlink{class_property_float}{Property\+Float}} \&prp)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a4f801e95cbe95a0638200899ea511e16}{print}} (\mbox{\hyperlink{class_property_int}{Property\+Int}} \&prp)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a60d48aeebde88afd1c2f59d1553f625b}{print}} (\mbox{\hyperlink{struct_ray_hit_data}{Ray\+Hit\+Data}} \&HD)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a7d45661eceeb4237bdcc5538a69a2e5b}{print}} (\mbox{\hyperlink{class_ray}{Ray}} \&ray)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a148dc19262a379296344f45b17fcf3a5}{print}} (\mbox{\hyperlink{struct_camera}{Camera}} \&cam)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a0aa89a6f864e83355ebe2302bff5a513}{print}} (\mbox{\hyperlink{struct_f_buff}{F\+Buff}}$<$ \mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}} $>$ \&buff, bool Print\+Text)
+\item 
+void \mbox{\hyperlink{_print_8cpp_a87e31b1c00def615045d587398f69b5e}{post\+\_\+\+M\+SG}} (\mbox{\hyperlink{_print_8h_adec0354f2e62b2f8a047fd3e3aa8f34a}{C\+M\+S\+G\+Type}} M\+S\+Gtype, std\+::string str, float val)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_print_8cpp_aa5e5e2075c7f84ba7ae4d914b48ebe22}\label{_print_8cpp_aa5e5e2075c7f84ba7ae4d914b48ebe22}} 
+\index{Print.cpp@{Print.cpp}!CLASS\_NAME@{CLASS\_NAME}}
+\index{CLASS\_NAME@{CLASS\_NAME}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{CLASS\_NAME}{CLASS\_NAME}}
+{\footnotesize\ttfamily \#define C\+L\+A\+S\+S\+\_\+\+N\+A\+ME(\begin{DoxyParamCaption}\item[{}]{Type }\end{DoxyParamCaption})~$<$$<$ typeid(Type).name()}
+
+
+
+Definition at line 12 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a8c54b10b84183429bcbcbc82c92fcca9}\label{_print_8cpp_a8c54b10b84183429bcbcbc82c92fcca9}} 
+\index{Print.cpp@{Print.cpp}!COUT@{COUT}}
+\index{COUT@{COUT}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{COUT}{COUT}}
+{\footnotesize\ttfamily \#define C\+O\+UT~std\+::cout $<$$<$}
+
+
+
+Definition at line 5 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a7278a3f51f882e4c76cb5ecb83935cb8}\label{_print_8cpp_a7278a3f51f882e4c76cb5ecb83935cb8}} 
+\index{Print.cpp@{Print.cpp}!ENTR@{ENTR}}
+\index{ENTR@{ENTR}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{ENTR}{ENTR}}
+{\footnotesize\ttfamily \#define E\+N\+TR~\mbox{\hyperlink{_print_8cpp_a8c54b10b84183429bcbcbc82c92fcca9}{C\+O\+UT}} \char`\"{}\textbackslash{}n\char`\"{};}
+
+
+
+Definition at line 11 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a4fc34b120ed3bd1120c1eb36abbcd6af}\label{_print_8cpp_a4fc34b120ed3bd1120c1eb36abbcd6af}} 
+\index{Print.cpp@{Print.cpp}!NL@{NL}}
+\index{NL@{NL}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{NL}{NL}}
+{\footnotesize\ttfamily \#define NL~$<$$<$ \char`\"{}\textbackslash{}n\char`\"{}}
+
+
+
+Definition at line 7 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a2f6ab229cdd7ca820b302155b5324739}\label{_print_8cpp_a2f6ab229cdd7ca820b302155b5324739}} 
+\index{Print.cpp@{Print.cpp}!PROP@{PROP}}
+\index{PROP@{PROP}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{PROP}{PROP}}
+{\footnotesize\ttfamily \#define P\+R\+OP(\begin{DoxyParamCaption}\item[{}]{prop }\end{DoxyParamCaption})~prop.\+get()}
+
+
+
+Definition at line 13 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}\label{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}} 
+\index{Print.cpp@{Print.cpp}!SPC@{SPC}}
+\index{SPC@{SPC}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{SPC}{SPC}}
+{\footnotesize\ttfamily \#define S\+PC~$<$$<$ \char`\"{} \char`\"{} $<$$<$}
+
+
+
+Definition at line 8 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_ad58a1fbfc85c7e4790fc55e654f50221}\label{_print_8cpp_ad58a1fbfc85c7e4790fc55e654f50221}} 
+\index{Print.cpp@{Print.cpp}!TAB@{TAB}}
+\index{TAB@{TAB}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{TAB}{TAB}}
+{\footnotesize\ttfamily \#define T\+AB~\char`\"{}	\char`\"{} $<$$<$}
+
+
+
+Definition at line 6 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a7608efdc0d77aa8f1f07f181022ff86e}\label{_print_8cpp_a7608efdc0d77aa8f1f07f181022ff86e}} 
+\index{Print.cpp@{Print.cpp}!TRG@{TRG}}
+\index{TRG@{TRG}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{TRG}{TRG}}
+{\footnotesize\ttfamily \#define T\+RG(\begin{DoxyParamCaption}\item[{}]{trig }\end{DoxyParamCaption})~\char`\"{}v0\+:\char`\"{} $<$$<$ V\+EC(trig.\+V0) $<$$<$ \char`\"{}v1\+:\char`\"{} $<$$<$ V\+EC(trig.\+V1) $<$$<$ \char`\"{}v2\+:\char`\"{} $<$$<$ V\+EC(trig.\+V2)}
+
+
+
+Definition at line 10 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a5fb4f0a952ebf9705fac83c7bc02c692}\label{_print_8cpp_a5fb4f0a952ebf9705fac83c7bc02c692}} 
+\index{Print.cpp@{Print.cpp}!VEC@{VEC}}
+\index{VEC@{VEC}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{VEC}{VEC}}
+{\footnotesize\ttfamily \#define V\+EC(\begin{DoxyParamCaption}\item[{}]{vec }\end{DoxyParamCaption})~vec.\+x \mbox{\hyperlink{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}{S\+PC}} vec.\+y \mbox{\hyperlink{_print_8cpp_a3d725a80a1060b97c063eac27c4feb60}{S\+PC}} vec.\+z}
+
+
+
+Definition at line 9 of file Print.\+cpp.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_print_8cpp_a87e31b1c00def615045d587398f69b5e}\label{_print_8cpp_a87e31b1c00def615045d587398f69b5e}} 
+\index{Print.cpp@{Print.cpp}!post\_MSG@{post\_MSG}}
+\index{post\_MSG@{post\_MSG}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{post\_MSG()}{post\_MSG()}}
+{\footnotesize\ttfamily void post\+\_\+\+M\+SG (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_print_8h_adec0354f2e62b2f8a047fd3e3aa8f34a}{C\+M\+S\+G\+Type}}}]{M\+S\+Gtype,  }\item[{std\+::string}]{str,  }\item[{float}]{val }\end{DoxyParamCaption})}
+
+
+
+Definition at line 83 of file Print.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{_print_8cpp_a148dc19262a379296344f45b17fcf3a5}\label{_print_8cpp_a148dc19262a379296344f45b17fcf3a5}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_camera}{Camera}} \&}]{cam }\end{DoxyParamCaption})}
+
+
+
+Definition at line 54 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a0aa89a6f864e83355ebe2302bff5a513}\label{_print_8cpp_a0aa89a6f864e83355ebe2302bff5a513}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_f_buff}{F\+Buff}}$<$ \mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}} $>$ \&}]{buff,  }\item[{bool}]{Print\+Text }\end{DoxyParamCaption})}
+
+
+
+Definition at line 61 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a6bae2d567ea118be71f00c1d1c8e53d4}\label{_print_8cpp_a6bae2d567ea118be71f00c1d1c8e53d4}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_mat3f}{Mat3f}} \&}]{mat }\end{DoxyParamCaption})}
+
+
+
+Definition at line 19 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a4fd88d7e318460cd36b52d9fb43eba66}\label{_print_8cpp_a4fd88d7e318460cd36b52d9fb43eba66}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_property_float}{Property\+Float}} \&}]{prp }\end{DoxyParamCaption})}
+
+
+
+Definition at line 26 of file Print.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{_print_8cpp_a4f801e95cbe95a0638200899ea511e16}\label{_print_8cpp_a4f801e95cbe95a0638200899ea511e16}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_property_int}{Property\+Int}} \&}]{prp }\end{DoxyParamCaption})}
+
+
+
+Definition at line 33 of file Print.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{_print_8cpp_a7d45661eceeb4237bdcc5538a69a2e5b}\label{_print_8cpp_a7d45661eceeb4237bdcc5538a69a2e5b}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_ray}{Ray}} \&}]{ray }\end{DoxyParamCaption})}
+
+
+
+Definition at line 48 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a60d48aeebde88afd1c2f59d1553f625b}\label{_print_8cpp_a60d48aeebde88afd1c2f59d1553f625b}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_ray_hit_data}{Ray\+Hit\+Data}} \&}]{HD }\end{DoxyParamCaption})}
+
+
+
+Definition at line 40 of file Print.\+cpp.
+
+\mbox{\Hypertarget{_print_8cpp_a858928c3f221709ddbfb74d628963ba8}\label{_print_8cpp_a858928c3f221709ddbfb74d628963ba8}} 
+\index{Print.cpp@{Print.cpp}!print@{print}}
+\index{print@{print}!Print.cpp@{Print.cpp}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily void print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vec3f}{Vec3f}} \&}]{vec }\end{DoxyParamCaption})}
+
+
+
+Definition at line 15 of file Print.\+cpp.
+

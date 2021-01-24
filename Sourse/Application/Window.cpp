@@ -5,9 +5,10 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  RGBA_32 color = 0xff1d1d1d;
-  SysH->drawRect(Rect<SCR_UINT>());
+  RGBA_32 color = 0xff1d1d21;
+  //SysH->drawRect(Rect<SCR_UINT>());
   buff.clear(&color);
+  UIroot->Draw(UIroot);
 }
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
@@ -38,6 +39,8 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
 
   SysH->getScreenSize(scr_size);
 
+  UIroot = UIroot_Init(operators);
+
   // draw initialized window
   buff.resize(rect.size.x, rect.size.y);
   Draw();
@@ -63,10 +66,11 @@ void Window::ProcessEvents(List<OpThread>* op_threads) {
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
+  UIroot->ProcEvent(UIroot, op_threads, &user_inputs);
 }
 
 void Window::SendBuffToSystem() {
-  //SysH->SysOutput(&buff);
+  SysH->SysOutput(&buff);
 }
 
 bool Window::IsActive() {
@@ -74,7 +78,6 @@ bool Window::IsActive() {
 }
 
 void Window::ToggleConsole() {
-
   SysH->consoletoggle();
 }
 

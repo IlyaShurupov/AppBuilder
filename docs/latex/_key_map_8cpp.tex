@@ -1,0 +1,239 @@
+\hypertarget{_key_map_8cpp}{}\doxysection{Sourse/\+Application/\+Key\+Map.cpp File Reference}
+\label{_key_map_8cpp}\index{Sourse/Application/KeyMap.cpp@{Sourse/Application/KeyMap.cpp}}
+{\ttfamily \#include \char`\"{}public/\+Key\+Map.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include \char`\"{}public/\+Print.\+h\char`\"{}}\newline
+Include dependency graph for Key\+Map.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_a0ad84b0b158c03fa2e86168c891b963e}{K\+B\+\_\+\+S\+T\+A\+RT}}~\textquotesingle{}$<$\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_abb603fe7e93df6caa6e6aae1971b1962}{K\+B\+\_\+\+E\+ND}}~\textquotesingle{}$>$\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_aa61461aca27ff0f59bf27476cf28e2da}{M\+M\+P\+I\+T\+E\+M\+\_\+\+S\+T\+A\+RT}}~\textquotesingle{}\mbox{[}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_a7fafd39f4fce92cdd8b07f053c930e82}{M\+M\+P\+I\+T\+E\+M\+\_\+\+E\+ND}}~\textquotesingle{}\mbox{]}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_ad226bd7df40132be7eb8877e5495db49}{I\+D\+N\+A\+M\+E\+\_\+\+B\+O\+UD}}~\textquotesingle{}\char`\"{}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_a767689afcfe9d68c1e01269423c5ec01}{M\+M\+A\+P\+\_\+\+S\+T\+A\+RT}}~\textquotesingle{}\mbox{[}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_a98e6c0cb37d12308999c721aed0bef30}{M\+M\+A\+P\+\_\+\+E\+ND}}~\textquotesingle{}\mbox{]}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_aadc04c55e582e68050ccfc89f2590696}{C\+O\+N\+D\+\_\+\+S\+T\+A\+RT}}~\textquotesingle{}\{\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_a86bf72c79a458203521fa32461724140}{C\+O\+N\+D\+\_\+\+E\+ND}}~\textquotesingle{}\}\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_abba6a1d80be5071d8cf6d5d17f9f067a}{C\+O\+N\+D\+S\+\_\+\+S\+T\+A\+RT}}~\textquotesingle{}(\textquotesingle{}
+\item 
+\#define \mbox{\hyperlink{_key_map_8cpp_abb91e15601c37835ef4ff43c45bbbd6b}{C\+O\+N\+D\+S\+\_\+\+E\+ND}}~\textquotesingle{})\textquotesingle{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+string \mbox{\hyperlink{_key_map_8cpp_a411394e783c76aba30f830a9f69320f6}{get\+Executable\+Path}} ()
+\item 
+\mbox{\hyperlink{struct_bounds}{Bounds}} \mbox{\hyperlink{_key_map_8cpp_a734d12b7d79141e51120839fc7e07834}{find\+\_\+idname}} (std\+::string $\ast$str, const char start\+\_\+kw, const char end\+\_\+kw, \mbox{\hyperlink{struct_bounds}{Bounds}} bnds)
+\item 
+\mbox{\hyperlink{struct_bounds}{Bounds}} \mbox{\hyperlink{_key_map_8cpp_a834c88e3fb50b1e812245016065a10e1}{find\+\_\+idname\+\_\+straigt}} (std\+::string $\ast$str, const char start\+\_\+kw, const char end\+\_\+kw, \mbox{\hyperlink{struct_bounds}{Bounds}} bnds)
+\item 
+bool \mbox{\hyperlink{_key_map_8cpp_af97d80a3290f76d9317c6c6718bbcf5d}{valid}} (\mbox{\hyperlink{struct_bounds}{Bounds}} \&bds)
+\item 
+bool \mbox{\hyperlink{_key_map_8cpp_a2f04966e6b69852588844485c4a885c8}{strs\+\_\+match}} (string $\ast$str1, string $\ast$str2, \mbox{\hyperlink{struct_bounds}{Bounds}} \&bnds1, \mbox{\hyperlink{struct_bounds}{Bounds}} \&bnds2)
+\item 
+void \mbox{\hyperlink{_key_map_8cpp_a0bfacaf30d8404f3aad035cacfbe0ef3}{str\+\_\+coppy}} (string $\ast$str, \mbox{\hyperlink{struct_bounds}{Bounds}} \&in\+\_\+str\+\_\+from\+\_\+to, string \&out)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_key_map_8cpp_a86bf72c79a458203521fa32461724140}\label{_key_map_8cpp_a86bf72c79a458203521fa32461724140}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!COND\_END@{COND\_END}}
+\index{COND\_END@{COND\_END}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{COND\_END}{COND\_END}}
+{\footnotesize\ttfamily \#define C\+O\+N\+D\+\_\+\+E\+ND~\textquotesingle{}\}\textquotesingle{}}
+
+
+
+Definition at line 23 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_aadc04c55e582e68050ccfc89f2590696}\label{_key_map_8cpp_aadc04c55e582e68050ccfc89f2590696}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!COND\_START@{COND\_START}}
+\index{COND\_START@{COND\_START}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{COND\_START}{COND\_START}}
+{\footnotesize\ttfamily \#define C\+O\+N\+D\+\_\+\+S\+T\+A\+RT~\textquotesingle{}\{\textquotesingle{}}
+
+
+
+Definition at line 22 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_abb91e15601c37835ef4ff43c45bbbd6b}\label{_key_map_8cpp_abb91e15601c37835ef4ff43c45bbbd6b}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!CONDS\_END@{CONDS\_END}}
+\index{CONDS\_END@{CONDS\_END}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{CONDS\_END}{CONDS\_END}}
+{\footnotesize\ttfamily \#define C\+O\+N\+D\+S\+\_\+\+E\+ND~\textquotesingle{})\textquotesingle{}}
+
+
+
+Definition at line 26 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_abba6a1d80be5071d8cf6d5d17f9f067a}\label{_key_map_8cpp_abba6a1d80be5071d8cf6d5d17f9f067a}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!CONDS\_START@{CONDS\_START}}
+\index{CONDS\_START@{CONDS\_START}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{CONDS\_START}{CONDS\_START}}
+{\footnotesize\ttfamily \#define C\+O\+N\+D\+S\+\_\+\+S\+T\+A\+RT~\textquotesingle{}(\textquotesingle{}}
+
+
+
+Definition at line 25 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_ad226bd7df40132be7eb8877e5495db49}\label{_key_map_8cpp_ad226bd7df40132be7eb8877e5495db49}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!IDNAME\_BOUD@{IDNAME\_BOUD}}
+\index{IDNAME\_BOUD@{IDNAME\_BOUD}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{IDNAME\_BOUD}{IDNAME\_BOUD}}
+{\footnotesize\ttfamily \#define I\+D\+N\+A\+M\+E\+\_\+\+B\+O\+UD~\textquotesingle{}\char`\"{}\textquotesingle{}}
+
+
+
+Definition at line 17 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_abb603fe7e93df6caa6e6aae1971b1962}\label{_key_map_8cpp_abb603fe7e93df6caa6e6aae1971b1962}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!KB\_END@{KB\_END}}
+\index{KB\_END@{KB\_END}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{KB\_END}{KB\_END}}
+{\footnotesize\ttfamily \#define K\+B\+\_\+\+E\+ND~\textquotesingle{}$>$\textquotesingle{}}
+
+
+
+Definition at line 12 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_a0ad84b0b158c03fa2e86168c891b963e}\label{_key_map_8cpp_a0ad84b0b158c03fa2e86168c891b963e}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!KB\_START@{KB\_START}}
+\index{KB\_START@{KB\_START}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{KB\_START}{KB\_START}}
+{\footnotesize\ttfamily \#define K\+B\+\_\+\+S\+T\+A\+RT~\textquotesingle{}$<$\textquotesingle{}}
+
+
+
+Definition at line 11 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_a98e6c0cb37d12308999c721aed0bef30}\label{_key_map_8cpp_a98e6c0cb37d12308999c721aed0bef30}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!MMAP\_END@{MMAP\_END}}
+\index{MMAP\_END@{MMAP\_END}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{MMAP\_END}{MMAP\_END}}
+{\footnotesize\ttfamily \#define M\+M\+A\+P\+\_\+\+E\+ND~\textquotesingle{}\mbox{]}\textquotesingle{}}
+
+
+
+Definition at line 20 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_a767689afcfe9d68c1e01269423c5ec01}\label{_key_map_8cpp_a767689afcfe9d68c1e01269423c5ec01}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!MMAP\_START@{MMAP\_START}}
+\index{MMAP\_START@{MMAP\_START}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{MMAP\_START}{MMAP\_START}}
+{\footnotesize\ttfamily \#define M\+M\+A\+P\+\_\+\+S\+T\+A\+RT~\textquotesingle{}\mbox{[}\textquotesingle{}}
+
+
+
+Definition at line 19 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_a7fafd39f4fce92cdd8b07f053c930e82}\label{_key_map_8cpp_a7fafd39f4fce92cdd8b07f053c930e82}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!MMPITEM\_END@{MMPITEM\_END}}
+\index{MMPITEM\_END@{MMPITEM\_END}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{MMPITEM\_END}{MMPITEM\_END}}
+{\footnotesize\ttfamily \#define M\+M\+P\+I\+T\+E\+M\+\_\+\+E\+ND~\textquotesingle{}\mbox{]}\textquotesingle{}}
+
+
+
+Definition at line 15 of file Key\+Map.\+cpp.
+
+\mbox{\Hypertarget{_key_map_8cpp_aa61461aca27ff0f59bf27476cf28e2da}\label{_key_map_8cpp_aa61461aca27ff0f59bf27476cf28e2da}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!MMPITEM\_START@{MMPITEM\_START}}
+\index{MMPITEM\_START@{MMPITEM\_START}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{MMPITEM\_START}{MMPITEM\_START}}
+{\footnotesize\ttfamily \#define M\+M\+P\+I\+T\+E\+M\+\_\+\+S\+T\+A\+RT~\textquotesingle{}\mbox{[}\textquotesingle{}}
+
+
+
+Definition at line 14 of file Key\+Map.\+cpp.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_key_map_8cpp_a734d12b7d79141e51120839fc7e07834}\label{_key_map_8cpp_a734d12b7d79141e51120839fc7e07834}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!find\_idname@{find\_idname}}
+\index{find\_idname@{find\_idname}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{find\_idname()}{find\_idname()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_bounds}{Bounds}} find\+\_\+idname (\begin{DoxyParamCaption}\item[{std\+::string $\ast$}]{str,  }\item[{const char}]{start\+\_\+kw,  }\item[{const char}]{end\+\_\+kw,  }\item[{\mbox{\hyperlink{struct_bounds}{Bounds}}}]{bnds }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 36 of file Key\+Map.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{_key_map_8cpp_a834c88e3fb50b1e812245016065a10e1}\label{_key_map_8cpp_a834c88e3fb50b1e812245016065a10e1}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!find\_idname\_straigt@{find\_idname\_straigt}}
+\index{find\_idname\_straigt@{find\_idname\_straigt}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{find\_idname\_straigt()}{find\_idname\_straigt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_bounds}{Bounds}} find\+\_\+idname\+\_\+straigt (\begin{DoxyParamCaption}\item[{std\+::string $\ast$}]{str,  }\item[{const char}]{start\+\_\+kw,  }\item[{const char}]{end\+\_\+kw,  }\item[{\mbox{\hyperlink{struct_bounds}{Bounds}}}]{bnds }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 40 of file Key\+Map.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{_key_map_8cpp_a411394e783c76aba30f830a9f69320f6}\label{_key_map_8cpp_a411394e783c76aba30f830a9f69320f6}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!getExecutablePath@{getExecutablePath}}
+\index{getExecutablePath@{getExecutablePath}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{getExecutablePath()}{getExecutablePath()}}
+{\footnotesize\ttfamily string get\+Executable\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 28 of file Key\+Map.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{_key_map_8cpp_a0bfacaf30d8404f3aad035cacfbe0ef3}\label{_key_map_8cpp_a0bfacaf30d8404f3aad035cacfbe0ef3}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!str\_coppy@{str\_coppy}}
+\index{str\_coppy@{str\_coppy}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{str\_coppy()}{str\_coppy()}}
+{\footnotesize\ttfamily void str\+\_\+coppy (\begin{DoxyParamCaption}\item[{string $\ast$}]{str,  }\item[{\mbox{\hyperlink{struct_bounds}{Bounds}} \&}]{in\+\_\+str\+\_\+from\+\_\+to,  }\item[{string \&}]{out }\end{DoxyParamCaption})}
+
+
+
+Definition at line 68 of file Key\+Map.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{_key_map_8cpp_a2f04966e6b69852588844485c4a885c8}\label{_key_map_8cpp_a2f04966e6b69852588844485c4a885c8}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!strs\_match@{strs\_match}}
+\index{strs\_match@{strs\_match}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{strs\_match()}{strs\_match()}}
+{\footnotesize\ttfamily bool strs\+\_\+match (\begin{DoxyParamCaption}\item[{string $\ast$}]{str1,  }\item[{string $\ast$}]{str2,  }\item[{\mbox{\hyperlink{struct_bounds}{Bounds}} \&}]{bnds1,  }\item[{\mbox{\hyperlink{struct_bounds}{Bounds}} \&}]{bnds2 }\end{DoxyParamCaption})}
+
+
+
+Definition at line 54 of file Key\+Map.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 5
+Here is the caller graph for this function\+:
+% FIG 6
+\mbox{\Hypertarget{_key_map_8cpp_af97d80a3290f76d9317c6c6718bbcf5d}\label{_key_map_8cpp_af97d80a3290f76d9317c6c6718bbcf5d}} 
+\index{KeyMap.cpp@{KeyMap.cpp}!valid@{valid}}
+\index{valid@{valid}!KeyMap.cpp@{KeyMap.cpp}}
+\doxysubsubsection{\texorpdfstring{valid()}{valid()}}
+{\footnotesize\ttfamily bool valid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_bounds}{Bounds}} \&}]{bds }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 50 of file Key\+Map.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 7

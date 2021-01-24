@@ -4,6 +4,7 @@
 #include "Property.h"
 #include "Vec2.h"
 #include "FrameBuff.h"
+#include "Operator.h"
 
 enum struct UIInputState {
   NONE = 0,
@@ -13,22 +14,30 @@ enum struct UIInputState {
   HOVER,
 };
 
+enum struct UIType {
+  NONE = 0,
+  ROOT,
+  AREA,
+  REGION,
+};
+
 struct UIItem {
 
-  // All ui items wich this item is build of
   Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
+
+  UIType type;
+
+  void* CustomData = nullptr;
 
   // location & size in the parent frame of reference
   Rect<SCR_UINT> rect;
   
-  // Own buffer to daraw
-  FBuff<RGBA_32> *buffer;
+  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs) = nullptr;
+  void (*Draw)(UIItem *This) = nullptr;
 
-  // current input state of ui item
-  UIInputState input_state;
-
-  void (*ProcEvent)(UIItem *This, struct UserInputs *user_inputs);
-  void (*Draw)(UIItem *This);
+  UIItem(UIType UIType) {
+    type = UIType;
+  }
 };
 
-void UI_Init(struct Seance *C);
+UIItem* UIroot_Init(List<Operator>* operators);

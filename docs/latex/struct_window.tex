@@ -1,0 +1,270 @@
+\hypertarget{struct_window}{}\doxysection{Window Struct Reference}
+\label{struct_window}\index{Window@{Window}}
+
+
+{\ttfamily \#include $<$Window.\+h$>$}
+
+
+
+Collaboration diagram for Window\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_window_a740344183984e459ba4f36d78c39306d}{Window}} (std\+::string $\ast$configfolder, \mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{struct_operator}{Operator}} $>$ $\ast$operators)
+\item 
+\mbox{\hyperlink{struct_window_a245d821e6016fa1f6970ccbbedd635f6}{$\sim$\+Window}} ()
+\item 
+void \mbox{\hyperlink{struct_window_a7c485c6319396ad184a9d544a37dda5b}{On\+Write}} ()
+\item 
+void \mbox{\hyperlink{struct_window_a65b6379910cce5fde41e4268c2785c0c}{On\+Read}} ()
+\item 
+void \mbox{\hyperlink{struct_window_a6a32d5adb69f78a3efa023ca2a456650}{Process\+Events}} (\mbox{\hyperlink{class_list}{List}}$<$ struct \mbox{\hyperlink{struct_op_thread}{Op\+Thread}} $>$ $\ast$exec\+\_\+queue)
+\item 
+void \mbox{\hyperlink{struct_window_a2baaa0af83bbf036ae7d268cba434633}{Draw}} ()
+\item 
+void \mbox{\hyperlink{struct_window_a0967c8c50f98b486fb7cd4796215134c}{Send\+Buff\+To\+System}} ()
+\item 
+bool \mbox{\hyperlink{struct_window_aa92adfa834260d9b9cbd7399ec5e636b}{Is\+Active}} ()
+\item 
+void \mbox{\hyperlink{struct_window_adb6f8e4fe9e32a5703ac37710d28b239}{Toggle\+Console}} ()
+\item 
+void \mbox{\hyperlink{struct_window_a34e840d76d7132c4bd8ff2cddb1cf3fb}{get\+Rect}} (\mbox{\hyperlink{struct_rect}{Rect}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \&\mbox{\hyperlink{struct_window_ae5882595bbe1874d718e3173c70e9ddc}{rect}})
+\item 
+void \mbox{\hyperlink{struct_window_a81296ca6e251e011cc9471bb62e22dcd}{set\+Rect}} (\mbox{\hyperlink{struct_rect}{Rect}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \&\mbox{\hyperlink{struct_window_ae5882595bbe1874d718e3173c70e9ddc}{rect}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_f_buff}{F\+Buff}}$<$ \mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}} $>$ \mbox{\hyperlink{struct_window_a7d20863f280e7a9e3c2937dc9df860a0}{buff}}
+\item 
+\mbox{\hyperlink{struct_rect}{Rect}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \mbox{\hyperlink{struct_window_ae5882595bbe1874d718e3173c70e9ddc}{rect}}
+\item 
+\mbox{\hyperlink{classvec2}{vec2}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \mbox{\hyperlink{struct_window_a4c6b77ee3de31705a681eca6a95a3ac7}{scr\+\_\+size}}
+\item 
+\mbox{\hyperlink{classvec2}{vec2}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \mbox{\hyperlink{struct_window_a0f13b2afacd05c5651311b82a1f6e0a1}{minsize}}
+\item 
+\mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{struct_u_i_item}{U\+I\+Item}} $>$ \mbox{\hyperlink{struct_window_a6cd90b2ec8cc2a14e541a21772d972d3}{areas}}
+\item 
+\mbox{\hyperlink{struct_user_inputs}{User\+Inputs}} \mbox{\hyperlink{struct_window_af2d244866f58943890a1f50f910c9e39}{user\+\_\+inputs}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 8 of file Window.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{struct_window_a740344183984e459ba4f36d78c39306d}\label{struct_window_a740344183984e459ba4f36d78c39306d}} 
+\index{Window@{Window}!Window@{Window}}
+\index{Window@{Window}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{Window()}{Window()}}
+{\footnotesize\ttfamily Window\+::\+Window (\begin{DoxyParamCaption}\item[{std\+::string $\ast$}]{configfolder,  }\item[{\mbox{\hyperlink{class_list}{List}}$<$ \mbox{\hyperlink{struct_operator}{Operator}} $>$ $\ast$}]{operators }\end{DoxyParamCaption})}
+
+
+
+Definition at line 13 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{struct_window_a245d821e6016fa1f6970ccbbedd635f6}\label{struct_window_a245d821e6016fa1f6970ccbbedd635f6}} 
+\index{Window@{Window}!````~Window@{$\sim$Window}}
+\index{````~Window@{$\sim$Window}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{$\sim$Window()}{~Window()}}
+{\footnotesize\ttfamily Window\+::$\sim$\+Window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 51 of file Window.\+cpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_window_a2baaa0af83bbf036ae7d268cba434633}\label{struct_window_a2baaa0af83bbf036ae7d268cba434633}} 
+\index{Window@{Window}!Draw@{Draw}}
+\index{Draw@{Draw}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{Draw()}{Draw()}}
+{\footnotesize\ttfamily void Window\+::\+Draw (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 7 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 2
+Here is the caller graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{struct_window_a34e840d76d7132c4bd8ff2cddb1cf3fb}\label{struct_window_a34e840d76d7132c4bd8ff2cddb1cf3fb}} 
+\index{Window@{Window}!getRect@{getRect}}
+\index{getRect@{getRect}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{getRect()}{getRect()}}
+{\footnotesize\ttfamily void Window\+::get\+Rect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_rect}{Rect}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \&}]{rect }\end{DoxyParamCaption})}
+
+
+
+Definition at line 81 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 4
+Here is the caller graph for this function\+:
+% FIG 5
+\mbox{\Hypertarget{struct_window_aa92adfa834260d9b9cbd7399ec5e636b}\label{struct_window_aa92adfa834260d9b9cbd7399ec5e636b}} 
+\index{Window@{Window}!IsActive@{IsActive}}
+\index{IsActive@{IsActive}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{IsActive()}{IsActive()}}
+{\footnotesize\ttfamily bool Window\+::\+Is\+Active (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 72 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 6
+Here is the caller graph for this function\+:
+% FIG 7
+\mbox{\Hypertarget{struct_window_a65b6379910cce5fde41e4268c2785c0c}\label{struct_window_a65b6379910cce5fde41e4268c2785c0c}} 
+\index{Window@{Window}!OnRead@{OnRead}}
+\index{OnRead@{OnRead}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{OnRead()}{OnRead()}}
+{\footnotesize\ttfamily void Window\+::\+On\+Read (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 59 of file Window.\+cpp.
+
+\mbox{\Hypertarget{struct_window_a7c485c6319396ad184a9d544a37dda5b}\label{struct_window_a7c485c6319396ad184a9d544a37dda5b}} 
+\index{Window@{Window}!OnWrite@{OnWrite}}
+\index{OnWrite@{OnWrite}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{OnWrite()}{OnWrite()}}
+{\footnotesize\ttfamily void Window\+::\+On\+Write (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 57 of file Window.\+cpp.
+
+\mbox{\Hypertarget{struct_window_a6a32d5adb69f78a3efa023ca2a456650}\label{struct_window_a6a32d5adb69f78a3efa023ca2a456650}} 
+\index{Window@{Window}!ProcessEvents@{ProcessEvents}}
+\index{ProcessEvents@{ProcessEvents}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{ProcessEvents()}{ProcessEvents()}}
+{\footnotesize\ttfamily void Window\+::\+Process\+Events (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_list}{List}}$<$ struct \mbox{\hyperlink{struct_op_thread}{Op\+Thread}} $>$ $\ast$}]{exec\+\_\+queue }\end{DoxyParamCaption})}
+
+
+
+Definition at line 61 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 8
+Here is the caller graph for this function\+:
+% FIG 9
+\mbox{\Hypertarget{struct_window_a0967c8c50f98b486fb7cd4796215134c}\label{struct_window_a0967c8c50f98b486fb7cd4796215134c}} 
+\index{Window@{Window}!SendBuffToSystem@{SendBuffToSystem}}
+\index{SendBuffToSystem@{SendBuffToSystem}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{SendBuffToSystem()}{SendBuffToSystem()}}
+{\footnotesize\ttfamily void Window\+::\+Send\+Buff\+To\+System (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 68 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 10
+Here is the caller graph for this function\+:
+% FIG 11
+\mbox{\Hypertarget{struct_window_a81296ca6e251e011cc9471bb62e22dcd}\label{struct_window_a81296ca6e251e011cc9471bb62e22dcd}} 
+\index{Window@{Window}!setRect@{setRect}}
+\index{setRect@{setRect}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{setRect()}{setRect()}}
+{\footnotesize\ttfamily void Window\+::set\+Rect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_rect}{Rect}}$<$ \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}} $>$ \&}]{rect }\end{DoxyParamCaption})}
+
+
+
+Definition at line 85 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 12
+Here is the caller graph for this function\+:
+% FIG 13
+\mbox{\Hypertarget{struct_window_adb6f8e4fe9e32a5703ac37710d28b239}\label{struct_window_adb6f8e4fe9e32a5703ac37710d28b239}} 
+\index{Window@{Window}!ToggleConsole@{ToggleConsole}}
+\index{ToggleConsole@{ToggleConsole}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{ToggleConsole()}{ToggleConsole()}}
+{\footnotesize\ttfamily void Window\+::\+Toggle\+Console (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 76 of file Window.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 14
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{struct_window_a6cd90b2ec8cc2a14e541a21772d972d3}\label{struct_window_a6cd90b2ec8cc2a14e541a21772d972d3}} 
+\index{Window@{Window}!areas@{areas}}
+\index{areas@{areas}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{areas}{areas}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_list}{List}}$<$\mbox{\hyperlink{struct_u_i_item}{U\+I\+Item}}$>$ Window\+::areas}
+
+
+
+Definition at line 18 of file Window.\+h.
+
+\mbox{\Hypertarget{struct_window_a7d20863f280e7a9e3c2937dc9df860a0}\label{struct_window_a7d20863f280e7a9e3c2937dc9df860a0}} 
+\index{Window@{Window}!buff@{buff}}
+\index{buff@{buff}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{buff}{buff}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_f_buff}{F\+Buff}}$<$\mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}}$>$ Window\+::buff}
+
+
+
+Definition at line 10 of file Window.\+h.
+
+\mbox{\Hypertarget{struct_window_a0f13b2afacd05c5651311b82a1f6e0a1}\label{struct_window_a0f13b2afacd05c5651311b82a1f6e0a1}} 
+\index{Window@{Window}!minsize@{minsize}}
+\index{minsize@{minsize}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{minsize}{minsize}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvec2}{vec2}}$<$\mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}}$>$ Window\+::minsize}
+
+
+
+Definition at line 15 of file Window.\+h.
+
+\mbox{\Hypertarget{struct_window_ae5882595bbe1874d718e3173c70e9ddc}\label{struct_window_ae5882595bbe1874d718e3173c70e9ddc}} 
+\index{Window@{Window}!rect@{rect}}
+\index{rect@{rect}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{rect}{rect}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_rect}{Rect}}$<$\mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}}$>$ Window\+::rect}
+
+
+
+Definition at line 13 of file Window.\+h.
+
+\mbox{\Hypertarget{struct_window_a4c6b77ee3de31705a681eca6a95a3ac7}\label{struct_window_a4c6b77ee3de31705a681eca6a95a3ac7}} 
+\index{Window@{Window}!scr\_size@{scr\_size}}
+\index{scr\_size@{scr\_size}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{scr\_size}{scr\_size}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvec2}{vec2}}$<$\mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}}$>$ Window\+::scr\+\_\+size}
+
+
+
+Definition at line 14 of file Window.\+h.
+
+\mbox{\Hypertarget{struct_window_af2d244866f58943890a1f50f910c9e39}\label{struct_window_af2d244866f58943890a1f50f910c9e39}} 
+\index{Window@{Window}!user\_inputs@{user\_inputs}}
+\index{user\_inputs@{user\_inputs}!Window@{Window}}
+\doxysubsubsection{\texorpdfstring{user\_inputs}{user\_inputs}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_user_inputs}{User\+Inputs}} Window\+::user\+\_\+inputs}
+
+
+
+Definition at line 19 of file Window.\+h.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Sourse/\+Application/public/\mbox{\hyperlink{_window_8h}{Window.\+h}}\item 
+Sourse/\+Application/\mbox{\hyperlink{_window_8cpp}{Window.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,132 @@
+\hypertarget{_frame_buff_8h}{}\doxysection{Sourse/\+Types/public/\+Frame\+Buff.h File Reference}
+\label{_frame_buff_8h}\index{Sourse/Types/public/FrameBuff.h@{Sourse/Types/public/FrameBuff.h}}
+{\ttfamily \#include $<$cassert$>$}\newline
+{\ttfamily \#include \char`\"{}Linked\+List.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Rect.\+h\char`\"{}}\newline
+Include dependency graph for Frame\+Buff.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_r_g_b_af}{R\+G\+B\+Af}}
+\item 
+struct \mbox{\hyperlink{struct_f_buff}{F\+Buff$<$ Color\+\_\+t $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}}~int32\+\_\+t
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_a651407bf69c676d19d43bc45d13a1b6f}{F\+B\+F\+F\+\_\+\+C\+O\+L\+OR}}~\mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}}
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_a89e6ef29b70ba00a9b5b4f5e21dff2e0}{C\+O\+L32\+\_\+A}}~0xff000000
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_ae9be18b60f0da43f71a333147f2caef6}{C\+O\+L32\+\_\+R}}~0x00ff0000
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_adaa7677e4b664cff9e11a904912d2a3a}{C\+O\+L32\+\_\+G}}~0x0000ff00
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_a09ee4f929c3730aeba5ac4e301f013ee}{C\+O\+L32\+\_\+B}}~0x000000ff
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_a54ccee179af34449e6151afedeb5b128}{R\+G\+B\+A\+\_\+\+G\+ET}}(color,  chanel)~((unsigned char$\ast$)color + chanel)
+\item 
+\#define \mbox{\hyperlink{_frame_buff_8h_ab851666b844d9891078a3ad0e8697aba}{R\+G\+B\+A\+\_\+\+S\+ET}}(color,  val,  chanel)~$\ast$((unsigned char$\ast$)color + chanel) = val
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{struct_r_g_b_af}{R\+G\+B\+Af}} \mbox{\hyperlink{_frame_buff_8h_a9081c1030c08a52a97effa2a47640ade}{R\+G\+B\+Af}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_frame_buff_8h_a89e6ef29b70ba00a9b5b4f5e21dff2e0}\label{_frame_buff_8h_a89e6ef29b70ba00a9b5b4f5e21dff2e0}} 
+\index{FrameBuff.h@{FrameBuff.h}!COL32\_A@{COL32\_A}}
+\index{COL32\_A@{COL32\_A}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{COL32\_A}{COL32\_A}}
+{\footnotesize\ttfamily \#define C\+O\+L32\+\_\+A~0xff000000}
+
+
+
+Definition at line 11 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_a09ee4f929c3730aeba5ac4e301f013ee}\label{_frame_buff_8h_a09ee4f929c3730aeba5ac4e301f013ee}} 
+\index{FrameBuff.h@{FrameBuff.h}!COL32\_B@{COL32\_B}}
+\index{COL32\_B@{COL32\_B}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{COL32\_B}{COL32\_B}}
+{\footnotesize\ttfamily \#define C\+O\+L32\+\_\+B~0x000000ff}
+
+
+
+Definition at line 14 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_adaa7677e4b664cff9e11a904912d2a3a}\label{_frame_buff_8h_adaa7677e4b664cff9e11a904912d2a3a}} 
+\index{FrameBuff.h@{FrameBuff.h}!COL32\_G@{COL32\_G}}
+\index{COL32\_G@{COL32\_G}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{COL32\_G}{COL32\_G}}
+{\footnotesize\ttfamily \#define C\+O\+L32\+\_\+G~0x0000ff00}
+
+
+
+Definition at line 13 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_ae9be18b60f0da43f71a333147f2caef6}\label{_frame_buff_8h_ae9be18b60f0da43f71a333147f2caef6}} 
+\index{FrameBuff.h@{FrameBuff.h}!COL32\_R@{COL32\_R}}
+\index{COL32\_R@{COL32\_R}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{COL32\_R}{COL32\_R}}
+{\footnotesize\ttfamily \#define C\+O\+L32\+\_\+R~0x00ff0000}
+
+
+
+Definition at line 12 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_a651407bf69c676d19d43bc45d13a1b6f}\label{_frame_buff_8h_a651407bf69c676d19d43bc45d13a1b6f}} 
+\index{FrameBuff.h@{FrameBuff.h}!FBFF\_COLOR@{FBFF\_COLOR}}
+\index{FBFF\_COLOR@{FBFF\_COLOR}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{FBFF\_COLOR}{FBFF\_COLOR}}
+{\footnotesize\ttfamily \#define F\+B\+F\+F\+\_\+\+C\+O\+L\+OR~\mbox{\hyperlink{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}{R\+G\+B\+A\+\_\+32}}}
+
+
+
+Definition at line 9 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}\label{_frame_buff_8h_ac5f4b04645cb95d8445f900ad37f6a1f}} 
+\index{FrameBuff.h@{FrameBuff.h}!RGBA\_32@{RGBA\_32}}
+\index{RGBA\_32@{RGBA\_32}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{RGBA\_32}{RGBA\_32}}
+{\footnotesize\ttfamily \#define R\+G\+B\+A\+\_\+32~int32\+\_\+t}
+
+
+
+Definition at line 8 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_a54ccee179af34449e6151afedeb5b128}\label{_frame_buff_8h_a54ccee179af34449e6151afedeb5b128}} 
+\index{FrameBuff.h@{FrameBuff.h}!RGBA\_GET@{RGBA\_GET}}
+\index{RGBA\_GET@{RGBA\_GET}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{RGBA\_GET}{RGBA\_GET}}
+{\footnotesize\ttfamily \#define R\+G\+B\+A\+\_\+\+G\+ET(\begin{DoxyParamCaption}\item[{}]{color,  }\item[{}]{chanel }\end{DoxyParamCaption})~((unsigned char$\ast$)color + chanel)}
+
+
+
+Definition at line 167 of file Frame\+Buff.\+h.
+
+\mbox{\Hypertarget{_frame_buff_8h_ab851666b844d9891078a3ad0e8697aba}\label{_frame_buff_8h_ab851666b844d9891078a3ad0e8697aba}} 
+\index{FrameBuff.h@{FrameBuff.h}!RGBA\_SET@{RGBA\_SET}}
+\index{RGBA\_SET@{RGBA\_SET}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{RGBA\_SET}{RGBA\_SET}}
+{\footnotesize\ttfamily \#define R\+G\+B\+A\+\_\+\+S\+ET(\begin{DoxyParamCaption}\item[{}]{color,  }\item[{}]{val,  }\item[{}]{chanel }\end{DoxyParamCaption})~$\ast$((unsigned char$\ast$)color + chanel) = val}
+
+
+
+Definition at line 168 of file Frame\+Buff.\+h.
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{_frame_buff_8h_a9081c1030c08a52a97effa2a47640ade}\label{_frame_buff_8h_a9081c1030c08a52a97effa2a47640ade}} 
+\index{FrameBuff.h@{FrameBuff.h}!RGBAf@{RGBAf}}
+\index{RGBAf@{RGBAf}!FrameBuff.h@{FrameBuff.h}}
+\doxysubsubsection{\texorpdfstring{RGBAf}{RGBAf}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_r_g_b_af}{R\+G\+B\+Af}} \mbox{\hyperlink{struct_r_g_b_af}{R\+G\+B\+Af}}}
+

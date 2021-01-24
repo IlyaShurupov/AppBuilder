@@ -1,0 +1,139 @@
+\hypertarget{_math_macros_8h}{}\doxysection{Sourse/\+Types/public/\+Math\+Macros.h File Reference}
+\label{_math_macros_8h}\index{Sourse/Types/public/MathMacros.h@{Sourse/Types/public/MathMacros.h}}
+{\ttfamily \#include $<$float.\+h$>$}\newline
+{\ttfamily \#include $<$limits.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$crtdbg.\+h$>$}\newline
+{\ttfamily \#include $<$cstdlib$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+Include dependency graph for Math\+Macros.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a002b2f4894492820fe708b1b7e7c5e70}{E\+P\+S\+I\+L\+ON}}~0.\+0000001
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a0c233fcb94ea9f05596b48427095806e}{Pi}}~float(3.\+1415926535897932384626433832795)
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a80955b83fb3239b2e91975efd8068ce6}{S\+C\+R\+\_\+\+U\+I\+N\+T\+\_\+\+M\+AX}}~U\+S\+H\+R\+T\+\_\+\+M\+AX
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a898024f90ac9f0bfb29fb98c0e0c82d8}{A\+BS}}(val)~  if (val $<$ 0) val = -\/val
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_aa46c464f8003d6bc85ccb0d97e7fa481}{C\+L\+A\+MP}}(val,  min,  max)
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_afc30e481f763a8d68a861dba91be7316}{\+\_\+\+C\+R\+T\+D\+B\+G\+\_\+\+M\+A\+P\+\_\+\+A\+L\+L\+OC}}
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a2334c409f14af85341e7e691ea5aa632}{N\+A\+ME}}(v)~\#v
+\item 
+\#define \mbox{\hyperlink{_math_macros_8h_a95d1b97f67f97c7e0f27519372822f43}{D\+B\+G\+\_\+\+N\+EW}}~new
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef int \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_math_macros_8h_afc30e481f763a8d68a861dba91be7316}\label{_math_macros_8h_afc30e481f763a8d68a861dba91be7316}} 
+\index{MathMacros.h@{MathMacros.h}!\_CRTDBG\_MAP\_ALLOC@{\_CRTDBG\_MAP\_ALLOC}}
+\index{\_CRTDBG\_MAP\_ALLOC@{\_CRTDBG\_MAP\_ALLOC}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{\_CRTDBG\_MAP\_ALLOC}{\_CRTDBG\_MAP\_ALLOC}}
+{\footnotesize\ttfamily \#define \+\_\+\+C\+R\+T\+D\+B\+G\+\_\+\+M\+A\+P\+\_\+\+A\+L\+L\+OC}
+
+
+
+Definition at line 23 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a898024f90ac9f0bfb29fb98c0e0c82d8}\label{_math_macros_8h_a898024f90ac9f0bfb29fb98c0e0c82d8}} 
+\index{MathMacros.h@{MathMacros.h}!ABS@{ABS}}
+\index{ABS@{ABS}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{ABS}{ABS}}
+{\footnotesize\ttfamily \#define A\+BS(\begin{DoxyParamCaption}\item[{}]{val }\end{DoxyParamCaption})~  if (val $<$ 0) val = -\/val}
+
+
+
+Definition at line 17 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_aa46c464f8003d6bc85ccb0d97e7fa481}\label{_math_macros_8h_aa46c464f8003d6bc85ccb0d97e7fa481}} 
+\index{MathMacros.h@{MathMacros.h}!CLAMP@{CLAMP}}
+\index{CLAMP@{CLAMP}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{CLAMP}{CLAMP}}
+{\footnotesize\ttfamily \#define C\+L\+A\+MP(\begin{DoxyParamCaption}\item[{}]{val,  }\item[{}]{min,  }\item[{}]{max }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{  \textcolor{keywordflow}{if} (val > max) val = max;  \(\backslash\)}
+\DoxyCodeLine{  if (val < min) val = min}
+
+\end{DoxyCode}
+
+
+Definition at line 19 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a95d1b97f67f97c7e0f27519372822f43}\label{_math_macros_8h_a95d1b97f67f97c7e0f27519372822f43}} 
+\index{MathMacros.h@{MathMacros.h}!DBG\_NEW@{DBG\_NEW}}
+\index{DBG\_NEW@{DBG\_NEW}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{DBG\_NEW}{DBG\_NEW}}
+{\footnotesize\ttfamily \#define D\+B\+G\+\_\+\+N\+EW~new}
+
+
+
+Definition at line 30 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a002b2f4894492820fe708b1b7e7c5e70}\label{_math_macros_8h_a002b2f4894492820fe708b1b7e7c5e70}} 
+\index{MathMacros.h@{MathMacros.h}!EPSILON@{EPSILON}}
+\index{EPSILON@{EPSILON}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{EPSILON}{EPSILON}}
+{\footnotesize\ttfamily \#define E\+P\+S\+I\+L\+ON~0.\+0000001}
+
+
+
+Definition at line 13 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a2334c409f14af85341e7e691ea5aa632}\label{_math_macros_8h_a2334c409f14af85341e7e691ea5aa632}} 
+\index{MathMacros.h@{MathMacros.h}!NAME@{NAME}}
+\index{NAME@{NAME}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{NAME}{NAME}}
+{\footnotesize\ttfamily \#define N\+A\+ME(\begin{DoxyParamCaption}\item[{}]{v }\end{DoxyParamCaption})~\#v}
+
+
+
+Definition at line 24 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a0c233fcb94ea9f05596b48427095806e}\label{_math_macros_8h_a0c233fcb94ea9f05596b48427095806e}} 
+\index{MathMacros.h@{MathMacros.h}!Pi@{Pi}}
+\index{Pi@{Pi}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{Pi}{Pi}}
+{\footnotesize\ttfamily \#define Pi~float(3.\+1415926535897932384626433832795)}
+
+
+
+Definition at line 14 of file Math\+Macros.\+h.
+
+\mbox{\Hypertarget{_math_macros_8h_a80955b83fb3239b2e91975efd8068ce6}\label{_math_macros_8h_a80955b83fb3239b2e91975efd8068ce6}} 
+\index{MathMacros.h@{MathMacros.h}!SCR\_UINT\_MAX@{SCR\_UINT\_MAX}}
+\index{SCR\_UINT\_MAX@{SCR\_UINT\_MAX}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{SCR\_UINT\_MAX}{SCR\_UINT\_MAX}}
+{\footnotesize\ttfamily \#define S\+C\+R\+\_\+\+U\+I\+N\+T\+\_\+\+M\+AX~U\+S\+H\+R\+T\+\_\+\+M\+AX}
+
+
+
+Definition at line 16 of file Math\+Macros.\+h.
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}\label{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}} 
+\index{MathMacros.h@{MathMacros.h}!SCR\_UINT@{SCR\_UINT}}
+\index{SCR\_UINT@{SCR\_UINT}!MathMacros.h@{MathMacros.h}}
+\doxysubsubsection{\texorpdfstring{SCR\_UINT}{SCR\_UINT}}
+{\footnotesize\ttfamily typedef int \mbox{\hyperlink{_math_macros_8h_aa6616a945c0674acd11d78be7fd7c7a4}{S\+C\+R\+\_\+\+U\+I\+NT}}}
+
+
+
+Definition at line 15 of file Math\+Macros.\+h.
+

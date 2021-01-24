@@ -1,0 +1,315 @@
+\hypertarget{class_list}{}\doxysection{List$<$ Type $>$ Class Template Reference}
+\label{class_list}\index{List$<$ Type $>$@{List$<$ Type $>$}}
+
+
+{\ttfamily \#include $<$Linked\+List.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_list_a87405d18413f3ec9e0b57ccfe39a5a1d}{List}} ()
+\item 
+\mbox{\hyperlink{class_list_a17633b3c9f5315c0888217947ab4bad1}{$\sim$\+List}} ()
+\item 
+void \mbox{\hyperlink{class_list_a802f385bf0eb21d731f89a71bb23ebfe}{add}} (Type $\ast$data)
+\item 
+Type $\ast$ \mbox{\hyperlink{class_list_ad2f5e2386463ea2de2b7a27f79e4ed84}{operator\mbox{[}$\,$\mbox{]}}} (size\+\_\+t idx)
+\item 
+size\+\_\+t \mbox{\hyperlink{class_list_aec8b8bdb8522635755eea7f3b22f0e5e}{len}} ()
+\item 
+void \mbox{\hyperlink{class_list_a849434030d5fcd5f8502548aacf14efa}{del}} ()
+\item 
+void \mbox{\hyperlink{class_list_a2ce5ad7d497fb43b1de874b3fe3eff38}{pop}} (bool recursice)
+\item 
+void \mbox{\hyperlink{class_list_abb96a49c5e4427eb8a176ca691dcb02b}{del}} (Type $\ast$node\+\_\+data)
+\item 
+void \mbox{\hyperlink{class_list_ae8c5fc52ea0c15c83f159111978e7c26}{del}} (size\+\_\+t idx, bool recursice)
+\item 
+void \mbox{\hyperlink{class_list_a43eb203ddf2426899b01a2bc889b7758}{del}} (size\+\_\+t idx\+\_\+start, size\+\_\+t idx\+\_\+end, bool recursice)
+\item 
+void \mbox{\hyperlink{class_list_a5b46cf621b441c20f785d7680e754b6d}{del}} (\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$node, bool recursice)
+\item 
+void \mbox{\hyperlink{class_list_a8f81bcc5e1c16a76dc7ae2316e46869b}{pop}} ()
+\item 
+void \mbox{\hyperlink{class_list_a829d0d4a30a9fc23cd2ce354cc889857}{del}} (size\+\_\+t idx)
+\item 
+void \mbox{\hyperlink{class_list_a4757caf3605e0d4a5ab19fcde087f1be}{del}} (size\+\_\+t idx\+\_\+start, size\+\_\+t idx\+\_\+end)
+\item 
+void \mbox{\hyperlink{class_list_a1e2fc68512201f90d1ca677edf3d43bf}{del}} (\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$node)
+\item 
+void \mbox{\hyperlink{class_list_ad4c733e84cebc6a70f4f90daa466844a}{popnode}} ()
+\item 
+void \mbox{\hyperlink{class_list_aa210a145b561cedd99f3436f985971ff}{delnode}} (size\+\_\+t idx)
+\item 
+void \mbox{\hyperlink{class_list_a228569fde8ab917047fda4b204b7cad0}{delnode}} (size\+\_\+t idx\+\_\+start, size\+\_\+t idx\+\_\+end)
+\item 
+void \mbox{\hyperlink{class_list_a099031c62a3aed364df827585774cd1b}{delnode}} (\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$node)
+\item 
+\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ \& \mbox{\hyperlink{class_list_aaf743e71ba1a596db25d3130a09b9e6b}{first}} ()
+\item 
+\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ \& \mbox{\hyperlink{class_list_a89e8313b375597edafef19bc53904aa0}{last}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Type$>$\newline
+class List$<$ Type $>$}
+
+
+
+Definition at line 79 of file Linked\+List.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_list_a87405d18413f3ec9e0b57ccfe39a5a1d}\label{class_list_a87405d18413f3ec9e0b57ccfe39a5a1d}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!List@{List}}
+\index{List@{List}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{List()}{List()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+\mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::\mbox{\hyperlink{class_list}{List}}}
+
+
+
+Definition at line 118 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a17633b3c9f5315c0888217947ab4bad1}\label{class_list_a17633b3c9f5315c0888217947ab4bad1}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!````~List@{$\sim$List}}
+\index{````~List@{$\sim$List}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$List()}{~List()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+\mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::$\sim$\mbox{\hyperlink{class_list}{List}}}
+
+
+
+Definition at line 366 of file Linked\+List.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_list_a802f385bf0eb21d731f89a71bb23ebfe}\label{class_list_a802f385bf0eb21d731f89a71bb23ebfe}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!add@{add}}
+\index{add@{add}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::add (\begin{DoxyParamCaption}\item[{Type $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+Definition at line 126 of file Linked\+List.\+h.
+
+Here is the caller graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{class_list_a849434030d5fcd5f8502548aacf14efa}\label{class_list_a849434030d5fcd5f8502548aacf14efa}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 359 of file Linked\+List.\+h.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{class_list_a1e2fc68512201f90d1ca677edf3d43bf}\label{class_list_a1e2fc68512201f90d1ca677edf3d43bf}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$}]{node }\end{DoxyParamCaption})}
+
+
+
+Definition at line 310 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a5b46cf621b441c20f785d7680e754b6d}\label{class_list_a5b46cf621b441c20f785d7680e754b6d}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$}]{node,  }\item[{bool}]{recursice }\end{DoxyParamCaption})}
+
+
+
+Definition at line 245 of file Linked\+List.\+h.
+
+Here is the call graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_list_a829d0d4a30a9fc23cd2ce354cc889857}\label{class_list_a829d0d4a30a9fc23cd2ce354cc889857}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx }\end{DoxyParamCaption})}
+
+
+
+Definition at line 305 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_ae8c5fc52ea0c15c83f159111978e7c26}\label{class_list_ae8c5fc52ea0c15c83f159111978e7c26}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx,  }\item[{bool}]{recursice }\end{DoxyParamCaption})}
+
+
+
+Definition at line 236 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a4757caf3605e0d4a5ab19fcde087f1be}\label{class_list_a4757caf3605e0d4a5ab19fcde087f1be}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx\+\_\+start,  }\item[{size\+\_\+t}]{idx\+\_\+end }\end{DoxyParamCaption})}
+
+
+
+Definition at line 300 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a43eb203ddf2426899b01a2bc889b7758}\label{class_list_a43eb203ddf2426899b01a2bc889b7758}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx\+\_\+start,  }\item[{size\+\_\+t}]{idx\+\_\+end,  }\item[{bool}]{recursice }\end{DoxyParamCaption})}
+
+
+
+Definition at line 184 of file Linked\+List.\+h.
+
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{class_list_abb96a49c5e4427eb8a176ca691dcb02b}\label{class_list_abb96a49c5e4427eb8a176ca691dcb02b}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!del@{del}}
+\index{del@{del}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::del (\begin{DoxyParamCaption}\item[{Type $\ast$}]{node\+\_\+data }\end{DoxyParamCaption})}
+
+
+
+Definition at line 292 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a099031c62a3aed364df827585774cd1b}\label{class_list_a099031c62a3aed364df827585774cd1b}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!delnode@{delnode}}
+\index{delnode@{delnode}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{delnode()}{delnode()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::delnode (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ $\ast$}]{node }\end{DoxyParamCaption})}
+
+
+
+Definition at line 332 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_aa210a145b561cedd99f3436f985971ff}\label{class_list_aa210a145b561cedd99f3436f985971ff}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!delnode@{delnode}}
+\index{delnode@{delnode}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{delnode()}{delnode()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::delnode (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx }\end{DoxyParamCaption})}
+
+
+
+Definition at line 327 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a228569fde8ab917047fda4b204b7cad0}\label{class_list_a228569fde8ab917047fda4b204b7cad0}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!delnode@{delnode}}
+\index{delnode@{delnode}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{delnode()}{delnode()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::delnode (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx\+\_\+start,  }\item[{size\+\_\+t}]{idx\+\_\+end }\end{DoxyParamCaption})}
+
+
+
+Definition at line 322 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_aaf743e71ba1a596db25d3130a09b9e6b}\label{class_list_aaf743e71ba1a596db25d3130a09b9e6b}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!first@{first}}
+\index{first@{first}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{first()}{first()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ \& \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::first}
+
+
+
+Definition at line 349 of file Linked\+List.\+h.
+
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{class_list_a89e8313b375597edafef19bc53904aa0}\label{class_list_a89e8313b375597edafef19bc53904aa0}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!last@{last}}
+\index{last@{last}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{last()}{last()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+\mbox{\hyperlink{class_node}{Node}}$<$ Type $>$ \& \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::last}
+
+
+
+Definition at line 344 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_aec8b8bdb8522635755eea7f3b22f0e5e}\label{class_list_aec8b8bdb8522635755eea7f3b22f0e5e}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!len@{len}}
+\index{len@{len}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{len()}{len()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+size\+\_\+t \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::len}
+
+
+
+Definition at line 354 of file Linked\+List.\+h.
+
+Here is the caller graph for this function\+:
+% FIG 5
+\mbox{\Hypertarget{class_list_ad2f5e2386463ea2de2b7a27f79e4ed84}\label{class_list_ad2f5e2386463ea2de2b7a27f79e4ed84}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+Type $\ast$ \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx }\end{DoxyParamCaption})}
+
+
+
+Definition at line 138 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a8f81bcc5e1c16a76dc7ae2316e46869b}\label{class_list_a8f81bcc5e1c16a76dc7ae2316e46869b}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!pop@{pop}}
+\index{pop@{pop}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{pop()}{pop()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::pop}
+
+
+
+Definition at line 315 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_a2ce5ad7d497fb43b1de874b3fe3eff38}\label{class_list_a2ce5ad7d497fb43b1de874b3fe3eff38}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!pop@{pop}}
+\index{pop@{pop}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{pop()}{pop()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::pop (\begin{DoxyParamCaption}\item[{bool}]{recursice }\end{DoxyParamCaption})}
+
+
+
+Definition at line 280 of file Linked\+List.\+h.
+
+\mbox{\Hypertarget{class_list_ad4c733e84cebc6a70f4f90daa466844a}\label{class_list_ad4c733e84cebc6a70f4f90daa466844a}} 
+\index{List$<$ Type $>$@{List$<$ Type $>$}!popnode@{popnode}}
+\index{popnode@{popnode}!List$<$ Type $>$@{List$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{popnode()}{popnode()}}
+{\footnotesize\ttfamily template$<$typename Type $>$ \\
+void \mbox{\hyperlink{class_list}{List}}$<$ Type $>$\+::popnode}
+
+
+
+Definition at line 337 of file Linked\+List.\+h.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Sourse/\+Types/public/\mbox{\hyperlink{_linked_list_8h}{Linked\+List.\+h}}\end{DoxyCompactItemize}

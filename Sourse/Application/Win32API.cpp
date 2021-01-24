@@ -249,6 +249,7 @@ void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 }
 
 void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
+  /*
   HDC hdc = BeginPaint(m_hwnd, &ps);
   //hdc = BeginPaint(m_hWnd, &ps);
   //    Initializing original object
@@ -290,6 +291,7 @@ void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
 
   //    Restoring the original object
   SelectObject(hdc, original);
+  */
 }
 
 

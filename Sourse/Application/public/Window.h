@@ -15,7 +15,7 @@ struct Window {
   vec2<SCR_UINT> minsize;
 
   // UI layout of window
-  List<UIItem> areas;
+  UIItem *UIroot;
   UserInputs user_inputs;
 
   // Creates empty window

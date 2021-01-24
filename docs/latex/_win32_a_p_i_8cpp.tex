@@ -1,0 +1,126 @@
+\hypertarget{_win32_a_p_i_8cpp}{}\doxysection{Sourse/\+Application/\+Win32\+A\+PI.cpp File Reference}
+\label{_win32_a_p_i_8cpp}\index{Sourse/Application/Win32API.cpp@{Sourse/Application/Win32API.cpp}}
+{\ttfamily \#include \char`\"{}public/\+Win32\+A\+P\+I.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$conio.\+h$>$}\newline
+{\ttfamily \#include $<$d2d1helper.\+h$>$}\newline
+{\ttfamily \#include $<$dwrite.\+h$>$}\newline
+{\ttfamily \#include $<$malloc.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$memory.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$wchar.\+h$>$}\newline
+{\ttfamily \#include $<$wincodec.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Frame\+Buff.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}public/\+Key\+Map.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}wingdi.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}d2d1\+\_\+1.\+h\char`\"{}}\newline
+Include dependency graph for Win32\+A\+P\+I.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_win32_a_p_i_8cpp_a53cf7ffb5ff6b778335db18cdfa0f691}{H\+I\+N\+S\+T\+\_\+\+T\+H\+I\+S\+C\+O\+M\+P\+O\+N\+E\+NT}}~((H\+I\+N\+S\+T\+A\+N\+CE)\&\mbox{\hyperlink{_win32_a_p_i_8cpp_aa18247f58cfcd71b4b5e6e8463122029}{\+\_\+\+\_\+\+Image\+Base}})
+\item 
+\#define \mbox{\hyperlink{_win32_a_p_i_8cpp_a71b0b3cf24a2c2d79ea28efd27f9517e}{T\+R\+A\+N\+S\+P\+A\+R\+E\+N\+T\+CY}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class Interface $>$ }\\void \mbox{\hyperlink{_win32_a_p_i_8cpp_a5372b6d9be095d35b1ce2b8e6cbcb982}{Safe\+Release}} (Interface $\ast$$\ast$pp\+Interface\+To\+Release)
+\item 
+void \mbox{\hyperlink{_win32_a_p_i_8cpp_a51e7489f394bfc04a5f69e1f5e3a058f}{drawbmp}} (H\+W\+ND hwnd, H\+B\+I\+T\+M\+AP hbmp)
+\item 
+void \mbox{\hyperlink{_win32_a_p_i_8cpp_acf334eab6d6e4d970bf86d327b0495eb}{Upd\+Key\+Sate}} (\mbox{\hyperlink{struct_input}{Input}} \&key, bool down, bool \&Is\+Event)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+E\+X\+T\+E\+R\+N\+\_\+C I\+M\+A\+G\+E\+\_\+\+D\+O\+S\+\_\+\+H\+E\+A\+D\+ER \mbox{\hyperlink{_win32_a_p_i_8cpp_aa18247f58cfcd71b4b5e6e8463122029}{\+\_\+\+\_\+\+Image\+Base}}
+\item 
+bool \mbox{\hyperlink{_win32_a_p_i_8cpp_ab85b1aaa0cd4f783e84178aa84ddd965}{consolehidden}} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_a53cf7ffb5ff6b778335db18cdfa0f691}\label{_win32_a_p_i_8cpp_a53cf7ffb5ff6b778335db18cdfa0f691}} 
+\index{Win32API.cpp@{Win32API.cpp}!HINST\_THISCOMPONENT@{HINST\_THISCOMPONENT}}
+\index{HINST\_THISCOMPONENT@{HINST\_THISCOMPONENT}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{HINST\_THISCOMPONENT}{HINST\_THISCOMPONENT}}
+{\footnotesize\ttfamily \#define H\+I\+N\+S\+T\+\_\+\+T\+H\+I\+S\+C\+O\+M\+P\+O\+N\+E\+NT~((H\+I\+N\+S\+T\+A\+N\+CE)\&\mbox{\hyperlink{_win32_a_p_i_8cpp_aa18247f58cfcd71b4b5e6e8463122029}{\+\_\+\+\_\+\+Image\+Base}})}
+
+
+
+Definition at line 21 of file Win32\+A\+P\+I.\+cpp.
+
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_a71b0b3cf24a2c2d79ea28efd27f9517e}\label{_win32_a_p_i_8cpp_a71b0b3cf24a2c2d79ea28efd27f9517e}} 
+\index{Win32API.cpp@{Win32API.cpp}!TRANSPARENTCY@{TRANSPARENTCY}}
+\index{TRANSPARENTCY@{TRANSPARENTCY}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{TRANSPARENTCY}{TRANSPARENTCY}}
+{\footnotesize\ttfamily \#define T\+R\+A\+N\+S\+P\+A\+R\+E\+N\+T\+CY}
+
+
+
+Definition at line 24 of file Win32\+A\+P\+I.\+cpp.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_a51e7489f394bfc04a5f69e1f5e3a058f}\label{_win32_a_p_i_8cpp_a51e7489f394bfc04a5f69e1f5e3a058f}} 
+\index{Win32API.cpp@{Win32API.cpp}!drawbmp@{drawbmp}}
+\index{drawbmp@{drawbmp}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{drawbmp()}{drawbmp()}}
+{\footnotesize\ttfamily void drawbmp (\begin{DoxyParamCaption}\item[{H\+W\+ND}]{hwnd,  }\item[{H\+B\+I\+T\+M\+AP}]{hbmp }\end{DoxyParamCaption})}
+
+
+
+Definition at line 193 of file Win32\+A\+P\+I.\+cpp.
+
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_a5372b6d9be095d35b1ce2b8e6cbcb982}\label{_win32_a_p_i_8cpp_a5372b6d9be095d35b1ce2b8e6cbcb982}} 
+\index{Win32API.cpp@{Win32API.cpp}!SafeRelease@{SafeRelease}}
+\index{SafeRelease@{SafeRelease}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{SafeRelease()}{SafeRelease()}}
+{\footnotesize\ttfamily template$<$class Interface $>$ \\
+void Safe\+Release (\begin{DoxyParamCaption}\item[{Interface $\ast$$\ast$}]{pp\+Interface\+To\+Release }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 30 of file Win32\+A\+P\+I.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_acf334eab6d6e4d970bf86d327b0495eb}\label{_win32_a_p_i_8cpp_acf334eab6d6e4d970bf86d327b0495eb}} 
+\index{Win32API.cpp@{Win32API.cpp}!UpdKeySate@{UpdKeySate}}
+\index{UpdKeySate@{UpdKeySate}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{UpdKeySate()}{UpdKeySate()}}
+{\footnotesize\ttfamily void Upd\+Key\+Sate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_input}{Input}} \&}]{key,  }\item[{bool}]{down,  }\item[{bool \&}]{Is\+Event }\end{DoxyParamCaption})}
+
+
+
+Definition at line 339 of file Win32\+A\+P\+I.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 2
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_aa18247f58cfcd71b4b5e6e8463122029}\label{_win32_a_p_i_8cpp_aa18247f58cfcd71b4b5e6e8463122029}} 
+\index{Win32API.cpp@{Win32API.cpp}!\_\_ImageBase@{\_\_ImageBase}}
+\index{\_\_ImageBase@{\_\_ImageBase}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{\_\_ImageBase}{\_\_ImageBase}}
+{\footnotesize\ttfamily E\+X\+T\+E\+R\+N\+\_\+C I\+M\+A\+G\+E\+\_\+\+D\+O\+S\+\_\+\+H\+E\+A\+D\+ER \+\_\+\+\_\+\+Image\+Base}
+
+
+
+Definition at line 20 of file Win32\+A\+P\+I.\+cpp.
+
+\mbox{\Hypertarget{_win32_a_p_i_8cpp_ab85b1aaa0cd4f783e84178aa84ddd965}\label{_win32_a_p_i_8cpp_ab85b1aaa0cd4f783e84178aa84ddd965}} 
+\index{Win32API.cpp@{Win32API.cpp}!consolehidden@{consolehidden}}
+\index{consolehidden@{consolehidden}!Win32API.cpp@{Win32API.cpp}}
+\doxysubsubsection{\texorpdfstring{consolehidden}{consolehidden}}
+{\footnotesize\ttfamily bool consolehidden = false}
+
+
+
+Definition at line 27 of file Win32\+A\+P\+I.\+cpp.
+

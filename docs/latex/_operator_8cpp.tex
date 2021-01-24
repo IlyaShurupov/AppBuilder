@@ -1,0 +1,358 @@
+\hypertarget{_operator_8cpp}{}\doxysection{Sourse/\+Application/\+Operator.cpp File Reference}
+\label{_operator_8cpp}\index{Sourse/Application/Operator.cpp@{Sourse/Application/Operator.cpp}}
+{\ttfamily \#include \char`\"{}public/\+Operator.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}public/\+Print.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}public/\+Seance.\+h\char`\"{}}\newline
+Include dependency graph for Operator.\+cpp\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_win_resize_data}{Win\+Resize\+Data}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_operator_8cpp_adcf95bfa74d68ec627e8751ab07642b2}{O\+P\+D\+A\+T\+A\+\_\+\+F\+R\+O\+M\+\_\+\+OP}}(Type,  name)~Type$\ast$ name = (Type$\ast$)op-\/$>$Custom\+Data;
+\item 
+\#define \mbox{\hyperlink{_operator_8cpp_a0028a871af0854fbe44240bede3675fc}{R\+E\+T\+\_\+\+F\+I\+N\+I\+S\+H\+ED}}(op)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_operator_8cpp_ab4d3bd3312b13fedcf851d2643481b5f}{End\+Seance\+\_\+ecec}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_ad7fda21e3ee4a0cec7c03039aa8f3f3c}{End\+Seance\+\_\+invoke}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+bool \mbox{\hyperlink{_operator_8cpp_abe60e21d23ded9bf4371d9bdc13bb90f}{End\+Seance\+\_\+poll}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_af6dc5635b97d889e60ad39de5f90d94c}{End\+Seance\+\_\+create}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a859e265c4b3a4114fa937037472bd5e7}{Toggle\+Concole\+\_\+ecec}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a04035838c9be26853f16a1b1597b09c3}{Toggle\+Concole\+\_\+invoke}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+bool \mbox{\hyperlink{_operator_8cpp_aa436c90297403b24dd77adb2d8e5852d}{Toggle\+Concole\+\_\+poll}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a0a26b5aa3bed2be0106aa202dca812f3}{Toggle\+Concole\+\_\+create}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a68b90882cd158401efe406712ff6e0a4}{Window\+Resize\+\_\+ecec}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a18077826c3f8a6661bf8e61d8554b969}{Window\+Resize\+\_\+invoke}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+bool \mbox{\hyperlink{_operator_8cpp_aba157f8fe4218315c94dfb20633c73e3}{Window\+Resize\+\_\+poll}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a8c962717e03e93f0cbf1c81ddd1b2c30}{Window\+Resize\+\_\+modal}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op, \mbox{\hyperlink{struct_modal_event}{Modal\+Event}} $\ast$event)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_ad4d4a7b5f34f2fae680a63cdf7382e01}{Window\+Resize\+\_\+create}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a8d8258c47375881e2c45a0946a3704f0}{Window\+Drag\+\_\+ecec}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a24dfb2118a01724c41adbadf39fd7ee9}{Window\+Drag\+\_\+invoke}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+bool \mbox{\hyperlink{_operator_8cpp_a3fa70de3326e1eac33408562d618fc01}{Window\+Drag\+\_\+poll}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a657306e9d5d0ede3fa0af6f02f67ffbd}{Window\+Drag\+\_\+modal}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op, \mbox{\hyperlink{struct_modal_event}{Modal\+Event}} $\ast$event)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a926a2a5b3c84d53f2389174860e99f35}{Window\+Drag\+\_\+create}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a47f188d5867e11418d17303bc70a04cf}{Add\+Operator}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, void($\ast$Create)(\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op))
+\item 
+void \mbox{\hyperlink{_operator_8cpp_a59363202eec80ce71f371292e1f19649}{init\+Ops}} (\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_operator_8cpp_adcf95bfa74d68ec627e8751ab07642b2}\label{_operator_8cpp_adcf95bfa74d68ec627e8751ab07642b2}} 
+\index{Operator.cpp@{Operator.cpp}!OPDATA\_FROM\_OP@{OPDATA\_FROM\_OP}}
+\index{OPDATA\_FROM\_OP@{OPDATA\_FROM\_OP}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{OPDATA\_FROM\_OP}{OPDATA\_FROM\_OP}}
+{\footnotesize\ttfamily \#define O\+P\+D\+A\+T\+A\+\_\+\+F\+R\+O\+M\+\_\+\+OP(\begin{DoxyParamCaption}\item[{}]{Type,  }\item[{}]{name }\end{DoxyParamCaption})~Type$\ast$ name = (Type$\ast$)op-\/$>$Custom\+Data;}
+
+
+
+Definition at line 5 of file Operator.\+cpp.
+
+\mbox{\Hypertarget{_operator_8cpp_a0028a871af0854fbe44240bede3675fc}\label{_operator_8cpp_a0028a871af0854fbe44240bede3675fc}} 
+\index{Operator.cpp@{Operator.cpp}!RET\_FINISHED@{RET\_FINISHED}}
+\index{RET\_FINISHED@{RET\_FINISHED}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{RET\_FINISHED}{RET\_FINISHED}}
+{\footnotesize\ttfamily \#define R\+E\+T\+\_\+\+F\+I\+N\+I\+S\+H\+ED(\begin{DoxyParamCaption}\item[{}]{op }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{  op-\/>State = OpState::FINISHED; \(\backslash\)}
+\DoxyCodeLine{  return;}
+
+\end{DoxyCode}
+
+
+Definition at line 6 of file Operator.\+cpp.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_operator_8cpp_a47f188d5867e11418d17303bc70a04cf}\label{_operator_8cpp_a47f188d5867e11418d17303bc70a04cf}} 
+\index{Operator.cpp@{Operator.cpp}!AddOperator@{AddOperator}}
+\index{AddOperator@{AddOperator}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{AddOperator()}{AddOperator()}}
+{\footnotesize\ttfamily void Add\+Operator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{void($\ast$)(\mbox{\hyperlink{struct_seance}{Seance}} $\ast$C, \mbox{\hyperlink{struct_operator}{Operator}} $\ast$op)}]{Create }\end{DoxyParamCaption})}
+
+
+
+Definition at line 189 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 1
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{_operator_8cpp_af6dc5635b97d889e60ad39de5f90d94c}\label{_operator_8cpp_af6dc5635b97d889e60ad39de5f90d94c}} 
+\index{Operator.cpp@{Operator.cpp}!EndSeance\_create@{EndSeance\_create}}
+\index{EndSeance\_create@{EndSeance\_create}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{EndSeance\_create()}{EndSeance\_create()}}
+{\footnotesize\ttfamily void End\+Seance\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 28 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 3
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{_operator_8cpp_ab4d3bd3312b13fedcf851d2643481b5f}\label{_operator_8cpp_ab4d3bd3312b13fedcf851d2643481b5f}} 
+\index{Operator.cpp@{Operator.cpp}!EndSeance\_ecec@{EndSeance\_ecec}}
+\index{EndSeance\_ecec@{EndSeance\_ecec}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{EndSeance\_ecec()}{EndSeance\_ecec()}}
+{\footnotesize\ttfamily void End\+Seance\+\_\+ecec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 12 of file Operator.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 5
+\mbox{\Hypertarget{_operator_8cpp_ad7fda21e3ee4a0cec7c03039aa8f3f3c}\label{_operator_8cpp_ad7fda21e3ee4a0cec7c03039aa8f3f3c}} 
+\index{Operator.cpp@{Operator.cpp}!EndSeance\_invoke@{EndSeance\_invoke}}
+\index{EndSeance\_invoke@{EndSeance\_invoke}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{EndSeance\_invoke()}{EndSeance\_invoke()}}
+{\footnotesize\ttfamily void End\+Seance\+\_\+invoke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 18 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 6
+Here is the caller graph for this function\+:
+% FIG 7
+\mbox{\Hypertarget{_operator_8cpp_abe60e21d23ded9bf4371d9bdc13bb90f}\label{_operator_8cpp_abe60e21d23ded9bf4371d9bdc13bb90f}} 
+\index{Operator.cpp@{Operator.cpp}!EndSeance\_poll@{EndSeance\_poll}}
+\index{EndSeance\_poll@{EndSeance\_poll}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{EndSeance\_poll()}{EndSeance\_poll()}}
+{\footnotesize\ttfamily bool End\+Seance\+\_\+poll (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 24 of file Operator.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 8
+\mbox{\Hypertarget{_operator_8cpp_a59363202eec80ce71f371292e1f19649}\label{_operator_8cpp_a59363202eec80ce71f371292e1f19649}} 
+\index{Operator.cpp@{Operator.cpp}!initOps@{initOps}}
+\index{initOps@{initOps}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{initOps()}{initOps()}}
+{\footnotesize\ttfamily void init\+Ops (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C }\end{DoxyParamCaption})}
+
+
+
+Definition at line 201 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 9
+Here is the caller graph for this function\+:
+% FIG 10
+\mbox{\Hypertarget{_operator_8cpp_a0a26b5aa3bed2be0106aa202dca812f3}\label{_operator_8cpp_a0a26b5aa3bed2be0106aa202dca812f3}} 
+\index{Operator.cpp@{Operator.cpp}!ToggleConcole\_create@{ToggleConcole\_create}}
+\index{ToggleConcole\_create@{ToggleConcole\_create}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{ToggleConcole\_create()}{ToggleConcole\_create()}}
+{\footnotesize\ttfamily void Toggle\+Concole\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 55 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 11
+Here is the caller graph for this function\+:
+% FIG 12
+\mbox{\Hypertarget{_operator_8cpp_a859e265c4b3a4114fa937037472bd5e7}\label{_operator_8cpp_a859e265c4b3a4114fa937037472bd5e7}} 
+\index{Operator.cpp@{Operator.cpp}!ToggleConcole\_ecec@{ToggleConcole\_ecec}}
+\index{ToggleConcole\_ecec@{ToggleConcole\_ecec}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{ToggleConcole\_ecec()}{ToggleConcole\_ecec()}}
+{\footnotesize\ttfamily void Toggle\+Concole\+\_\+ecec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 40 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 13
+Here is the caller graph for this function\+:
+% FIG 14
+\mbox{\Hypertarget{_operator_8cpp_a04035838c9be26853f16a1b1597b09c3}\label{_operator_8cpp_a04035838c9be26853f16a1b1597b09c3}} 
+\index{Operator.cpp@{Operator.cpp}!ToggleConcole\_invoke@{ToggleConcole\_invoke}}
+\index{ToggleConcole\_invoke@{ToggleConcole\_invoke}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{ToggleConcole\_invoke()}{ToggleConcole\_invoke()}}
+{\footnotesize\ttfamily void Toggle\+Concole\+\_\+invoke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 45 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 15
+Here is the caller graph for this function\+:
+% FIG 16
+\mbox{\Hypertarget{_operator_8cpp_aa436c90297403b24dd77adb2d8e5852d}\label{_operator_8cpp_aa436c90297403b24dd77adb2d8e5852d}} 
+\index{Operator.cpp@{Operator.cpp}!ToggleConcole\_poll@{ToggleConcole\_poll}}
+\index{ToggleConcole\_poll@{ToggleConcole\_poll}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{ToggleConcole\_poll()}{ToggleConcole\_poll()}}
+{\footnotesize\ttfamily bool Toggle\+Concole\+\_\+poll (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 51 of file Operator.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 17
+\mbox{\Hypertarget{_operator_8cpp_a926a2a5b3c84d53f2389174860e99f35}\label{_operator_8cpp_a926a2a5b3c84d53f2389174860e99f35}} 
+\index{Operator.cpp@{Operator.cpp}!WindowDrag\_create@{WindowDrag\_create}}
+\index{WindowDrag\_create@{WindowDrag\_create}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowDrag\_create()}{WindowDrag\_create()}}
+{\footnotesize\ttfamily void Window\+Drag\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 178 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 18
+Here is the caller graph for this function\+:
+% FIG 19
+\mbox{\Hypertarget{_operator_8cpp_a8d8258c47375881e2c45a0946a3704f0}\label{_operator_8cpp_a8d8258c47375881e2c45a0946a3704f0}} 
+\index{Operator.cpp@{Operator.cpp}!WindowDrag\_ecec@{WindowDrag\_ecec}}
+\index{WindowDrag\_ecec@{WindowDrag\_ecec}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowDrag\_ecec()}{WindowDrag\_ecec()}}
+{\footnotesize\ttfamily void Window\+Drag\+\_\+ecec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 152 of file Operator.\+cpp.
+
+\mbox{\Hypertarget{_operator_8cpp_a24dfb2118a01724c41adbadf39fd7ee9}\label{_operator_8cpp_a24dfb2118a01724c41adbadf39fd7ee9}} 
+\index{Operator.cpp@{Operator.cpp}!WindowDrag\_invoke@{WindowDrag\_invoke}}
+\index{WindowDrag\_invoke@{WindowDrag\_invoke}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowDrag\_invoke()}{WindowDrag\_invoke()}}
+{\footnotesize\ttfamily void Window\+Drag\+\_\+invoke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 154 of file Operator.\+cpp.
+
+Here is the caller graph for this function\+:
+% FIG 20
+\mbox{\Hypertarget{_operator_8cpp_a657306e9d5d0ede3fa0af6f02f67ffbd}\label{_operator_8cpp_a657306e9d5d0ede3fa0af6f02f67ffbd}} 
+\index{Operator.cpp@{Operator.cpp}!WindowDrag\_modal@{WindowDrag\_modal}}
+\index{WindowDrag\_modal@{WindowDrag\_modal}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowDrag\_modal()}{WindowDrag\_modal()}}
+{\footnotesize\ttfamily void Window\+Drag\+\_\+modal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op,  }\item[{\mbox{\hyperlink{struct_modal_event}{Modal\+Event}} $\ast$}]{event }\end{DoxyParamCaption})}
+
+
+
+Definition at line 163 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 21
+Here is the caller graph for this function\+:
+% FIG 22
+\mbox{\Hypertarget{_operator_8cpp_a3fa70de3326e1eac33408562d618fc01}\label{_operator_8cpp_a3fa70de3326e1eac33408562d618fc01}} 
+\index{Operator.cpp@{Operator.cpp}!WindowDrag\_poll@{WindowDrag\_poll}}
+\index{WindowDrag\_poll@{WindowDrag\_poll}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowDrag\_poll()}{WindowDrag\_poll()}}
+{\footnotesize\ttfamily bool Window\+Drag\+\_\+poll (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 159 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 23
+Here is the caller graph for this function\+:
+% FIG 24
+\mbox{\Hypertarget{_operator_8cpp_ad4d4a7b5f34f2fae680a63cdf7382e01}\label{_operator_8cpp_ad4d4a7b5f34f2fae680a63cdf7382e01}} 
+\index{Operator.cpp@{Operator.cpp}!WindowResize\_create@{WindowResize\_create}}
+\index{WindowResize\_create@{WindowResize\_create}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowResize\_create()}{WindowResize\_create()}}
+{\footnotesize\ttfamily void Window\+Resize\+\_\+create (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 136 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 25
+Here is the caller graph for this function\+:
+% FIG 26
+\mbox{\Hypertarget{_operator_8cpp_a68b90882cd158401efe406712ff6e0a4}\label{_operator_8cpp_a68b90882cd158401efe406712ff6e0a4}} 
+\index{Operator.cpp@{Operator.cpp}!WindowResize\_ecec@{WindowResize\_ecec}}
+\index{WindowResize\_ecec@{WindowResize\_ecec}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowResize\_ecec()}{WindowResize\_ecec()}}
+{\footnotesize\ttfamily void Window\+Resize\+\_\+ecec (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 76 of file Operator.\+cpp.
+
+\mbox{\Hypertarget{_operator_8cpp_a18077826c3f8a6661bf8e61d8554b969}\label{_operator_8cpp_a18077826c3f8a6661bf8e61d8554b969}} 
+\index{Operator.cpp@{Operator.cpp}!WindowResize\_invoke@{WindowResize\_invoke}}
+\index{WindowResize\_invoke@{WindowResize\_invoke}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowResize\_invoke()}{WindowResize\_invoke()}}
+{\footnotesize\ttfamily void Window\+Resize\+\_\+invoke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 78 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 27
+Here is the caller graph for this function\+:
+% FIG 28
+\mbox{\Hypertarget{_operator_8cpp_a8c962717e03e93f0cbf1c81ddd1b2c30}\label{_operator_8cpp_a8c962717e03e93f0cbf1c81ddd1b2c30}} 
+\index{Operator.cpp@{Operator.cpp}!WindowResize\_modal@{WindowResize\_modal}}
+\index{WindowResize\_modal@{WindowResize\_modal}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowResize\_modal()}{WindowResize\_modal()}}
+{\footnotesize\ttfamily void Window\+Resize\+\_\+modal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op,  }\item[{\mbox{\hyperlink{struct_modal_event}{Modal\+Event}} $\ast$}]{event }\end{DoxyParamCaption})}
+
+
+
+Definition at line 102 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 29
+Here is the caller graph for this function\+:
+% FIG 30
+\mbox{\Hypertarget{_operator_8cpp_aba157f8fe4218315c94dfb20633c73e3}\label{_operator_8cpp_aba157f8fe4218315c94dfb20633c73e3}} 
+\index{Operator.cpp@{Operator.cpp}!WindowResize\_poll@{WindowResize\_poll}}
+\index{WindowResize\_poll@{WindowResize\_poll}!Operator.cpp@{Operator.cpp}}
+\doxysubsubsection{\texorpdfstring{WindowResize\_poll()}{WindowResize\_poll()}}
+{\footnotesize\ttfamily bool Window\+Resize\+\_\+poll (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_seance}{Seance}} $\ast$}]{C,  }\item[{\mbox{\hyperlink{struct_operator}{Operator}} $\ast$}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line 97 of file Operator.\+cpp.
+
+Here is the call graph for this function\+:
+% FIG 31
+Here is the caller graph for this function\+:
+% FIG 32
