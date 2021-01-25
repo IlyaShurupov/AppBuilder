@@ -1,7 +1,9 @@
 #pragma once
 
+//#include "FrameBuff.h"
 #include "LinkedList.h"
 #include "MathMacros.h"
+//#include "Object.h"
 
 // TODO: a lot to do
 
@@ -43,6 +45,31 @@ class PropertyFloat {
   float min, max;
 };
 
+
+class PropertyObjectPtr {
+  public:
+  char name[10];
+
+  //class Object* obj_ptr;
+  void* obj;
+  void assign(void* obj_ptr);
+
+  PropertyObjectPtr();
+  ~PropertyObjectPtr();
+};
+
+class PropertyBuffPtr {
+  public:
+  char name[10];
+  //FBuff<RGBA_32>* buff;
+  void* buff;
+
+  void assign(void* buff_ptr);
+
+  PropertyBuffPtr();
+  ~PropertyBuffPtr();
+};
+
 class PropertyFuncAdress {
  public:
   void* (*func)(void* arg);
@@ -54,5 +81,7 @@ class PropertyFuncAdress {
 struct Properties {
   List<PropertyInt> Ints;
   List<PropertyFloat> Floats;
+  List<PropertyObjectPtr> Pointers_Obj;
+  List<PropertyBuffPtr> Pointers_Buff;
   // List<PropertyFuncAdress> Funcs;
 };

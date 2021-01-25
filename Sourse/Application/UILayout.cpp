@@ -1,6 +1,19 @@
 
 #include "public/UILayout.h"
 #include "public/Seance.h"
+//#include "Property.h"
+
+Operator* find_op(List<Operator>* operators, std::string* op_idname) {
+  Operator* op_ptr = nullptr;
+  Bounds bnds = Bounds(0, op_idname->length());
+  FOREACH_NODE(Operator, operators, op_node) {
+    if (strs_match(&op_node->Data->idname, op_idname, bnds, bnds)) {
+      op_ptr = op_node->Data;
+      break;
+    }
+  }
+  return op_ptr;
+}
 
 // --------- Button ---------------- //
 
@@ -22,15 +35,7 @@ void button_draw(UIItem* This, UIItem* project_to) {
 
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, std::string* op_idname) {
 
-  Operator* op_ptr = nullptr;
-  Bounds bnds = Bounds(0, op_idname->length());
-  FOREACH_NODE(Operator, operators, op_node) {
-    if (strs_match(&op_node->Data->idname, op_idname, bnds, bnds)) {
-      op_ptr = op_node->Data;
-      break;
-    }
-  }
-
+  Operator* op_ptr = find_op(operators, op_idname);
   if (!op_ptr) {
     return NULL;
   }
@@ -51,11 +56,21 @@ UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operat
 
 // --------- Region ---------------- //
 
+typedef struct UIRegionData {
+  Operator* op = nullptr;
+  Object* RS_ptr = nullptr;
+}UIRegionData;
+
 void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor) {
 
   This->upd_ev_state(cursor, user_inputs);
 
   if (This->redraw) {
+
+    UIRegionData* rd = (UIRegionData *)This->CustomData;
+
+    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
+
     FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
       child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos));
     }
@@ -63,9 +78,6 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 }
 
 void region_draw(UIItem* This, UIItem* project_to) {
-
-  RGBA_32 color = 0xffffffff;
-  This->buff->clear(&color);
 
   FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
     child_node->Data->Draw(child_node->Data, This);
@@ -76,13 +88,55 @@ void region_draw(UIItem* This, UIItem* project_to) {
   This->redraw = false;
 }
 
-UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect) {
+UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators) {
+
+  Operator* op_ptr = find_op(operators, &std::string("Render To Buff"));
+  if (!op_ptr) {
+    return NULL;
+  }
+
   UIItem* region = DBG_NEW UIItem(&rect.size);
 
   region->Draw = region_draw;
   region->ProcEvent = region_proc;
 
   region->rect = rect;
+
+  UIRegionData* rd = DBG_NEW UIRegionData();
+  region->CustomData = (void*)rd;
+
+  rd->op = op_ptr;
+  rd->op->Props.Pointers_Buff[0]->assign((void*)region->buff);
+
+  rd->RS_ptr = DBG_NEW Object();
+  rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
+
+  RenderSettings* rs = DBG_NEW RenderSettings();
+  rd->RS_ptr->SetRenderComponent(rs);
+
+  Object* MeshObj = DBG_NEW Object();
+  Object* CamObj = DBG_NEW Object();
+
+  List<Object> *objlist = DBG_NEW List<Object>();
+  objlist->add(MeshObj);
+  rs->setCamera(CamObj);
+  rs->setObjList(objlist);
+
+  StaticMesh* mesh = DBG_NEW StaticMesh();
+  Camera* cam = DBG_NEW Camera();
+  MeshObj->SetStaticMeshComponent(mesh);
+  CamObj->SetCameraComponent(cam);
+
+  cam->Height.setVal(rect.size.y);
+  cam->Width.setVal(rect.size.x);
+  cam->Lens.setVal(1);
+
+  Trig* trig = DBG_NEW Trig();
+  mesh->Trigs.add(trig);
+
+  trig->V0.assign(0, 0, -1);
+  trig->V1.assign(1, 1, -1);
+  trig->V2.assign(0, 1, -1);
 
   region->hierarchy.join(parent);
   return region;
@@ -177,7 +231,7 @@ UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, Window* pare
 
   UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(20, 20, 300, 300), "View3d");
 
-  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(20, 20, 200, 200));
+  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(20, 20, 200, 200), operators);
 
   UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(20, 20), operators, &std::string("Toggle Console"));
 

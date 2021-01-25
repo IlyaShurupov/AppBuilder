@@ -5,6 +5,8 @@
 
 void test();
 
+//TODO: edit region UI, pass properties to ops, UI resize
+
 int main(int argc, char* argv[]) {
 
   // enable memory debuging

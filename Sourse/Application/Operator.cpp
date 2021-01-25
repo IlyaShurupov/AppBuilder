@@ -1,7 +1,8 @@
 #include "public/Operator.h"
-
 #include "public/Print.h"
 #include "public/Seance.h"
+#include "../RenderEngines/RayCast/public/RayCast.h"
+
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 #define RET_FINISHED(op)         \
   op->State = OpState::FINISHED; \
@@ -33,7 +34,6 @@ void EndSeance_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
 }
 
-// -----------  End Seance Operator end ----------------------- //
 
 // -----------  Console Toggle Operator ----------------------- //
 
@@ -60,8 +60,6 @@ void ToggleConcole_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
 }
 
-// -----------  Console Toggle Operator end ----------------------- //
-
 // -----------  Window Resize Operator ----------------------- //
 
 struct WinResizeData {
@@ -73,7 +71,7 @@ struct WinResizeData {
 };
 
 
-void WindowResize_ecec(Seance* C, Operator* op) {}
+void WindowResize_ecec(Seance* C, Operator* op) { op->state = OpState::FINISHED; }
 
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
@@ -145,7 +143,6 @@ void WindowResize_create(Seance* C, Operator* op) {
   op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
 }
 
-// -----------  Window Resize Operator end ----------------------- //
 
 // -----------  Window Drag Operator ----------------------- //
 
@@ -184,7 +181,33 @@ void WindowDrag_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
 }
 
-// -----------  Window Drag Operator end ----------------------- //
+// -----------  Render To Buff Operator ----------------------- //
+
+void RenderToBuff_ecec(Seance* C, Operator* op) {
+
+  RenderSettings* rd = ((Object*)op->Props.Pointers_Obj[0]->obj)->GetRenderComponent();
+  RenderToBuff(rd, (FBuff<RGBA_32>*)op->Props.Pointers_Buff[0]->buff);
+
+  op->state = OpState::FINISHED;
+}
+
+// Checks if operator can be inveked
+bool RenderToBuff_poll(Seance* C, Operator* op) {
+  return true;
+}
+
+void RenderToBuff_create(Seance* C, Operator* op) {
+  op->idname = "Render To Buff";
+  op->Poll = RenderToBuff_poll;
+  op->Execute = RenderToBuff_ecec;
+
+  op->Props.Pointers_Obj.add(DBG_NEW PropertyObjectPtr());
+  op->Props.Pointers_Buff.add(DBG_NEW PropertyBuffPtr());
+
+  op->state = OpState::NONE;
+}
+
+// -----------  Operator ----------------------- //
 
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = DBG_NEW Operator;
@@ -203,6 +226,7 @@ void initOps(Seance* C) {
   AddOperator(C, ToggleConcole_create);
   AddOperator(C, WindowResize_create);
   AddOperator(C, WindowDrag_create);
+  AddOperator(C, RenderToBuff_create);
 }
 
 Operator::~Operator() {
