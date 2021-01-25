@@ -6,35 +6,40 @@
 #include "FrameBuff.h"
 #include "Operator.h"
 
-enum struct UIInputState {
+enum struct UICursorState {
   NONE = 0,
-  HOLD,
-  PRESSED,
-  RELEASED,
-  HOVER,
-};
-
-enum struct UIType {
-  BUTTON = 0,
-  ROOT,
-  AREA,
-  REGION,
+  ENTERED,
+  INSIDE,
+  LEAVED,
 };
 
 struct UIItem {
 
   Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
 
-  UIType type;
+  UICursorState ev_state;
+  Rect<SCR_UINT> rect;
+  vec2<SCR_UINT> minsize;
 
+  bool visible;
+  bool redraw = true;
+  FBuff<RGBA_32> *buff = nullptr;
+
+  void upd_ev_state(vec2<SCR_UINT>& cursor, struct UserInputs* user_inputs);
+  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor);
+  void (*Draw)(UIItem *This, UIItem* project_to) = nullptr;
   void* CustomData = nullptr;
 
-  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs) = nullptr;
-  void (*Draw)(UIItem *This) = nullptr;
+  UIItem(vec2<SCR_UINT>* size) {
 
-  UIItem(UIType UIType) {
-    type = UIType;
+    ev_state = UICursorState::NONE;
+    ProcEvent = nullptr;
+
+    if (this->visible = (bool)size) {
+      buff = DBG_NEW FBuff<RGBA_32>();
+      buff->resize(size->x, size->y);
+    }
   }
 };
 
-UIItem* UI_compile(List<Operator>* operators, std::string *ui_path);
+UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, struct Window* parent);

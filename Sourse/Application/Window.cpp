@@ -5,19 +5,19 @@
 #include "public/Win32API.h"
 
 void Window::Draw() {
-  RGBA_32 color = 0xff1d1d21;
-  //SysH->drawRect(Rect<SCR_UINT>());
-  buff.clear(&color);
-  UIroot->Draw(UIroot);
+  UIroot->Draw(UIroot, NULL);
 }
 
 Window::Window(std::string* configfolder, List<Operator>* operators) {
 
-  rect.size.assign(800, 500);
-  rect.pos.assign(600, 250);
-  minsize.y = 60;
-  minsize.x = 100;
+  // compile kmap
+  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
+  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
+  std::string ui_path = *configfolder + "UIs\\Default.txt";
+  UIroot = UI_compile(operators, &ui_path, this);
+
+  
   // init sys handler
   SysH = DBG_NEW SystemHandler();
 
@@ -25,7 +25,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
-  if (!SUCCEEDED(SysH->Initialize(rect))) {
+  if (!SUCCEEDED(SysH->Initialize(UIroot->rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
@@ -33,20 +33,12 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   std::string icon_path = *configfolder + "icon.ico";
   SysH->SetIcon(icon_path);
 
-  // compile kmap
-  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
-  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
-
   SysH->getScreenSize(scr_size);
 
-  std::string ui_path = *configfolder + "UIs\\Default.txt";
-  UIroot = UI_compile(operators, ui_path);
-
   // draw initialized window
-  buff.resize(rect.size.x, rect.size.y);
   Draw();
 
-  SysH->setRect(rect, scr_size.y);
+  SysH->setRect(UIroot->rect, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
 
@@ -67,11 +59,11 @@ void Window::ProcessEvents(List<OpThread>* op_threads) {
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
-  UIroot->ProcEvent(UIroot, op_threads, &user_inputs);
+  UIroot->ProcEvent(UIroot, op_threads, &user_inputs, user_inputs.Cursor);
 }
 
 void Window::SendBuffToSystem() {
-  SysH->SysOutput(&buff);
+  SysH->SysOutput(UIroot->buff);
 }
 
 bool Window::IsActive() {
@@ -83,47 +75,45 @@ void Window::ToggleConsole() {
 }
 
 void Window::getRect(Rect<SCR_UINT>& rect) {
-  SysH->getRect(rect, scr_size.y);
+  rect = UIroot->rect;
 }
 
 void Window::setRect(Rect<SCR_UINT>& newrect) {
 
-  SysH->getRect(rect, scr_size.y);
+  //SysH->getRect(rect, scr_size.y);
 
   // clamp new rect first
-  if (newrect.size.x < minsize.x) {
-    if (newrect.pos.x > rect.pos.x) {
+  if (newrect.size.x < UIroot->minsize.x) {
+    if (newrect.pos.x > UIroot->rect.pos.x) {
       // left -> right
-      newrect.pos.x = rect.size_vec_w().x - minsize.x;
-      newrect.size.x = minsize.x;
+      newrect.pos.x = UIroot->rect.size_vec_w().x - UIroot->minsize.x;
+      newrect.size.x = UIroot->minsize.x;
 
     } else {
       // left <- right
-      newrect.size.x = minsize.x;
+      newrect.size.x = UIroot->minsize.x;
     }
   }
 
-  if (newrect.size.y < minsize.y) {
-    if (newrect.pos.y > rect.pos.y) {
+  if (newrect.size.y < UIroot->minsize.y) {
+    if (newrect.pos.y > UIroot->rect.pos.y) {
       // top <- bottom
-      newrect.pos.y = rect.size_vec_w().y - minsize.y;
-      newrect.size.y = minsize.y;
+      newrect.pos.y = UIroot->rect.size_vec_w().y - UIroot->minsize.y;
+      newrect.size.y = UIroot->minsize.y;
 
     } else {
       // top -> bottom
-      newrect.size.y = minsize.y;
+      newrect.size.y = UIroot->minsize.y;
     }
   }
 
   // update cursor pos
-  user_inputs.Cursor.x -= newrect.pos.x - rect.pos.x;
-  user_inputs.Cursor.y -= newrect.pos.y - rect.pos.y;
+  user_inputs.Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
+  user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
 
-  this->rect = newrect;
+  UIroot->rect = newrect;
+  UIroot->buff->resize(newrect.size.x, newrect.size.y);
 
-  // upd buffer
-  this->buff.resize(rect.size.x, rect.size.y);
-
-  SysH->setRect(rect, scr_size.y);
+  SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();
 }

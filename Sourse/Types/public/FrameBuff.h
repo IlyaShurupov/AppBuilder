@@ -58,6 +58,7 @@ struct FBuff {
 
   void coppy(FBuff<RGBAf>* fbuff);
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
+  void project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos);
   void move(SCR_UINT dx, SCR_UINT dy);
 
   void premultiply();
@@ -100,6 +101,22 @@ void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
 }
 
 template <typename Color_t>
+void FBuff<Color_t>::project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos) {
+  assert(this->pos >= project_to->pos && project_to->size >= this->size);
+
+  SCR_UINT lastpxlx = size.x;
+  SCR_UINT lastpxly = size.y;
+
+  for (SCR_UINT i = 0; i < lastpxlx; i++) {
+    for (SCR_UINT j = 0; j < lastpxly; j++) {
+      SCR_UINT pxl_idx = project_to->size.x * (pos.y + j) + (pos.x + i);
+      project_to->pxls[pxl_idx] = pxls[size.x * j + i];
+    }
+  }
+}
+
+
+template <typename Color_t>
 void FBuff<Color_t>::move(SCR_UINT dx, SCR_UINT dy) {
   pos.x += dx;
   pos.y += dy;
@@ -133,7 +150,7 @@ Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
   return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + (x + pos.x);
 }
 
-template<typename Color_t>
+template <typename Color_t>
 void FBuff<Color_t>::coppy(FBuff<RGBAf>* fbuff) {
   resize(fbuff->size.x, fbuff->size.y);
   unsigned char r, g, b;
@@ -145,13 +162,12 @@ void FBuff<Color_t>::coppy(FBuff<RGBAf>* fbuff) {
 
     *(pxls + i) = 0xff000000 | ((RGBA_32)r << 16) | ((RGBA_32)g << 8) | (RGBA_32)b;
   }
-
 }
 
 template <typename Color_t>
 void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
 
-  assert((rect.size.y <= size.y) && (rect.size.x <= size.y));
+  assert(size >= rect->size && rect->pos >= pos);
 
   local_hrchy.childs.add(&out);
 
@@ -178,7 +194,6 @@ void FBuff<Color_t>::premultiply() {
     RGBA_SET(color, ((*RGBA_GET(color, 2) * A) / 255), 2);
     RGBA_SET(color, ((*RGBA_GET(color, 1) * A) / 255), 1);
     RGBA_SET(color, ((*RGBA_GET(color, 0) * A) / 255), 0);
- 
   }
 }
 

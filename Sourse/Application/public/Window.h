@@ -7,12 +7,7 @@
 
 struct Window {
 
-  FBuff<RGBA_32> buff;
-
-  // dimentions & loc of window
-  Rect<SCR_UINT> rect;
   vec2<SCR_UINT> scr_size;
-  vec2<SCR_UINT> minsize;
 
   // UI layout of window
   UIItem *UIroot;

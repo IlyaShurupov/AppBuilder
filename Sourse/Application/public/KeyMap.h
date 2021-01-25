@@ -8,6 +8,7 @@
 
 #define USRINPUT_DECL(INPUT_NAME) Input INPUT_NAME = Input(NAME(INPUT_NAME), InputState::NONE)
 
+
 enum class InputState {
   NONE = 0,
   HOLD,
@@ -163,3 +164,4 @@ struct CompiledKeyMap {
 };
 
 std::string getExecutablePath();
+bool strs_match(std::string* str1, std::string* str2, Bounds& bnds1, Bounds& bnds2);
