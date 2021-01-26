@@ -68,7 +68,6 @@ void EndSeance_ecec(Seance* C, Operator* op) {
 
 void EndSeance_invoke(Seance* C, Operator* op) {
   EndSeance_ecec(C, op);
-  op->state = OpState::FINISHED;
 }
 
 // Checks if operator can be inveked
@@ -80,6 +79,7 @@ void EndSeance_create(Seance* C, Operator* op) {
   op->idname = "End Seance";
   op->Poll = EndSeance_poll;
   op->Invoke = EndSeance_invoke;
+  op->Execute = EndSeance_ecec;
 
   op->state = OpState::NONE;
 }
@@ -90,11 +90,11 @@ void EndSeance_create(Seance* C, Operator* op) {
 void ToggleConcole_ecec(Seance* C, Operator* op) {
   if (C->project.windows.len())
     C->project.windows[0]->ToggleConsole();
+  op->state = OpState::FINISHED;
 }
 
 void ToggleConcole_invoke(Seance* C, Operator* op) {
   ToggleConcole_ecec(C, op);
-  op->state = OpState::FINISHED;
 }
 
 // Checks if operator can be inveked
@@ -106,6 +106,7 @@ void ToggleConcole_create(Seance* C, Operator* op) {
   op->idname = "Toggle Console";
   op->Poll = ToggleConcole_poll;
   op->Invoke = ToggleConcole_invoke;
+  op->Execute = ToggleConcole_ecec;
 
   op->state = OpState::NONE;
 }

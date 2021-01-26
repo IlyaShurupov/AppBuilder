@@ -43,7 +43,7 @@ void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
   if (This->redraw) {
     if (user_inputs->LMB.state == InputState::RELEASED) {
-      op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::INVOKE, NULL));
+      op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, NULL));
     }
   }
 }
@@ -116,10 +116,6 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
           rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
           rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
         }
-      }
-
-      if (!rd->RS_ptr) {
-        op_threads->add(DBG_NEW OpThread(find_op(&C->prefferences.operators, &std::string("Add Plane")), OpEventState::EXECUTE, NULL));
       }
     }
 
@@ -278,8 +274,16 @@ UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, Window* pare
 
   UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(20, 20, 200, 200), operators);
 
-  UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(20, 20), operators, &std::string("Toggle Console"));
+  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(20, 20), operators, &std::string("Add Plane"));
 
+  short width = 25;
+  short border = 10;
+  Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, UIroot->rect.size.y - width - border, UIroot->rect.size.x - border*2, width);
+  UIItem* Area2 = ui_add_area(UIroot, rect, "View3d");
+
+  ui_add_button(Area2, vec2<SCR_UINT>(2, 2), operators, &std::string("Toggle Console"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 1, 2), operators, &std::string("End Seance"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 2, 2), operators, &std::string("Move Window"));
   return UIroot;
 }
 
