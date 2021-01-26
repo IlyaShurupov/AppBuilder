@@ -5,7 +5,8 @@
 
 void test();
 
-//TODO: UI resize, new Shortcut condition (UI id name),  UI framework, ops properties, cleanup include structure
+// TODO: string class, UI cleanup, new Shortcut condition (UI id name), ops properties, cleanup include
+// structure & performance debug
 
 int main(int argc, char* argv[]) {
 
@@ -84,7 +85,7 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      //if (C.op_threads.len()) 
+      // if (C.op_threads.len())
       {
         // Draw each window & show updates
         FOREACH_NODE(Window, (&C.project.windows), win_node) {
@@ -117,7 +118,7 @@ void test() {
   Object ch111, ch112;
 
   root.hrchy_dbg.add(&ch13);
-  
+
   ch13.hrchy_dbg.join(&root);
 
   ch112.hrchy_dbg.join(&root);
@@ -125,8 +126,8 @@ void test() {
 
   Object* rootptr = ch111.hrchy_dbg.root();
   rootptr->Pos.assign(0, 0, 0);
-  
+
   ch111.hrchy_dbg.leave();
 
-#endif // _DEBUG
+#endif  // _DEBUG
 }

@@ -39,10 +39,13 @@ void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_input
     redraw = true;
     state = newState;
 
-    if (ProcBody)
-      ProcBody(this, op_threads, user_inputs, cursor, C);
     
   }
+
+  if (state == UIstate::INSIDE) {
+    if (ProcBody)
+      ProcBody(this, op_threads, user_inputs, cursor, C);
+  } 
   
   if (redraw) {
     FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
