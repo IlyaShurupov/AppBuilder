@@ -6,7 +6,7 @@
 struct CycleData;
 void RenderPass(RenderSettings* settings, Ray ray, FBFF_COLOR& color);
 void WritePassToBuff(FBuff<RGBA_32>* Buff, SCR_UINT i, SCR_UINT j, CycleData& CData, FBFF_COLOR& color);
-void InitCycle(CycleData& CData, RenderSettings* settings);
+void InitCycle(CycleData& CData, RenderSettings* settings, FBuff<RGBA_32>* Buff);
 inline void UpdYPass(CycleData& CData, SCR_UINT& i);
 inline void UpdXPass(CycleData& CData, SCR_UINT& i);
 
@@ -20,7 +20,7 @@ struct CycleData {
 
 void RenderToBuff(RenderSettings* Settings, FBuff<RGBA_32>* Buff) {
   CycleData CData;
-  InitCycle(CData, Settings);
+  InitCycle(CData, Settings, Buff);
 
   for (SCR_UINT j = 0; j < CData.y_passes; UpdYPass(CData, j)) {
     for (SCR_UINT i = 0; i < CData.x_passes; UpdXPass(CData, i)) {
@@ -57,12 +57,12 @@ void WritePassToBuff(FBuff<RGBA_32>* Buff, SCR_UINT i, SCR_UINT j, CycleData& CD
    Buff->DrawRect(Rect<SCR_UINT>(pos_x, pos_y, CData.pxl_size, CData.pxl_size), color);
 }
 
-void InitCycle(CycleData& CData, RenderSettings* settings) {
+void InitCycle(CycleData& CData, RenderSettings* settings, FBuff<RGBA_32>* Buff) {
   Object* cam = settings->getCamera();
   Camera* CamAtrb = cam->GetCameraComponent();
   Mat3f* Rotation = &cam->TransformMat;
 
-  float cam_y = (float)sqrt(float(CamAtrb->Height.get()) / CamAtrb->Width.get());
+  float cam_y = (float)sqrt(float(Buff->size.y) / Buff->size.x);
   float cam_x = 1 / cam_y;
 
   SCR_UINT pxl_size = (SCR_UINT)floor(1.f / settings->Resolution.get());
@@ -71,8 +71,8 @@ void InitCycle(CycleData& CData, RenderSettings* settings) {
     pxl_size++;
   }
 
-  CData.y_passes = (SCR_UINT)floor(CamAtrb->Height.get() / pxl_size) - 1;
-  CData.x_passes = (SCR_UINT)floor(CamAtrb->Width.get() / pxl_size) - 1;
+  CData.y_passes = (SCR_UINT)floor(Buff->size.y / pxl_size) - 1;
+  CData.x_passes = (SCR_UINT)floor(Buff->size.x / pxl_size) - 1;
 
   CData.step_x = Rotation->I * (cam_x / CData.x_passes);
   CData.step_y = Rotation->J * (-cam_y / CData.y_passes);

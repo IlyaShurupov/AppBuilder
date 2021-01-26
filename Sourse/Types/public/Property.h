@@ -84,4 +84,10 @@ struct Properties {
   List<PropertyObjectPtr> Pointers_Obj;
   List<PropertyBuffPtr> Pointers_Buff;
   // List<PropertyFuncAdress> Funcs;
+  ~Properties() {
+    Ints.del();
+    Floats.del();
+    Pointers_Buff.del();
+    Pointers_Obj.del();
+  }
 };

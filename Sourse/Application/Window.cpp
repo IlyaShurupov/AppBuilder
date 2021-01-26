@@ -47,6 +47,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
 Window::~Window() {
   //compiled_key_map.op_bindings.free();
   delete SysH;
+  delete UIroot;
   CoUninitialize();
 }
 
@@ -111,8 +112,8 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   user_inputs.Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
   user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
 
-  UIroot->rect = newrect;
-  UIroot->buff->resize(newrect.size.x, newrect.size.y);
+  UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x, (float)newrect.size.y / UIroot->rect.size.y));
+  UIroot->rect.pos = newrect.pos;
 
   SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();

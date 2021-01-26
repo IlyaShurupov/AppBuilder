@@ -5,7 +5,7 @@
 
 void test();
 
-//TODO: UI resize, new Shortcut condition (UI id name),  UI framework, ops properties
+//TODO: UI resize, new Shortcut condition (UI id name),  UI framework, ops properties, cleanup include structure
 
 int main(int argc, char* argv[]) {
 

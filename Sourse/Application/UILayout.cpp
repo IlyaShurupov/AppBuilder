@@ -1,7 +1,6 @@
 
 #include "public/UILayout.h"
 #include "public/Seance.h"
-//#include "Property.h"
 
 Operator* find_op(List<Operator>* operators, std::string* op_idname) {
   Operator* op_ptr = nullptr;
@@ -13,6 +12,28 @@ Operator* find_op(List<Operator>* operators, std::string* op_idname) {
     }
   }
   return op_ptr;
+}
+
+
+void UIResize(UIItem* This, vec2<float>& rescale) {
+
+  float width =  (This->presice_rect.size.x + This->presice_rect.pos.x) * rescale.x;
+  float height = (This->presice_rect.size.y + This->presice_rect.pos.y) * rescale.y;
+  This->presice_rect.pos.x *= rescale.x;
+  This->presice_rect.pos.y *= rescale.y;
+  This->presice_rect.size.x = width - This->presice_rect.pos.x;
+  This->presice_rect.size.y = height - This->presice_rect.pos.y;
+  
+  This->rect.size.assign((SCR_UINT)This->presice_rect.size.x, (SCR_UINT)This->presice_rect.size.y);
+  This->rect.pos.assign((SCR_UINT)This->presice_rect.pos.x, (SCR_UINT)This->presice_rect.pos.y);
+
+  if (This->visible) {
+    This->buff->resize((SCR_UINT)This->presice_rect.size.x, (SCR_UINT)This->presice_rect.size.y);
+  }
+
+  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
+    child_node->Data->Resize(child_node->Data, rescale);
+  }
 }
 
 // --------- Button ---------------- //
@@ -41,6 +62,10 @@ void button_draw(UIItem* This, UIItem* project_to) {
   This->redraw = false;
 }
 
+void ButtonResize(UIItem* This, vec2<float> &rescale) {
+
+}
+
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, std::string* op_idname) {
 
   Operator* op_ptr = find_op(operators, op_idname);
@@ -51,13 +76,15 @@ UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operat
   UIItem* button = DBG_NEW UIItem(NULL);
   button->Draw = button_draw;
   button->ProcEvent = button_proc;
-
+  button->Resize = ButtonResize;
+  button->visible = false;
   button->CustomData = (void*)op_ptr;
-
   button->hierarchy.join(parent);
 
 
   button->rect = Rect<SCR_UINT>(pos.x, pos.y, 40, 20);
+  button->presice_rect.size.assign(40, 20);
+  button->presice_rect.pos.assign((SCR_UINT)pos.x, (SCR_UINT)pos.y);
 
   return button;
 }
@@ -125,7 +152,11 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
 
   region->Draw = region_draw;
   region->ProcEvent = region_proc;
+  region->Resize = UIResize;
+  region->visible = true;
 
+  region->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  region->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
   region->rect = rect;
 
   UIRegionData* rd = DBG_NEW UIRegionData();
@@ -181,13 +212,18 @@ UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, std::string name) {
 
   Area->Draw = area_draw;
   Area->ProcEvent = area_proc;
+  Area->Resize = UIResize;
 
   AreaData* ad = DBG_NEW AreaData;
   Area->CustomData = (void*)ad;
 
   ad->name = name;
-  Area->rect = rect;
 
+  Area->rect = rect;
+  Area->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  Area->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+
+  Area->visible = false;
   Area->hierarchy.join(parent);
   return Area;
 }
@@ -220,11 +256,15 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
   UIItem* UIroot = DBG_NEW UIItem(&rect.size);
   UIroot->ProcEvent = Uiproc;
   UIroot->Draw = UIdraw;
+  UIroot->Resize = UIResize;
 
   UIroot->rect = rect;
+  UIroot->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  UIroot->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+
   UIroot->minsize.y = 60;
   UIroot->minsize.x = 100;
-
+  UIroot->visible = true;
   return UIroot;
 }
 

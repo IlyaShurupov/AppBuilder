@@ -18,6 +18,7 @@ struct UIItem {
 
   UICursorState ev_state;
   Rect<SCR_UINT> rect;
+  Rect<float> presice_rect;
   vec2<SCR_UINT> minsize;
 
   bool visible;
@@ -25,6 +26,7 @@ struct UIItem {
   FBuff<RGBA_32> *buff = nullptr;
 
   void upd_ev_state(vec2<SCR_UINT>& cursor, struct UserInputs* user_inputs);
+  void(*Resize)(UIItem* This, vec2<float>& rescale);
   void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
   void (*Draw)(UIItem *This, UIItem* project_to) = nullptr;
   void* CustomData = nullptr;
@@ -32,12 +34,18 @@ struct UIItem {
   UIItem(vec2<SCR_UINT>* size) {
 
     ev_state = UICursorState::NONE;
+    Resize = nullptr;
     ProcEvent = nullptr;
 
     if (this->visible = (bool)size) {
       buff = DBG_NEW FBuff<RGBA_32>();
       buff->resize(size->x, size->y);
     }
+  }
+
+  ~UIItem() {
+    hierarchy.childs.del();
+    delete buff;
   }
 };
 

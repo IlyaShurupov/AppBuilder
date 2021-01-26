@@ -7,7 +7,11 @@ Object::Object() {
   RenderSettingsComponent = nullptr;
 }
 
-Object::~Object() {}
+Object::~Object() {
+  if (StaticMeshComponent) delete StaticMeshComponent;
+  if (CameraComponent) delete CameraComponent;
+  if (RenderSettingsComponent) delete RenderSettingsComponent;
+}
 
 void Object::SetStaticMeshComponent(StaticMesh *static_mesh) {
   StaticMeshComponent = static_mesh;
