@@ -17,7 +17,7 @@ Operator* find_op(List<Operator>* operators, std::string* op_idname) {
 
 // --------- Button ---------------- //
 
-void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor) {
+void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
   This->upd_ev_state(cursor, user_inputs);
 
   if (This->redraw) {
@@ -28,8 +28,16 @@ void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 }
 
 void button_draw(UIItem* This, UIItem* project_to) {
-  RGBA_32 color = 0xff090909;
-  project_to->buff->DrawRect(This->rect, color);
+  
+  RGBA_32 color1 = 0xffffffff;
+  RGBA_32 color2 = 0xff090909;
+
+  if (This->ev_state == UICursorState::LEAVED || This->ev_state == UICursorState::NONE) {
+    color1 = 0xffaaaaaa;
+  }
+  
+  project_to->buff->DrawRect(This->rect, color1);
+  project_to->buff->DrawBounds(This->rect, color2, 1);
   This->redraw = false;
 }
 
@@ -61,7 +69,7 @@ typedef struct UIRegionData {
   Object* RS_ptr = nullptr;
 }UIRegionData;
 
-void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor) {
+void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
 
   This->upd_ev_state(cursor, user_inputs);
 
@@ -69,10 +77,28 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
     UIRegionData* rd = (UIRegionData *)This->CustomData;
 
-    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
+    if (rd->RS_ptr) {
+
+      op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
+
+    } else {
+
+      FOREACH_NODE(Object, (&C->project.collection), obj_node) {
+        if (obj_node->Data->GetRenderComponent()) {
+          rd->RS_ptr = obj_node->Data;
+          rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
+          rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
+        }
+      }
+
+      if (!rd->RS_ptr) {
+        op_threads->add(DBG_NEW OpThread(find_op(&C->prefferences.operators, &std::string("Add Plane")), OpEventState::EXECUTE, NULL));
+      }
+    }
+
 
     FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos));
+      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos), C);
     }
   }
 }
@@ -106,37 +132,6 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
   region->CustomData = (void*)rd;
 
   rd->op = op_ptr;
-  rd->op->Props.Pointers_Buff[0]->assign((void*)region->buff);
-
-  rd->RS_ptr = DBG_NEW Object();
-  rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
-
-  RenderSettings* rs = DBG_NEW RenderSettings();
-  rd->RS_ptr->SetRenderComponent(rs);
-
-  Object* MeshObj = DBG_NEW Object();
-  Object* CamObj = DBG_NEW Object();
-
-  List<Object> *objlist = DBG_NEW List<Object>();
-  objlist->add(MeshObj);
-  rs->setCamera(CamObj);
-  rs->setObjList(objlist);
-
-  StaticMesh* mesh = DBG_NEW StaticMesh();
-  Camera* cam = DBG_NEW Camera();
-  MeshObj->SetStaticMeshComponent(mesh);
-  CamObj->SetCameraComponent(cam);
-
-  cam->Height.setVal(rect.size.y);
-  cam->Width.setVal(rect.size.x);
-  cam->Lens.setVal(1);
-
-  Trig* trig = DBG_NEW Trig();
-  mesh->Trigs.add(trig);
-
-  trig->V0.assign(0, 0, -1);
-  trig->V1.assign(1, 1, -1);
-  trig->V2.assign(0, 1, -1);
 
   region->hierarchy.join(parent);
   return region;
@@ -149,13 +144,13 @@ typedef struct AreaData {
   std::string name;
 } AreaData;
 
-void area_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor) {
+void area_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
 
   This->upd_ev_state(cursor, user_inputs);
 
   if (This->redraw) {
     FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos));
+      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos), C);
     }
   }
 }
@@ -167,6 +162,16 @@ void area_draw(UIItem* This, UIItem* project_to) {
     child_node->Data->Draw(child_node->Data, project_to);
     child_node->Data->rect.pos -= This->rect.pos;
   }
+
+  RGBA_32 color2 = 0xff050505;
+  short thick = 3;
+
+  if (This->ev_state == UICursorState::LEAVED || This->ev_state == UICursorState::NONE) {
+    color2 = 0xff101010;
+    thick = 2;
+  }
+
+  project_to->buff->DrawBounds(This->rect, color2, thick);
 
   This->redraw = false;
 }
@@ -189,10 +194,10 @@ UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, std::string name) {
 
 // ------------------ UI Root --------------------------------- //
 
-void Uiproc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & loc_cursor) {
+void Uiproc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & loc_cursor, Seance* C) {
 
   FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, loc_cursor);
+    child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, loc_cursor, C);
   }
 
   This->redraw = true;

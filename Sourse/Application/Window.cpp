@@ -54,12 +54,12 @@ void Window::OnWrite() {}
 
 void Window::OnRead() {}
 
-void Window::ProcessEvents(List<OpThread>* op_threads) {
+void Window::ProcessEvents(List<OpThread>* op_threads, Seance *C) {
   SysH->getUserInputs(&user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
-  UIroot->ProcEvent(UIroot, op_threads, &user_inputs, user_inputs.Cursor);
+  UIroot->ProcEvent(UIroot, op_threads, &user_inputs, user_inputs.Cursor, C);
 }
 
 void Window::SendBuffToSystem() {

@@ -8,6 +8,56 @@
   op->State = OpState::FINISHED; \
   return;
 
+/*
+// -----------  Operator template ----------------------- //
+
+typedef struct opnameData {
+  bool top = false;
+  bool right = false;
+  bool bottom = false;
+  bool left = false;
+  Window* win = nullptr;
+}opnameData;
+
+
+void opname_ecec(Seance * C, Operator * op) { 
+  op->state = OpState::FINISHED; 
+}
+
+void opname_invoke(Seance * C, Operator * op) {
+  opnameData* data = (opnameData*)op->CustomData;
+
+  op->state = OpState::RUNNING_MODAL;
+}
+
+// Checks if operator can be inveked
+bool opname_poll(Seance * C, Operator * op) {
+  opnameData* data = (opnameData*)op->CustomData;
+  return data->win = C->project.C_actWin();
+}
+
+void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
+  opnameData* data = (opnameData*)op->CustomData;
+
+  if (event && event->idname == "FINISH") {
+    op->state = OpState::FINISHED;
+    return;
+  }
+}
+
+void opname_create(Seance * C, Operator * op) {
+  op->state = OpState::NONE;
+  op->CustomData = DBG_NEW opnameData();
+
+  op->idname = "opname";
+  op->Poll = opname_poll;
+  op->Invoke = opname_invoke;
+  op->Modal = opname_modal;
+
+  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+}
+*/
+
 // -----------  End Seance Operator ----------------------- //
 
 void EndSeance_ecec(Seance* C, Operator* op) {
@@ -207,6 +257,59 @@ void RenderToBuff_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
 }
 
+// -----------  Add Plane Atatic Mesh Operator ----------------------- //
+
+void AddPlane_ecec(Seance* C, Operator* op) {
+
+  Object* MeshObj = DBG_NEW Object();
+  StaticMesh* mesh = DBG_NEW StaticMesh();
+
+  Trig* trig = DBG_NEW Trig();
+  trig->V0.assign(0, 0, -1);
+  trig->V1.assign(1, 1, -1);
+  trig->V2.assign(0, 1, -1);
+
+  mesh->Trigs.add(trig);
+  MeshObj->SetStaticMeshComponent(mesh);
+
+  Camera* cam = DBG_NEW Camera();
+  cam->Height.setVal(200);
+  cam->Width.setVal(200);
+  cam->Lens.setVal(1);
+
+  Object* CamObj = DBG_NEW Object();
+  CamObj->SetCameraComponent(cam);
+
+
+  RenderSettings* rs = DBG_NEW RenderSettings();
+  rs->setCamera(CamObj);
+  rs->setObjList(&C->project.collection);
+ 
+  Object* RndObj = DBG_NEW Object();
+  RndObj->SetRenderComponent(rs);
+
+  C->project.collection.add(CamObj);
+  C->project.collection.add(MeshObj);
+  C->project.collection.add(RndObj);
+
+  op->state = OpState::FINISHED;
+}
+
+// Checks if operator can be inveked
+bool AddPlane_poll(Seance* C, Operator* op) {
+  return true;
+}
+
+void AddPlane_create(Seance* C, Operator* op) {
+  op->state = OpState::NONE;
+
+  op->idname = "Add Plane";
+  op->Poll = AddPlane_poll;
+  op->Execute = AddPlane_ecec;
+
+  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+}
+
 // -----------  Operator ----------------------- //
 
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
@@ -227,6 +330,7 @@ void initOps(Seance* C) {
   AddOperator(C, WindowResize_create);
   AddOperator(C, WindowDrag_create);
   AddOperator(C, RenderToBuff_create);
+  AddOperator(C, AddPlane_create);
 }
 
 Operator::~Operator() {

@@ -25,7 +25,7 @@ struct UIItem {
   FBuff<RGBA_32> *buff = nullptr;
 
   void upd_ev_state(vec2<SCR_UINT>& cursor, struct UserInputs* user_inputs);
-  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor);
+  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
   void (*Draw)(UIItem *This, UIItem* project_to) = nullptr;
   void* CustomData = nullptr;
 

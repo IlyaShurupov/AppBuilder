@@ -65,6 +65,7 @@ struct FBuff {
 
   // simple draw methods
   void DrawRect(Rect<SCR_UINT>& rect, Color_t& color);
+  void DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thickness);
   void clear(Color_t* color);
 };
 
@@ -137,6 +138,35 @@ void FBuff<Color_t>::DrawRect(Rect<SCR_UINT>& rect, Color_t& color) {
     for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
       set(i, j, &color);
     }
+  }
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thickness) {
+
+  SCR_UINT lastpxlx = rect.pos.x + rect.size.x;
+  SCR_UINT lastpxly = rect.pos.y + rect.size.y;
+
+  short th1 = -1;
+  short th2 = 0;
+
+  if (thickness != 1) {
+    th1 = -thickness/2;
+    th2 = th1 + thickness;
+  }
+
+  while (th1 < th2) {
+    for (SCR_UINT i = rect.pos.x -thickness / 2; i < lastpxlx + thickness / 2; i++) {
+      set(i, rect.pos.y + th1, &color);
+      set(i, rect.pos.y + rect.size.y + th1, &color);
+    }
+
+    for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
+      set(rect.pos.x + th1, j, &color);
+      set(rect.pos.x + rect.size.x + th1, j, &color);
+    }
+
+    th1++;
   }
 }
 

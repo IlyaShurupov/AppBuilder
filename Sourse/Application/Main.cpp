@@ -5,7 +5,7 @@
 
 void test();
 
-//TODO: edit region UI, pass properties to ops, UI resize
+//TODO: UI resize, new Shortcut condition (UI id name),  UI framework, ops properties
 
 int main(int argc, char* argv[]) {
 
@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
       // Handle events for each window
       FOREACH_NODE(Window, (&C.project.windows), win_node) {
         Window* win = win_node->Data;
-        win->ProcessEvents(&C.op_threads);
+        win->ProcessEvents(&C.op_threads, &C);
       }
 
       // Run Operators from queu (This is where the fun happends)
