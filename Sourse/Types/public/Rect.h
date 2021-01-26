@@ -35,6 +35,10 @@ struct Rect {
     return (p.operator>(pos) && (pos + size).operator>(p));
   }
 
+  bool inside(Type x, Type y) {
+    return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y);
+  }
+
   inline vec2<Type> size_vec() { 
     return vec2<Type>(size.x, size.y); 
   }

@@ -14,52 +14,106 @@ Operator* find_op(List<Operator>* operators, std::string* op_idname) {
   return op_ptr;
 }
 
+void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
-void UIResize(UIItem* This, vec2<float>& rescale) {
+  UIstate newState;
 
-  float width =  (This->presice_rect.size.x + This->presice_rect.pos.x) * rescale.x;
-  float height = (This->presice_rect.size.y + This->presice_rect.pos.y) * rescale.y;
-  This->presice_rect.pos.x *= rescale.x;
-  This->presice_rect.pos.y *= rescale.y;
-  This->presice_rect.size.x = width - This->presice_rect.pos.x;
-  This->presice_rect.size.y = height - This->presice_rect.pos.y;
+  if (rect.inside(cursor.x, cursor.y)) {
+
+    if (state == UIstate::NONE) {
+      newState = UIstate::ENTERED;
+    } else {
+      newState = UIstate::INSIDE;
+      redraw = true;
+    }
+
+  } else {
+    if (state == UIstate::INSIDE) {
+      newState = UIstate::LEAVED;
+    } else {
+      newState = UIstate::NONE;
+    }
+  }
+
+  if (state != newState) {
+    redraw = true;
+    state = newState;
+
+    if (ProcBody)
+      ProcBody(this, op_threads, user_inputs, cursor, C);
+    
+  }
   
-  This->rect.size.assign((SCR_UINT)This->presice_rect.size.x, (SCR_UINT)This->presice_rect.size.y);
-  This->rect.pos.assign((SCR_UINT)This->presice_rect.pos.x, (SCR_UINT)This->presice_rect.pos.y);
+  if (redraw) {
+    FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
+      vec2<SCR_UINT> pos = vec2<SCR_UINT>(rect.pos.x, rect.pos.y);
+      child_node->Data->ProcEvent(op_threads, user_inputs, (cursor - pos), C);
+    }
+  }
+}
 
-  if (This->visible) {
-    This->buff->resize((SCR_UINT)This->presice_rect.size.x, (SCR_UINT)This->presice_rect.size.y);
+void UIItem::Draw(UIItem* project_to) {
+
+  if (DrawBody)
+    DrawBody(this, project_to);
+
+  FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
+
+    if (ownbuff) {
+      child_node->Data->Draw(this);
+      continue;
+    }
+
+    child_node->Data->rect.pos += rect.pos;
+    child_node->Data->Draw(project_to);
+    child_node->Data->rect.pos -= rect.pos;
   }
 
-  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->Resize(child_node->Data, rescale);
+  if (ownbuff && project_to) {
+    buff->project_to(project_to->buff, vec2<SCR_UINT>(rect.pos.x, rect.pos.y));
   }
+
+  redraw = false;
+}
+
+UIItem::UIItem(vec2<SCR_UINT>* size) {
+
+  state = UIstate::NONE;
+  Resize = nullptr;
+  ProcBody = nullptr;
+  DrawBody = nullptr;
+
+  if (this->ownbuff = (bool)size) {
+    buff = DBG_NEW FBuff<RGBA_32>();
+    buff->resize(size->x, size->y);
+  }
+}
+
+UIItem::~UIItem() {
+  hierarchy.childs.del();
+  delete buff;
 }
 
 // --------- Button ---------------- //
 
 void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
-  This->upd_ev_state(cursor, user_inputs);
-
-  if (This->redraw) {
-    if (user_inputs->LMB.state == InputState::RELEASED) {
-      op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, NULL));
-    }
+  if (user_inputs->LMB.state == InputState::RELEASED) {
+    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, NULL));
   }
 }
 
 void button_draw(UIItem* This, UIItem* project_to) {
-  
+
   RGBA_32 color1 = 0xffffffff;
   RGBA_32 color2 = 0xff090909;
-
-  if (This->ev_state == UICursorState::LEAVED || This->ev_state == UICursorState::NONE) {
+  if (This->state == UIstate::LEAVED || This->state == UIstate::NONE) {
     color1 = 0xffaaaaaa;
   }
-  
-  project_to->buff->DrawRect(This->rect, color1);
-  project_to->buff->DrawBounds(This->rect, color2, 1);
-  This->redraw = false;
+
+  Rect<SCR_UINT> rect = Rect<SCR_UINT>(This->rect.pos.x, This->rect.pos.y, This->rect.size.x, This->rect.size.y);
+
+  project_to->buff->DrawRect(rect, color1);
+  project_to->buff->DrawBounds(rect, color2, 1);
 }
 
 void ButtonResize(UIItem* This, vec2<float> &rescale) {
@@ -68,25 +122,49 @@ void ButtonResize(UIItem* This, vec2<float> &rescale) {
 
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, std::string* op_idname) {
 
+  UIItem* button = DBG_NEW UIItem(NULL);
+  button->hierarchy.join(parent);
+  
+  button->ownbuff = false;
+  button->DrawBody = button_draw;
+  button->ProcBody = button_proc;
+  button->Resize = ButtonResize;
+
+  button->rect.size.assign(40, 20);
+  button->rect.pos.assign((SCR_UINT)pos.x, (SCR_UINT)pos.y);
+
+  //own
   Operator* op_ptr = find_op(operators, op_idname);
   if (!op_ptr) {
     return NULL;
   }
-
-  UIItem* button = DBG_NEW UIItem(NULL);
-  button->Draw = button_draw;
-  button->ProcEvent = button_proc;
-  button->Resize = ButtonResize;
-  button->visible = false;
   button->CustomData = (void*)op_ptr;
-  button->hierarchy.join(parent);
-
-
-  button->rect = Rect<SCR_UINT>(pos.x, pos.y, 40, 20);
-  button->presice_rect.size.assign(40, 20);
-  button->presice_rect.pos.assign((SCR_UINT)pos.x, (SCR_UINT)pos.y);
+  //own
 
   return button;
+}
+
+// -------------------------    ------------------------- //
+
+void UIResize(UIItem* This, vec2<float>& rescale) {
+
+  float width = (This->rect.size.x + This->rect.pos.x) * rescale.x;
+  float height = (This->rect.size.y + This->rect.pos.y) * rescale.y;
+
+  This->rect.pos.x *= rescale.x;
+  This->rect.pos.y *= rescale.y;
+
+  This->rect.size.x = width - This->rect.pos.x;
+  This->rect.size.y = height - This->rect.pos.y;
+
+  
+  if (This->ownbuff) {
+    This->buff->resize((SCR_UINT)This->rect.size.x, (SCR_UINT)This->rect.size.y);
+  }
+
+  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
+    child_node->Data->Resize(child_node->Data, rescale);
+  }
 }
 
 // --------- Region ---------------- //
@@ -98,129 +176,93 @@ typedef struct UIRegionData {
 
 void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
 
-  This->upd_ev_state(cursor, user_inputs);
+  UIRegionData* rd = (UIRegionData *)This->CustomData;
 
-  if (This->redraw) {
+  if (rd->RS_ptr) {
 
-    UIRegionData* rd = (UIRegionData *)This->CustomData;
+    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
 
-    if (rd->RS_ptr) {
+  } else {
 
-      op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
-
-    } else {
-
-      FOREACH_NODE(Object, (&C->project.collection), obj_node) {
-        if (obj_node->Data->GetRenderComponent()) {
-          rd->RS_ptr = obj_node->Data;
-          rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
-          rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
-        }
+    FOREACH_NODE(Object, (&C->project.collection), obj_node) {
+      if (obj_node->Data->GetRenderComponent()) {
+        rd->RS_ptr = obj_node->Data;
+        rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
+        rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
       }
-    }
-
-
-    FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos), C);
     }
   }
 }
 
 void region_draw(UIItem* This, UIItem* project_to) {
 
-  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->Draw(child_node->Data, This);
-  }
-
-  This->buff->project_to(project_to->buff, This->rect.pos);
-
-  This->redraw = false;
 }
 
 UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators) {
 
+
+  UIItem* region = DBG_NEW UIItem(&rect.size);
+  region->hierarchy.join(parent);
+
+  region->ownbuff = true;
+  region->DrawBody = region_draw;
+  region->ProcBody = region_proc;
+  region->Resize = UIResize;
+
+  region->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  region->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+
+  // own
   Operator* op_ptr = find_op(operators, &std::string("Render To Buff"));
   if (!op_ptr) {
     return NULL;
   }
 
-  UIItem* region = DBG_NEW UIItem(&rect.size);
-
-  region->Draw = region_draw;
-  region->ProcEvent = region_proc;
-  region->Resize = UIResize;
-  region->visible = true;
-
-  region->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  region->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
-  region->rect = rect;
-
   UIRegionData* rd = DBG_NEW UIRegionData();
   region->CustomData = (void*)rd;
-
   rd->op = op_ptr;
+  // own
 
-  region->hierarchy.join(parent);
   return region;
 }
 
 
 // ---------  Area ---------------- //
 
-typedef struct AreaData {
-  std::string name;
-} AreaData;
-
 void area_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
 
-  This->upd_ev_state(cursor, user_inputs);
-
-  if (This->redraw) {
-    FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-      child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, (cursor - This->rect.pos), C);
-    }
-  }
 }
 
 void area_draw(UIItem* This, UIItem* project_to) {
 
-  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->rect.pos += This->rect.pos;
-    child_node->Data->Draw(child_node->Data, project_to);
-    child_node->Data->rect.pos -= This->rect.pos;
-  }
-
   RGBA_32 color2 = 0xff050505;
   short thick = 3;
 
-  if (This->ev_state == UICursorState::LEAVED || This->ev_state == UICursorState::NONE) {
+  if (This->state == UIstate::LEAVED || This->state == UIstate::NONE) {
     color2 = 0xff101010;
     thick = 2;
   }
 
-  project_to->buff->DrawBounds(This->rect, color2, thick);
-
-  This->redraw = false;
+  Rect<SCR_UINT> rect = Rect<SCR_UINT>(This->rect.pos.x, This->rect.pos.y, This->rect.size.x, This->rect.size.y);
+  project_to->buff->DrawBounds(rect, color2, thick);
 }
 
 UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, std::string name) {
+
   UIItem* Area = DBG_NEW UIItem(NULL);
-
-  Area->Draw = area_draw;
-  Area->ProcEvent = area_proc;
-  Area->Resize = UIResize;
-
-  AreaData* ad = DBG_NEW AreaData;
-  Area->CustomData = (void*)ad;
-
-  ad->name = name;
-
-  Area->rect = rect;
-  Area->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  Area->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
-
-  Area->visible = false;
   Area->hierarchy.join(parent);
+
+  Area->ownbuff = false;
+  Area->DrawBody = area_draw;
+  Area->ProcBody = area_proc;
+  Area->Resize = UIResize;
+  Area->idname = name;
+
+  Area->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  Area->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+
+  // own
+
   return Area;
 }
 
@@ -228,39 +270,26 @@ UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, std::string name) {
 
 void Uiproc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & loc_cursor, Seance* C) {
 
-  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->ProcEvent(child_node->Data, op_threads, user_inputs, loc_cursor, C);
-  }
-
-  This->redraw = true;
 }
 
 void UIdraw(UIItem* This, UIItem* project_to) {
-
   RGBA_32 color = 0xff1d1d21;
   This->buff->clear(&color);
-
-  FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
-    child_node->Data->Draw(child_node->Data, This);
-  }
-
-  This->redraw = false;
 }
 
 UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
   UIItem* UIroot = DBG_NEW UIItem(&rect.size);
-  UIroot->ProcEvent = Uiproc;
-  UIroot->Draw = UIdraw;
+  UIroot->ProcBody = Uiproc;
+  UIroot->DrawBody = UIdraw;
   UIroot->Resize = UIResize;
 
-  UIroot->rect = rect;
-  UIroot->presice_rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  UIroot->presice_rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+  UIroot->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
+  UIroot->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
 
   UIroot->minsize.y = 60;
   UIroot->minsize.x = 100;
-  UIroot->visible = true;
+  UIroot->ownbuff = true;
   return UIroot;
 }
 
@@ -287,28 +316,3 @@ UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, Window* pare
   return UIroot;
 }
 
-void UIItem::upd_ev_state(vec2<SCR_UINT>& cursor, struct UserInputs* user_inputs) {
-  UICursorState newState;
-
-  if (rect.inside(cursor)) {
-
-    if (ev_state == UICursorState::NONE) {
-      newState = UICursorState::ENTERED;
-    } else {
-      newState = UICursorState::INSIDE;
-      redraw = true;
-    }
-
-  } else {
-    if (ev_state == UICursorState::INSIDE) {
-      newState = UICursorState::LEAVED;
-    } else {
-      newState = UICursorState::NONE;
-    }
-  }
-
-  if (ev_state != newState) {
-    redraw = true;
-    ev_state = newState;
-  }
-}

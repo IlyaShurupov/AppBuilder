@@ -5,7 +5,7 @@
 #include "FrameBuff.h"
 #include "Operator.h"
 
-enum struct UICursorState {
+enum struct UIstate {
   NONE = 0,
   ENTERED,
   INSIDE,
@@ -16,37 +16,27 @@ struct UIItem {
 
   Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
 
-  UICursorState ev_state;
-  Rect<SCR_UINT> rect;
-  Rect<float> presice_rect;
+  Str idname;
+  UIstate state;
+
+  Rect<float> rect;
   vec2<SCR_UINT> minsize;
 
-  bool visible;
-  bool redraw = true;
+  bool ownbuff;
   FBuff<RGBA_32> *buff = nullptr;
 
-  void upd_ev_state(vec2<SCR_UINT>& cursor, struct UserInputs* user_inputs);
-  void(*Resize)(UIItem* This, vec2<float>& rescale);
-  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
-  void (*Draw)(UIItem *This, UIItem* project_to) = nullptr;
+  bool redraw = true;
   void* CustomData = nullptr;
 
-  UIItem(vec2<SCR_UINT>* size) {
+  void(*Resize)(UIItem* This, vec2<float>& rescale);
+  void (*ProcBody)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
+  void (*DrawBody)(UIItem* This, UIItem* project_to);
 
-    ev_state = UICursorState::NONE;
-    Resize = nullptr;
-    ProcEvent = nullptr;
+  void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void Draw(UIItem* project_to);
 
-    if (this->visible = (bool)size) {
-      buff = DBG_NEW FBuff<RGBA_32>();
-      buff->resize(size->x, size->y);
-    }
-  }
-
-  ~UIItem() {
-    hierarchy.childs.del();
-    delete buff;
-  }
+  UIItem(vec2<SCR_UINT>* size);
+  ~UIItem();
 };
 
 UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, struct Window* parent);

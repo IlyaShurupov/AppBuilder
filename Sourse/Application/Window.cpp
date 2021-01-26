@@ -4,10 +4,6 @@
 #include "public/Operator.h"
 #include "public/Win32API.h"
 
-void Window::Draw() {
-  UIroot->Draw(UIroot, NULL);
-}
-
 Window::Window(std::string* configfolder, List<Operator>* operators) {
 
   // compile kmap
@@ -25,7 +21,8 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
-  if (!SUCCEEDED(SysH->Initialize(UIroot->rect))) {
+  Rect<SCR_UINT> rect = Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
+  if (!SUCCEEDED(SysH->Initialize(rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
@@ -38,7 +35,7 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   // draw initialized window
   Draw();
 
-  SysH->setRect(UIroot->rect, scr_size.y);
+  SysH->setRect(rect, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
 
@@ -55,12 +52,17 @@ void Window::OnWrite() {}
 
 void Window::OnRead() {}
 
+void Window::Draw() {
+  UIroot->Draw(NULL);
+}
+
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance *C) {
   SysH->getUserInputs(&user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
-  UIroot->ProcEvent(UIroot, op_threads, &user_inputs, user_inputs.Cursor, C);
+  vec2<SCR_UINT> pos = vec2<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y);
+  UIroot->ProcEvent(op_threads, &user_inputs, user_inputs.Cursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {
@@ -76,7 +78,7 @@ void Window::ToggleConsole() {
 }
 
 void Window::getRect(Rect<SCR_UINT>& rect) {
-  rect = UIroot->rect;
+  rect = Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
 }
 
 void Window::setRect(Rect<SCR_UINT>& newrect) {
@@ -113,7 +115,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
 
   UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x, (float)newrect.size.y / UIroot->rect.size.y));
-  UIroot->rect.pos = newrect.pos;
+  UIroot->rect.pos.assign(newrect.pos.x, newrect.pos.y);
 
   SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();
