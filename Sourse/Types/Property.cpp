@@ -1,5 +1,5 @@
 #include "public/Property.h"
-
+#include "public/MathMacros.h"
 
 PropertyInt::PropertyInt() {
 	max = INT_MAX;

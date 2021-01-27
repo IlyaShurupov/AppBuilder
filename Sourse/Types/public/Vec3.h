@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MathMacros.h"
+#include <corecrt_math.h>
 
 class Vec3f
 {

@@ -1,10 +1,8 @@
 #pragma once
 
-// Windows Header Files:
+#include "FrameBuff.h"
 #include <d2d1.h>
 #include <windows.h>
-#include "Rect.h"
-#include "FrameBuff.h"
 
 
 class SystemHandler {

@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
       }
 
       if (!timer.timeout()) {
-        THREAD_SLEEP(timer.remain());
+        TreadSleep(timer.remain());
       }
     }
   }

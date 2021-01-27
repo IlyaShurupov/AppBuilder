@@ -1,6 +1,5 @@
 
 #include "public/Win32API.h"
-
 #include <conio.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
@@ -11,10 +10,11 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <wincodec.h>
-#include "FrameBuff.h"
-#include "public/KeyMap.h"
-#include "wingdi.h"
+
 #include "d2d1_1.h"
+#include "wingdi.h"
+
+#include "public/KeyMap.h"
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -92,16 +92,17 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(rect.size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(rect.size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL, HINST_THISCOMPONENT, this);
+    m_hwnd = CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL,
+                          HINST_THISCOMPONENT, this);
 
     hr = m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
-      #ifdef TRANSPARENTCY
+#ifdef TRANSPARENTCY
       SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-      #else
+#else
       SetWindowLong(m_hwnd, GWL_EXSTYLE, 0);
-      #endif
+#endif
 
       hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
 
@@ -204,7 +205,7 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
 
   // use the source image's alpha channel for blending
   BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-  
+
   LPRECT wrect_p = &RECT();
   GetWindowRect(hwnd, wrect_p);
 
@@ -237,12 +238,12 @@ void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
-  #ifdef TRANSPARENTCY
+#ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
-  #else
+#else
   SelectObject(hdcMem, hbmMem);
   BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
-  #endif
+#endif
 
   DeleteObject(hbmMem);
   ReleaseDC(m_hwnd, hdcWindow);
@@ -271,7 +272,7 @@ void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
   //    COLORREF SetDCPenColor(HDC hdc, COLORREF color)
   SelectObject(hdc, GetStockObject(DC_PEN));
 
-  //    Select DC_BRUSH so you can change the brush color from the 
+  //    Select DC_BRUSH so you can change the brush color from the
   //    default WHITE_BRUSH to any other color
   SelectObject(hdc, GetStockObject(DC_BRUSH));
 
@@ -282,7 +283,7 @@ void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
   //    Set the Pen to Blue
   SetDCPenColor(hdc, RGB(0, 0, 255));
 
-  //    Drawing a rectangle with the current Device Context    
+  //    Drawing a rectangle with the current Device Context
   Rectangle(hdc, 100, 300, 200, 400);
 
   //    Changing the color of the brush to Green
@@ -332,8 +333,7 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   cprect.inv_y(scry);
 
-  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y,
-               SWP_DRAWFRAME);
+  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_DRAWFRAME);
 }
 
 void UpdKeySate(Input& key, bool down, bool& IsEvent) {

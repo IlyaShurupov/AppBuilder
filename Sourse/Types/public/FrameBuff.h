@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <cassert>
 #include "LinkedList.h"
 #include "Rect.h"
 
@@ -103,7 +102,6 @@ void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
 
 template <typename Color_t>
 void FBuff<Color_t>::project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos) {
-  assert(this->pos >= project_to->pos && project_to->size >= this->size);
 
   SCR_UINT lastpxlx = size.x;
   SCR_UINT lastpxly = size.y;
@@ -177,7 +175,7 @@ Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
     return pxls + (__int64)size.x * y + x;
   }
 
-  return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + (x + pos.x);
+  return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + x + pos.x;
 }
 
 template <typename Color_t>

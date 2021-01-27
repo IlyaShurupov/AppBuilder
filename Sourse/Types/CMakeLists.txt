@@ -5,9 +5,10 @@ project(Types)
 
 set (TYPES_HEADERS
     "public/Vec2.h"
-    "public/String.h"
+    "public/Strings.h"
     "public/Rect.h"
-    "public/MathMacros.h"
+    "public/Mem.h"
+    "public/Math.h"
     "public/Property.h"
     "public/Vec3.h"
     "public/FrameBuff.h"
@@ -29,7 +30,8 @@ set (TYPES_SOURCES
     "FrameBuff.cpp"
     "Ray.cpp"
     "Timer.cpp"
-    "String.cpp"
+    "Mem.cpp"
+    "Strings.cpp"
     "Mesh.cpp"
     "Object.cpp"
     "Trig.cpp"

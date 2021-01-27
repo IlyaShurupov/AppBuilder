@@ -3,6 +3,7 @@
 
 #include "public/Operator.h"
 #include "public/Win32API.h"
+#include "public/Print.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
 
@@ -25,8 +26,7 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
-  Rect<SCR_UINT> rect =
-      Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
+  Rect<SCR_UINT> rect(UIroot->rect);
   if (!SUCCEEDED(SysH->Initialize(rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
@@ -66,7 +66,7 @@ void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
-  vec2<SCR_UINT> pos = vec2<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y);
+  vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
   UIroot->ProcEvent(op_threads, &user_inputs, user_inputs.Cursor + pos, C);
 }
 
@@ -83,7 +83,7 @@ void Window::ToggleConsole() {
 }
 
 void Window::getRect(Rect<SCR_UINT>& rect) {
-  rect = Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
+  rect = Rect<SCR_UINT>(UIroot->rect);
 }
 
 void Window::setRect(Rect<SCR_UINT>& newrect) {
@@ -94,7 +94,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   if (newrect.size.x < UIroot->minsize.x) {
     if (newrect.pos.x > UIroot->rect.pos.x) {
       // left -> right
-      newrect.pos.x = UIroot->rect.size_vec_w().x - UIroot->minsize.x;
+      newrect.pos.x = (SCR_UINT)UIroot->rect.size_vec_w().x - UIroot->minsize.x;
       newrect.size.x = UIroot->minsize.x;
 
     } else {
@@ -106,7 +106,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   if (newrect.size.y < UIroot->minsize.y) {
     if (newrect.pos.y > UIroot->rect.pos.y) {
       // top <- bottom
-      newrect.pos.y = UIroot->rect.size_vec_w().y - UIroot->minsize.y;
+      newrect.pos.y = (SCR_UINT)UIroot->rect.size_vec_w().y - UIroot->minsize.y;
       newrect.size.y = UIroot->minsize.y;
 
     } else {
@@ -116,12 +116,12 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   }
 
   // update cursor pos
-  user_inputs.Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
-  user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
+  user_inputs.Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
+  user_inputs.Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
 
   UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x,
                                      (float)newrect.size.y / UIroot->rect.size.y));
-  UIroot->rect.pos.assign(newrect.pos.x, newrect.pos.y);
+  UIroot->rect.pos.assign((float)newrect.pos.x, (float)newrect.pos.y);
 
   SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();

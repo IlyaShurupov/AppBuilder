@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LinkedList.h"
-#include "MathMacros.h"
 #include "Strings.h"
 
 class PropertyInt {

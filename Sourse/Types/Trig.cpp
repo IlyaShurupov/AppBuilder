@@ -1,5 +1,6 @@
 #include "public/Trig.h"
 #include "public/Ray.h"
+#include "public/MathMacros.h"
 
 Trig::Trig() {
 	V0.assign(0.f, 0.f, 0.f);

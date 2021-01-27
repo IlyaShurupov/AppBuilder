@@ -1,5 +1,24 @@
 
 #include "public/Timer.h"
+#include "public/MathMacros.h"
+//#include <time.h>
+#include <chrono>
+#include <thread>
+
+#define GETTIMEMSC()                                                                                         \
+  (TIME_MS)(                                                                                                 \
+      std::chrono::duration_cast<std::chrono::milliseconds>(                                                 \
+          std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()) \
+              .time_since_epoch())                                                                           \
+          .count())
+
+#define THREAD_SLEEP(time_ms) std::this_thread::sleep_for(std::chrono::milliseconds(time_ms))
+
+void TreadSleep(TIME_MS duration) {
+  THREAD_SLEEP(duration);
+}
+
+
 
 Timer::Timer() {
   duration = 0;
@@ -38,8 +57,6 @@ float Timer::ease_in(TIME_MS duration) {
 
   float out = (1.1f * x) / (x + 0.1f);
   CLAMP(out, 0, 1);
-  //printf("\n %lfp", ((long double)time(0) * 1000));
-  //printf("\n %f", out);
   return out;
 }
 

@@ -75,6 +75,11 @@ bool COpBindings::IsInvoked() {
   return invoke.IsShortcut();
 }
 
+COpBindings::COpBindings() {
+  op_ptr = nullptr;
+  thread_ptr = nullptr;
+}
+
 COpBindings::~COpBindings() {
   //invoke.conditions.free();
   modal_keymap.free();
