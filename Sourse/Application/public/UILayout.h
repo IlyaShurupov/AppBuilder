@@ -39,4 +39,4 @@ struct UIItem {
   ~UIItem();
 };
 
-UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, struct Window* parent);
+UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* parent);

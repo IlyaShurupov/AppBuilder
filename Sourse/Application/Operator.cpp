@@ -1,12 +1,23 @@
 #include "public/Operator.h"
-#include "public/Print.h"
+//#include "public/Print.h"
+
 #include "public/Seance.h"
+#include "String.h"
 #include "../RenderEngines/RayCast/public/RayCast.h"
 
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
-#define RET_FINISHED(op)         \
-  op->State = OpState::FINISHED; \
-  return;
+
+Operator* find_op(List<Operator>* operators, Str* op_idname) {
+  Operator* op_ptr = nullptr;
+  Range bnds = Range(0, op_idname->len());
+  FOREACH_NODE(Operator, operators, op_node) {
+    if (op_node->Data->idname.match(bnds, *op_idname, bnds)) {
+      op_ptr = op_node->Data;
+      break;
+    }
+  }
+  return op_ptr;
+}
 
 /*
 // -----------  Operator template ----------------------- //

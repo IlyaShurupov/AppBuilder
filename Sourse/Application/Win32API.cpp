@@ -449,7 +449,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   }
 }
 
-void SystemHandler::SetIcon(std::string stricon) {
+void SystemHandler::SetIcon(Str& stricon) {
   if (hWindowIcon != NULL)
     DestroyIcon(hWindowIcon);
   if (hWindowIconBig != NULL)
@@ -458,8 +458,8 @@ void SystemHandler::SetIcon(std::string stricon) {
     SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
     SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
   } else {
-    hWindowIcon = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
-    hWindowIconBig = (HICON)LoadImage(NULL, stricon.c_str(), IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+    hWindowIcon = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    hWindowIconBig = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
     SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
     SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
   }

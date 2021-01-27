@@ -8,7 +8,6 @@
 
 #define USRINPUT_DECL(INPUT_NAME) Input INPUT_NAME = Input(NAME(INPUT_NAME), InputState::NONE)
 
-
 enum class InputState {
   NONE = 0,
   HOLD,
@@ -18,22 +17,9 @@ enum class InputState {
 
 struct Input {
   Input();
-  Input(std::string idname, InputState state = InputState::NONE);
-  std::string idname;
+  Input(const char* idname, InputState state = InputState::NONE);
+  struct Str idname;
   InputState state = InputState::NONE;
-};
-
-typedef long long int strloc;
-
-struct Bounds {
-  strloc len() { return end - strt;}
-  Bounds(){}
-  Bounds(strloc strt, strloc end) {
-    this->strt = strt;
-    this->end = end;
-  }
-  strloc strt = -1;
-  strloc end = -1;
 };
 
 struct UserInputs {
@@ -43,7 +29,6 @@ struct UserInputs {
   USRINPUT_DECL(SYS_DESTROY_COMMAND);
 
   USRINPUT_DECL(WIN_KEY);
-
   USRINPUT_DECL(K0);
   USRINPUT_DECL(K1);
   USRINPUT_DECL(K2);
@@ -123,7 +108,7 @@ struct CKeyCondition {
   InputState* input_ptr;
   InputState trigger_state;
 
-  bool Compile(UserInputs* usins, std::string* str, Bounds& bnds);
+  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
 
   bool IsTrue();
 };
@@ -132,7 +117,7 @@ struct CShortcut {
   Stack<CKeyCondition> conditions;
   struct ModalEvent modal_event;
 
-  bool Compile(UserInputs* usins, std::string* str, Bounds& bnds);
+  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
 
   bool IsShortcut();
   ~CShortcut();
@@ -144,7 +129,7 @@ struct COpBindings {
   struct Operator* op_ptr;
   struct OpThread* thread_ptr;
 
-  bool Compile(List<Operator>* ops, UserInputs* usins, std::string* str, Bounds bnds);
+  bool Compile(List<Operator>* ops, UserInputs* usins, struct Str* str, struct Range bnds);
 
   ModalEvent* IsModalEvent();
   bool IsInvoked();
@@ -156,12 +141,9 @@ struct CompiledKeyMap {
   
   Stack<COpBindings> op_bindings;
 
-  void Compile(List<Operator>* ops, UserInputs* usins, std::string* filipath);
+  void Compile(List<Operator>* ops, UserInputs* usins, struct Str* filepath);
 
   void ProcEvents(List<OpThread>* exec_queue);
 
   ~CompiledKeyMap();
 };
-
-std::string getExecutablePath();
-bool strs_match(std::string* str1, std::string* str2, Bounds& bnds1, Bounds& bnds2);

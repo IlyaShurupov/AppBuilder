@@ -31,7 +31,7 @@ class SystemHandler {
   void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
   void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
 
-  void SetIcon(std::string stricon);
+  void SetIcon(struct Str& stricon);
 
   void drawRect(Rect<SCR_UINT>& rect);
 

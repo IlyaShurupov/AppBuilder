@@ -4,16 +4,20 @@
 #include "public/Operator.h"
 #include "public/Win32API.h"
 
-Window::Window(std::string* configfolder, List<Operator>* operators) {
+Window::Window(Str* configfolder, List<Operator>* operators) {
 
   // compile kmap
-  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
+  Str keymap_path;
+  keymap_path = *configfolder;
+  keymap_path += Str("KeyMaps\\Default.txt");
   compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
-  std::string ui_path = *configfolder + "UIs\\Default.txt";
+  Str ui_path;
+  ui_path = *configfolder;
+  ui_path += Str("UIs\\Default.txt");
   UIroot = UI_compile(operators, &ui_path, this);
 
-  
+
   // init sys handler
   SysH = DBG_NEW SystemHandler();
 
@@ -21,13 +25,15 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
-  Rect<SCR_UINT> rect = Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
+  Rect<SCR_UINT> rect =
+      Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
   if (!SUCCEEDED(SysH->Initialize(rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
   // Set icon
-  std::string icon_path = *configfolder + "icon.ico";
+  Str icon_path; icon_path = *configfolder;
+  icon_path += Str("icon.ico");
   SysH->SetIcon(icon_path);
 
   SysH->getScreenSize(scr_size);
@@ -38,11 +44,10 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   SysH->setRect(rect, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
-
 }
 
 Window::~Window() {
-  //compiled_key_map.op_bindings.free();
+  // compiled_key_map.op_bindings.free();
   delete SysH;
   delete UIroot;
   CoUninitialize();
@@ -56,7 +61,7 @@ void Window::Draw() {
   UIroot->Draw(NULL);
 }
 
-void Window::ProcessEvents(List<OpThread>* op_threads, Seance *C) {
+void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   SysH->getUserInputs(&user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
@@ -83,7 +88,7 @@ void Window::getRect(Rect<SCR_UINT>& rect) {
 
 void Window::setRect(Rect<SCR_UINT>& newrect) {
 
-  //SysH->getRect(rect, scr_size.y);
+  // SysH->getRect(rect, scr_size.y);
 
   // clamp new rect first
   if (newrect.size.x < UIroot->minsize.x) {
@@ -114,7 +119,8 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   user_inputs.Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
   user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
 
-  UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x, (float)newrect.size.y / UIroot->rect.size.y));
+  UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x,
+                                     (float)newrect.size.y / UIroot->rect.size.y));
   UIroot->rect.pos.assign(newrect.pos.x, newrect.pos.y);
 
   SysH->setRect(newrect, scr_size.y);

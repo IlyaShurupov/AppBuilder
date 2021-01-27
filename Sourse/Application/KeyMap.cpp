@@ -2,9 +2,10 @@
 #include "public/KeyMap.h"
 //#include <inttypes.h>
 #include <fstream>
-#include <iostream>
+//#include <iostream>
 #include <sstream>
-#include "public/Print.h"
+//#include "public/Print.h"
+#include "String.h"
 
 using namespace std;
 
@@ -25,59 +26,25 @@ using namespace std;
 #define CONDS_START '('
 #define CONDS_END ')'
 
-string getExecutablePath() {
-
-  char* exePath;
-  if (_get_pgmptr(&exePath) != 0)
-    exePath = "";
-  return std::string(exePath);
-}
-
-inline Bounds find_idname(std::string* str, const char start_kw, const char end_kw, Bounds bnds) {
-  return Bounds(str->find(start_kw, bnds.strt), str->rfind(end_kw, bnds.end));
-}
-
-inline Bounds find_idname_straigt(std::string* str, const char start_kw, const char end_kw, Bounds bnds) {
-  strloc p1 = str->find(start_kw, bnds.strt) + 1;
-  strloc p2 = str->find(end_kw, p1 + 1) - 1;
-
-  if (p2 > bnds.end) {
-    return Bounds(-1, -1);
-  }
-  return Bounds(p1, p2);
-}
-
-inline bool valid(Bounds& bds) {
-  return (bds.strt > 0 && bds.end > 0);
-}
-
-bool strs_match(string* str1, string* str2, Bounds& bnds1, Bounds& bnds2) {
-  if (bnds1.len() != bnds2.len()) {
-    return false;
-  }
-  for (strloc i = 0; i < bnds1.len(); i++) {
-    char c1 = str1->at(bnds1.strt + i);
-    char c2 = str2->at(bnds2.strt + i);
-    if (c1 != c2) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void str_coppy(string* str, Bounds& in_str_from_to, string& out) {
-  out.clear();
-  for (strloc i = in_str_from_to.strt; i < in_str_from_to.end + 1; i++) {
-    out.push_back(str->at(i));
-  }
-}
-
 // ---------------------------- //
 
+inline Range find_idname(Str* str, const char start_kw, const char end_kw, Range bnds) {
+  return Range(str->find(start_kw, bnds), str->rfind(end_kw, bnds));
+}
+
+inline Range find_idname_straigt(Str* str, const char start_kw, const char end_kw, Range bnds) {
+  str_idx p1 = str->find(start_kw, bnds) + 1;
+  str_idx p2 = str->find(end_kw, Range(p1 + 1, bnds.end + 1)) - 1;
+
+  if (p2 > bnds.end) {
+    return Range(-1, -1);
+  }
+  return Range(p1, p2);
+}
 
 Input::Input() {}
 
-Input::Input(std::string idname, InputState state) {
+Input::Input(const char* idname, InputState state) {
   this->idname = idname;
   this->state = state;
 }
@@ -137,32 +104,32 @@ void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {
 
 // ---------------------------- //
 
-bool CKeyCondition::Compile(UserInputs* usins, string* str, Bounds& bnds) {
+bool CKeyCondition::Compile(UserInputs* usins, Str* str, Range& bnds) {
 
-  strloc cursor = bnds.strt;
+  str_idx cursor = bnds.strt;
 
   // find input name
-  Bounds inp_id_bnds = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Bounds(cursor, bnds.end));
-  if (!valid(inp_id_bnds)) {
+  Range inp_id_bnds = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Range(cursor, bnds.end));
+  if (!inp_id_bnds.valid()) {
     return false;
   }
-  string input_idname;
-  str_coppy(str, inp_id_bnds, input_idname);
+  Str input_idname;
+  input_idname.coppy(*str, inp_id_bnds);
 
   // move cursor
   cursor = inp_id_bnds.end + 2;
 
   // find triger state name
-  Bounds trigger_id_bnds = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Bounds(cursor, bnds.end));
-  if (!valid(trigger_id_bnds)) {
+  Range trigger_id_bnds = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Range(cursor, bnds.end));
+  if (!trigger_id_bnds.valid()) {
     return false;
   }
-  string triger_state;
-  str_coppy(str, trigger_id_bnds, triger_state);
+  Str triger_state;
+  triger_state.coppy(*str, trigger_id_bnds);
 
   // map into existing inputs
   Input* iter = &usins->SYS_DESTROY_COMMAND;
-  while (iter->idname != "END_OF_INPUTS") {
+  while (!(iter->idname == "END_OF_INPUTS")) {
     if (iter->idname == input_idname) {
       input_ptr = &(iter->state);
 
@@ -190,15 +157,15 @@ bool CKeyCondition::Compile(UserInputs* usins, string* str, Bounds& bnds) {
   return false;
 }
 
-bool CShortcut::Compile(UserInputs* usins, string* str, Bounds& bnds) {
+bool CShortcut::Compile(UserInputs* usins, Str* str, Range& bnds) {
 
   // Init conditions
-  strloc cursor = bnds.strt;
+  str_idx cursor = bnds.strt;
   do {
 
     // find condition item item
-    Bounds cond_bnds = find_idname_straigt(str, COND_START, COND_END, Bounds(cursor, bnds.end));
-    if (!valid(cond_bnds)) {
+    Range cond_bnds = find_idname_straigt(str, COND_START, COND_END, Range(cursor, bnds.end));
+    if (!cond_bnds.valid()) {
       break;
     }
 
@@ -224,17 +191,19 @@ CShortcut::~CShortcut() {
   conditions.free();
 }
 
-bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, Bounds bnds) {
+bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, Str* str, Range bnds) {
 
   this->op_ptr = nullptr;
 
-  strloc cursor = bnds.strt;
+  str_idx cursor = bnds.strt;
 
   // find op identifier in keymap
-  Bounds op_name = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Bounds(cursor, bnds.end));
-  if (!valid(op_name)) {
+  Range op_name = find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Range(cursor, bnds.end));
+  if (!op_name.valid()) {
+    /*
     post_MSG(CMSGType::WARNING,
              "Compiling KeyMap: Op Identifier Not Found. Corrupted KeyMap file at " + bnds.strt);
+    */
     return false;
   }
   cursor = op_name.strt;
@@ -242,23 +211,25 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, B
   // find op in prefs
   FOREACH_NODE(Operator, ops, op_node) {
 
-    if (strs_match(&op_node->Data->idname, str, Bounds(0, op_node->Data->idname.length() - 1), op_name)) {
+    if (op_node->Data->idname.match(Range(0, op_node->Data->idname.len() - 1), *str, op_name)) {
       this->op_ptr = op_node->Data;
       break;
     }
   }
   if (!op_ptr) {
-    string warning_op;
-    str_coppy(str, op_name, warning_op);
-    post_MSG(CMSGType::WARNING, "Compiling KeyMap: Couldn't find spicified operator: " + warning_op);
+    Str warning_op;
+    warning_op.coppy(*str, op_name);
+    //post_MSG(CMSGType::WARNING, "Compiling KeyMap: Couldn't find spicified operator: " + warning_op);
     return false;
   }
 
   // find invoke
-  Bounds invk = find_idname_straigt(str, CONDS_START, CONDS_END, Bounds(cursor, bnds.end));
-  if (!valid(invk)) {
+  Range invk = find_idname_straigt(str, CONDS_START, CONDS_END, Range(cursor, bnds.end));
+  if (!invk.valid()) {
+    /*
     post_MSG(CMSGType::WARNING,
              "Compiling KeyMap: Invoke Identifier Not Found. Corrupted KeyMap file at " + bnds.strt);
+    */
     return false;
   }
   // init invoke shortcut
@@ -267,18 +238,18 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, B
   }
 
 
-  Bounds modalm = find_idname(str, MMAP_START, MMAP_END, bnds);
-  if (!valid(invk)) {
+  Range modalm = find_idname(str, MMAP_START, MMAP_END, bnds);
+  if (!invk.valid()) {
     return false;
   }
 
   // Init modal items
-  strloc mmp_cursor = modalm.strt;
+  str_idx mmp_cursor = modalm.strt;
   do {
 
     // find modal map item
-    Bounds mmp_item = find_idname_straigt(str, MMPITEM_START, MMPITEM_END, Bounds(mmp_cursor, modalm.end));
-    if (!valid(mmp_item)) {
+    Range mmp_item = find_idname_straigt(str, MMPITEM_START, MMPITEM_END, Range(mmp_cursor, modalm.end));
+    if (!mmp_item.valid()) {
       break;
     }
 
@@ -288,17 +259,17 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, B
     CShortcut* modal_shcut = DBG_NEW CShortcut();
 
     // find event identifier
-    Bounds modal_event_name =
-        find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Bounds(mmp_cursor, mmp_item.end));
-    if (!valid(modal_event_name)) {
+    Range modal_event_name =
+        find_idname_straigt(str, IDNAME_BOUD, IDNAME_BOUD, Range(mmp_cursor, mmp_item.end));
+    if (!modal_event_name.valid()) {
       continue;
     }
-    str_coppy(str, modal_event_name, modal_shcut->modal_event.idname);
+    modal_shcut->modal_event.idname.coppy(*str, modal_event_name);
 
 
     // find conditions
-    Bounds conditions = find_idname_straigt(str, CONDS_START, CONDS_END, Bounds(mmp_cursor, mmp_item.end));
-    if (!valid(conditions)) {
+    Range conditions = find_idname_straigt(str, CONDS_START, CONDS_END, Range(mmp_cursor, mmp_item.end));
+    if (!conditions.valid()) {
       continue;
     }
 
@@ -316,25 +287,27 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, string* str, B
   return true;
 }
 
-void CompiledKeyMap::Compile(List<Operator>* ops, UserInputs* usins, std::string* filipath) {
+void CompiledKeyMap::Compile(List<Operator>* ops, UserInputs* usins, Str* filipath) {
 
   // Loading File into string
   ifstream keymap_file;
-  keymap_file.open(*filipath);
-  if (!keymap_file) {
-    post_MSG(CMSGType::ERRORtype, "Compiling KeyMap: Couldn't load the keymap");
+  keymap_file.open(string(filipath->str, filipath->len()));
+  if (!keymap_file.is_open()) {
+    //post_MSG(CMSGType::ERRORtype, "Compiling KeyMap: Couldn't load the keymap");
   }
 
   stringstream strStream;
   strStream << keymap_file.rdbuf();
-  string kmap = strStream.str();
+  Str kmap = Str(strStream.str().c_str());
+  //Str kmap;
+  //string s = strStream.str();
 
   // Reading KeyMap
-  strloc cursor = 0;
+  str_idx cursor = 0;
   do {
 
-    Bounds bds = find_idname_straigt(&kmap, KB_START, KB_END, Bounds(cursor, kmap.length()));
-    if (!valid(bds)) {
+    Range bds = find_idname_straigt(&kmap, KB_START, KB_END, Range(cursor, kmap.len()));
+    if (!bds.valid()) {
       break;
     }
 

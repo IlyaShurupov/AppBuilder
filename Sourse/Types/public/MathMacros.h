@@ -3,17 +3,15 @@
 #include <float.h>
 #include <limits.h>
 #include <math.h>
+
 //memory debug
 #include <crtdbg.h>
 #include <cstdlib>
 #include <time.h>
-#include <string>
-//#include <map>
 
 #define EPSILON 0.0000001
 #define Pi float(3.1415926535897932384626433832795)
 typedef int SCR_UINT;
-typedef std::string Str;
 #define SCR_UINT_MAX USHRT_MAX
 #define ABS(val) \
   if (val < 0) val = -val

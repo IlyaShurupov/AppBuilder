@@ -2,7 +2,7 @@
 #include "public/Seance.h"
 #include "public/Print.h"
 
-Seance::Seance(std::string* basePath) {
+Seance::Seance(Str* Path) {
 
   if (/*file specified*/ false) {
 
@@ -13,10 +13,10 @@ Seance::Seance(std::string* basePath) {
     // Create dummy
     initOps(this);
 
-    basePath->erase(basePath->rfind('\\') + 1);
-    std::string configfolder = *basePath + "\\Configuration\\";
+    Path->trim(Range(0, Path->rfind('\\', Range(0, Path->length))));
+    *Path += Str("Configuration\\");
 
-    Window* win2 = DBG_NEW Window(&configfolder, &prefferences.operators);
+    Window* win2 = DBG_NEW Window(Path, &prefferences.operators);
 
     project.windows.add(win2);
 

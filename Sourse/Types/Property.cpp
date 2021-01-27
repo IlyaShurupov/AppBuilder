@@ -85,6 +85,8 @@ void PropertyObjectPtr::assign(void* obj_ptr) {
 }
 
 PropertyObjectPtr::PropertyObjectPtr() {
+	obj = nullptr;
+	idname = Str();
 }
 
 PropertyObjectPtr::~PropertyObjectPtr() {
@@ -95,7 +97,8 @@ void PropertyBuffPtr::assign(void* buff_ptr) {
 }
 
 PropertyBuffPtr::PropertyBuffPtr() {
-	//buff = nullptr;
+	buff = nullptr;
+	idname = Str();
 }
 
 PropertyBuffPtr::~PropertyBuffPtr() {
@@ -106,4 +109,11 @@ PropertyFuncAdress::PropertyFuncAdress() {
 	func = nullptr;
 }
 PropertyFuncAdress::~PropertyFuncAdress() {
+}
+
+Properties::~Properties() {
+	Ints.del();
+	Floats.del();
+	Pointers_Buff.del();
+	Pointers_Obj.del();
 }

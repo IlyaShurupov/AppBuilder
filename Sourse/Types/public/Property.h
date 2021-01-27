@@ -1,16 +1,13 @@
 #pragma once
 
-//#include "FrameBuff.h"
 #include "LinkedList.h"
 #include "MathMacros.h"
-//#include "Object.h"
-
-// TODO: a lot to do
+#include "Strings.h"
 
 class PropertyInt {
  public:
-  char name[10];
-  char describtion[10];
+  Str idname;
+  Str describtion;
 
   PropertyInt();
   PropertyInt(int val, int min, int max);
@@ -27,8 +24,8 @@ class PropertyInt {
 
 class PropertyFloat {
  public:
-  char name[10];
-  char describtion[10];
+  Str idname;
+  Str describtion;
 
   PropertyFloat();
   PropertyFloat(float val, float min, float max);
@@ -47,32 +44,28 @@ class PropertyFloat {
 
 
 class PropertyObjectPtr {
-  public:
-  char name[10];
-
-  //class Object* obj_ptr;
+ public:
+  Str idname;
   void* obj;
-  void assign(void* obj_ptr);
 
+  void assign(void* obj_ptr);
   PropertyObjectPtr();
   ~PropertyObjectPtr();
 };
 
 class PropertyBuffPtr {
-  public:
-  char name[10];
-  //FBuff<RGBA_32>* buff;
+ public:
+  Str idname;
   void* buff;
 
   void assign(void* buff_ptr);
-
   PropertyBuffPtr();
   ~PropertyBuffPtr();
 };
 
 class PropertyFuncAdress {
  public:
-  void* (*func)(void* arg);
+  void* (*func)(void* arg) = nullptr;
 
   PropertyFuncAdress();
   ~PropertyFuncAdress();
@@ -83,11 +76,5 @@ struct Properties {
   List<PropertyFloat> Floats;
   List<PropertyObjectPtr> Pointers_Obj;
   List<PropertyBuffPtr> Pointers_Buff;
-  // List<PropertyFuncAdress> Funcs;
-  ~Properties() {
-    Ints.del();
-    Floats.del();
-    Pointers_Buff.del();
-    Pointers_Obj.del();
-  }
+  ~Properties();
 };

@@ -14,7 +14,7 @@ struct Window {
   UserInputs user_inputs;
 
   // Creates empty window
-  Window(std::string* configfolder, List<Operator>* operators);
+  Window(Str* configfolder, List<Operator>* operators);
 
   // Closes the window
   ~Window();

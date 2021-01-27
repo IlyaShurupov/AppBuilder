@@ -2,18 +2,6 @@
 #include "public/UILayout.h"
 #include "public/Seance.h"
 
-Operator* find_op(List<Operator>* operators, std::string* op_idname) {
-  Operator* op_ptr = nullptr;
-  Bounds bnds = Bounds(0, op_idname->length());
-  FOREACH_NODE(Operator, operators, op_node) {
-    if (strs_match(&op_node->Data->idname, op_idname, bnds, bnds)) {
-      op_ptr = op_node->Data;
-      break;
-    }
-  }
-  return op_ptr;
-}
-
 void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
   UIstate newState;
@@ -123,7 +111,7 @@ void ButtonResize(UIItem* This, vec2<float> &rescale) {
 
 }
 
-UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, std::string* op_idname) {
+UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname) {
 
   UIItem* button = DBG_NEW UIItem(NULL);
   button->hierarchy.join(parent);
@@ -216,7 +204,7 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
   region->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
 
   // own
-  Operator* op_ptr = find_op(operators, &std::string("Render To Buff"));
+  Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
   if (!op_ptr) {
     return NULL;
   }
@@ -250,7 +238,7 @@ void area_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
-UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, std::string name) {
+UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name) {
 
   UIItem* Area = DBG_NEW UIItem(NULL);
   Area->hierarchy.join(parent);
@@ -298,7 +286,7 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
 // ---------------------- UI compiling -------------------------  //
 
-UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, Window* parent) {
+UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600));
 
@@ -306,16 +294,16 @@ UIItem* UI_compile(List<Operator>* operators, std::string* ui_path, Window* pare
 
   UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(20, 20, 200, 200), operators);
 
-  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(20, 20), operators, &std::string("Add Plane"));
+  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(20, 20), operators, &Str("Add Plane"));
 
   short width = 25;
   short border = 10;
   Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, UIroot->rect.size.y - width - border, UIroot->rect.size.x - border*2, width);
   UIItem* Area2 = ui_add_area(UIroot, rect, "View3d");
 
-  ui_add_button(Area2, vec2<SCR_UINT>(2, 2), operators, &std::string("Toggle Console"));
-  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 1, 2), operators, &std::string("End Seance"));
-  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 2, 2), operators, &std::string("Move Window"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2, 2), operators, &Str("Toggle Console"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 1, 2), operators, &Str("End Seance"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 2, 2), operators, &Str("Move Window"));
   return UIroot;
 }
 

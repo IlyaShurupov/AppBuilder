@@ -5,7 +5,7 @@
 #include "LinkedList.h"
 #include "Rect.h"
 
-#define RGBA_32 int32_t
+#define RGBA_32 int
 #define FBFF_COLOR RGBA_32
 
 #define COL32_A 0xff000000
