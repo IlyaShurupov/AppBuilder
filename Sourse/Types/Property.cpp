@@ -1,5 +1,6 @@
 #include "public/Property.h"
 
+
 PropertyInt::PropertyInt() {
 	max = INT_MAX;
 	min = INT_MIN;
@@ -79,9 +80,40 @@ float PropertyFloat::get()
 	return val;
 }
 
+void PropertyObjectPtr::assign(void* obj_ptr) {
+	obj = obj_ptr;
+}
+
+PropertyObjectPtr::PropertyObjectPtr() {
+	obj = nullptr;
+	idname = Str();
+}
+
+PropertyObjectPtr::~PropertyObjectPtr() {
+}
+
+void PropertyBuffPtr::assign(void* buff_ptr) {
+	this->buff = buff_ptr;
+}
+
+PropertyBuffPtr::PropertyBuffPtr() {
+	buff = nullptr;
+	idname = Str();
+}
+
+PropertyBuffPtr::~PropertyBuffPtr() {
+}
+
 
 PropertyFuncAdress::PropertyFuncAdress() {
 	func = nullptr;
 }
 PropertyFuncAdress::~PropertyFuncAdress() {
+}
+
+Properties::~Properties() {
+	Ints.del();
+	Floats.del();
+	Pointers_Buff.del();
+	Pointers_Obj.del();
 }

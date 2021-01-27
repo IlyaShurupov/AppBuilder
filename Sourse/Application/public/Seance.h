@@ -38,7 +38,7 @@ struct Prefferences {
 };
 
 struct Seance {
-  Seance(std::string* basePath);
+  Seance(Str* basePath);
   ~Seance();
 
   Prefferences prefferences;

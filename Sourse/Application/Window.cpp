@@ -4,19 +4,19 @@
 #include "public/Operator.h"
 #include "public/Win32API.h"
 
-void Window::Draw() {
-  RGBA_32 color = 0xff1d1d21;
-  //SysH->drawRect(Rect<SCR_UINT>());
-  buff.clear(&color);
-  UIroot->Draw(UIroot);
-}
+Window::Window(Str* configfolder, List<Operator>* operators) {
 
-Window::Window(std::string* configfolder, List<Operator>* operators) {
+  // compile kmap
+  Str keymap_path;
+  keymap_path = *configfolder;
+  keymap_path += Str("KeyMaps\\Default.txt");
+  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
-  rect.size.assign(800, 500);
-  rect.pos.assign(600, 250);
-  minsize.y = 60;
-  minsize.x = 100;
+  Str ui_path;
+  ui_path = *configfolder;
+  ui_path += Str("UIs\\Default.txt");
+  UIroot = UI_compile(operators, &ui_path, this);
+
 
   // init sys handler
   SysH = DBG_NEW SystemHandler();
@@ -25,35 +25,31 @@ Window::Window(std::string* configfolder, List<Operator>* operators) {
   if (!SUCCEEDED(CoInitialize(NULL))) {
     printf("ERROR: im about to crash\n");
   }
+  Rect<SCR_UINT> rect =
+      Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
   if (!SUCCEEDED(SysH->Initialize(rect))) {
     printf("ERROR: system handler is out of his mind\n");
   }
 
   // Set icon
-  std::string icon_path = *configfolder + "icon.ico";
+  Str icon_path; icon_path = *configfolder;
+  icon_path += Str("icon.ico");
   SysH->SetIcon(icon_path);
-
-  // compile kmap
-  std::string keymap_path = *configfolder + "KeyMaps\\Default.txt";
-  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
   SysH->getScreenSize(scr_size);
 
-  UIroot = UIroot_Init(operators);
-
   // draw initialized window
-  buff.resize(rect.size.x, rect.size.y);
   Draw();
 
   SysH->setRect(rect, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
-
 }
 
 Window::~Window() {
-  //compiled_key_map.op_bindings.free();
+  // compiled_key_map.op_bindings.free();
   delete SysH;
+  delete UIroot;
   CoUninitialize();
 }
 
@@ -61,16 +57,21 @@ void Window::OnWrite() {}
 
 void Window::OnRead() {}
 
-void Window::ProcessEvents(List<OpThread>* op_threads) {
+void Window::Draw() {
+  UIroot->Draw(NULL);
+}
+
+void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   SysH->getUserInputs(&user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs.IsEvent) {
     compiled_key_map.ProcEvents(op_threads);
   }
-  UIroot->ProcEvent(UIroot, op_threads, &user_inputs);
+  vec2<SCR_UINT> pos = vec2<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y);
+  UIroot->ProcEvent(op_threads, &user_inputs, user_inputs.Cursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {
-  SysH->SysOutput(&buff);
+  SysH->SysOutput(UIroot->buff);
 }
 
 bool Window::IsActive() {
@@ -82,47 +83,46 @@ void Window::ToggleConsole() {
 }
 
 void Window::getRect(Rect<SCR_UINT>& rect) {
-  SysH->getRect(rect, scr_size.y);
+  rect = Rect<SCR_UINT>(UIroot->rect.pos.x, UIroot->rect.pos.y, UIroot->rect.size.x, UIroot->rect.size.y);
 }
 
 void Window::setRect(Rect<SCR_UINT>& newrect) {
 
-  SysH->getRect(rect, scr_size.y);
+  // SysH->getRect(rect, scr_size.y);
 
   // clamp new rect first
-  if (newrect.size.x < minsize.x) {
-    if (newrect.pos.x > rect.pos.x) {
+  if (newrect.size.x < UIroot->minsize.x) {
+    if (newrect.pos.x > UIroot->rect.pos.x) {
       // left -> right
-      newrect.pos.x = rect.size_vec_w().x - minsize.x;
-      newrect.size.x = minsize.x;
+      newrect.pos.x = UIroot->rect.size_vec_w().x - UIroot->minsize.x;
+      newrect.size.x = UIroot->minsize.x;
 
     } else {
       // left <- right
-      newrect.size.x = minsize.x;
+      newrect.size.x = UIroot->minsize.x;
     }
   }
 
-  if (newrect.size.y < minsize.y) {
-    if (newrect.pos.y > rect.pos.y) {
+  if (newrect.size.y < UIroot->minsize.y) {
+    if (newrect.pos.y > UIroot->rect.pos.y) {
       // top <- bottom
-      newrect.pos.y = rect.size_vec_w().y - minsize.y;
-      newrect.size.y = minsize.y;
+      newrect.pos.y = UIroot->rect.size_vec_w().y - UIroot->minsize.y;
+      newrect.size.y = UIroot->minsize.y;
 
     } else {
       // top -> bottom
-      newrect.size.y = minsize.y;
+      newrect.size.y = UIroot->minsize.y;
     }
   }
 
   // update cursor pos
-  user_inputs.Cursor.x -= newrect.pos.x - rect.pos.x;
-  user_inputs.Cursor.y -= newrect.pos.y - rect.pos.y;
+  user_inputs.Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
+  user_inputs.Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
 
-  this->rect = newrect;
+  UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x,
+                                     (float)newrect.size.y / UIroot->rect.size.y));
+  UIroot->rect.pos.assign(newrect.pos.x, newrect.pos.y);
 
-  // upd buffer
-  this->buff.resize(rect.size.x, rect.size.y);
-
-  SysH->setRect(rect, scr_size.y);
+  SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();
 }

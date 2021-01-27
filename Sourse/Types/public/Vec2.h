@@ -36,6 +36,10 @@ class vec2 {
   void operator*=(Type val);
   void operator/=(Type val);
 
+  bool operator>(vec2<Type> &vec);
+  bool operator>=(vec2<Type>& vec);
+  bool operator==(vec2<Type> &vec);
+
   // Vector Properties
   float Dot(vec2& vec);
   float Length();
@@ -163,6 +167,21 @@ inline vec2<Type> vec2<Type>::operator*(Type val) {
 template <typename Type>
 inline vec2<Type> vec2<Type>::operator/(Type val) {
   return vec2(x / val, y / val);
+}
+
+template <typename Type>
+inline bool vec2<Type>::operator>(vec2<Type> &vec) {
+  return (x > vec.x && y > vec.y);
+}
+
+template <typename Type>
+inline bool vec2<Type>::operator>=(vec2<Type>& vec) {
+  return (x >= vec.x && y >= vec.y);
+}
+
+template <typename Type>
+inline bool vec2<Type>::operator==(vec2<Type> &vec) {
+  return (x == vec.x && y == vec.y);
 }
 
 // Vector Properties

@@ -5,6 +5,7 @@ project(Types)
 
 set (TYPES_HEADERS
     "public/Vec2.h"
+    "public/String.h"
     "public/Rect.h"
     "public/MathMacros.h"
     "public/Property.h"
@@ -28,6 +29,7 @@ set (TYPES_SOURCES
     "FrameBuff.cpp"
     "Ray.cpp"
     "Timer.cpp"
+    "String.cpp"
     "Mesh.cpp"
     "Object.cpp"
     "Trig.cpp"

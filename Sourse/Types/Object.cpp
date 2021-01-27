@@ -4,9 +4,14 @@
 Object::Object() {
   StaticMeshComponent = nullptr;
   CameraComponent = nullptr;
+  RenderSettingsComponent = nullptr;
 }
 
-Object::~Object() {}
+Object::~Object() {
+  if (StaticMeshComponent) delete StaticMeshComponent;
+  if (CameraComponent) delete CameraComponent;
+  if (RenderSettingsComponent) delete RenderSettingsComponent;
+}
 
 void Object::SetStaticMeshComponent(StaticMesh *static_mesh) {
   StaticMeshComponent = static_mesh;
@@ -19,6 +24,14 @@ void Object::SetCameraComponent(Camera *CameraComponent) {
 }
 
 Camera *Object::GetCameraComponent() { return CameraComponent; }
+
+void Object::SetRenderComponent(RenderSettings* RenderComponent) {
+  RenderSettingsComponent = RenderComponent;
+}
+
+RenderSettings* Object::GetRenderComponent() {
+  return RenderSettingsComponent;
+}
 
 void Object::getWorldLocation(Vec3f &out) {
   out.assign(Pos);

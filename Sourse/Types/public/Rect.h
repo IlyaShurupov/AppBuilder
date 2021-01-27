@@ -16,10 +16,27 @@ struct Rect {
     this->size = size;
   }
 
+  Rect(Type posx, Type posy, Type sizex, Type sizey) {
+    this->pos.assign(posx, posy);
+    this->size.assign(sizex, sizey);
+  }
+
   Rect<Type>& operator=(Rect<Type>& rect) {
     pos = rect.pos;
     size = rect.size;
     return *this;
+  }
+
+  bool enclosed_in(Rect<Type>& rect) {
+    return (pos.operator>(rect.pos) && rect.size.operator>(size));
+  }
+
+  bool inside(vec2<Type>& p) {
+    return (p.operator>(pos) && (pos + size).operator>(p));
+  }
+
+  bool inside(Type x, Type y) {
+    return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y);
   }
 
   inline vec2<Type> size_vec() { 

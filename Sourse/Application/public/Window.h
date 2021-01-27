@@ -7,19 +7,14 @@
 
 struct Window {
 
-  FBuff<RGBA_32> buff;
-
-  // dimentions & loc of window
-  Rect<SCR_UINT> rect;
   vec2<SCR_UINT> scr_size;
-  vec2<SCR_UINT> minsize;
 
   // UI layout of window
   UIItem *UIroot;
   UserInputs user_inputs;
 
   // Creates empty window
-  Window(std::string* configfolder, List<Operator>* operators);
+  Window(Str* configfolder, List<Operator>* operators);
 
   // Closes the window
   ~Window();
@@ -31,7 +26,7 @@ struct Window {
   void OnRead();
 
   // Maps user inputs into an executing commands
-  void ProcessEvents(List<struct OpThread>* exec_queue);
+  void ProcessEvents(List<struct OpThread>* exec_queue, Seance* C);
 
   // Draws the UI only!! (Buttons, menus...)
   void Draw();

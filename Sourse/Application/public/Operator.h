@@ -1,6 +1,5 @@
 #pragma once
 #include "Property.h"
-
 enum class OpEventState {
   EXECUTE,
   INVOKE,
@@ -15,23 +14,22 @@ enum class OpState {
 };
 
 enum class ThreadState {
-  RUNNING, 
+  RUNNING,
   CLOSED,
   DENIED,
 };
 
 struct ModalEvent {
-  ModalEvent(){
-  };
-  ModalEvent(std::string idname){
-    this->idname = idname;
-  }
-  std::string idname;
+  Str idname;
+
+  ModalEvent(){};
+  ModalEvent(Str idname) { this->idname = idname; }
+  ModalEvent(char* idname) { this->idname = idname; }
 };
 
 struct Operator {
   // OP idname
-  std::string idname;
+  struct Str idname;
 
   // Current state of op
   OpState state;
@@ -64,3 +62,4 @@ struct OpThread {
 };
 
 void initOps(struct Seance* C);
+Operator* find_op(List<Operator>* operators, Str* op_idname);

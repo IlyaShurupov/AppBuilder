@@ -1,43 +1,42 @@
 #pragma once
 
 #include "LinkedList.h"
-#include "Property.h"
 #include "Vec2.h"
 #include "FrameBuff.h"
 #include "Operator.h"
 
-enum struct UIInputState {
+enum struct UIstate {
   NONE = 0,
-  HOLD,
-  PRESSED,
-  RELEASED,
-  HOVER,
-};
-
-enum struct UIType {
-  NONE = 0,
-  ROOT,
-  AREA,
-  REGION,
+  ENTERED,
+  INSIDE,
+  LEAVED,
 };
 
 struct UIItem {
 
   Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
 
-  UIType type;
+  Str idname;
+  UIstate state;
 
+  Rect<float> rect;
+  vec2<SCR_UINT> minsize;
+
+  bool ownbuff;
+  FBuff<RGBA_32> *buff = nullptr;
+
+  bool redraw = true;
   void* CustomData = nullptr;
 
-  // location & size in the parent frame of reference
-  Rect<SCR_UINT> rect;
-  
-  void (*ProcEvent)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs) = nullptr;
-  void (*Draw)(UIItem *This) = nullptr;
+  void(*Resize)(UIItem* This, vec2<float>& rescale);
+  void (*ProcBody)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
+  void (*DrawBody)(UIItem* This, UIItem* project_to);
 
-  UIItem(UIType UIType) {
-    type = UIType;
-  }
+  void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void Draw(UIItem* project_to);
+
+  UIItem(vec2<SCR_UINT>* size);
+  ~UIItem();
 };
 
-UIItem* UIroot_Init(List<Operator>* operators);
+UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* parent);

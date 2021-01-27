@@ -5,6 +5,9 @@
 
 void test();
 
+// TODO: string class, UI cleanup, new Shortcut condition (UI id name), ops properties, cleanup include
+// structure & performance debug
+
 int main(int argc, char* argv[]) {
 
   // enable memory debuging
@@ -16,7 +19,7 @@ int main(int argc, char* argv[]) {
 
   {
     // Create Seance
-    Seance& C = *DBG_NEW Seance(&getExecutablePath());
+    Seance& C = *DBG_NEW Seance(&Str(getExecutablePath()));
 
     Timer timer = Timer(1 * int(1000 / FPS));
 
@@ -28,7 +31,7 @@ int main(int argc, char* argv[]) {
       // Handle events for each window
       FOREACH_NODE(Window, (&C.project.windows), win_node) {
         Window* win = win_node->Data;
-        win->ProcessEvents(&C.op_threads);
+        win->ProcessEvents(&C.op_threads, &C);
       }
 
       // Run Operators from queu (This is where the fun happends)
@@ -82,7 +85,7 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      //if (C.op_threads.len()) 
+      // if (C.op_threads.len())
       {
         // Draw each window & show updates
         FOREACH_NODE(Window, (&C.project.windows), win_node) {
@@ -115,7 +118,7 @@ void test() {
   Object ch111, ch112;
 
   root.hrchy_dbg.add(&ch13);
-  
+
   ch13.hrchy_dbg.join(&root);
 
   ch112.hrchy_dbg.join(&root);
@@ -123,8 +126,8 @@ void test() {
 
   Object* rootptr = ch111.hrchy_dbg.root();
   rootptr->Pos.assign(0, 0, 0);
-  
+
   ch111.hrchy_dbg.leave();
 
-#endif // _DEBUG
+#endif  // _DEBUG
 }
