@@ -5,9 +5,9 @@
 #include "public/Operator.h"
 #include "public/Window.h"
 
-#define FPS 120.f
+#define FPS 60.f
 
-// TODO: string class, UI cleanup, new Shortcut condition (UI id name), ops properties, cleanup include
+// TODO: Bug fixes, UI cleanup, new Shortcut condition (UI id name), ops properties
 // structure & performance debug
 
 int main(int argc, char* argv[]) {

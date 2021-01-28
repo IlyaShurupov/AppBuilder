@@ -85,8 +85,8 @@ UIItem::UIItem(vec2<SCR_UINT>* size) {
 UIItem::~UIItem() {
   hierarchy.childs.del();
   delete buff;
-  if (CustomData) 
-    delete CustomData;
+  if (CustomData) {}
+    //delete CustomData;
 }
 
 // --------- Button ---------------- //
@@ -164,10 +164,10 @@ void UIResize(UIItem* This, vec2<float>& rescale) {
 
 // --------- Region ---------------- //
 
-typedef struct UIRegionData {
+struct UIRegionData {
   Operator* op = nullptr;
   Object* RS_ptr = nullptr;
-}UIRegionData;
+};
 
 void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
 

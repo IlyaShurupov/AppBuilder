@@ -50,15 +50,16 @@ str_idx Str::len() {
 
 void Str::alloc(str_idx len) {
   if (str) {
-    delete str;
+    delete[] str;
   }
+  //str = alloc(len);
   str = DBG_NEW char[len];
   length = len;
 }
 
 void Str::clear() {
   if (str) {
-    delete str;
+    delete[] str;
   }
 }
 
@@ -77,7 +78,7 @@ void Str::operator+=(const Str& string) {
 
   str_idx newlen = string.length + length;
   char* newstr = DBG_NEW char[newlen];
-
+ 
   for (str_idx i = 0; i < length; i++) {
     newstr[i] = str[i];
   }
