@@ -1,12 +1,14 @@
 
 #include "public/UILayout.h"
 #include "public/Seance.h"
+#include "public/KeyMap.h"
+#include "Object.h"
 
 void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
   UIstate newState;
 
-  if (rect.inside(cursor.x, cursor.y)) {
+  if (rect.inside((float)cursor.x, (float)cursor.y)) {
 
     if (state == UIstate::NONE) {
       newState = UIstate::ENTERED;
@@ -37,7 +39,7 @@ void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_input
   
   if (redraw) {
     FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
-      vec2<SCR_UINT> pos = vec2<SCR_UINT>(rect.pos.x, rect.pos.y);
+      vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
       child_node->Data->ProcEvent(op_threads, user_inputs, (cursor - pos), C);
     }
   }
@@ -61,7 +63,7 @@ void UIItem::Draw(UIItem* project_to) {
   }
 
   if (ownbuff && project_to) {
-    buff->project_to(project_to->buff, vec2<SCR_UINT>(rect.pos.x, rect.pos.y));
+    buff->project_to(project_to->buff, vec2<SCR_UINT>((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y));
   }
 
   redraw = false;
@@ -83,13 +85,15 @@ UIItem::UIItem(vec2<SCR_UINT>* size) {
 UIItem::~UIItem() {
   hierarchy.childs.del();
   delete buff;
+  if (CustomData) 
+    delete CustomData;
 }
 
 // --------- Button ---------------- //
 
 void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
   if (user_inputs->LMB.state == InputState::RELEASED) {
-    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, NULL));
+    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, nullptr));
   }
 }
 
@@ -101,7 +105,7 @@ void button_draw(UIItem* This, UIItem* project_to) {
     color1 = 0xffaaaaaa;
   }
 
-  Rect<SCR_UINT> rect = Rect<SCR_UINT>(This->rect.pos.x, This->rect.pos.y, This->rect.size.x, This->rect.size.y);
+  Rect<SCR_UINT> rect(This->rect);
 
   project_to->buff->DrawRect(rect, color1);
   project_to->buff->DrawBounds(rect, color2, 1);
@@ -113,7 +117,7 @@ void ButtonResize(UIItem* This, vec2<float> &rescale) {
 
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname) {
 
-  UIItem* button = DBG_NEW UIItem(NULL);
+  UIItem* button = DBG_NEW UIItem(nullptr);
   button->hierarchy.join(parent);
   
   button->ownbuff = false;
@@ -122,12 +126,12 @@ UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operat
   button->Resize = ButtonResize;
 
   button->rect.size.assign(40, 20);
-  button->rect.pos.assign((SCR_UINT)pos.x, (SCR_UINT)pos.y);
+  button->rect.pos.assign((float)pos.x, (float)pos.y);
 
   //own
   Operator* op_ptr = find_op(operators, op_idname);
   if (!op_ptr) {
-    return NULL;
+    return nullptr;
   }
   button->CustomData = (void*)op_ptr;
   //own
@@ -171,7 +175,7 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
   if (rd->RS_ptr) {
 
-    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
+    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, nullptr));
 
   } else {
 
@@ -200,13 +204,13 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
   region->ProcBody = region_proc;
   region->Resize = UIResize;
 
-  region->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  region->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+  region->rect.size.assign((float)rect.size.x, (float)rect.size.y);
+  region->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
 
   // own
   Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
   if (!op_ptr) {
-    return NULL;
+    return nullptr;
   }
 
   UIRegionData* rd = DBG_NEW UIRegionData();
@@ -234,13 +238,13 @@ void area_draw(UIItem* This, UIItem* project_to) {
     thick = 2;
   }
 
-  Rect<SCR_UINT> rect = Rect<SCR_UINT>(This->rect.pos.x, This->rect.pos.y, This->rect.size.x, This->rect.size.y);
+  Rect<SCR_UINT> rect(This->rect);
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
 UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name) {
 
-  UIItem* Area = DBG_NEW UIItem(NULL);
+  UIItem* Area = DBG_NEW UIItem(nullptr);
   Area->hierarchy.join(parent);
 
   Area->ownbuff = false;
@@ -249,8 +253,8 @@ UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name) {
   Area->Resize = UIResize;
   Area->idname = name;
 
-  Area->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  Area->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+  Area->rect.size.assign((float)rect.size.x, (float)rect.size.y);
+  Area->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
 
   // own
 
@@ -275,8 +279,8 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
   UIroot->DrawBody = UIdraw;
   UIroot->Resize = UIResize;
 
-  UIroot->rect.size.assign((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-  UIroot->rect.pos.assign((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+  UIroot->rect.size.assign((float)rect.size.x, (float)rect.size.y);
+  UIroot->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
 
   UIroot->minsize.y = 60;
   UIroot->minsize.x = 100;
@@ -298,7 +302,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   short width = 25;
   short border = 10;
-  Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, UIroot->rect.size.y - width - border, UIroot->rect.size.x - border*2, width);
+  Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, (SCR_UINT)UIroot->rect.size.y - width - border, (SCR_UINT)UIroot->rect.size.x - border*2, width);
   UIItem* Area2 = ui_add_area(UIroot, rect, "View3d");
 
   ui_add_button(Area2, vec2<SCR_UINT>(2, 2), operators, &Str("Toggle Console"));

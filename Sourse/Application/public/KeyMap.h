@@ -133,6 +133,7 @@ struct COpBindings {
 
   ModalEvent* IsModalEvent();
   bool IsInvoked();
+  COpBindings();
   ~COpBindings();
 };
 

@@ -1,6 +1,11 @@
 #pragma once
+
 #include "public/Seance.h"
-#include "public/Print.h"
+#include "RayCast.h"
+#include "Types.h"
+#include "public/Operator.h"
+#include "public/Window.h"
+//#include "public/Print.h"
 
 Seance::Seance(Str* Path) {
 
@@ -19,7 +24,6 @@ Seance::Seance(Str* Path) {
     Window* win2 = DBG_NEW Window(Path, &prefferences.operators);
 
     project.windows.add(win2);
-
   }
 }
 
@@ -36,13 +40,13 @@ void Seance::OnRead(/*file path*/) {}
 
 Window* Project::C_actWin() {
 
-  //return windows[0];
+  // return windows[0];
 
   FOREACH_NODE(Window, (&windows), win_node) {
     if (win_node->Data->IsActive()) {
       return win_node->Data;
     }
   }
-  post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
+  // post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
   return nullptr;
 }

@@ -1,52 +1,12 @@
 #pragma once
-#include <cassert>
-#include "MathMacros.h"
+
 #define FOREACH_NODE(NodeType, List, iter_node) \
   for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
 
-// idx tmpl param is the idx of hrchy member in the struct
-template <typename Type, typename ListType, int hrch_idx>
-struct Hierarchy {
+#define FOREACH(List, Type, node) \
+  for (Node<Type>* node = &(List)->first(); node; node= node->Next)
 
-  ListType childs;
-  Type* parent = nullptr;
-
-  Hierarchy() {
-  }
-
-  Hierarchy(Type* parent) {
-    join(parent);
-  }
-
-  void add(Type* chld) {
-    childs.add(chld);
-    ((Hierarchy*)chld + hrch_idx)->parent = (Type*)(this - hrch_idx);
-  }
-
-  void join(Type* parent) {
-    ((Hierarchy*)parent + hrch_idx)->childs.add((Type*)(this - hrch_idx));
-    this->parent = parent;
-  }
-
-  void leave() {
-    if (parent) {
-      ((Hierarchy*)parent + hrch_idx)->childs.del((Type*)(this  - hrch_idx));
-    }
-  }
-
-  Type* root() {
-    Hierarchy* root = (Hierarchy*)parent;
-    while (true) {
-      if ((root + hrch_idx)->parent) {
-        root = (Hierarchy*)(root + hrch_idx)->parent;
-        continue;
-      }
-      break;
-    }
-    return (Type*)root;
-  }
-};
-
+#include "Mem.h"
 
 template <typename Type>
 class Node {
@@ -143,7 +103,6 @@ Type* List<Type>::operator[](size_t idx) {
 
 template <typename Type>
 Node<Type>* List<Type>::SearchNode(size_t index, Type* data) {
-  assert(index < length);
 
   if (Buff && index == Buff->idx) {
     return Buff;
@@ -182,7 +141,6 @@ Node<Type>* List<Type>::SearchNode(size_t index, Type* data) {
 
 template <typename Type>
 void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
-  assert(index_end < length);
 
   Node<Type>* first = SearchNode(index_start, nullptr);
   Node<Type>* last = SearchNode(index_end, nullptr);
@@ -234,7 +192,6 @@ void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
 
 template <typename Type>
 void List<Type>::del(size_t index, bool recursice) {
-  assert(index < length);
 
   Node<Type>* del_node = SearchNode(index, nullptr);
 

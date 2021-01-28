@@ -1,9 +1,14 @@
 #include "public/Operator.h"
-//#include "public/Print.h"
 
-#include "public/Seance.h"
-#include "String.h"
+#include <stdlib.h>
 #include "../RenderEngines/RayCast/public/RayCast.h"
+#include "RayCast.h"
+#include "Types.h"
+#include "public/KeyMap.h"
+#include "public/Operator.h"
+#include "public/Seance.h"
+#include "public/Window.h"
+//#include "public/Print.h"
 
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 
@@ -18,56 +23,6 @@ Operator* find_op(List<Operator>* operators, Str* op_idname) {
   }
   return op_ptr;
 }
-
-/*
-// -----------  Operator template ----------------------- //
-
-typedef struct opnameData {
-  bool top = false;
-  bool right = false;
-  bool bottom = false;
-  bool left = false;
-  Window* win = nullptr;
-}opnameData;
-
-
-void opname_ecec(Seance * C, Operator * op) { 
-  op->state = OpState::FINISHED; 
-}
-
-void opname_invoke(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  op->state = OpState::RUNNING_MODAL;
-}
-
-// Checks if operator can be inveked
-bool opname_poll(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-  return data->win = C->project.C_actWin();
-}
-
-void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  if (event && event->idname == "FINISH") {
-    op->state = OpState::FINISHED;
-    return;
-  }
-}
-
-void opname_create(Seance * C, Operator * op) {
-  op->state = OpState::NONE;
-  op->CustomData = DBG_NEW opnameData();
-
-  op->idname = "opname";
-  op->Poll = opname_poll;
-  op->Invoke = opname_invoke;
-  op->Modal = opname_modal;
-
-  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
-}
-*/
 
 // -----------  End Seance Operator ----------------------- //
 
@@ -133,12 +88,14 @@ struct WinResizeData {
 };
 
 
-void WindowResize_ecec(Seance* C, Operator* op) { op->state = OpState::FINISHED; }
+void WindowResize_ecec(Seance* C, Operator* op) {
+  op->state = OpState::FINISHED;
+}
 
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
 
-  vec2<SCR_UINT>* crsr = &data->win->user_inputs.Cursor;
+  vec2<SCR_UINT>* crsr = &data->win->user_inputs->Cursor;
   Rect<SCR_UINT> rect;
   data->win->getRect(rect);
 
@@ -167,14 +124,14 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
     return;
   }
 
-  int dx = data->win->user_inputs.Cdelta.x;
-  int dy = data->win->user_inputs.Cdelta.y;
+  int dx = data->win->user_inputs->Cdelta.x;
+  int dy = data->win->user_inputs->Cdelta.y;
 
   Rect<SCR_UINT> rect;
   data->win->getRect(rect);
 
-  //rect.size.y += 2;
-  //rect.pos.y += -1;
+  // rect.size.y += 2;
+  // rect.pos.y += -1;
   rect.size.y += dy * data->top;
   rect.size.x += dx * data->right;
 
@@ -188,7 +145,7 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
     rect.size.x -= dx;
   }
   /*
-  */
+   */
 
   data->win->setRect(rect);
 }
@@ -230,7 +187,7 @@ void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
 
   Rect<SCR_UINT> rect;
   data->getRect(rect);
-  rect.move(data->user_inputs.Cdelta.x, data->user_inputs.Cdelta.y);
+  rect.move(data->user_inputs->Cdelta.x, data->user_inputs->Cdelta.y);
   data->setRect(rect);
 }
 
@@ -296,7 +253,7 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   RenderSettings* rs = DBG_NEW RenderSettings();
   rs->setCamera(CamObj);
   rs->setObjList(&C->project.collection);
- 
+
   Object* RndObj = DBG_NEW Object();
   RndObj->SetRenderComponent(rs);
 
@@ -351,3 +308,53 @@ Operator::~Operator() {
   }
   modal_events.del();
 }
+
+/*
+// -----------  Operator template ----------------------- //
+
+typedef struct opnameData {
+  bool top = false;
+  bool right = false;
+  bool bottom = false;
+  bool left = false;
+  Window* win = nullptr;
+}opnameData;
+
+
+void opname_ecec(Seance * C, Operator * op) {
+  op->state = OpState::FINISHED;
+}
+
+void opname_invoke(Seance * C, Operator * op) {
+  opnameData* data = (opnameData*)op->CustomData;
+
+  op->state = OpState::RUNNING_MODAL;
+}
+
+// Checks if operator can be inveked
+bool opname_poll(Seance * C, Operator * op) {
+  opnameData* data = (opnameData*)op->CustomData;
+  return data->win = C->project.C_actWin();
+}
+
+void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
+  opnameData* data = (opnameData*)op->CustomData;
+
+  if (event && event->idname == "FINISH") {
+    op->state = OpState::FINISHED;
+    return;
+  }
+}
+
+void opname_create(Seance * C, Operator * op) {
+  op->state = OpState::NONE;
+  op->CustomData = DBG_NEW opnameData();
+
+  op->idname = "opname";
+  op->Poll = opname_poll;
+  op->Invoke = opname_invoke;
+  op->Modal = opname_modal;
+
+  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+}
+*/

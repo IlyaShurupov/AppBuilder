@@ -1,5 +1,6 @@
 #include "public/Strings.h"
-#include "public/MathMacros.h"
+#include "public/Mem.h"
+#include <cstdlib>
 
 inline str_idx cstrlen(const char* str) {
   str_idx len = 0;
@@ -17,8 +18,12 @@ char* getExecutablePath() {
   return exePath;
 }
 
-str_idx Range::len() { return end - strt + 1; }
-bool Range::valid() { return (strt > 0 && end > 0 && end >= strt); }
+str_idx Range::len() {
+  return end - strt + 1;
+}
+bool Range::valid() {
+  return (strt > 0 && end > 0 && end >= strt);
+}
 Range::Range() {}
 Range::Range(str_idx strt, str_idx end) {
   this->strt = strt;
@@ -27,7 +32,11 @@ Range::Range(str_idx strt, str_idx end) {
 
 
 Str::Str() {}
-Str::~Str() {}
+
+Str::~Str() {
+  clear();
+}
+
 Str::Str(const char* string) {
   alloc(cstrlen(string));
   for (str_idx i = 0; i < length; i++) {
@@ -35,7 +44,9 @@ Str::Str(const char* string) {
   }
 }
 
-str_idx Str::len() { return length; }
+str_idx Str::len() {
+  return length;
+}
 
 void Str::alloc(str_idx len) {
   if (str) {
@@ -110,7 +121,9 @@ bool Str::operator==(Str& string) {
   return true;
 }
 
-char Str::operator[](str_idx idx) { return str[idx]; }
+char Str::operator[](str_idx idx) {
+  return str[idx];
+}
 
 bool Str::match(Range& range, Str& str2, Range& range2) {
   if (range.len() != range2.len()) {

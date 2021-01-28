@@ -11,6 +11,11 @@ struct Rect {
 
   Rect() {}
 
+  Rect(Rect<float> &rec) {
+    pos.assign((SCR_UINT)rec.pos.x, (SCR_UINT)rec.pos.y);
+    size.assign((SCR_UINT)rec.size.x, (SCR_UINT)rec.size.y);
+  }
+
   Rect(vec2<Type>& pos, vec2<Type>& size) {
     this->pos = pos;
     this->size = size;

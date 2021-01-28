@@ -154,25 +154,22 @@ inline Mat3f& Mat3f::Transform(Mat3f& Matx) {
 	return Matx;
 }
 
-namespace Mat {
 
-	inline void RotArbAxis(Mat3f& Mat, Vec3f& Dir, float angle) {
+inline void RotArbAxis(Mat3f& Mat, Vec3f& Dir, float angle) {
 
-		float cosa = (float)cos(angle);
-		float sina = (float)sin(angle);
-		float tmp = 1 - cosa;
+	float cosa = (float)cos(angle);
+	float sina = (float)sin(angle);
+	float tmp = 1 - cosa;
 
-		Mat.I.x = cosa + Dir.x * Dir.x* tmp;
-		Mat.I.y = Dir.y * Dir.x * tmp + Dir.z * sina;
-		Mat.I.z = Dir.z * Dir.x * tmp - Dir.y * sina;
+	Mat.I.x = cosa + Dir.x * Dir.x* tmp;
+	Mat.I.y = Dir.y * Dir.x * tmp + Dir.z * sina;
+	Mat.I.z = Dir.z * Dir.x * tmp - Dir.y * sina;
 
-		Mat.J.x = Dir.x * Dir.y * tmp + Dir.z * sina;
-		Mat.J.y = cosa + Dir.y * Dir.y * tmp;
-		Mat.J.z = Dir.z * Dir.y * tmp + Dir.x * sina;
+	Mat.J.x = Dir.x * Dir.y * tmp + Dir.z * sina;
+	Mat.J.y = cosa + Dir.y * Dir.y * tmp;
+	Mat.J.z = Dir.z * Dir.y * tmp + Dir.x * sina;
 
-		Mat.K.x = Dir.x * Dir.z * tmp + Dir.y * sina;
-		Mat.K.y = Dir.y * Dir.z * tmp + Dir.x * sina;
-		Mat.K.z = cosa + Dir.z * Dir.z * tmp;
-	}
-
+	Mat.K.x = Dir.x * Dir.z * tmp + Dir.y * sina;
+	Mat.K.y = Dir.y * Dir.z * tmp + Dir.x * sina;
+	Mat.K.z = cosa + Dir.z * Dir.z * tmp;
 }
