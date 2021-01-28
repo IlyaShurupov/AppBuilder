@@ -31,7 +31,7 @@ Timer::Timer(TIME_MS duration) {
 }
 
 bool Timer::timeout() {
-  printf("\n ----------- %lli", GETTIMEMSC());
+  //printf("\n ----------- %lli", GETTIMEMSC());
   return duration < GETTIMEMSC() - start;
 }
 

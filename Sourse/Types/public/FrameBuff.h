@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include "LinkedList.h"
 #include "Rect.h"
+#include "LinkedList.h"
+#include "Hierarchy.h"
 
 #define RGBA_32 int
 #define FBFF_COLOR RGBA_32

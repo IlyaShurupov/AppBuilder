@@ -7,6 +7,7 @@ set (TYPES_HEADERS
     "public/Vec2.h"
     "public/Strings.h"
     "public/Rect.h"
+    "public/Hierarchy.h"
     "public/Mem.h"
     "public/MathMacros.h"
     "public/Property.h"

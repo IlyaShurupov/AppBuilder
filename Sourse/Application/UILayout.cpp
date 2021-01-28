@@ -1,6 +1,8 @@
 
 #include "public/UILayout.h"
 #include "public/Seance.h"
+#include "public/KeyMap.h"
+#include "Object.h"
 
 void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
@@ -91,7 +93,7 @@ UIItem::~UIItem() {
 
 void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
   if (user_inputs->LMB.state == InputState::RELEASED) {
-    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, NULL));
+    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, nullptr));
   }
 }
 
@@ -115,7 +117,7 @@ void ButtonResize(UIItem* This, vec2<float> &rescale) {
 
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname) {
 
-  UIItem* button = DBG_NEW UIItem(NULL);
+  UIItem* button = DBG_NEW UIItem(nullptr);
   button->hierarchy.join(parent);
   
   button->ownbuff = false;
@@ -129,7 +131,7 @@ UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operat
   //own
   Operator* op_ptr = find_op(operators, op_idname);
   if (!op_ptr) {
-    return NULL;
+    return nullptr;
   }
   button->CustomData = (void*)op_ptr;
   //own
@@ -173,7 +175,7 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
   if (rd->RS_ptr) {
 
-    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, NULL));
+    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, nullptr));
 
   } else {
 
@@ -208,7 +210,7 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
   // own
   Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
   if (!op_ptr) {
-    return NULL;
+    return nullptr;
   }
 
   UIRegionData* rd = DBG_NEW UIRegionData();
@@ -242,7 +244,7 @@ void area_draw(UIItem* This, UIItem* project_to) {
 
 UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name) {
 
-  UIItem* Area = DBG_NEW UIItem(NULL);
+  UIItem* Area = DBG_NEW UIItem(nullptr);
   Area->hierarchy.join(parent);
 
   Area->ownbuff = false;

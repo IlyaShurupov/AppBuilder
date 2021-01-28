@@ -1,20 +1,13 @@
 #pragma once
 
-#include "Operator.h"
-#include "RayCast.h"
-#include "Types.h"
-//#include "UIUILayout.h"
-#include "Window.h"
-#include "KeyMap.h"
-
-
+#include "LinkedList.h"
 
 struct Project {
   // MeshObjects, Cameras, Renders...
-  List<Object> collection;
+  List<class Object> collection;
 
   // UI layout
-  List<Window> windows;
+  List<struct Window> windows;
 
   // save project
   void OnWrite();
@@ -22,12 +15,12 @@ struct Project {
   // load project
   void OnRead();
 
-  Window* C_actWin();
+  struct Window* C_actWin();
 };
 
 struct Prefferences {
   //UserKeyMap key_map;
-  List<Operator> operators;
+  List<struct Operator> operators;
   //List<Editor> editors;
 
   // save prefs
@@ -38,7 +31,7 @@ struct Prefferences {
 };
 
 struct Seance {
-  Seance(Str* basePath);
+  Seance(struct Str* basePath);
   ~Seance();
 
   Prefferences prefferences;
@@ -47,7 +40,7 @@ struct Seance {
   Project project;
 
   // All execute commands from UI (pointers to predefined operators)
-  List<OpThread> op_threads;
+  List<struct OpThread> op_threads;
 
   // Save current context
   void OnWrite(/*file path*/);

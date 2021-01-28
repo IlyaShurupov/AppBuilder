@@ -1,17 +1,19 @@
 #pragma once
 
 #include "FrameBuff.h"
-#include <d2d1.h>
-#include <windows.h>
 
+struct HWND_;
+typedef struct HWND_* HWND;
 
 class SystemHandler {
  public:
+  bool close = false;
+
   SystemHandler();
   ~SystemHandler();
 
   // Register the win & call methods for instantiating drawing res
-  HRESULT Initialize(Rect<SCR_UINT>& rect);
+  bool Initialize(Rect<SCR_UINT>& rect);
   void ShowInitializedWindow();
 
   // UserInputs
@@ -33,19 +35,15 @@ class SystemHandler {
 
   void drawRect(Rect<SCR_UINT>& rect);
 
- private:
-
-  // The windows procedure.
-  static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
- public:
-  bool close = false;
 
  private:
-  HICON hWindowIcon = NULL;
-  HICON hWindowIconBig = NULL;
-  MSG msg;
-  HDC hdcMem;
-  HWND m_hwnd;
-  ID2D1Factory* m_pDirect2dFactory;
+
+  static __int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+ 
+  void* hWindowIcon;
+  void* hWindowIconBig;
+  void* hdcMem;
+  void* m_hwnd;
+  void* m_pDirect2dFactory;
+  void* msg;
 };

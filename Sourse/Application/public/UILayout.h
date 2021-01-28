@@ -1,7 +1,5 @@
 #pragma once
 
-#include "LinkedList.h"
-#include "Vec2.h"
 #include "FrameBuff.h"
 #include "Operator.h"
 

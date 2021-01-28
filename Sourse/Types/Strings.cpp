@@ -1,5 +1,6 @@
 #include "public/Strings.h"
 #include "public/Mem.h"
+#include <cstdlib>
 
 inline str_idx cstrlen(const char* str) {
   str_idx len = 0;
