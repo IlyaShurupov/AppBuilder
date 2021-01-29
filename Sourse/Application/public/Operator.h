@@ -32,7 +32,7 @@ struct Operator {
   struct Str idname;
 
   // Current state of op
-  OpState state;
+  OpState state = OpState::NONE;
 
   // Modal Map event idnames
   class List<ModalEvent> modal_events;

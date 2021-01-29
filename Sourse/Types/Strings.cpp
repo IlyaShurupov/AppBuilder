@@ -1,5 +1,10 @@
+
 #include "public/Strings.h"
+
 #include "public/Mem.h"
+
+
+//#include <string.h> // get rid of
 #include <cstdlib>
 
 inline str_idx cstrlen(const char* str) {
@@ -17,6 +22,7 @@ char* getExecutablePath() {
     exePath = "";
   return exePath;
 }
+
 
 str_idx Range::len() {
   return end - strt + 1;
@@ -85,11 +91,13 @@ void Str::operator+=(const Str& string) {
   for (str_idx i = 0; i < length; i++) {
     newstr[i] = str[i];
   }
+
   for (str_idx i = 0; i < string.length; i++) {
     newstr[i + length] = string.str[i];
   }
 
   clear();
+
   str = newstr;
   length = newlen;
 }

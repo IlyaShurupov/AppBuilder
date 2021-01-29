@@ -2,6 +2,7 @@
 
 #ifdef _DEBUG
 #define MEM_DEBUG 
+//#define MEM_DEBUG_WRAP
 #endif // _DEBUG
 
 
