@@ -8,7 +8,7 @@ set (TYPES_HEADERS
     "public/Strings.h"
     "public/Rect.h"
     "public/Mem.h"
-    "public/MathMacros.h"
+    "public/Math.h"
     "public/Property.h"
     "public/Vec3.h"
     "public/FrameBuff.h"
