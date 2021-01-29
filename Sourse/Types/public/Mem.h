@@ -6,27 +6,36 @@ typedef long long byte_size;
 
 #ifdef MEM_DEBUG
 
-  #include <crtdbg.h>
+#include <crtdbg.h>
 
-  #define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC
 
-  #define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-  void* Alloc(byte_size size);
-  void Free(void* ptr);
-  void LogHeap();
+void* Alloc(byte_size size);
+void Free(void* ptr);
+void LogHeap();
 
 #else
 
-  #define DBG_NEW new
-  inline void* Alloc(byte_size size) { return malloc(size); }
-  inline void Free(void* ptr) { free(ptr); }
+inline void* Alloc(byte_size size) {
+  return malloc(size);
+}
+inline void Free(void* ptr) {
+  free(ptr);
+}
 
 #endif
 
 
 #define FREE(ptr) Free((void*)ptr);
 
-#define ALLOC_DEF(Type) Type*ptr = (Type*)Alloc(sizeof(Type));
-#define ALLOC_DEF_AR(Type, len, ptr) Type*ptr = (Type*)Alloc(sizeof(Type) * (len));
-#define ALLOC(Type, ptr) ptr = (Type*)Alloc(sizeof(Type));
-#define ALLOC_AR(Type, len, ptr) ptr = (Type*)Alloc(sizeof(Type) * (len));
+#define ALLOC_DEF(Type, ptr) Type* ptr = (Type*)Alloc(sizeof(Type))
+#define ALLOC_DEF_AR(Type, len, ptr) Type* ptr = (Type*)Alloc(sizeof(Type) * (len))
+#define ALLOC_A(Type, ptr) ptr = (Type*)Alloc(sizeof(Type))
+#define ALLOC(Type) (Type*)Alloc(sizeof(Type))
+#define ALLOC_AR(Type, len, ptr) ptr = (Type*)Alloc(sizeof(Type) * (len))
+
+#define NEW_DBG(Type) new((Type*)Alloc(sizeof(Type)))
+#define DELETE_DBG(Type, ptr) ptr->~Type(); Free((void*)ptr)
+
+#define NEW_DBG_AR(Type, len) (Type*)Alloc(sizeof(Type) * (len))
+#define DELETE_DBG_AR(ptr) Free((void*)ptr)

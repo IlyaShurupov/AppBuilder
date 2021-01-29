@@ -29,7 +29,7 @@ Operator* find_op(List<Operator>* operators, Str* op_idname) {
 
 void EndSeance_ecec(Seance* C, Operator* op) {
   // save &
-  delete C;
+  DELETE_DBG(Seance, C);
   exit(0);
 }
 
@@ -153,14 +153,14 @@ void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
 
 void WindowResize_create(Seance* C, Operator* op) {
   op->state = OpState::NONE;
-  op->CustomData = DBG_NEW WinResizeData();
+  op->CustomData = NEW_DBG(WinResizeData) WinResizeData();
 
   op->idname = "Resize Window";
   op->Poll = WindowResize_poll;
   op->Invoke = WindowResize_invoke;
   op->Modal = WindowResize_modal;
 
-  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+  op->modal_events.add(NEW_DBG(ModalEvent) ModalEvent("FINISH"));
 }
 
 
@@ -221,8 +221,8 @@ void RenderToBuff_create(Seance* C, Operator* op) {
   op->Poll = RenderToBuff_poll;
   op->Execute = RenderToBuff_ecec;
 
-  op->Props.Pointers_Obj.add(DBG_NEW PropertyObjectPtr());
-  op->Props.Pointers_Buff.add(DBG_NEW PropertyBuffPtr());
+  op->Props.Pointers_Obj.add(NEW_DBG(PropertyObjectPtr) PropertyObjectPtr());
+  op->Props.Pointers_Buff.add(NEW_DBG(PropertyBuffPtr) PropertyBuffPtr());
 
   op->state = OpState::NONE;
 }
@@ -231,10 +231,10 @@ void RenderToBuff_create(Seance* C, Operator* op) {
 
 void AddPlane_ecec(Seance* C, Operator* op) {
 
-  Object* MeshObj = DBG_NEW Object();
-  StaticMesh* mesh = DBG_NEW StaticMesh();
+  Object* MeshObj = NEW_DBG(Object) Object();
+  StaticMesh* mesh = NEW_DBG(StaticMesh) StaticMesh();
 
-  Trig* trig = DBG_NEW Trig();
+  Trig* trig = NEW_DBG(Trig) Trig();
   trig->V0.assign(0, 0, -1);
   trig->V1.assign(1, 1, -1);
   trig->V2.assign(0, 1, -1);
@@ -242,20 +242,20 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   mesh->Trigs.add(trig);
   MeshObj->SetStaticMeshComponent(mesh);
 
-  Camera* cam = DBG_NEW Camera();
+  Camera* cam = NEW_DBG(Camera) Camera();
   cam->Height.setVal(200);
   cam->Width.setVal(200);
   cam->Lens.setVal(1);
 
-  Object* CamObj = DBG_NEW Object();
+  Object* CamObj = NEW_DBG(Object) Object();
   CamObj->SetCameraComponent(cam);
 
 
-  RenderSettings* rs = DBG_NEW RenderSettings();
+  RenderSettings* rs = NEW_DBG(RenderSettings) RenderSettings();
   rs->setCamera(CamObj);
   rs->setObjList(&C->project.collection);
 
-  Object* RndObj = DBG_NEW Object();
+  Object* RndObj = NEW_DBG(Object) Object();
   RndObj->SetRenderComponent(rs);
 
   C->project.collection.add(CamObj);
@@ -277,13 +277,13 @@ void AddPlane_create(Seance* C, Operator* op) {
   op->Poll = AddPlane_poll;
   op->Execute = AddPlane_ecec;
 
-  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+  op->modal_events.add(NEW_DBG(ModalEvent) ModalEvent("FINISH"));
 }
 
 // -----------  Operator ----------------------- //
 
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
-  Operator* op = DBG_NEW Operator;
+  Operator* op = NEW_DBG(Operator) Operator;
   Create(C, op);
   C->prefferences.operators.add(op);
 }
@@ -305,7 +305,7 @@ void initOps(Seance* C) {
 
 Operator::~Operator() {
   if (CustomData) {
-    delete CustomData;
+    //DELETE_DBG() CustomData;
   }
   modal_events.del();
 }
@@ -350,13 +350,13 @@ void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
 
 void opname_create(Seance * C, Operator * op) {
   op->state = OpState::NONE;
-  op->CustomData = DBG_NEW opnameData();
+  op->CustomData = NEW_DBG() opnameData();
 
   op->idname = "opname";
   op->Poll = opname_poll;
   op->Invoke = opname_invoke;
   op->Modal = opname_modal;
 
-  op->modal_events.add(DBG_NEW ModalEvent("FINISH"));
+  op->modal_events.add(NEW_DBG() ModalEvent("FINISH"));
 }
 */

@@ -38,16 +38,19 @@ void* Alloc(byte_size size) {
 
 void Free(void* ptr) {
 
+  if (!ptr) {
+    return;
+  }
+
   MemHead* mhptr = ((MemHead*)ptr - 1);
 
   if (mhptr->prev && mhptr->next) {
     mhptr->next->prev = mhptr->prev;
     mhptr->prev->next = mhptr->next;
-  }
 
-  if (mhptr->prev || mhptr->next) {
+  } else if (mhptr->prev || mhptr->next) {
 
-    if (!mhptr->prev) {
+    if (mhptr->next) {
       mhptr->next->prev = nullptr;
     } else {
       mhptr->prev->next = nullptr;

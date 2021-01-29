@@ -83,7 +83,7 @@ COpBindings::COpBindings() {
 COpBindings::~COpBindings() {
   //invoke.conditions.free();
   modal_keymap.free();
-  //delete thread_ptr;
+  //DELETE_DBG() thread_ptr;
 }
 
 void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {
@@ -99,7 +99,7 @@ void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {
       }
     } else {
       if (op_map->IsInvoked()) {
-        OpThread* new_tread = DBG_NEW OpThread(op, OpEventState::INVOKE, nullptr);
+        OpThread* new_tread = NEW_DBG(OpThread) OpThread(op, OpEventState::INVOKE, nullptr);
         op_map->thread_ptr = new_tread;
         op_threads->add(new_tread);
       }
@@ -176,13 +176,13 @@ bool CShortcut::Compile(UserInputs* usins, Str* str, Range& bnds) {
 
     cursor = cond_bnds.strt;
 
-    CKeyCondition* cond = DBG_NEW CKeyCondition();
+    CKeyCondition* cond = NEW_DBG(CKeyCondition) CKeyCondition();
 
     if (cond->Compile(usins, str, cond_bnds)) {
       this->conditions.add(cond);
     } else {
 
-      delete cond;
+      DELETE_DBG(CKeyCondition, cond);
     }
     cursor = cond_bnds.end + 2;
 
@@ -261,7 +261,7 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, Str* str, Rang
     mmp_cursor = mmp_item.strt;
 
 
-    CShortcut* modal_shcut = DBG_NEW CShortcut();
+    CShortcut* modal_shcut = NEW_DBG(CShortcut) CShortcut();
 
     // find event identifier
     Range modal_event_name =
@@ -282,7 +282,7 @@ bool COpBindings::Compile(List<Operator>* ops, UserInputs* usins, Str* str, Rang
     if (modal_shcut->Compile(usins, str, conditions)) {
       this->modal_keymap.add(modal_shcut);
     } else {
-      delete modal_shcut;
+      DELETE_DBG(CShortcut, modal_shcut);
     }
 
     mmp_cursor = mmp_item.end;
@@ -318,11 +318,11 @@ void CompiledKeyMap::Compile(List<Operator>* ops, UserInputs* usins, Str* filipa
 
     cursor = bds.strt;
 
-    COpBindings* new_bdgs = DBG_NEW COpBindings();
+    COpBindings* new_bdgs = NEW_DBG(COpBindings) COpBindings();
     if (new_bdgs->Compile(ops, usins, &kmap, bds)) {
       this->op_bindings.add(new_bdgs);
     } else {
-      delete new_bdgs;
+      DELETE_DBG(COpBindings, new_bdgs);
     }
 
     cursor = bds.end;

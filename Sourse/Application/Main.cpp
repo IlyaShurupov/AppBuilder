@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
   {
     // Create Seance
-    Seance& C = *DBG_NEW Seance(&Str(getExecutablePath()));
+    Seance& C = *NEW_DBG(Seance) Seance(&Str(getExecutablePath()));
 
     Timer timer = Timer(1 * int(1000 / FPS));
 

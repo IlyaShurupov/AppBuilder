@@ -8,22 +8,32 @@ Object::Object() {
 }
 
 Object::~Object() {
-  if (StaticMeshComponent) delete StaticMeshComponent;
-  if (CameraComponent) delete CameraComponent;
-  if (RenderSettingsComponent) delete RenderSettingsComponent;
+  if (StaticMeshComponent) {
+    DELETE_DBG(StaticMesh, StaticMeshComponent);
+  }
+  if (CameraComponent) {
+    DELETE_DBG(Camera, CameraComponent);
+  }
+  if (RenderSettingsComponent) {
+    DELETE_DBG(RenderSettings, RenderSettingsComponent);
+  }
 }
 
-void Object::SetStaticMeshComponent(StaticMesh *static_mesh) {
+void Object::SetStaticMeshComponent(StaticMesh* static_mesh) {
   StaticMeshComponent = static_mesh;
 }
 
-StaticMesh *Object::GetStaticMeshComponent() { return StaticMeshComponent; }
+StaticMesh* Object::GetStaticMeshComponent() {
+  return StaticMeshComponent;
+}
 
-void Object::SetCameraComponent(Camera *CameraComponent) {
+void Object::SetCameraComponent(Camera* CameraComponent) {
   this->CameraComponent = CameraComponent;
 }
 
-Camera *Object::GetCameraComponent() { return CameraComponent; }
+Camera* Object::GetCameraComponent() {
+  return CameraComponent;
+}
 
 void Object::SetRenderComponent(RenderSettings* RenderComponent) {
   RenderSettingsComponent = RenderComponent;
@@ -33,13 +43,13 @@ RenderSettings* Object::GetRenderComponent() {
   return RenderSettingsComponent;
 }
 
-void Object::getWorldLocation(Vec3f &out) {
+void Object::getWorldLocation(Vec3f& out) {
   out.assign(Pos);
-  Object *parent = hrchy.parent;
+  Object* parent = hrchy.parent;
   while (parent) {
     out += parent->Pos;
     parent = parent->hrchy.parent;
   }
 }
 
-void Object::getWorldTransform(Mat3f &out) {}
+void Object::getWorldTransform(Mat3f& out) {}

@@ -219,7 +219,7 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   // paint the window (in the right location) with the alpha-blended bitmap
   UpdateLayeredWindow(hwnd, hdcScr, &pos, &size, hdcMem, &ptZero, RGB(0, 0, 0), &bf, 2);
 
-  // delete temporary objects
+  // DELETE_DBG() temporary objects
   SelectObject(hdcMem, hbmpOld);
   DeleteDC(hdcMem);
   ReleaseDC(NULL, hdcScr);

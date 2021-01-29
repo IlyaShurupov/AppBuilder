@@ -31,7 +31,7 @@ class Node {
     this->idx = idx;
   }
 
-  void free() { delete Data; }
+  void free() { DELETE_DBG(Type, Data); }
   ~Node() {}
 };
 
@@ -85,10 +85,10 @@ List<Type>::List() {
 template <typename Type>
 void List<Type>::add(Type* data) {
   if (!length) {
-    First = DBG_NEW Node<Type>(Last, nullptr, length, data);
+    First = NEW_DBG(Node<Type>) Node<Type>(Last, nullptr, length, data);
     Last = First;
   } else {
-    Last->Next = DBG_NEW Node<Type>(Last, nullptr, length, data);
+    Last->Next = NEW_DBG(Node<Type>) Node<Type>(Last, nullptr, length, data);
     Last = Last->Next;
   }
   length += 1;
@@ -158,7 +158,7 @@ void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
     if (recursice) {
       del_node->free();
     }
-    delete del_node;
+    DELETE_DBG(Node<Type>, del_node);
   }
 
   // Reconecting Links
@@ -228,7 +228,7 @@ void List<Type>::del(Node<Type>* node, bool recursice) {
   if (recursice) {
     del_node->free();
   }
-  delete del_node;
+  DELETE_DBG(Node<Type>, del_node);
 
   length -= 1;
 }
@@ -239,7 +239,7 @@ void List<Type>::pop(bool recursice) {
   if (recursice) {
     Last->free();
   }
-  delete Last;
+  DELETE_DBG(Node<Type>, Last);
   Last = prev_item;
   prev_item->Next = 0;
   length -= 1;

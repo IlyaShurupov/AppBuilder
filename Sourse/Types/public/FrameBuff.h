@@ -78,7 +78,7 @@ FBuff<Color_t>::FBuff() {
 template <typename Color_t>
 FBuff<Color_t>::FBuff(SCR_UINT width, SCR_UINT height) {
   size.assign(width, height);
-  pxls = DBG_NEW Color_t[(__int64)height * width];
+  pxls = NEW_DBG_AR(Color_t, height * (__int64)width);
 }
 
 template <typename Color_t>
@@ -96,8 +96,8 @@ void FBuff<Color_t>::clear(Color_t* color) {
 
 template <typename Color_t>
 void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
-  delete pxls;
-  pxls = DBG_NEW Color_t[height * (__int64)width];
+  DELETE_DBG_AR(pxls);
+  pxls = NEW_DBG_AR(Color_t, height * (__int64)width);
   size.assign(width, height);
 }
 
@@ -228,6 +228,6 @@ void FBuff<Color_t>::premultiply() {
 
 template <typename Color_t>
 FBuff<Color_t>::~FBuff() {
-  delete pxls;
+  DELETE_DBG_AR(pxls);
   local_hrchy.leave();
 }

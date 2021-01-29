@@ -77,24 +77,25 @@ UIItem::UIItem(vec2<SCR_UINT>* size) {
   DrawBody = nullptr;
 
   if (this->ownbuff = (bool)size) {
-    buff = DBG_NEW FBuff<RGBA_32>();
+    buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>();
     buff->resize(size->x, size->y);
   }
 }
 
 UIItem::~UIItem() {
   hierarchy.childs.del();
-  if (buff)
-    delete buff;
+  if (buff) {
+    DELETE_DBG(FBuff<RGBA_32>, buff);
+  }
   //if (CustomData) 
-    //delete CustomData;
+    //DELETE_DBG() CustomData;
 }
 
 // --------- Button ---------------- //
 
 void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT> & cursor, Seance* C) {
   if (user_inputs->LMB.state == InputState::RELEASED) {
-    op_threads->add(DBG_NEW OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, nullptr));
+    op_threads->add(NEW_DBG(OpThread) OpThread((Operator *)This->CustomData, OpEventState::EXECUTE, nullptr));
   }
 }
 
@@ -118,7 +119,8 @@ void ButtonResize(UIItem* This, vec2<float> &rescale) {
 
 UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname) {
 
-  UIItem* button = DBG_NEW UIItem(nullptr);
+  UIItem* button = NEW_DBG(UIItem) UIItem(nullptr);
+
   button->hierarchy.join(parent);
   
   button->ownbuff = false;
@@ -176,7 +178,7 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
   if (rd->RS_ptr) {
 
-    op_threads->add(DBG_NEW OpThread(rd->op, OpEventState::EXECUTE, nullptr));
+    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEventState::EXECUTE, nullptr));
 
   } else {
 
@@ -197,7 +199,8 @@ void region_draw(UIItem* This, UIItem* project_to) {
 UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators) {
 
 
-  UIItem* region = DBG_NEW UIItem(&rect.size);
+  UIItem* region = NEW_DBG(UIItem) UIItem(&rect.size);
+
   region->hierarchy.join(parent);
 
   region->ownbuff = true;
@@ -214,7 +217,7 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
     return nullptr;
   }
 
-  UIRegionData* rd = DBG_NEW UIRegionData();
+  UIRegionData* rd = NEW_DBG(UIRegionData) UIRegionData();
   region->CustomData = (void*)rd;
   rd->op = op_ptr;
   // own
@@ -245,7 +248,8 @@ void area_draw(UIItem* This, UIItem* project_to) {
 
 UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name) {
 
-  UIItem* Area = DBG_NEW UIItem(nullptr);
+  UIItem* Area = NEW_DBG(UIItem) UIItem(nullptr);
+
   Area->hierarchy.join(parent);
 
   Area->ownbuff = false;
@@ -275,7 +279,8 @@ void UIdraw(UIItem* This, UIItem* project_to) {
 
 UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
-  UIItem* UIroot = DBG_NEW UIItem(&rect.size);
+  UIItem* UIroot = NEW_DBG (UIItem) UIItem(&rect.size);
+
   UIroot->ProcBody = Uiproc;
   UIroot->DrawBody = UIdraw;
   UIroot->Resize = UIResize;

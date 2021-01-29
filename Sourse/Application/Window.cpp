@@ -9,8 +9,8 @@
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
 
-  compiled_key_map = DBG_NEW CompiledKeyMap();
-  user_inputs = DBG_NEW UserInputs();
+  compiled_key_map = NEW_DBG(CompiledKeyMap) CompiledKeyMap();
+  user_inputs = NEW_DBG(UserInputs) UserInputs();
 
   // compile kmap
   Str keymap_path;
@@ -25,7 +25,7 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
 
   // init sys handler
-  SysH = DBG_NEW SystemHandler();
+  SysH = NEW_DBG(SystemHandler) SystemHandler();
 
   HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
   if (!SUCCEEDED(CoInitialize(NULL))) {
@@ -52,11 +52,11 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 }
 
 Window::~Window() {
-  delete UIroot;
-  delete compiled_key_map;
-  delete user_inputs;
+  DELETE_DBG(UIItem, UIroot);
+  DELETE_DBG(CompiledKeyMap, compiled_key_map);
+  DELETE_DBG(UserInputs, user_inputs);
 
-  delete SysH;
+  DELETE_DBG(SystemHandler, SysH);
   CoUninitialize();
 }
 
