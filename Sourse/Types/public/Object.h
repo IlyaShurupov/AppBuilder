@@ -3,7 +3,6 @@
 #include "Matrix.h"
 #include "Mesh.h"
 #include "Property.h"
-#include "Hierarchy.h"
 
 struct Camera {
 	PropertyInt Width;

@@ -1,5 +1,5 @@
 #include "public/RayCast.h"
-#include "Object.h"
+
 #include "Ray.h"
 
 

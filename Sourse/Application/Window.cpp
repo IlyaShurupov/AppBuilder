@@ -1,22 +1,17 @@
 
 #include "public/Window.h"
-#include "public/KeyMap.h"
-#include "public/UILayout.h"
+
 #include "public/Operator.h"
 #include "public/Win32API.h"
-
-//#include "public/Print.h"
+#include "public/Print.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
-
-  compiled_key_map = DBG_NEW CompiledKeyMap();
-  user_inputs = DBG_NEW UserInputs();
 
   // compile kmap
   Str keymap_path;
   keymap_path = *configfolder;
   keymap_path += Str("KeyMaps\\Default.txt");
-  compiled_key_map->Compile(operators, user_inputs, &keymap_path);
+  compiled_key_map.Compile(operators, &user_inputs, &keymap_path);
 
   Str ui_path;
   ui_path = *configfolder;
@@ -27,9 +22,13 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   // init sys handler
   SysH = DBG_NEW SystemHandler();
 
+  HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+  if (!SUCCEEDED(CoInitialize(NULL))) {
+    printf("ERROR: im about to crash\n");
+  }
   Rect<SCR_UINT> rect(UIroot->rect);
-  if (!SysH->Initialize(rect)) {
-    //printf("ERROR: system handler is out of his mind\n");
+  if (!SUCCEEDED(SysH->Initialize(rect))) {
+    printf("ERROR: system handler is out of his mind\n");
   }
 
   // Set icon
@@ -51,9 +50,7 @@ Window::~Window() {
   // compiled_key_map.op_bindings.free();
   delete SysH;
   delete UIroot;
-  delete compiled_key_map;
-  delete user_inputs;
-  //CoUninitialize();
+  CoUninitialize();
 }
 
 void Window::OnWrite() {}
@@ -61,16 +58,16 @@ void Window::OnWrite() {}
 void Window::OnRead() {}
 
 void Window::Draw() {
-  UIroot->Draw(nullptr);
+  UIroot->Draw(NULL);
 }
 
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
-  SysH->getUserInputs(user_inputs, scr_size.y);
-  if (this->IsActive() && user_inputs->IsEvent) {
-    compiled_key_map->ProcEvents(op_threads);
+  SysH->getUserInputs(&user_inputs, scr_size.y);
+  if (this->IsActive() && user_inputs.IsEvent) {
+    compiled_key_map.ProcEvents(op_threads);
   }
   vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
+  UIroot->ProcEvent(op_threads, &user_inputs, user_inputs.Cursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {
@@ -119,8 +116,8 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   }
 
   // update cursor pos
-  user_inputs->Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
-  user_inputs->Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
+  user_inputs.Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
+  user_inputs.Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
 
   UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x,
                                      (float)newrect.size.y / UIroot->rect.size.y));

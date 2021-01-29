@@ -1,5 +1,6 @@
 #pragma once
-
 #include "FrameBuff.h"
+#include "LinkedList.h"
+#include "Object.h"
 
-void RenderToBuff(class RenderSettings* settings, FBuff<RGBA_32>* Buff);
+void RenderToBuff(RenderSettings* settings, FBuff<RGBA_32>* Buff);
