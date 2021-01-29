@@ -23,18 +23,9 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   ui_path += Str("UIs\\Default.txt");
   UIroot = UI_compile(operators, &ui_path, this);
 
-
   // init sys handler
-  SysH = NEW_DBG(SystemHandler) SystemHandler();
-
-  HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-  if (!SUCCEEDED(CoInitialize(NULL))) {
-    //printf("ERROR: im about to crash\n");
-  }
   Rect<SCR_UINT> rect(UIroot->rect);
-  if (!SUCCEEDED(SysH->Initialize(rect))) {
-    //printf("ERROR: system handler is out of his mind\n");
-  }
+  SysH = NEW_DBG(SystemHandler) SystemHandler(rect);
 
   // Set icon
   Str icon_path; icon_path = *configfolder;
@@ -55,9 +46,7 @@ Window::~Window() {
   DELETE_DBG(UIItem, UIroot);
   DELETE_DBG(CompiledKeyMap, compiled_key_map);
   DELETE_DBG(UserInputs, user_inputs);
-
   DELETE_DBG(SystemHandler, SysH);
-  CoUninitialize();
 }
 
 void Window::OnWrite() {}

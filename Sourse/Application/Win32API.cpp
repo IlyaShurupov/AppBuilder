@@ -35,16 +35,32 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-SystemHandler::SystemHandler() {
-  m_hwnd = (NULL);
-  m_pDirect2dFactory = (NULL);
-  msg = MSG();
+SystemHandler::SystemHandler(Rect<SCR_UINT> &rect) {
+
+  hWindowIcon = nullptr;
+  hWindowIconBig = nullptr;
   hdcMem = nullptr;
+  m_hwnd = nullptr;
+  m_pDirect2dFactory = nullptr;
+
+  msg = MSG();
+
+  //HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+  if (!SUCCEEDED(CoInitialize(NULL))) {
+    //printf("ERROR: im about to crash\n");
+  }
+
+  if (!SUCCEEDED(Initialize(rect))) {
+    //printf("ERROR: system handler is out of his mind\n");
+  }
 }
 
 SystemHandler::~SystemHandler() {
-  KillTimer(m_hwnd, 10);
-  SafeRelease(&m_pDirect2dFactory);
+  KillTimer((HWND)m_hwnd, 10);
+  ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
+  //((ID2D1Factory*)m_pDirect2dFactory)->Release();
+  SafeRelease(&f);
+  CoUninitialize();
 }
 
 
@@ -58,7 +74,9 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
 
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
-  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
+  ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
+  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &f);
+  m_pDirect2dFactory = (void*)f;
 
   if (SUCCEEDED(hr)) {
 
@@ -85,28 +103,28 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
     // will use to create its own windows.
 #pragma warning(push)
 #pragma warning(disable : 4996)
-    m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
+    ((ID2D1Factory*)m_pDirect2dFactory)->GetDesktopDpi(&dpiX, &dpiY);
 #pragma warning(pop)
 
     // Create the window.
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(rect.size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(rect.size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL,
+    m_hwnd = (HWND)CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL,
                           HINST_THISCOMPONENT, this);
 
-    hr = m_hwnd ? S_OK : E_FAIL;
+    hr = (HWND)m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
 #ifdef TRANSPARENTCY
       SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 #else
-      SetWindowLong(m_hwnd, GWL_EXSTYLE, 0);
+      SetWindowLong((HWND)m_hwnd, GWL_EXSTYLE, 0);
 #endif
 
-      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+      hdcMem = (HDC)CreateCompatibleDC(GetDC((HWND)m_hwnd));
 
-      SetMenu(m_hwnd, NULL);
+      SetMenu((HWND)m_hwnd, NULL);
       // ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
       // SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
     }
@@ -235,19 +253,19 @@ void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
 
 void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 
-  HDC hdcWindow = GetDC(m_hwnd);
+  HDC hdcWindow = GetDC((HWND)m_hwnd);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
 #ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
 #else
-  SelectObject(hdcMem, hbmMem);
-  BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
+  SelectObject((HDC)hdcMem, hbmMem);
+  BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, (HDC)hdcMem, 0, 0, SRCCOPY);
 #endif
 
   DeleteObject(hbmMem);
-  ReleaseDC(m_hwnd, hdcWindow);
+  ReleaseDC((HWND)m_hwnd, hdcWindow);
 }
 
 void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
@@ -303,7 +321,7 @@ void SystemHandler::consoletoggle() {
 }
 
 bool SystemHandler::active() {
-  return GetForegroundWindow() == m_hwnd;
+  return GetForegroundWindow() == (HWND)m_hwnd;
 }
 
 // very slow!!!!!
@@ -315,7 +333,7 @@ void SystemHandler::getScreenSize(vec2<SCR_UINT>& rect) {
 void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   LPRECT wrect_p = &RECT();
-  GetWindowRect(m_hwnd, wrect_p);
+  GetWindowRect((HWND)m_hwnd, wrect_p);
 
   rect.pos.x = wrect_p->left;
   rect.pos.y = wrect_p->top;
@@ -334,7 +352,7 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   cprect.inv_y(scry);
 
-  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_DRAWFRAME);
+  SetWindowPos((HWND)m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_DRAWFRAME);
 }
 
 void UpdKeySate(Input& key, bool down, bool& IsEvent) {
@@ -444,7 +462,7 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   // USRINPUT_DECL(ARROW_LEFT);
   // USRINPUT_DECL(ARROW_RIGHT);
 
-  while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE)) {
+  while (PeekMessage(&msg, (HWND)m_hwnd, 0, 0, PM_REMOVE)) {
     DispatchMessage(&msg);
     TranslateMessage(&msg);
   }
@@ -452,21 +470,21 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
 
 void SystemHandler::SetIcon(Str& stricon) {
   if (hWindowIcon != NULL)
-    DestroyIcon(hWindowIcon);
+    DestroyIcon((HICON)hWindowIcon);
   if (hWindowIconBig != NULL)
-    DestroyIcon(hWindowIconBig);
+    DestroyIcon((HICON)hWindowIconBig);
   if (stricon == "") {
-    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
-    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
   } else {
     hWindowIcon = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
     hWindowIconBig = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
-    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
-    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)(HICON)hWindowIcon);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)(HICON)hWindowIconBig);
   }
 }
 
 void SystemHandler::ShowInitializedWindow() {
-  ShowWindow(m_hwnd, SW_SHOWNORMAL);
-  UpdateWindow(m_hwnd);
+  ShowWindow((HWND)m_hwnd, SW_SHOWNORMAL);
+  UpdateWindow((HWND)m_hwnd);
 }

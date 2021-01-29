@@ -7,7 +7,7 @@
 
 class SystemHandler {
  public:
-  SystemHandler();
+  SystemHandler(Rect<SCR_UINT>& rect);
   ~SystemHandler();
 
   // Register the win & call methods for instantiating drawing res
@@ -42,10 +42,11 @@ class SystemHandler {
   bool close = false;
 
  private:
-  HICON hWindowIcon = NULL;
-  HICON hWindowIconBig = NULL;
+   void* hWindowIcon;
+   void* hWindowIconBig;
+   void* hdcMem;
+   void* m_hwnd;
+   void* m_pDirect2dFactory;
+
   MSG msg;
-  HDC hdcMem;
-  HWND m_hwnd;
-  ID2D1Factory* m_pDirect2dFactory;
 };
