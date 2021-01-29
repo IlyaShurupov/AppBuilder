@@ -25,12 +25,17 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
 
   // init sys handler
+  SysH = DBG_NEW SystemHandler();
+
+  Rect<SCR_UINT> rect(UIroot->rect);
+  if (!SysH->Initialize(rect)) {
+    //printf("ERROR: system handler is out of his mind\n");
+  }
+
+  // Set icon
   Str icon_path; icon_path = *configfolder;
   icon_path += Str("icon.ico");
-  Rect<SCR_UINT> rect(UIroot->rect);
-
-  SysH = DBG_NEW SystemHandler(rect, icon_path);
-
+  SysH->SetIcon(icon_path);
 
   SysH->getScreenSize(scr_size);
 
@@ -43,10 +48,12 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 }
 
 Window::~Window() {
+  // compiled_key_map.op_bindings.free();
+  delete SysH;
+  delete UIroot;
   delete compiled_key_map;
   delete user_inputs;
-  delete UIroot;
-  //delete SysH;
+  //CoUninitialize();
 }
 
 void Window::OnWrite() {}

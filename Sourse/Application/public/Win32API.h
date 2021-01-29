@@ -5,10 +5,16 @@
 struct HWND_;
 typedef struct HWND_* HWND;
 
-struct SystemHandler {
+class SystemHandler {
+ public:
+  bool close = false;
 
-  SystemHandler(Rect<SCR_UINT>& rect, struct Str& stricon);
+  SystemHandler();
   ~SystemHandler();
+
+  // Register the win & call methods for instantiating drawing res
+  bool Initialize(Rect<SCR_UINT>& rect);
+  void ShowInitializedWindow();
 
   // UserInputs
   void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
@@ -17,17 +23,18 @@ struct SystemHandler {
   void SysOutput(FBuff<RGBAf>* buff);
   void SysOutput(FBuff<RGBA_32>* buff);
 
-  bool active();
   void consoletoggle();
+
+  bool active();
+
   void getScreenSize(vec2<SCR_UINT>& rect);
+  void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
   void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
 
-  void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
-  void ShowInitializedWindow();
   void SetIcon(struct Str& stricon);
+
   void drawRect(Rect<SCR_UINT>& rect);
 
-  bool close = false;
 
  private:
 
