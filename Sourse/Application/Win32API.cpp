@@ -1,5 +1,5 @@
 
-#include "public/Win32API.h"
+//#include "public/Win32API.h"
 #include <conio.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
@@ -13,7 +13,9 @@
 
 #include "d2d1_1.h"
 #include "wingdi.h"
-
+#include <d2d1.h>
+#include <windows.h>
+#include "FrameBuff.h"
 #include "public/KeyMap.h"
 
 #ifndef HINST_THISCOMPONENT
@@ -26,6 +28,43 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 bool consolehidden = false;
 
+struct SystemHandler {
+
+  bool close = false;
+
+  SystemHandler(Rect<SCR_UINT>& rect);
+  ~SystemHandler();
+
+  // UserInputs
+  void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
+
+  // Draw Fbuff.
+  void SysOutput(FBuff<RGBAf>* buff);
+  void SysOutput(FBuff<RGBA_32>* buff);
+
+
+  void ShowInitializedWindow();
+  void consoletoggle();
+  bool active();
+  void getScreenSize(vec2<SCR_UINT>& rect);
+  void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
+  void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
+  void SetIcon(struct Str& stricon);
+  void drawRect(Rect<SCR_UINT>& rect);
+
+  private:
+
+  static __int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+
+  void* hWindowIcon;
+  void* hWindowIconBig;
+  void* hdcMem;
+  void* m_hwnd;
+  void* m_pDirect2dFactory;
+
+  void* msg;
+};
+
 template <class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease) {
   if (*ppInterfaceToRelease != NULL) {
@@ -35,20 +74,21 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-SystemHandler::SystemHandler() {
-  m_hwnd = (NULL);
-  m_pDirect2dFactory = (NULL);
-  msg = MSG();
+SystemHandler::SystemHandler(Rect<SCR_UINT> &rect) {
+
+  hWindowIcon = nullptr;
+  hWindowIconBig = nullptr;
   hdcMem = nullptr;
-}
+  m_hwnd = nullptr;
+  m_pDirect2dFactory = nullptr;
 
-SystemHandler::~SystemHandler() {
-  KillTimer(m_hwnd, 10);
-  SafeRelease(&m_pDirect2dFactory);
-}
+  msg = new MSG();
 
+  //HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+  if (!SUCCEEDED(CoInitialize(NULL))) {
+    //printf("ERROR: im about to crash\n");
+  }
 
-HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
   HRESULT hr;
 
   rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
@@ -58,15 +98,17 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
 
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
-  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
+  ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
+  hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &f);
+  m_pDirect2dFactory = (void*)f;
 
   if (SUCCEEDED(hr)) {
 
 
     // Register the window class.
-    WNDCLASSEX wcex = {sizeof(WNDCLASSEX)};
+    WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
     wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = SystemHandler::WndProc;
+    wcex.lpfnWndProc = SystemHandler::win_proc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = sizeof(LONG_PTR);
     wcex.hInstance = HINST_THISCOMPONENT;
@@ -83,40 +125,49 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
 
     // The factory returns the current system DPI. This is also the value it
     // will use to create its own windows.
-#pragma warning(push)
-#pragma warning(disable : 4996)
-    m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
-#pragma warning(pop)
+    #pragma warning(push)
+    #pragma warning(disable : 4996)
+    ((ID2D1Factory*)m_pDirect2dFactory)->GetDesktopDpi(&dpiX, &dpiY);
+    #pragma warning(pop)
 
     // Create the window.
     LPCSTR name = LPCSTR("Gamuncool");
     UINT sizex = static_cast<UINT>(ceil(float(rect.size.x) * dpiX / 96.f));
     UINT sizey = static_cast<UINT>(ceil(float(rect.size.y) * dpiY / 96.f));
-    m_hwnd = CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL,
-                          HINST_THISCOMPONENT, this);
+    m_hwnd = (HWND)CreateWindow(name, name, WS_POPUP, rect.pos.x, rect.pos.y, sizex, sizey, NULL, NULL,
+                                HINST_THISCOMPONENT, this);
 
-    hr = m_hwnd ? S_OK : E_FAIL;
+    hr = (HWND)m_hwnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
 
-#ifdef TRANSPARENTCY
+      #ifdef TRANSPARENTCY
       SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-#else
-      SetWindowLong(m_hwnd, GWL_EXSTYLE, 0);
-#endif
+      #else
+      SetWindowLong((HWND)m_hwnd, GWL_EXSTYLE, 0);
+      #endif
 
-      hdcMem = CreateCompatibleDC(GetDC(m_hwnd));
+      hdcMem = (HDC)CreateCompatibleDC(GetDC((HWND)m_hwnd));
 
-      SetMenu(m_hwnd, NULL);
+      SetMenu((HWND)m_hwnd, NULL);
       // ShowWindow(m_hwnd, SW_SHOWMINIMIZED);
       // SetWindowPos(m_hwnd, HWND_TOP, 100, 100, size.x, size.y, SWP_NOACTIVATE);
     }
   }
 
   rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
-  return hr;
 }
 
-LRESULT CALLBACK SystemHandler::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+SystemHandler::~SystemHandler() {
+  KillTimer((HWND)m_hwnd, 10);
+  ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
+  //((ID2D1Factory*)m_pDirect2dFactory)->Release();
+  SafeRelease(&f);
+  CoUninitialize();
+}
+
+
+__int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
+
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
@@ -235,19 +286,19 @@ void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
 
 void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
 
-  HDC hdcWindow = GetDC(m_hwnd);
+  HDC hdcWindow = GetDC((HWND)m_hwnd);
 
   HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
 
 #ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
 #else
-  SelectObject(hdcMem, hbmMem);
-  BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, hdcMem, 0, 0, SRCCOPY);
+  SelectObject((HDC)hdcMem, hbmMem);
+  BitBlt(hdcWindow, 0, 0, buff->size.x, buff->size.y, (HDC)hdcMem, 0, 0, SRCCOPY);
 #endif
 
   DeleteObject(hbmMem);
-  ReleaseDC(m_hwnd, hdcWindow);
+  ReleaseDC((HWND)m_hwnd, hdcWindow);
 }
 
 void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
@@ -303,7 +354,7 @@ void SystemHandler::consoletoggle() {
 }
 
 bool SystemHandler::active() {
-  return GetForegroundWindow() == m_hwnd;
+  return GetForegroundWindow() == (HWND)m_hwnd;
 }
 
 // very slow!!!!!
@@ -315,7 +366,7 @@ void SystemHandler::getScreenSize(vec2<SCR_UINT>& rect) {
 void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   LPRECT wrect_p = &RECT();
-  GetWindowRect(m_hwnd, wrect_p);
+  GetWindowRect((HWND)m_hwnd, wrect_p);
 
   rect.pos.x = wrect_p->left;
   rect.pos.y = wrect_p->top;
@@ -334,7 +385,7 @@ void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   cprect.inv_y(scry);
 
-  SetWindowPos(m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_DRAWFRAME);
+  SetWindowPos((HWND)m_hwnd, HWND_TOP, cprect.pos.x, cprect.pos.y, cprect.size.x, cprect.size.y, SWP_DRAWFRAME);
 }
 
 void UpdKeySate(Input& key, bool down, bool& IsEvent) {
@@ -444,29 +495,29 @@ void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
   // USRINPUT_DECL(ARROW_LEFT);
   // USRINPUT_DECL(ARROW_RIGHT);
 
-  while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE)) {
-    DispatchMessage(&msg);
-    TranslateMessage(&msg);
+  while (PeekMessage(&(*(MSG*)msg), (HWND)m_hwnd, 0, 0, PM_REMOVE)) {
+    DispatchMessage(&(*(MSG*)msg));
+    TranslateMessage(&(*(MSG*)msg));
   }
 }
 
 void SystemHandler::SetIcon(Str& stricon) {
   if (hWindowIcon != NULL)
-    DestroyIcon(hWindowIcon);
+    DestroyIcon((HICON)hWindowIcon);
   if (hWindowIconBig != NULL)
-    DestroyIcon(hWindowIconBig);
+    DestroyIcon((HICON)hWindowIconBig);
   if (stricon == "") {
-    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
-    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
   } else {
     hWindowIcon = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
     hWindowIconBig = (HICON)LoadImage(NULL, stricon.str, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
-    SendMessage(m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hWindowIcon);
-    SendMessage(m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)hWindowIconBig);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)(HICON)hWindowIcon);
+    SendMessage((HWND)m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)(HICON)hWindowIconBig);
   }
 }
 
 void SystemHandler::ShowInitializedWindow() {
-  ShowWindow(m_hwnd, SW_SHOWNORMAL);
-  UpdateWindow(m_hwnd);
+  ShowWindow((HWND)m_hwnd, SW_SHOWNORMAL);
+  UpdateWindow((HWND)m_hwnd);
 }
