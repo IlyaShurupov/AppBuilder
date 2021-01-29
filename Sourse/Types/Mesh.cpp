@@ -5,4 +5,5 @@ StaticMesh::StaticMesh() {
 
 
 StaticMesh::~StaticMesh() {
+	Trigs.del();
 }

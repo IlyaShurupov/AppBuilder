@@ -48,16 +48,15 @@ str_idx Str::len() {
 }
 
 void Str::alloc(str_idx len) {
-  if (str) {
-    delete str;
-  }
-  str = DBG_NEW char[len];
+  clear();
+  str = DBG_NEW char[len + 1];
+  str[len] = '\0';
   length = len;
 }
 
 void Str::clear() {
   if (str) {
-    delete str;
+    delete[] str;
   }
 }
 
@@ -75,7 +74,8 @@ void Str::operator=(Str& string) {
 void Str::operator+=(const Str& string) {
 
   str_idx newlen = string.length + length;
-  char* newstr = DBG_NEW char[newlen];
+  char* newstr = DBG_NEW char[newlen + 1];
+  newstr[newlen] = '\0';
 
   for (str_idx i = 0; i < length; i++) {
     newstr[i] = str[i];
@@ -181,7 +181,8 @@ str_idx Str::rfind(const char character, Range& range) {
 
 void Str::trim(Range& range) {
   str_idx newlen = range.len();
-  char* newstr = new char[newlen];
+  char* newstr = DBG_NEW char[newlen + 1];
+  newstr[newlen] = '\0';
 
   for (str_idx i = 0; i < newlen; i++) {
     newstr[i] = str[i + range.strt];

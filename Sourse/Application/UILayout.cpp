@@ -82,9 +82,10 @@ UIItem::UIItem(vec2<SCR_UINT>* size) {
 
 UIItem::~UIItem() {
   hierarchy.childs.del();
-  delete buff;
-  if (CustomData) 
-    delete CustomData;
+  if (buff)
+    delete buff;
+  //if (CustomData) 
+    //delete CustomData;
 }
 
 // --------- Button ---------------- //
