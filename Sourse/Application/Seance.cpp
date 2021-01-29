@@ -1,6 +1,11 @@
 #pragma once
+
 #include "public/Seance.h"
-#include "public/Print.h"
+#include "RayCast.h"
+#include "Types.h"
+#include "public/Operator.h"
+#include "public/Window.h"
+//#include "public/Print.h"
 
 Seance::Seance(Str* Path) {
 
@@ -43,6 +48,6 @@ Window* Project::C_actWin() {
       return win_node->Data;
     }
   }
-  post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
+  //post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
   return nullptr;
 }

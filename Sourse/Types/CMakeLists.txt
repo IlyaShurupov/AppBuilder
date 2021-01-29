@@ -5,6 +5,7 @@ project(Types)
 
 set (TYPES_HEADERS
     "public/Vec2.h"
+    "public/Hierarchy.h"
     "public/Strings.h"
     "public/Rect.h"
     "public/Mem.h"

@@ -1,20 +1,18 @@
 
 #pragma once
-#include "KeyMap.h"
-#include "UILayout.h"
+#include "LinkedList.h"
 #include "Rect.h"
-#include "Timer.h"
 
 struct Window {
 
   vec2<SCR_UINT> scr_size;
 
   // UI layout of window
-  UIItem *UIroot;
-  UserInputs user_inputs;
+  struct UIItem *UIroot;
+  struct UserInputs *user_inputs;
 
   // Creates empty window
-  Window(Str* configfolder, List<Operator>* operators);
+  Window(struct Str* configfolder, List<struct Operator>* operators);
 
   // Closes the window
   ~Window();
@@ -26,7 +24,7 @@ struct Window {
   void OnRead();
 
   // Maps user inputs into an executing commands
-  void ProcessEvents(List<struct OpThread>* exec_queue, Seance* C);
+  void ProcessEvents(List<struct OpThread>* exec_queue, struct Seance* C);
 
   // Draws the UI only!! (Buttons, menus...)
   void Draw();
@@ -49,5 +47,5 @@ struct Window {
   // This is where interactin with the system happends
   // Only things we need from the system are Fbuffer & user inputs
   class SystemHandler* SysH;
-  CompiledKeyMap compiled_key_map;
+  struct CompiledKeyMap *compiled_key_map;
 };

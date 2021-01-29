@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Operator.h"
-#include "RayCast.h"
-#include "Types.h"
-//#include "UIUILayout.h"
-#include "Window.h"
-#include "KeyMap.h"
+#include "LinkedList.h"
 
-
+class Object;
+struct Window;
+struct Operator;
+struct Str;
+struct OpThread;
 
 struct Project {
   // MeshObjects, Cameras, Renders...

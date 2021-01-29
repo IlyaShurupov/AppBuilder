@@ -2,6 +2,7 @@
 #pragma once
 
 #include "LinkedList.h"
+#include "Hierarchy.h"
 #include "Rect.h"
 
 #define RGBA_32 int

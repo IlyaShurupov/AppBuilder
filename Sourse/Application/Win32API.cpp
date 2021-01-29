@@ -112,6 +112,7 @@ HRESULT SystemHandler::Initialize(Rect<SCR_UINT>& rect) {
     }
   }
 
+  rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
   return hr;
 }
 

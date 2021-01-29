@@ -1,11 +1,13 @@
 
 #include "public/Seance.h"
+#include "Timer.h"
+#include "Strings.h"
+#include "public/Operator.h"
+#include "public/Window.h"
 
 #define FPS 120.f
 
-void test();
-
-// TODO: string class, UI cleanup, new Shortcut condition (UI id name), ops properties, cleanup include
+// TODO: mem debug, cleanup include, idle mode, UI cleanup, new Shortcut condition (UI id name), ops properties
 // structure & performance debug
 
 int main(int argc, char* argv[]) {
@@ -14,8 +16,6 @@ int main(int argc, char* argv[]) {
 #ifdef _DEBUG
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
-  test();
 
   {
     // Create Seance
@@ -105,29 +105,4 @@ int main(int argc, char* argv[]) {
 #ifdef _DEBUG
   _CrtDumpMemoryLeaks();
 #endif
-}
-
-void test() {
-#ifdef _DEBUG
-
-
-  Object root;
-  root.Pos.assign(1, 1, 1);
-
-  Object ch11, ch13;
-  Object ch111, ch112;
-
-  root.hrchy_dbg.add(&ch13);
-
-  ch13.hrchy_dbg.join(&root);
-
-  ch112.hrchy_dbg.join(&root);
-  ch111.hrchy_dbg.join(&ch112);
-
-  Object* rootptr = ch111.hrchy_dbg.root();
-  rootptr->Pos.assign(0, 0, 0);
-
-  ch111.hrchy_dbg.leave();
-
-#endif  // _DEBUG
 }
