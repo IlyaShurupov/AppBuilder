@@ -19,6 +19,7 @@ struct CycleData {
 };
 
 void RenderToBuff(RenderSettings* Settings, FBuff<RGBA_32>* Buff) {
+
   CycleData CData;
   InitCycle(CData, Settings, Buff);
 

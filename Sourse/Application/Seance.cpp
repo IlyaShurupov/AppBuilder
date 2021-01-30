@@ -29,10 +29,10 @@ Seance::Seance(Str* Path) {
 }
 
 Seance::~Seance() {
-  op_threads.del();
   project.collection.del();
   prefferences.operators.del();
   project.windows.del();
+  op_threads.del();
 }
 
 void Seance::OnWrite(/*file path*/) {}
