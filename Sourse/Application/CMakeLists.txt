@@ -28,9 +28,9 @@ set (SOURCES
 )
 
 
-link_directories(${CMAKE_BINARY_DIR}/bin )
 
 # Create proj
+link_directories(${CMAKE_BINARY_DIR}/bin )
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
@@ -41,19 +41,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast/public>
               $<INSTALL_INTERFACE:/Sourse/RenderEngines/RayCast/public>
 )
+
 target_link_libraries(${PROJECT_NAME} "Types.lib" "RayCast.lib" "d2d1.lib")
 
-#target_link_libraries (${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Sourse/Types)
 
-#install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Debug/Configuration)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Release/Configuration)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Configuration)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/Sourse/Application/Configuration/ ${CMAKE_BINARY_DIR}/bin/Release/Configuration)
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/Sourse/Application/Configuration/ ${CMAKE_BINARY_DIR}/bin/Debug/Configuration)
+                       ${CMAKE_CURRENT_SOURCE_DIR}/Configuration/ ${CMAKE_BINARY_DIR}/bin/Configuration)
