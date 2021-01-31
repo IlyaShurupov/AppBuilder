@@ -2,7 +2,7 @@
 
 //#ifdef _DEBUG
 
-//#define MEM_DEBUG 
+#define MEM_DEBUG 
 
 #define MEM_DEBUG_WRAP
 

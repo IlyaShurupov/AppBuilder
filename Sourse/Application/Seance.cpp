@@ -29,10 +29,12 @@ Seance::Seance(Str* Path) {
 }
 
 Seance::~Seance() {
+  /*
   project.collection.del();
   prefferences.operators.del();
   project.windows.del();
   op_threads.del();
+  */
 }
 
 void Seance::OnWrite(/*file path*/) {}
@@ -51,3 +53,7 @@ Window* Project::C_actWin() {
   //post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
   return nullptr;
 }
+
+Project::~Project() {}
+
+Prefferences::~Prefferences() {}

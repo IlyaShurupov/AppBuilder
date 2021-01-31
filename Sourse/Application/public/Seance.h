@@ -22,6 +22,7 @@ struct Project {
   void OnRead();
 
   Window* C_actWin();
+  ~Project();
 };
 
 struct Prefferences {
@@ -34,6 +35,8 @@ struct Prefferences {
 
   // load prefs
   void OnRead();
+
+  ~Prefferences();
 };
 
 struct Seance {

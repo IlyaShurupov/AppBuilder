@@ -29,7 +29,7 @@ Operator* find_op(List<Operator>* operators, Str* op_idname) {
 
 void EndSeance_ecec(Seance* C, Operator* op) {
 
-  //DELETE_DBG(Seance, C);
+  DELETE_DBG(Seance, C);
 
   #ifdef MEM_DEBUG
   if (LogHeap()) {
