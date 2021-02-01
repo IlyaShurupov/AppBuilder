@@ -4,6 +4,7 @@
 #include "Strings.h"
 #include "public/Operator.h"
 #include "public/Window.h"
+#include "Mem.h"
 
 #define FPS 120.f
 
@@ -12,10 +13,12 @@
 
 int main(int argc, char* argv[]) {
 
+  /*
   // enable memory debuging
 #ifdef _DEBUG
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+  */
 
   {
     // Create Seance
@@ -101,8 +104,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  /*
   // Print out mem leaks
 #ifdef _DEBUG
   _CrtDumpMemoryLeaks();
 #endif
+  */
 }

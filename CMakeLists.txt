@@ -23,3 +23,5 @@ add_subdirectory("Sourse")
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(GLOBAL CMAKE_EXPORT_COMPILE_COMMANDS ON)

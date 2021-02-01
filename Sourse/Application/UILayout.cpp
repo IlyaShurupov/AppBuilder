@@ -163,6 +163,8 @@ void UIResize(UIItem* This, vec2<float>& rescale) {
   FOREACH_NODE(UIItem, (&This->hierarchy.childs), child_node) {
     child_node->Data->Resize(child_node->Data, rescale);
   }
+
+  This->redraw = true;
 }
 
 // --------- Region ---------------- //
@@ -313,7 +315,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   ui_add_button(Area2, vec2<SCR_UINT>(2, 2), operators, &Str("Toggle Console"));
   ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 1, 2), operators, &Str("End Seance"));
-  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 2, 2), operators, &Str("Move Window"));
+  ui_add_button(Area2, vec2<SCR_UINT>(2 + 40 * 2, 2), operators, &Str("Log Heap"));
   return UIroot;
 }
 

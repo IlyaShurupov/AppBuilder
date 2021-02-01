@@ -4,104 +4,47 @@
 
 #include <stdlib.h>
 #include <cstdio>
+#include <iostream>
+
+#ifdef MEM_DEBUG_WRAP
+#include <cassert>
+typedef char int1;
+#define WRAP_LEN 8  // bytes
+#define WRAP_FILL_VAL 1  // bytes
+#endif
+
+#include "public/LinkedList.h"
 
 struct MemHead {
-  byte_size size = 0;
+  alloc_size size = 0;
   MemHead* next = nullptr;
   MemHead* prev = nullptr;
+  void* type = nullptr;
+  void* file = nullptr;
+  long long line;
 };
 
 MemHead* mem_debug_entry_ptr;
 
+void* Alloc(alloc_size size, const char* Type, const char* File, int Line) {
+
 #ifdef MEM_DEBUG_WRAP
 
-#include <cassert>
-
-#define WRAP_TYPE int
-#define WRAP_FIIL_VAL 0
-#define WRAP_LEN 2  // byte / sizeof(WRAP_TYPE)
-
-void* Alloc(byte_size size) {
-
-  MemHead* mhptr = (MemHead*)malloc(size + sizeof(MemHead) + (WRAP_LEN * sizeof(WRAP_TYPE)) * 2);
+  alloc_size total = size + sizeof(MemHead) + WRAP_LEN * 2;
+  MemHead* mhptr = (MemHead*)malloc(total);
 
   if (mhptr) {
 
-    void* wrap1 = (void*)((MemHead*)mhptr + 1);
-    void* wrap2 = (void*)((int*)((WRAP_TYPE*)wrap1 + WRAP_LEN) + size);
-
-    for (byte_size i = 0; i < WRAP_LEN; i++) {
-      ((WRAP_TYPE*)wrap1)[i] = WRAP_FIIL_VAL;
-      ((WRAP_TYPE*)wrap2)[i] = WRAP_FIIL_VAL;
+    for (alloc_size i = 0; i < total; i++) {
+      ((int1*)mhptr)[i] = WRAP_FILL_VAL;
     }
-
-    mhptr->next = mhptr->prev = nullptr;
-
-    if (mem_debug_entry_ptr) {
-      mem_debug_entry_ptr->next = mhptr;
-    }
-
-    mhptr->prev = mem_debug_entry_ptr;
-    mem_debug_entry_ptr = mhptr;
-
-    mhptr->size = size;
-
-    return (void*)((WRAP_TYPE*)wrap1 + WRAP_LEN);
-  }
-
-  return nullptr;
-}
-
-void Free(void* ptr) {
-
-  if (!ptr) {
-    return;
-  }
-
-
-  MemHead* mhptr = ((MemHead*)((WRAP_TYPE*)ptr - WRAP_LEN) - 1);
-
-  void* wrap1 = (void*)((MemHead*)mhptr + 1);
-  void* wrap2 = (void*)((int*)((WRAP_TYPE*)wrap1 + WRAP_LEN) + mhptr->size);
-
-  for (byte_size i = 0; i < WRAP_LEN; i++) {
-    WRAP_TYPE val = ((WRAP_TYPE*)wrap1)[i];
-    assert(val != WRAP_FIIL_VAL);
-  }
-  for (byte_size i = 0; i < WRAP_LEN; i++) {
-    WRAP_TYPE val = ((WRAP_TYPE*)wrap2)[i];
-    assert(val != WRAP_FIIL_VAL);
-  }
-
-  char padding_bytes = 1;
-  char* padding_ptr = ((char*)wrap2 - padding_bytes);
-  for (char i = 0; i < padding_bytes; i++) {
-    padding_ptr[i] = 0;
-  }
-
-  if (mhptr->prev && mhptr->next) {
-    mhptr->next->prev = mhptr->prev;
-    mhptr->prev->next = mhptr->next;
-
-  } else if (mhptr->prev || mhptr->next) {
-
-    if (mhptr->next) {
-      mhptr->next->prev = nullptr;
-    } else {
-      mhptr->prev->next = nullptr;
-      mem_debug_entry_ptr = mhptr->prev;
-    }
-  }
-
-  free(mhptr);
-}
 
 #else
 
-void* Alloc(byte_size size) {
   MemHead* mhptr = (MemHead*)malloc(size + sizeof(MemHead));
 
   if (mhptr) {
+#endif
 
     mhptr->next = mhptr->prev = nullptr;
 
@@ -113,8 +56,24 @@ void* Alloc(byte_size size) {
     mem_debug_entry_ptr = mhptr;
 
     mhptr->size = size;
+    mhptr->line = Line;
 
+    int idx = 0;
+    for (int i = (int)strlen(File); i > 0; i--) {
+      if (File[i] == '\\') {
+        idx = i;
+        break;
+      }
+    }
+
+    mhptr->type = new std::string(Type);
+    mhptr->file = new std::string(&(File)[idx + 1]);
+
+    #ifdef MEM_DEBUG_WRAP
+    return (void*)((int1*)((MemHead*)mhptr + 1) + WRAP_LEN);
+    #else
     return (void*)((MemHead*)mhptr + 1);
+    #endif
   }
 
   return nullptr;
@@ -126,7 +85,22 @@ void Free(void* ptr) {
     return;
   }
 
+#ifdef MEM_DEBUG_WRAP
+
+  MemHead* mhptr = ((MemHead*)((int1*)ptr - WRAP_LEN) - 1);
+
+  void* wrap1 = (void*)((MemHead*)mhptr + 1);
+  void* wrap2 = (void*)((int1*)((MemHead*)mhptr + 1) + WRAP_LEN + mhptr->size);
+
+  for (alloc_size i = 0; i < WRAP_LEN; i++) {
+    int1 val1 = ((int1*)wrap1)[i];
+    int1 val2 = ((int1*)wrap2)[i];
+    assert(val1 == WRAP_FILL_VAL && val2 == WRAP_FILL_VAL);
+  }
+
+#else
   MemHead* mhptr = ((MemHead*)ptr - 1);
+#endif
 
   if (mhptr->prev && mhptr->next) {
     mhptr->next->prev = mhptr->prev;
@@ -142,62 +116,67 @@ void Free(void* ptr) {
     }
   }
 
+  delete (std::string*)mhptr->type;
+  delete (std::string*)mhptr->file;
+
   free(mhptr);
 }
 
-#endif
+bool LogHeap(bool group, bool sort) {
 
-void LogHeap() {
+  printf("\n HEAP IN USE: \n");
 
-  if (mem_debug_entry_ptr) {
-
-    byte_size leak_size = 0;
-    MemHead* iter = mem_debug_entry_ptr;
-
-    while (iter) {
-
-      printf("%lli bytes at %p\n", leak_size, (iter + 1));
-
-      leak_size += iter->size;
-      iter = iter->prev;
-    }
-
-    printf("Total bytes:%lli\n", leak_size);
-
-    return;
+  if (!mem_debug_entry_ptr) {
+    printf("  Heap is empthy\n");
+    return false;
   }
 
-  printf("Heap is empthy\n");
+  alloc_size HeapSize = 0;
+  MemHead* iter;
+
+  if (!group) {
+    for (iter = mem_debug_entry_ptr; iter; iter = iter->prev) {
+      std::cout << "   " << ((std::string*)iter->type)->c_str() << "   " << iter->size;
+      std::cout << "   " << ((std::string*)iter->file)->c_str() << "   " << iter->line << "\n";
+      HeapSize += iter->size;
+    }
+  } else {
+
+    typedef struct GRP {
+      alloc_size size = 0;
+      std::string type;
+    } GRP;
+
+    List<GRP> Groups;
+
+    for (iter = mem_debug_entry_ptr; iter; iter = iter->prev) {
+      bool in_grp = false;
+      FOREACH(&Groups, GRP, grp) {
+        if (grp->Data->type == *(std::string*)iter->type) {
+          in_grp = true;
+          grp->Data->size += iter->size;
+          break;
+        }
+      }
+      if (!in_grp) {
+        GRP* new_grp = NEW_DBG(GRP) GRP();
+        new_grp->size = iter->size;
+        new_grp->type = *(std::string*)iter->type;
+        Groups.add(new_grp);
+      }
+    }
+
+    FOREACH(&Groups, GRP, grp) {
+      std::cout << "   " << grp->Data->size << "    " << grp->Data->type.c_str() << "\n";
+      HeapSize += grp->Data->size;
+    }
+
+    Groups.del();
+  }
+
+
+  printf("\n Total:  %lli bytes ( %f MB ) \n", HeapSize, (float)HeapSize / (1024 * 1024));
+  return true;
 }
 
 #endif
-
-/*
-struct AllocWrap {
-  int wrapsize;
-  void* buff;
-
-  AllocWrap(void** out, int bytesize, int wrapsize = 10) {
-
-    this->wrapsize = wrapsize;
-    buff = malloc(bytesize + 2 * wrapsize * sizeof(int));
-
-    for (int i = 0; i < wrapsize; i++) {
-      buff[i] = 0;
-    }
-
-    for (int i = 0; i < wrapsize; i++) {
-      buff[i] = 0;
-    }
-  }
-
-  ~AllocWrap() {
-    for (int i = 0; i < wrapsize; i++) {
-      if (buff[i] != 0) {
-        bool braked = true;
-      }
-    }
-    delete[] buff;
-  }
-};
-*/

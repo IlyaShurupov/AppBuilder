@@ -28,8 +28,16 @@ Operator* find_op(List<Operator>* operators, Str* op_idname) {
 // -----------  End Seance Operator ----------------------- //
 
 void EndSeance_ecec(Seance* C, Operator* op) {
-  // save &
+
   DELETE_DBG(Seance, C);
+
+  #ifdef MEM_DEBUG
+  if (LogHeap()) {
+    exit(0);
+  }
+  TreadSleep(10000);
+  #endif
+
   exit(0);
 }
 
@@ -47,6 +55,33 @@ void EndSeance_create(Seance* C, Operator* op) {
   op->Poll = EndSeance_poll;
   op->Invoke = EndSeance_invoke;
   op->Execute = EndSeance_ecec;
+
+  op->state = OpState::NONE;
+}
+
+// -----------  End Seance Operator ----------------------- //
+
+void LogHeap_ecec(Seance* C, Operator* op) {
+  #ifdef MEM_DEBUG 
+  LogHeap();
+  #endif
+  op->state = OpState::FINISHED;
+}
+
+void LogHeap_invoke(Seance* C, Operator* op) {
+  LogHeap_ecec(C, op);
+}
+
+// Checks if operator can be inveked
+bool LogHeap_poll(Seance* C, Operator* op) {
+  return true;
+}
+
+void LogHeap_create(Seance* C, Operator* op) {
+  op->idname = "Log Heap";
+  op->Poll = LogHeap_poll;
+  op->Invoke = LogHeap_invoke;
+  op->Execute = LogHeap_ecec;
 
   op->state = OpState::NONE;
 }
@@ -232,7 +267,10 @@ void RenderToBuff_create(Seance* C, Operator* op) {
 void AddPlane_ecec(Seance* C, Operator* op) {
 
   Object* MeshObj = NEW_DBG(Object) Object();
+  C->project.collection.add(MeshObj);
+
   StaticMesh* mesh = NEW_DBG(StaticMesh) StaticMesh();
+  MeshObj->SetStaticMeshComponent(mesh);
 
   Trig* trig = NEW_DBG(Trig) Trig();
   trig->V0.assign(0, 0, -1);
@@ -240,27 +278,27 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   trig->V2.assign(0, 1, -1);
 
   mesh->Trigs.add(trig);
-  MeshObj->SetStaticMeshComponent(mesh);
+
+  Object* CamObj = NEW_DBG(Object) Object();
+  C->project.collection.add(CamObj);
 
   Camera* cam = NEW_DBG(Camera) Camera();
   cam->Height.setVal(200);
   cam->Width.setVal(200);
   cam->Lens.setVal(1);
 
-  Object* CamObj = NEW_DBG(Object) Object();
   CamObj->SetCameraComponent(cam);
 
+  Object* RndObj = NEW_DBG(Object) Object();
+  C->project.collection.add(RndObj);
 
   RenderSettings* rs = NEW_DBG(RenderSettings) RenderSettings();
-  rs->setCamera(CamObj);
-  rs->setObjList(&C->project.collection);
-
-  Object* RndObj = NEW_DBG(Object) Object();
   RndObj->SetRenderComponent(rs);
 
-  C->project.collection.add(CamObj);
-  C->project.collection.add(MeshObj);
-  C->project.collection.add(RndObj);
+  rs->setCamera(CamObj);
+  rs->setObjList(&C->project.collection);
+  /*
+  */
 
   op->state = OpState::FINISHED;
 }
@@ -301,6 +339,7 @@ void initOps(Seance* C) {
   AddOperator(C, WindowDrag_create);
   AddOperator(C, RenderToBuff_create);
   AddOperator(C, AddPlane_create);
+  AddOperator(C, LogHeap_create);
 }
 
 Operator::~Operator() {
