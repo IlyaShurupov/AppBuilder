@@ -32,7 +32,17 @@ struct Rect {
     return *this;
   }
 
-  bool enclosed_in(Rect<Type>& rect) { return (pos.operator>(rect.pos) && rect.size.operator>(size)); }
+  bool enclosed_in(Rect<Type>& rect, bool prnt = false) { 
+
+    if (prnt) {
+      return (pos.x + size.x < rect.size.x && pos.y + size.y < rect.size.y && pos.x > 0 && pos.y >0);
+    }
+
+    pos -= rect.pos;
+    bool ret = this->enclosed_in(rect, true); 
+    pos += rect.pos;
+    return ret;
+  }
 
   bool inside(vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }
 

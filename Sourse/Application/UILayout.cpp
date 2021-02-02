@@ -104,6 +104,8 @@ void UIItem::Resize(float rescale, bool dir) {
   UIItem* UIrigid;
   float* bnds;
 
+  float fac[2];
+
   prev_rect = rect;
 
   if (!rigid[dir]) {
@@ -119,7 +121,6 @@ void UIItem::Resize(float rescale, bool dir) {
       }
 
       if (UIrigid && UIrigid->rigid[dir] && !UIrigid->hide) {
-
         bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * (bool)offset);
         bnds[1] = UIrigid->prev_rect.pos[dir] + (UIrigid->prev_rect.size[dir] * (bool)offset);
 
@@ -129,22 +130,19 @@ void UIItem::Resize(float rescale, bool dir) {
       }
     }
 
-    float* pls_dir = bounds + 2;
-    float* mns_dir = bounds;
+    for (char plus = 0; plus <= 1; plus++) {
+      fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
+    }
 
-    float pls_fac = (pls_dir[0] - mns_dir[1]) / (pls_dir[1] - mns_dir[1]);
-    float mns_fac = (pls_dir[1] - mns_dir[0]) / (pls_dir[1] - mns_dir[1]);
-
-    rect.pos[dir] -= mns_dir[1];
-    float pls_width = (rect.size[dir] + rect.pos[dir]) * pls_fac;
-    rect.pos[dir] *= pls_fac;
+    rect.pos[dir] -= bounds[1];
+    float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[0];
+    rect.pos[dir] *= fac[0];
     rect.size[dir] = pls_width - rect.pos[dir];
-    rect.pos[dir] += mns_dir[1];
+    rect.pos[dir] += bounds[1];
 
-    float d1 = (pls_dir[0] - (rect.pos[dir] + rect.size[dir])) * mns_fac;
-    float d2 = (pls_dir[0] - rect.pos[dir]) * mns_fac;
-    float pos = pls_dir[0] - d2;
-    rect.size[dir] = pls_dir[0] - rect.pos[dir] - d1;
+    float d1 = ((bounds + 2)[0] - (rect.pos[dir] + rect.size[dir])) * fac[1];
+    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - rect.pos[dir]) * fac[1];
+    rect.size[dir] = (bounds + 2)[0] - rect.pos[dir] - d1;
     rect.pos[dir] = pos;
 
   } else if (inv_pos[dir]) {
@@ -153,16 +151,8 @@ void UIItem::Resize(float rescale, bool dir) {
 
   // Hide if overlaped or min size triggered
   if (rigid.x || rigid.y) {
-
-    hide = false;
-
-    if (rect.pos.x + rect.size.x > prnt_rec->size.x || rect.pos.y + rect.size.y > prnt_rec->size.y || rect.pos.x < 0 || rect.pos.y < 0) {
-
-      hide = true;
-
-      if (buff) {
-        buff->free();
-      }
+    if (hide = !rect.enclosed_in(*prnt_rec, true) && buff) {
+      buff->free();
     }
   }
 
