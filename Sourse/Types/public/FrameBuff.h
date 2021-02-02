@@ -60,7 +60,7 @@ struct FBuff {
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos);
   void move(SCR_UINT dx, SCR_UINT dy);
-
+  void free();
   void premultiply();
 
   // simple draw methods
@@ -99,6 +99,15 @@ void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
   DELETE_DBG_AR(pxls);
   pxls = NEW_DBG_AR(Color_t, height * (__int64)width);
   size.assign(width, height);
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::free() {
+  if (pxls) {
+    DELETE_DBG_AR(pxls);
+  }
+  pxls = nullptr;
+  size.assign(0, 0);
 }
 
 template <typename Color_t>

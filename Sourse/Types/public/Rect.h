@@ -11,7 +11,7 @@ struct Rect {
 
   Rect() {}
 
-  Rect(Rect<float> &rec) {
+  Rect(Rect<float>& rec) {
     pos.assign((SCR_UINT)rec.pos.x, (SCR_UINT)rec.pos.y);
     size.assign((SCR_UINT)rec.size.x, (SCR_UINT)rec.size.y);
   }
@@ -32,33 +32,36 @@ struct Rect {
     return *this;
   }
 
-  bool enclosed_in(Rect<Type>& rect) {
-    return (pos.operator>(rect.pos) && rect.size.operator>(size));
-  }
+  bool enclosed_in(Rect<Type>& rect) { return (pos.operator>(rect.pos) && rect.size.operator>(size)); }
 
-  bool inside(vec2<Type>& p) {
-    return (p.operator>(pos) && (pos + size).operator>(p));
-  }
+  bool inside(vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }
 
-  bool inside(Type x, Type y) {
-    return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y);
-  }
+  bool inside(Type x, Type y) { return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y); }
 
-  inline vec2<Type> size_vec() { 
-    return vec2<Type>(size.x, size.y); 
-  }
+  inline vec2<Type> size_vec() { return vec2<Type>(size.x, size.y); }
 
-  inline vec2<Type> size_vec_w() {
-    return vec2<Type>(size.x + pos.x, size.y + pos.y);
-  }
+  inline vec2<Type> size_vec_w() { return vec2<Type>(size.x + pos.x, size.y + pos.y); }
 
-  void inv_y(Type scr_y) {
-    pos.y = scr_y - pos.y - size.y;
-  }
+  void inv_y(Type scr_y) { pos.y = scr_y - pos.y - size.y; }
 
   void move(Type& dx, Type& dy) {
     pos.x += dx;
     pos.y += dy;
+  }
+
+  inline bool above(Rect<Type>& rect) { return (pos.y + size.y < rect.pos.y); }
+  inline bool bellow(Rect<Type>& rect) { return (rect.pos.y + rect.size.y < pos.y); }
+  inline bool right(Rect<Type>& rect) { return (pos.x + size.x < rect.pos.x); }
+  inline bool left(Rect<Type>& rect) { return (rect.pos.x + rect.size.x < pos.x); }
+
+  inline bool intersect_y(Rect<Type>& rect) { 
+    return ((rect.pos.x > pos.x && rect.pos.x < pos.x + size.x) ||
+            (rect.pos.x + rect.size.x > pos.x && rect.pos.x + rect.size.x > pos.x < pos.x + size.x));
+  }
+
+  inline bool intersect_x(Rect<Type>& rect) {
+    return ((rect.pos.y > pos.y && rect.pos.y < pos.y + size.y) ||
+            (rect.pos.y + rect.size.y > pos.y && rect.pos.y + rect.size.y > pos.y < pos.y + size.y));
   }
 };
 

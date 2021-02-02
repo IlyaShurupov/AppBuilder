@@ -115,8 +115,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   user_inputs->Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
   user_inputs->Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
 
-  UIroot->Resize(UIroot, vec2<float>((float)newrect.size.x / UIroot->rect.size.x,
-                                     (float)newrect.size.y / UIroot->rect.size.y));
+  UIroot->Resize(vec2<float>((float)newrect.size.x / UIroot->rect.size.x, (float)newrect.size.y / UIroot->rect.size.y));
   UIroot->rect.pos.assign((float)newrect.pos.x, (float)newrect.pos.y);
 
   SysH->setRect(newrect, scr_size.y);
