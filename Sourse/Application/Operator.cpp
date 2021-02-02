@@ -274,13 +274,14 @@ void AddPlane_ecec(Seance* C, Operator* op) {
 
   Trig* trig = NEW_DBG(Trig) Trig();
   trig->V0.assign(0, 0, -1);
-  trig->V1.assign(1, 0, -1);
+  trig->V1.assign(1, 1, -1);
   trig->V2.assign(0, 1, -1);
 
   mesh->Trigs.add(trig);
 
   Object* CamObj = NEW_DBG(Object) Object();
   C->project.collection.add(CamObj);
+  CamObj->Pos.z += 2;
 
   Camera* cam = NEW_DBG(Camera) Camera();
   cam->Lens.setVal(1);
