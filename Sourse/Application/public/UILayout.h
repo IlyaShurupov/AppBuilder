@@ -10,13 +10,6 @@ enum struct UIstate {
   LEAVED,
 };
 
-enum struct UIAttachCorner {
-  TOPLEFT = 0,
-  BOTTOMLEFT,
-  BOTTOMRIGGHT,
-  TOPRIGHT,
-};
-
 struct Wrap {
   struct UIItem* rig = nullptr;
   struct UIItem* top = nullptr;
@@ -42,7 +35,7 @@ struct UIItem {
   Rect<float> prev_rect;
   vec2<SCR_UINT> minsize;
   vec2<bool> rigid;
-  UIAttachCorner crnr;
+  vec2<bool> inv_pos;
   Wrap wrap;
   char flag = 0;
 
@@ -51,7 +44,7 @@ struct UIItem {
   FBuff<RGBA_32> *buff = nullptr;
 
   // User difined callbacks wrapers
-  void Resize(vec2<float>& rescale);
+  void Resize(float rescale, bool dir);
   void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void Draw(UIItem* project_to);
 
@@ -61,6 +54,7 @@ struct UIItem {
   void* CustomData = nullptr;
 
   void update_neighbors(bool recursive);
+  void update_buff(bool recursive);
 };
 
 UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* parent);
