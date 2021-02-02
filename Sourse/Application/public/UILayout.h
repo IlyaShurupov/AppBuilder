@@ -18,10 +18,10 @@ enum struct UIAttachCorner {
 };
 
 struct Wrap {
-  struct UIItem* top = nullptr;
-  struct UIItem* bot = nullptr;
-  struct UIItem* lef = nullptr;
   struct UIItem* rig = nullptr;
+  struct UIItem* top = nullptr;
+  struct UIItem* lef = nullptr;
+  struct UIItem* bot = nullptr;
 };
 
 struct UIItem {

@@ -40,6 +40,8 @@ class vec2 {
   bool operator>=(vec2<Type>& vec);
   bool operator==(vec2<Type> &vec);
 
+  Type& operator[](bool axes);
+
   // Vector Properties
   float Dot(vec2& vec);
   float Length();
@@ -209,6 +211,12 @@ inline vec2<Type> vec2<Type>::Dir() {
 template <typename Type>
 inline void vec2<Type>::Normalize() {
   *this /= (Type)this->Length();
+}
+
+
+template <typename Type>
+inline Type& vec2<Type>::operator[](bool axes) {
+  return (&x)[axes];
 }
 
 // Vector Transformation

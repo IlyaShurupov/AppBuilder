@@ -75,8 +75,8 @@ void InitCycle(CycleData& CData, RenderSettings* settings, FBuff<RGBA_32>* Buff)
   CData.y_passes = (SCR_UINT)floor(Buff->size.y / pxl_size);
   CData.x_passes = (SCR_UINT)floor(Buff->size.x / pxl_size);
 
-  CData.step_x = Rotation->I * (cam_x / CData.x_passes) + 1;
-  CData.step_y = Rotation->J * (-cam_y / CData.y_passes) + 1;
+  CData.step_x = Rotation->I * (cam_x / CData.x_passes);
+  CData.step_y = Rotation->J * (-cam_y / CData.y_passes);
 
   cam->getWorldLocation(CData.CamRay.Pos);
 

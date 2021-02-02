@@ -27,3 +27,5 @@ typedef int SCR_UINT;
 #define LLONG_MAX     9223372036854775807i64
 #define LLONG_MIN   (-9223372036854775807i64 - 1)
 #define ULLONG_MAX    0xffffffffffffffffui64
+
+#define OFFSET(first, offset) (*((&first) + offset))

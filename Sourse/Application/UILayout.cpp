@@ -106,57 +106,72 @@ void UIItem::Resize(vec2<float>& rescale) {
   }
 
   prev_rect = rect;
-  Rect<float>& prnt_rec = hierarchy.parent->rect;
+  Rect<float>& prnt_rec = hierarchy.parent ? hierarchy.parent->rect : rect;
 
-  if (!rigid.x) {
+  for (char dir = 0; dir <= 1; dir++) {
 
-    /*
-    UIItem* right = wrap.rig;
-    UIItem* left = wrap.lef;
+    if (!rigid[dir]) {
+      UIItem* bounds[2] = {OFFSET(wrap.rig, dir), OFFSET(wrap.rig, dir + 2)};
 
-    while (right) {
-      if (right->rs_type != UIResize::FOLLOW && right->rs_type != UIResize::FOLLOW_X) {
-        right = right->wrap.rig;
-        break;
+      for (char axes = 0; axes <= 1; axes++) {
+        while (bounds[axes]) {
+          if (bounds[axes]->rigid[dir]) {
+            break;
+          }
+          bounds[axes] = OFFSET(bounds[axes]->wrap.rig, dir + (char)(2 * axes));
+        }
       }
-      right = right->wrap.rig;
-    }
 
-    while (left) {
-      if (left->rs_type != UIResize::FOLLOW && left->rs_type != UIResize::FOLLOW_X) {
-        left = left->wrap.lef;
-        break;
+      if ((bounds[0] && bounds[0]->rigid[dir] && !bounds[0]->hide) || (bounds[1] && bounds[1]->rigid[dir]) && !bounds[1]->hide) {
+
+        float pls_dir_pos[2];
+        float mns_dir_pos[2];
+
+        if (bounds[0] && bounds[0]->rigid[dir] && !bounds[0]->hide) {
+          pls_dir_pos[0] = bounds[0]->rect.pos[dir] + (bounds[0]->rect.size[dir] * (!dir));
+          pls_dir_pos[1] = bounds[0]->prev_rect.pos[dir] + (bounds[0]->prev_rect.size[dir] * (!dir));
+        } else {
+          pls_dir_pos[0] = pls_dir_pos[1] = prnt_rec.size[dir] * (!dir);
+        }
+
+        if (bounds[1] && bounds[1]->rigid[dir] && !bounds[1]->hide) {
+          mns_dir_pos[0] = bounds[1]->rect.pos[dir] + (bounds[1]->rect.size[dir] * (!dir));
+          mns_dir_pos[1] = bounds[1]->prev_rect.pos[dir] + (bounds[1]->prev_rect.size[dir] * (!dir));
+        } else {
+          mns_dir_pos[0] = mns_dir_pos[1] = prnt_rec.size[dir] * (!dir);
+        }
+
+        float pls_fac = (pls_dir_pos[0] - mns_dir_pos[1]) / (pls_dir_pos[1] - mns_dir_pos[1]);
+        float mns_fac = (pls_dir_pos[1] - mns_dir_pos[0]) / (pls_dir_pos[1] - mns_dir_pos[1]);
+
+        rect.pos[dir] -= mns_dir_pos[1];
+        float pls_width = (rect.size[dir] + rect.pos[dir]) * pls_fac;
+        rect.pos[dir] *= pls_fac;
+        rect.size[dir] = pls_width - rect.pos[dir];
+        rect.pos[dir] += mns_dir_pos[1];
+
+        float d1 = (pls_dir_pos[0] - (rect.pos[dir] + rect.size[dir])) * mns_fac;
+        float d2 = (pls_dir_pos[0] - rect.pos[dir]) * mns_fac;
+        float pos = pls_dir_pos[0] - d2;
+        rect.size[dir] = pls_dir_pos[0] - rect.pos[dir] - d1;
+        rect.pos[dir] = pos;
+
+      } else {
+        float width = (rect.size[dir] + rect.pos[dir]) * rescale[dir];
+        rect.pos[dir] *= rescale[dir];
+        rect.size[dir] = width - rect.pos[dir];
       }
-      left = left->wrap.lef;
     }
-
-    if (right) {
-
-    }
-    if (left) {
-
-    }
-    */
-
-    float width = (rect.size.x + rect.pos.x) * rescale.x;
-    rect.pos.x *= rescale.x;
-    rect.size.x = width - rect.pos.x;
-  }
-
-  if (!rigid.y) {
-    float height = (rect.size.y + rect.pos.y) * rescale.y;
-    rect.pos.y *= rescale.y;
-    rect.size.y = height - rect.pos.y;
   }
 
   if (rigid.x || rigid.y) {
     if (crnr == UIAttachCorner::BOTTOMRIGGHT || crnr == UIAttachCorner::TOPRIGHT) {
-      float dx = prnt_rec.size.x * (1 - (1 / rescale.x));
+      float dx = prnt_rec.size.x - hierarchy.parent->prev_rect.size.x;
       rect.pos.x += dx;
     }
 
     if (crnr == UIAttachCorner::TOPLEFT || crnr == UIAttachCorner::TOPRIGHT) {
-      float dy = prnt_rec.size.y * (1 - (1 / rescale.y));
+      float dy = prnt_rec.size.y - hierarchy.parent->prev_rect.size.y;
       rect.pos.y += dy;
     }
   }
@@ -179,16 +194,16 @@ void UIItem::Resize(vec2<float>& rescale) {
 
   vec2<float> chld_rscl(rect.size.x / prev_rect.size.x, rect.size.y / prev_rect.size.y);
 
-  /*
   FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
-    if (child_node->Data->rs_type != UIResize::FOLLOW) {
+    if (child_node->Data->rigid.y || child_node->Data->rigid.x) {
       child_node->Data->Resize(chld_rscl);
     }
   }
-  */
 
   FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
+    if (!(child_node->Data->rigid.x || child_node->Data->rigid.y)) {
       child_node->Data->Resize(chld_rscl);
+    }
   }
 
   redraw = true;
@@ -436,7 +451,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), operators, vec2<bool>(0, 0), UIAttachCorner::BOTTOMLEFT);
 
-  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(242, 262), operators, &Str("Add Plane"), vec2<bool>(1, 1), UIAttachCorner::TOPRIGHT);
+  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), UIAttachCorner::TOPRIGHT);
 
   short width = 25;
   short border = 10;
