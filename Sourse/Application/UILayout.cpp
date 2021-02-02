@@ -120,20 +120,22 @@ void UIItem::Resize(float rescale, bool dir) {
         UIrigid = OFFSET(UIrigid->wrap.rig, dir + offset);
       }
 
+      bool vanish = dir ? (bool)offset : !(bool)offset;
+
       if (UIrigid && UIrigid->rigid[dir] && !UIrigid->hide) {
-        bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * (bool)offset);
-        bnds[1] = UIrigid->prev_rect.pos[dir] + (UIrigid->prev_rect.size[dir] * (bool)offset);
+        bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * vanish);
+        bnds[1] = UIrigid->prev_rect.pos[dir] + (UIrigid->prev_rect.size[dir] * vanish);
 
       } else {
-        bnds[0] = prnt_rec->size[dir] * (bool)offset;
-        bnds[1] = prnt_p_rec->size[dir] * (bool)offset;
+        bnds[0] = prnt_rec->size[dir] * vanish;
+        bnds[1] = prnt_p_rec->size[dir] * vanish;
       }
     }
 
     for (char plus = 0; plus <= 1; plus++) {
       fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
     }
-
+    
     rect.pos[dir] -= bounds[1];
     float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[0];
     rect.pos[dir] *= fac[0];
@@ -151,8 +153,11 @@ void UIItem::Resize(float rescale, bool dir) {
 
   // Hide if overlaped or min size triggered
   if (rigid.x || rigid.y) {
-    if (hide = !rect.enclosed_in(*prnt_rec, true) && buff) {
-      buff->free();
+
+    hide = !rect.enclosed_in(*prnt_rec, true);
+
+    if (hide && buff) {
+       buff->free();
     }
   }
 
@@ -439,5 +444,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
   ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
 
   UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 150, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
+  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(700, 100, 50, 200), "bottom bar", vec2<bool>(1, 0), vec2<bool>(1, 0));
+  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 50, 200), "bottom bar", vec2<bool>(1, 0), vec2<bool>(0, 0));
   return UIroot;
 }
