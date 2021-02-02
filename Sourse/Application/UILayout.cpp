@@ -8,7 +8,8 @@
 
 UIItem::UIItem(vec2<SCR_UINT>* size) {
 
-  rs_type = UIResizeType::NONE;
+  flag = 0;
+  rigid.assign(false, false);
   state = UIstate::NONE;
   crnr = UIAttachCorner::BOTTOMLEFT;
   ProcBody = nullptr;
@@ -107,14 +108,14 @@ void UIItem::Resize(vec2<float>& rescale) {
   prev_rect = rect;
   Rect<float>& prnt_rec = hierarchy.parent->rect;
 
-  if (rs_type == UIResizeType::FOLLOW || rs_type == UIResizeType::FOLLOW_X) {
+  if (!rigid.x) {
 
     /*
     UIItem* right = wrap.rig;
     UIItem* left = wrap.lef;
 
     while (right) {
-      if (right->rs_type != UIResizeType::FOLLOW && right->rs_type != UIResizeType::FOLLOW_X) {
+      if (right->rs_type != UIResize::FOLLOW && right->rs_type != UIResize::FOLLOW_X) {
         right = right->wrap.rig;
         break;
       }
@@ -122,7 +123,7 @@ void UIItem::Resize(vec2<float>& rescale) {
     }
 
     while (left) {
-      if (left->rs_type != UIResizeType::FOLLOW && left->rs_type != UIResizeType::FOLLOW_X) {
+      if (left->rs_type != UIResize::FOLLOW && left->rs_type != UIResize::FOLLOW_X) {
         left = left->wrap.lef;
         break;
       }
@@ -142,13 +143,13 @@ void UIItem::Resize(vec2<float>& rescale) {
     rect.size.x = width - rect.pos.x;
   }
 
-  if (rs_type == UIResizeType::FOLLOW || rs_type == UIResizeType::FOLLOW_Y) {
+  if (!rigid.y) {
     float height = (rect.size.y + rect.pos.y) * rescale.y;
     rect.pos.y *= rescale.y;
     rect.size.y = height - rect.pos.y;
   }
 
-  if (rs_type != UIResizeType::FOLLOW) {
+  if (rigid.x || rigid.y) {
     if (crnr == UIAttachCorner::BOTTOMRIGGHT || crnr == UIAttachCorner::TOPRIGHT) {
       float dx = prnt_rec.size.x * (1 - (1 / rescale.x));
       rect.pos.x += dx;
@@ -161,7 +162,7 @@ void UIItem::Resize(vec2<float>& rescale) {
   }
 
   if (hierarchy.parent) {
-    if (rs_type != UIResizeType::FOLLOW) {
+    if (rigid.x || rigid.y) {
       hide = false;
       if (rect.pos.x + rect.size.x > prnt_rec.size.x || rect.pos.y + rect.size.y > prnt_rec.size.y || rect.pos.x < 0 || rect.pos.y < 0) {
         hide = true;
@@ -180,7 +181,7 @@ void UIItem::Resize(vec2<float>& rescale) {
 
   /*
   FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
-    if (child_node->Data->rs_type != UIResizeType::FOLLOW) {
+    if (child_node->Data->rs_type != UIResize::FOLLOW) {
       child_node->Data->Resize(chld_rscl);
     }
   }
@@ -276,12 +277,12 @@ void button_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, 1);
 }
 
-UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname, UIResizeType rs_type, UIAttachCorner crnr) {
+UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, UIAttachCorner crnr) {
 
   UIItem* button = NEW_DBG(UIItem) UIItem(nullptr);
 
   button->hierarchy.join(parent);
-
+  button->rigid = rs_type;
   button->ownbuff = false;
   button->DrawBody = button_draw;
   button->ProcBody = button_proc;
@@ -330,7 +331,7 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
 void region_draw(UIItem* This, UIItem* project_to) {}
 
-UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators, UIResizeType rs_type, UIAttachCorner crnr) {
+UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators, vec2<bool> rs_type, UIAttachCorner crnr) {
 
 
   UIItem* region = NEW_DBG(UIItem) UIItem(&rect.size);
@@ -344,7 +345,7 @@ UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* opera
   region->rect.size.assign((float)rect.size.x, (float)rect.size.y);
   region->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
 
-  region->rs_type = rs_type;
+  region->rigid = rs_type;
 
   // own
   Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
@@ -379,7 +380,7 @@ void area_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
-UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name, UIResizeType rs_type, UIAttachCorner crnr) {
+UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name, vec2<bool> rs_type, UIAttachCorner crnr) {
 
   UIItem* Area = NEW_DBG(UIItem) UIItem(nullptr);
 
@@ -389,7 +390,7 @@ UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name, UIResizeType 
   Area->DrawBody = area_draw;
   Area->ProcBody = area_proc;
   Area->idname = name;
-  Area->rs_type = rs_type;
+  Area->rigid = rs_type;
   Area->crnr = crnr;
   Area->rect.size.assign((float)rect.size.x, (float)rect.size.y);
   Area->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
@@ -414,7 +415,7 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
   UIroot->ProcBody = Uiproc;
   UIroot->DrawBody = UIdraw;
-  UIroot->rs_type = UIResizeType::FOLLOW;
+  UIroot->rigid.assign(false, false);
   UIroot->crnr = UIAttachCorner::BOTTOMLEFT;
   UIroot->rect.size.assign((float)rect.size.x, (float)rect.size.y);
   UIroot->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
@@ -431,19 +432,19 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600));
 
-  UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(100, 100, 300, 300), "View3d", UIResizeType::FOLLOW, UIAttachCorner::TOPRIGHT);
+  UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(100, 100, 300, 300), "View3d", vec2<bool>(0, 0), UIAttachCorner::TOPRIGHT);
 
-  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), operators, UIResizeType::FOLLOW, UIAttachCorner::BOTTOMLEFT);
+  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), operators, vec2<bool>(0, 0), UIAttachCorner::BOTTOMLEFT);
 
-  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(242, 262), operators, &Str("Add Plane"), UIResizeType::NONE, UIAttachCorner::TOPRIGHT);
+  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(242, 262), operators, &Str("Add Plane"), vec2<bool>(1, 1), UIAttachCorner::TOPRIGHT);
 
   short width = 25;
   short border = 10;
   Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, (SCR_UINT)UIroot->rect.size.y - width - border, (SCR_UINT)UIroot->rect.size.x - border * 2, width);
-  UIItem* Area2 = ui_add_area(UIroot, rect, "topbar", UIResizeType::FOLLOW_X, UIAttachCorner::TOPLEFT);
+  UIItem* Area2 = ui_add_area(UIroot, rect, "topbar", vec2<bool>(0, 1), UIAttachCorner::TOPLEFT);
 
-  ui_add_button(Area2, vec2<SCR_UINT>(3, 3), operators, &Str("Toggle Console"), UIResizeType::NONE, UIAttachCorner::BOTTOMLEFT);
-  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 1, 3), operators, &Str("End Seance"), UIResizeType::NONE, UIAttachCorner::BOTTOMLEFT);
-  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), UIResizeType::NONE, UIAttachCorner::BOTTOMLEFT);
+  ui_add_button(Area2, vec2<SCR_UINT>(3, 3), operators, &Str("Toggle Console"), vec2<bool>(1, 1), UIAttachCorner::BOTTOMLEFT);
+  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 1, 3), operators, &Str("End Seance"), vec2<bool>(1, 1), UIAttachCorner::BOTTOMLEFT);
+  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), UIAttachCorner::BOTTOMLEFT);
   return UIroot;
 }

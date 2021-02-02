@@ -55,13 +55,19 @@ struct Rect {
   inline bool left(Rect<Type>& rect) { return (rect.pos.x + rect.size.x < pos.x); }
 
   inline bool intersect_y(Rect<Type>& rect) { 
-    return ((rect.pos.x > pos.x && rect.pos.x < pos.x + size.x) ||
-            (rect.pos.x + rect.size.x > pos.x && rect.pos.x + rect.size.x > pos.x < pos.x + size.x));
+    if (rect.pos.x > pos.x && rect.pos.x < pos.x + size.x)
+      return true;
+    if (rect.pos.x + rect.size.x > pos.x && rect.pos.x + rect.size.x < pos.x + size.x)
+      return true;
+    return false;
   }
 
   inline bool intersect_x(Rect<Type>& rect) {
-    return ((rect.pos.y > pos.y && rect.pos.y < pos.y + size.y) ||
-            (rect.pos.y + rect.size.y > pos.y && rect.pos.y + rect.size.y > pos.y < pos.y + size.y));
+    if (rect.pos.y > pos.y && rect.pos.y < pos.y + size.y)
+      return true;
+    if (rect.pos.y + rect.size.y > pos.y && rect.pos.y + rect.size.y < pos.y + size.y)
+      return true;
+    return false;
   }
 };
 

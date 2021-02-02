@@ -10,13 +10,6 @@ enum struct UIstate {
   LEAVED,
 };
 
-enum struct UIResizeType {
-  NONE = 0,
-  FOLLOW,
-  FOLLOW_X,
-  FOLLOW_Y,
-};
-
 enum struct UIAttachCorner {
   TOPLEFT = 0,
   BOTTOMLEFT,
@@ -48,10 +41,10 @@ struct UIItem {
   Rect<float> rect;
   Rect<float> prev_rect;
   vec2<SCR_UINT> minsize;
-  UIResizeType rs_type;
+  vec2<bool> rigid;
   UIAttachCorner crnr;
   Wrap wrap;
-  char flag;
+  char flag = 0;
 
   // Draw info
   bool ownbuff = true;
