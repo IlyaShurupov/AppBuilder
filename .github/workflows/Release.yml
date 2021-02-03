@@ -11,14 +11,41 @@ jobs:
     runs-on: "windows-latest"
 
     steps:
-      # ...
+
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+      
+      - name: Build_Debug
+        uses: nicledomaS/cmake_build_action@v1.3
+        with:
+          submodule_update: ON
+          run_tests: ON
+          unit_test_build: -Dtest=ON
+
+      - name: Build_Release
+        uses: nicledomaS/cmake_build_action@v1.3
+        with:
+          submodule_update: ON
+          run_tests: ON
+          unit_test_build: -Dtest=ON
+
       - name: "Build & test"
         run: |
           echo "done!"
 
-      - uses: "marvinpinto/action-automatic-releases@latest"
+#      - uses: "marvinpinto/action-automatic-releases@latest"
+#        with:
+#          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+#          automatic_release_tag: "stable"
+#          prerelease: false
+#          title: "Stable"
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: false
-          title: "Stable"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: D:/a/Gamuncool/Gamuncool/build/bin
+          asset_name: Binaries
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Application Binaries"
