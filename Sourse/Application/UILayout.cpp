@@ -120,22 +120,23 @@ void UIItem::Resize(float rescale, bool dir) {
         UIrigid = OFFSET(UIrigid->wrap.rig, dir + offset);
       }
 
-      bool vanish = dir ? (bool)offset : !(bool)offset;
+      bool vanish = (bool)offset;
+      // bool vanish = dir ? !(bool)offset : (bool)offset;
 
       if (UIrigid && UIrigid->rigid[dir] && !UIrigid->hide) {
         bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * vanish);
         bnds[1] = UIrigid->prev_rect.pos[dir] + (UIrigid->prev_rect.size[dir] * vanish);
 
       } else {
-        bnds[0] = prnt_rec->size[dir] * vanish;
-        bnds[1] = prnt_p_rec->size[dir] * vanish;
+        bnds[0] = prnt_rec->size[dir] * !vanish;
+        bnds[1] = prnt_p_rec->size[dir] * !vanish;
       }
     }
 
     for (char plus = 0; plus <= 1; plus++) {
       fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
     }
-    
+
     rect.pos[dir] -= bounds[1];
     float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[0];
     rect.pos[dir] *= fac[0];
@@ -157,7 +158,7 @@ void UIItem::Resize(float rescale, bool dir) {
     hide = !rect.enclosed_in(*prnt_rec, true);
 
     if (hide && buff) {
-       buff->free();
+      buff->free();
     }
   }
 
@@ -183,11 +184,6 @@ SKIP:
 
 void UIItem::update_neighbors(bool recursive) {
 
-  float dist_t = FLT_MAX;
-  float dist_b = FLT_MAX;
-  float dist_l = FLT_MAX;
-  float dist_r = FLT_MAX;
-
   FOREACH(&hierarchy.childs, UIItem, ui_node) {
     for (char i = 0; i < 4; i++) {
       OFFSET(ui_node->Data->wrap.rig, i) = nullptr;
@@ -201,34 +197,55 @@ void UIItem::update_neighbors(bool recursive) {
       continue;
     }
 
-    FOREACH(&hierarchy.childs, UIItem, ui_node) {
-      Rect<float>& i_rec = ui_node->Data->rect;
+    float dist_t = FLT_MAX;
+    float dist_b = FLT_MAX;
+    float dist_l = FLT_MAX;
+    float dist_r = FLT_MAX;
 
+    FOREACH(&hierarchy.childs, UIItem, ui_node) {
+
+      if (ui_node == cld_node) {
+        continue;
+      }
+
+      Rect<float>& i_rec = ui_node->Data->rect;
       bool intr_y = cld.rect.intersect_y(i_rec);
       bool intr_x = cld.rect.intersect_x(i_rec);
 
       if (intr_y) {
-        if (!cld.wrap.top && cld.rect.above(i_rec) && dist_t > cld.rect.pos.y + cld.rect.size.y - i_rec.pos.y) {
 
+        float dist = i_rec.pos.y - (cld.rect.pos.y + cld.rect.size.y);
+
+        if (!cld.wrap.top && cld.rect.above(i_rec) && dist_t > dist) {
           cld.wrap.top = ui_node->Data;
-          ui_node->Data->wrap.bot = &cld;
+          dist_t = dist;
+        } else {
 
-        } else if (!cld.wrap.bot && cld.rect.bellow(i_rec) && dist_b > cld.rect.pos.y - i_rec.pos.y + i_rec.size.y) {
+          dist = cld.rect.pos.y - (i_rec.pos.y + i_rec.size.y);
 
-          cld.wrap.bot = ui_node->Data;
-          ui_node->Data->wrap.top = &cld;
+          if (!cld.wrap.bot && cld.rect.bellow(i_rec) && dist_b > dist) {
+            dist_b = cld.rect.pos.y - i_rec.pos.y + i_rec.size.y;
+            cld.wrap.bot = ui_node->Data;
+            dist_b = dist;
+          }
         }
 
       } else if (intr_x) {
-        if (!cld.wrap.rig && cld.rect.right(i_rec) && dist_r > cld.rect.pos.x + cld.rect.size.x - i_rec.pos.x) {
 
+        float dist = i_rec.pos.x - (cld.rect.pos.x + cld.rect.size.x);
+
+        if (!cld.wrap.rig && cld.rect.right(i_rec) && dist_r > dist) {
           cld.wrap.rig = ui_node->Data;
-          ui_node->Data->wrap.lef = &cld;
+          dist_r = dist;
 
-        } else if (!cld.wrap.lef && cld.rect.left(i_rec) && dist_l > cld.rect.pos.x - i_rec.pos.x + i_rec.size.x) {
+        } else {
 
-          cld.wrap.lef = ui_node->Data;
-          ui_node->Data->wrap.rig = &cld;
+          dist = cld.rect.pos.x - (i_rec.pos.x + i_rec.size.x);
+
+          if (!cld.wrap.lef && cld.rect.left(i_rec) && dist_l > dist) {
+            cld.wrap.lef = ui_node->Data;
+            dist_l = dist;
+          }
         }
       }
 
@@ -443,8 +460,8 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
   ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 1, 3), operators, &Str("End Seance"), vec2<bool>(1, 1), vec2<bool>(0, 0));
   ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
 
-  UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 150, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
-  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(700, 100, 50, 200), "bottom bar", vec2<bool>(1, 0), vec2<bool>(1, 0));
-  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 50, 200), "bottom bar", vec2<bool>(1, 0), vec2<bool>(0, 0));
+  UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
+  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 100, 200, 200), "rught", vec2<bool>(1, 0), vec2<bool>(1, 0));
+  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 60, 200), "left", vec2<bool>(1, 0), vec2<bool>(0, 0));
   return UIroot;
 }
