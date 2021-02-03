@@ -22,7 +22,7 @@ struct UIItem {
   UIItem(vec2<SCR_UINT>* size);
   ~UIItem();
 
-  Hierarchy<UIItem, List<UIItem>, 0> hierarchy;
+  Hierarchy<UIItem, List<UIItem>, 0> hrchy;
   Str idname;
 
   // Event info
@@ -31,7 +31,7 @@ struct UIItem {
 
   // Edit info
   bool hide = false;
-  Rect<float> rect; 
+  Rect<float> rect;
   Rect<float> prev_rect;
   vec2<SCR_UINT> minsize;
   vec2<bool> rigid;
@@ -41,20 +41,26 @@ struct UIItem {
 
   // Draw info
   bool ownbuff = true;
-  FBuff<RGBA_32> *buff = nullptr;
+  FBuff<RGBA_32>* buff = nullptr;
 
   // User difined callbacks wrapers
-  void Resize(float rescale, bool dir);
+  void Resize(Rect<float>& newrect);
   void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  void (*ProcBody)(UIItem *This, List<OpThread>* op_threads, struct UserInputs *user_inputs, vec2<SCR_UINT> &loc_cursor, Seance* C);
+  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
   void* CustomData = nullptr;
 
+ private:
+  void resize_discard(bool dir);
+  bool resize_dir(float rescale, bool dir);
   void update_neighbors(bool recursive);
   void update_buff(bool recursive);
+  void ResizeBody(Rect<float>& out, bool dir);
+  void clear_flags();
+  void save_config();
 };
 
-UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* parent);
+UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* prnt);

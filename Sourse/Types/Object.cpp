@@ -45,10 +45,10 @@ RenderSettings* Object::GetRenderComponent() {
 
 void Object::getWorldLocation(Vec3f& out) {
   out.assign(Pos);
-  Object* parent = hrchy.parent;
+  Object* parent = hrchy.prnt;
   while (parent) {
     out += parent->Pos;
-    parent = parent->hrchy.parent;
+    parent = parent->hrchy.prnt;
   }
 }
 

@@ -181,11 +181,11 @@ void FBuff<Color_t>::DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thic
 template <typename Color_t>
 Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
 
-  if (!local_hrchy.parent) {
+  if (!local_hrchy.prnt) {
     return pxls + (__int64)size.x * y + x;
   }
 
-  return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + x + pos.x;
+  return local_hrchy.prnt->pxls + *root_width * ((__int64)y + pos.y) + x + pos.x;
 }
 
 template <typename Color_t>
@@ -209,7 +209,7 @@ void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
 
   local_hrchy.childs.add(&out);
 
-  out.local_hrchy.parent = this;
+  out.local_hrchy.prnt = this;
 
   FBuff* root = local_hrchy.root();
 

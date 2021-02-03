@@ -19,7 +19,7 @@ UIItem::UIItem(vec2<SCR_UINT>* size) {
 }
 
 UIItem::~UIItem() {
-  hierarchy.childs.del();
+  hrchy.childs.del();
   if (buff) {
     DELETE_DBG(FBuff<RGBA_32>, buff);
   }
@@ -58,7 +58,7 @@ void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_input
   }
 
   if (redraw) {
-    FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
+    FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
       vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
       child_node->Data->ProcEvent(op_threads, user_inputs, (cursor - pos), C);
     }
@@ -71,7 +71,7 @@ void UIItem::Draw(UIItem* project_to) {
 
   IF(DrawBody, DrawBody(this, project_to));
 
-  FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
+  FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
 
     if (ownbuff) {
       child_node->Data->Draw(this);
@@ -90,23 +90,98 @@ void UIItem::Draw(UIItem* project_to) {
   redraw = false;
 }
 
-void UIItem::Resize(float rescale, bool dir) {
+void UIItem::Resize(Rect<float>& newrect) {
+  update_neighbors(true);
+  save_config();
+  if (resize_dir(newrect.size.y / rect.size.y, 1)) {
+    rect.pos.y = newrect.pos.y;
+  }  
+  if (resize_dir(newrect.size.x / rect.size.x, 0)) {
+    rect.pos.x = newrect.pos.x; 
+  }
+  update_buff(true);
+}
 
-  if (!hierarchy.parent) {
-    prev_rect.size[dir] = rect.size[dir];
+bool UIItem::resize_dir(float rescale, bool dir) {
+
+  prev_rect.size[dir] = rect.size[dir];
+  prev_rect.pos[dir] = rect.pos[dir];
+
+  if (!hrchy.prnt) {
+    
     rect.size[dir] *= rescale;
-    goto SKIP;
+    
+  } else {
+
+    ResizeBody(rect, dir);   
+
+    // Hide if overlaped or min size triggered
+    if (!rect.enclosed_in(hrchy.prnt->rect, true)) {
+      rect.size[dir] = prev_rect.size[dir];
+      rect.pos[dir] = prev_rect.pos[dir];
+      flag = 0;
+      return false;
+    }
   }
 
-  Rect<float>* prnt_p_rec = &hierarchy.parent->prev_rect;
-  Rect<float>* prnt_rec = &hierarchy.parent->rect;
+  // repead recursively
+  bool reset = false;
+  float chld_rscl = rect.size[dir] / prev_rect.size[dir];
+
+  FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
+    if (child_node->Data->rigid[dir]) {
+      if (!child_node->Data->resize_dir(chld_rscl, dir)) {
+        reset = true;
+        break;
+      }
+    }
+  }
+
+  if (!reset) {
+    FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
+      if (!(child_node->Data->rigid[dir])) {
+        if (!child_node->Data->resize_dir(chld_rscl, dir)) { 
+          reset = true;
+          break;
+        }
+      }
+    }
+  }
+
+  if (reset) { 
+    resize_discard(dir);
+    return false;
+  }
+
+  redraw = true;
+  flag = 1;
+  return true;
+}
+
+void UIItem::resize_discard(bool dir) {
+  FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
+    if (child_node->Data->flag == 1) {
+      child_node->Data->resize_discard(dir);
+      child_node->Data->rect.pos[dir] = child_node->Data->prev_rect.pos[dir];
+      child_node->Data->rect.size[dir] = child_node->Data->prev_rect.size[dir];
+      flag = 0;
+    }
+  }
+
+  rect.size[dir] = prev_rect.size[dir];
+  rect.pos[dir] = prev_rect.pos[dir];
+  flag = 0;
+}
+
+void UIItem::ResizeBody(Rect<float>& out, bool dir) {
+
+  Rect<float>* prnt_p_rec = &hrchy.prnt->prev_rect;
+  Rect<float>* prnt_rec = &hrchy.prnt->rect;
   float bounds[4];
   UIItem* UIrigid;
   float* bnds;
 
   float fac[2];
-
-  prev_rect = rect;
 
   if (!rigid[dir]) {
 
@@ -136,61 +211,32 @@ void UIItem::Resize(float rescale, bool dir) {
       fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
     }
 
-    rect.pos[dir] -= bounds[3];
-    float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[1];
-    rect.pos[dir] *= fac[1];
-    rect.size[dir] = pls_width - rect.pos[dir];
-    rect.pos[dir] += bounds[3];
+    out.pos[dir] -= bounds[3];
+    float pls_width = (out.size[dir] + out.pos[dir]) * fac[1];
+    out.pos[dir] *= fac[1];
+    out.size[dir] = pls_width - out.pos[dir];
+    out.pos[dir] += bounds[3];
 
-    float d1 = ((bounds + 2)[0] - (rect.pos[dir] + rect.size[dir])) * fac[0];
-    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - rect.pos[dir]) * fac[0];
-    rect.size[dir] = (bounds + 2)[0] - rect.pos[dir] - d1;
-    rect.pos[dir] = pos;
+    float d1 = ((bounds + 2)[0] - (out.pos[dir] + out.size[dir])) * fac[0];
+    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - out.pos[dir]) * fac[0];
+    out.size[dir] = (bounds + 2)[0] - out.pos[dir] - d1;
+    out.pos[dir] = pos;
 
   } else if (inv_pos[dir]) {
-    rect.pos[dir] += prnt_rec->size[dir] - hierarchy.parent->prev_rect.size[dir];
+    out.pos[dir] += prnt_rec->size[dir] - hrchy.prnt->prev_rect.size[dir];
   }
-
-  // Hide if overlaped or min size triggered
-  if (rigid.x || rigid.y) {
-
-    hide = !rect.enclosed_in(*prnt_rec, true);
-
-    if (hide && buff) {
-      buff->free();
-    }
-  }
-
-SKIP:
-
-  // repead recursively
-  float chld_rscl = rect.size[dir] / prev_rect.size[dir];
-
-  FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
-    if (child_node->Data->rigid[dir]) {
-      child_node->Data->Resize(chld_rscl, dir);
-    }
-  }
-
-  FOREACH_NODE(UIItem, (&hierarchy.childs), child_node) {
-    if (!(child_node->Data->rigid[dir])) {
-      child_node->Data->Resize(chld_rscl, dir);
-    }
-  }
-
-  redraw = true;
 }
 
 void UIItem::update_neighbors(bool recursive) {
 
-  FOREACH(&hierarchy.childs, UIItem, ui_node) {
-    for (char i = 0; i < 4; i++) {
-      OFFSET(ui_node->Data->wrap.rig, i) = nullptr;
-    }
-  }
 
-  FOREACH(&hierarchy.childs, UIItem, cld_node) {
+  FOREACH(&hrchy.childs, UIItem, cld_node) {
     UIItem& cld = *cld_node->Data;
+
+    cld_node->Data->flag = 0;
+    for (char i = 0; i < 4; i++) {
+      OFFSET(cld_node->Data->wrap.rig, i) = nullptr;
+    }
 
     if (cld.wrap.top && cld.wrap.bot && cld.wrap.lef && cld.wrap.rig) {
       continue;
@@ -201,47 +247,45 @@ void UIItem::update_neighbors(bool recursive) {
     float dist_l = FLT_MAX;
     float dist_r = FLT_MAX;
 
-    FOREACH(&hierarchy.childs, UIItem, ui_node) {
+    FOREACH(&hrchy.childs, UIItem, ui_node) {
 
       if (ui_node == cld_node) {
         continue;
       }
 
-      Rect<float>& i_rec = ui_node->Data->rect;
-      bool intr_y = cld.rect.intersect_y(i_rec);
-      bool intr_x = cld.rect.intersect_x(i_rec);
+      Rect<float>& rec = ui_node->Data->rect;
 
-      if (intr_y) {
+      if (cld.rect.intersect_y(rec)) {
 
-        float dist = i_rec.pos.y - (cld.rect.pos.y + cld.rect.size.y);
+        float dist = rec.pos.y - (cld.rect.pos.y + cld.rect.size.y);
 
-        if (!cld.wrap.top && cld.rect.above(i_rec) && dist_t > dist) {
+        if (!cld.wrap.top && cld.rect.above(rec) && dist_t > dist) {
           cld.wrap.top = ui_node->Data;
           dist_t = dist;
         } else {
 
-          dist = cld.rect.pos.y - (i_rec.pos.y + i_rec.size.y);
+          dist = cld.rect.pos.y - (rec.pos.y + rec.size.y);
 
-          if (!cld.wrap.bot && cld.rect.bellow(i_rec) && dist_b > dist) {
-            dist_b = cld.rect.pos.y - i_rec.pos.y + i_rec.size.y;
+          if (!cld.wrap.bot && cld.rect.bellow(rec) && dist_b > dist) {
+            dist_b = cld.rect.pos.y - rec.pos.y + rec.size.y;
             cld.wrap.bot = ui_node->Data;
             dist_b = dist;
           }
         }
 
-      } else if (intr_x) {
+      } else if (cld.rect.intersect_x(rec)) {
 
-        float dist = i_rec.pos.x - (cld.rect.pos.x + cld.rect.size.x);
+        float dist = rec.pos.x - (cld.rect.pos.x + cld.rect.size.x);
 
-        if (!cld.wrap.rig && cld.rect.right(i_rec) && dist_r > dist) {
+        if (!cld.wrap.rig && cld.rect.right(rec) && dist_r > dist) {
           cld.wrap.rig = ui_node->Data;
           dist_r = dist;
 
         } else {
 
-          dist = cld.rect.pos.x - (i_rec.pos.x + i_rec.size.x);
+          dist = cld.rect.pos.x - (rec.pos.x + rec.size.x);
 
-          if (!cld.wrap.lef && cld.rect.left(i_rec) && dist_l > dist) {
+          if (!cld.wrap.lef && cld.rect.left(rec) && dist_l > dist) {
             cld.wrap.lef = ui_node->Data;
             dist_l = dist;
           }
@@ -255,15 +299,24 @@ void UIItem::update_neighbors(bool recursive) {
   }
 
   if (recursive) {
-    FOREACH(&hierarchy.childs, UIItem, ui_node) { ui_node->Data->update_neighbors(recursive); }
+    FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->update_neighbors(recursive); }
   }
 }
 
 void UIItem::update_buff(bool recursive) {
   IF((ownbuff && !hide), buff->resize((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y));
-  FOREACH(&hierarchy.childs, UIItem, ui_node) { ui_node->Data->update_buff(recursive); }
+  FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->update_buff(recursive); }
 }
 
+void UIItem::clear_flags() {
+  flag = 0;
+  FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->clear_flags(); }
+}
+
+void UIItem::save_config() {
+  prev_rect = rect;
+  FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->save_config(); }
+}
 
 // ------------------------------------ User Defined  ------------------------------------------------------------- //
 
@@ -289,11 +342,11 @@ void button_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, 1);
 }
 
-UIItem* ui_add_button(UIItem* parent, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_button(UIItem* prnt, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
   UIItem* button = NEW_DBG(UIItem) UIItem(nullptr);
 
-  button->hierarchy.join(parent);
+  button->hrchy.join(prnt);
   button->rigid = rs_type;
   button->ownbuff = false;
   button->DrawBody = button_draw;
@@ -343,12 +396,12 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
 void region_draw(UIItem* This, UIItem* project_to) {}
 
-UIItem* ui_add_region(UIItem* parent, Rect<SCR_UINT> rect, List<Operator>* operators, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_region(UIItem* prnt, Rect<SCR_UINT> rect, List<Operator>* operators, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
 
   UIItem* region = NEW_DBG(UIItem) UIItem(&rect.size);
 
-  region->hierarchy.join(parent);
+  region->hrchy.join(prnt);
 
   region->ownbuff = true;
   region->DrawBody = region_draw;
@@ -392,11 +445,11 @@ void area_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
-UIItem* ui_add_area(UIItem* parent, Rect<SCR_UINT> rect, Str name, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_area(UIItem* prnt, Rect<SCR_UINT> rect, Str name, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
   UIItem* Area = NEW_DBG(UIItem) UIItem(nullptr);
 
-  Area->hierarchy.join(parent);
+  Area->hrchy.join(prnt);
 
   Area->ownbuff = false;
   Area->DrawBody = area_draw;
@@ -440,7 +493,7 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
 // ---------------------- UI compiling -------------------------  //
 
-UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
+UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* prnt) {
 
   UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600));
 
@@ -448,7 +501,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), operators, vec2<bool>(0, 0), vec2<bool>(0, 0));
 
-  UIItem* Button = ui_add_button(Area, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), vec2<bool>(1, 1));
+  UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), vec2<bool>(1, 1));
 
   short width = 25;
   short border = 10;
@@ -457,7 +510,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
 
   ui_add_button(Area2, vec2<SCR_UINT>(3, 3), operators, &Str("Toggle Console"), vec2<bool>(1, 1), vec2<bool>(0, 0));
   ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 1, 3), operators, &Str("End Seance"), vec2<bool>(1, 1), vec2<bool>(0, 0));
-  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
+  ui_add_button(Area2, vec2<SCR_UINT>(3 + 80 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
 
   UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
   UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 300, 200, 200), "right", vec2<bool>(1, 0), vec2<bool>(1, 0));
