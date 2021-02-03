@@ -1,0 +1,7 @@
+on: [push]
+name: Release Master
+
+jobs:
+  build:
+    name: Release Master
+    runs-on: ubuntu-latest
