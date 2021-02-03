@@ -9,7 +9,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
       # Cache/Restore the vcpkg's build artifacts using a vcpkg.json manifest.
@@ -31,7 +31,7 @@ jobs:
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-          cmakeListsTxtPath: '${{ github.workspace }}/Gamuncool/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
           cmakeAppendedArgs: '-GNinja'
           buildDirectory: ${{ env.BUILD_DIR }}
