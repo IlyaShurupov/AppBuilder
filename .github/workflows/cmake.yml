@@ -3,15 +3,12 @@ name: CMake Build
 on: [push, pull_request]
 
 env:
-  CMAKE_VERSION: 3.18.3
-  NINJA_VERSION: 1.10.1
   BUILD_TYPE: Release
-  CCACHE_VERSION: 3.7.7
   BUILD_DIR: '${{ github.workspace }}/build'
 
 jobs:
   build:
-    name: deploy to staging
+    name: Build
     runs-on: windows-latest
     
     steps:
@@ -34,7 +31,7 @@ jobs:
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-          cmakeListsTxtPath: '${{ github.workspace }}/cmakesettings.json/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
           cmakeAppendedArgs: '-GNinja'
           buildDirectory: ${{ env.BUILD_DIR }}
