@@ -121,7 +121,6 @@ void UIItem::Resize(float rescale, bool dir) {
       }
 
       bool vanish = (bool)offset;
-      // bool vanish = dir ? !(bool)offset : (bool)offset;
 
       if (UIrigid && UIrigid->rigid[dir] && !UIrigid->hide) {
         bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * vanish);
@@ -137,14 +136,14 @@ void UIItem::Resize(float rescale, bool dir) {
       fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
     }
 
-    rect.pos[dir] -= bounds[1];
-    float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[0];
-    rect.pos[dir] *= fac[0];
+    rect.pos[dir] -= bounds[3];
+    float pls_width = (rect.size[dir] + rect.pos[dir]) * fac[1];
+    rect.pos[dir] *= fac[1];
     rect.size[dir] = pls_width - rect.pos[dir];
-    rect.pos[dir] += bounds[1];
+    rect.pos[dir] += bounds[3];
 
-    float d1 = ((bounds + 2)[0] - (rect.pos[dir] + rect.size[dir])) * fac[1];
-    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - rect.pos[dir]) * fac[1];
+    float d1 = ((bounds + 2)[0] - (rect.pos[dir] + rect.size[dir])) * fac[0];
+    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - rect.pos[dir]) * fac[0];
     rect.size[dir] = (bounds + 2)[0] - rect.pos[dir] - d1;
     rect.pos[dir] = pos;
 
@@ -461,7 +460,7 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* parent) {
   ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
 
   UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
-  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 100, 200, 200), "rught", vec2<bool>(1, 0), vec2<bool>(1, 0));
+  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 300, 200, 200), "right", vec2<bool>(1, 0), vec2<bool>(1, 0));
   UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 60, 200), "left", vec2<bool>(1, 0), vec2<bool>(0, 0));
   return UIroot;
 }

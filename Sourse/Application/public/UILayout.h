@@ -31,7 +31,7 @@ struct UIItem {
 
   // Edit info
   bool hide = false;
-  Rect<float> rect;
+  Rect<float> rect; 
   Rect<float> prev_rect;
   vec2<SCR_UINT> minsize;
   vec2<bool> rigid;

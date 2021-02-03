@@ -42,4 +42,4 @@ typedef int SCR_UINT;
     action;                \
   }
 
-#define INRANGE(val, bd1, bd2) ((val) > (bd1) && (val) < (bd2))
+#define INRANGE(val, bd1, bd2) ((val) >= (bd1) && (val) <= (bd2))
