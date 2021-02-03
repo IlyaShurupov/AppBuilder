@@ -1,4 +1,4 @@
-name: "pre-release"
+name: "Release"
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
 
 jobs:
   pre-release:
-    name: "Pre Release"
-    runs-on: "ubuntu-latest"
+    name: "Release"
+    runs-on: "windows-latest"
 
     steps:
       # ...
@@ -20,5 +20,5 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
+          prerelease: false
+          title: "Stable"
