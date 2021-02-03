@@ -31,7 +31,7 @@ jobs:
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-          cmakeListsTxtPath: 'D:/a/Gamuncool/CMakeLists.txt'
+          cmakeListsTxtPath: '/CMakeLists.txt'
           useVcpkgToolchainFile: true
           cmakeAppendedArgs: '-GNinja'
           buildDirectory: ${{ env.BUILD_DIR }}
