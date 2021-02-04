@@ -281,10 +281,9 @@ void AddPlane_ecec(Seance* C, Operator* op) {
 
   Object* CamObj = NEW_DBG(Object) Object();
   C->project.collection.add(CamObj);
+  CamObj->Pos.z += 2;
 
   Camera* cam = NEW_DBG(Camera) Camera();
-  cam->Height.setVal(200);
-  cam->Width.setVal(200);
   cam->Lens.setVal(1);
 
   CamObj->SetCameraComponent(cam);

@@ -1,12 +1,12 @@
 #pragma once
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
 
-//#define MEM_DEBUG 
+#define MEM_DEBUG 
 
 #define MEM_DEBUG_WRAP
 
-//#endif // _DEBUG
+#endif // _DEBUG
 
 
 typedef long long alloc_size;

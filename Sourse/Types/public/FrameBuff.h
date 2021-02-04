@@ -60,7 +60,7 @@ struct FBuff {
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
   void project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos);
   void move(SCR_UINT dx, SCR_UINT dy);
-
+  void free();
   void premultiply();
 
   // simple draw methods
@@ -99,6 +99,15 @@ void FBuff<Color_t>::resize(SCR_UINT width, SCR_UINT height) {
   DELETE_DBG_AR(pxls);
   pxls = NEW_DBG_AR(Color_t, height * (__int64)width);
   size.assign(width, height);
+}
+
+template <typename Color_t>
+void FBuff<Color_t>::free() {
+  if (pxls) {
+    DELETE_DBG_AR(pxls);
+  }
+  pxls = nullptr;
+  size.assign(0, 0);
 }
 
 template <typename Color_t>
@@ -172,11 +181,11 @@ void FBuff<Color_t>::DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thic
 template <typename Color_t>
 Color_t* FBuff<Color_t>::get(SCR_UINT x, SCR_UINT y) {
 
-  if (!local_hrchy.parent) {
+  if (!local_hrchy.prnt) {
     return pxls + (__int64)size.x * y + x;
   }
 
-  return local_hrchy.parent->pxls + *root_width * ((__int64)y + pos.y) + x + pos.x;
+  return local_hrchy.prnt->pxls + *root_width * ((__int64)y + pos.y) + x + pos.x;
 }
 
 template <typename Color_t>
@@ -200,7 +209,7 @@ void FBuff<Color_t>::cast(FBuff& out, Rect<SCR_UINT>& rect) {
 
   local_hrchy.childs.add(&out);
 
-  out.local_hrchy.parent = this;
+  out.local_hrchy.prnt = this;
 
   FBuff* root = local_hrchy.root();
 
