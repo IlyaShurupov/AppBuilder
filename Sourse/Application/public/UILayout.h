@@ -48,6 +48,12 @@ struct UIItem {
   void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void Draw(UIItem* project_to);
 
+  // Save UI of window
+  void OnWrite();
+
+  // Restore saved UI
+  void OnRead();
+
   // User defined callbacks
   void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
