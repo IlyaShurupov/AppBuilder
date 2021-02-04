@@ -75,6 +75,10 @@ struct Rect {
     IF(INRANGE(pos.y, rect.pos.y, rect.pos.y + rect.size.y), return true)
     return false;
   }
+
+  bool overlap(Rect<Type>& rect) {
+    return (intersect_x(rect) && intersect_y(rect));
+  } 
 };
 
 template <typename Type>

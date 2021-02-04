@@ -95,11 +95,37 @@ void UIItem::Resize(Rect<float>& newrect) {
   save_config();
   if (resize_dir(newrect.size.y / rect.size.y, 1)) {
     rect.pos.y = newrect.pos.y;
-  }  
+  }
   if (resize_dir(newrect.size.x / rect.size.x, 0)) {
-    rect.pos.x = newrect.pos.x; 
+    rect.pos.x = newrect.pos.x;
   }
   update_buff(true);
+}
+
+bool UIItem::valid_resize(Rect<float>& newrec, bool dir) {
+  bool pass = true;
+  // Hide if overlaped or min size triggered
+  if (!rect.enclosed_in(hrchy.prnt->rect, true)) {
+    goto DISKARD;
+  }
+
+  if (minsize[dir] >= newrec.size[dir]) {
+    goto DISKARD;
+  }
+
+  FOREACH_NODE(UIItem, (&hrchy.prnt->hrchy.childs), child_node) {
+    if (child_node->Data != this && rect.overlap(child_node->Data->rect)) {
+      goto DISKARD;
+    }
+  }
+
+  return true;
+
+ DISKARD:
+  rect.size[dir] = prev_rect.size[dir];
+  rect.pos[dir] = prev_rect.pos[dir];
+  flag = 0;
+  return false;
 }
 
 bool UIItem::resize_dir(float rescale, bool dir) {
@@ -108,20 +134,14 @@ bool UIItem::resize_dir(float rescale, bool dir) {
   prev_rect.pos[dir] = rect.pos[dir];
 
   if (!hrchy.prnt) {
-    
+
     rect.size[dir] *= rescale;
-    
+
   } else {
 
-    ResizeBody(rect, dir);   
+    ResizeBody(rect, dir);
 
-    // Hide if overlaped or min size triggered
-    if (!rect.enclosed_in(hrchy.prnt->rect, true)) {
-      rect.size[dir] = prev_rect.size[dir];
-      rect.pos[dir] = prev_rect.pos[dir];
-      flag = 0;
-      return false;
-    }
+    IF(!valid_resize(rect, dir), return false);
   }
 
   // repead recursively
@@ -140,7 +160,7 @@ bool UIItem::resize_dir(float rescale, bool dir) {
   if (!reset) {
     FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
       if (!(child_node->Data->rigid[dir])) {
-        if (!child_node->Data->resize_dir(chld_rscl, dir)) { 
+        if (!child_node->Data->resize_dir(chld_rscl, dir)) {
           reset = true;
           break;
         }
@@ -148,7 +168,7 @@ bool UIItem::resize_dir(float rescale, bool dir) {
     }
   }
 
-  if (reset) { 
+  if (reset) {
     resize_discard(dir);
     return false;
   }
@@ -342,13 +362,14 @@ void button_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, 1);
 }
 
-UIItem* ui_add_button(UIItem* prnt, vec2<SCR_UINT> pos, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_button(UIItem* prnt, vec2<SCR_UINT> pos, vec2<float> minsz, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
   UIItem* button = NEW_DBG(UIItem) UIItem(nullptr);
 
   button->hrchy.join(prnt);
   button->rigid = rs_type;
   button->ownbuff = false;
+  button->minsize = minsz;
   button->DrawBody = button_draw;
   button->ProcBody = button_proc;
   button->inv_pos = inv_pos;
@@ -396,7 +417,7 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
 
 void region_draw(UIItem* This, UIItem* project_to) {}
 
-UIItem* ui_add_region(UIItem* prnt, Rect<SCR_UINT> rect, List<Operator>* operators, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_region(UIItem* prnt, Rect<SCR_UINT> rect, vec2<float> minsz, List<Operator>* operators, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
 
   UIItem* region = NEW_DBG(UIItem) UIItem(&rect.size);
@@ -407,6 +428,7 @@ UIItem* ui_add_region(UIItem* prnt, Rect<SCR_UINT> rect, List<Operator>* operato
   region->DrawBody = region_draw;
   region->ProcBody = region_proc;
   region->inv_pos = inv_pos;
+  region->minsize = minsz;
   region->rect.size.assign((float)rect.size.x, (float)rect.size.y);
   region->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
 
@@ -445,7 +467,7 @@ void area_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
-UIItem* ui_add_area(UIItem* prnt, Rect<SCR_UINT> rect, Str name, vec2<bool> rs_type, vec2<bool> inv_pos) {
+UIItem* ui_add_area(UIItem* prnt, Rect<SCR_UINT> rect, vec2<float> minsz, Str name, vec2<bool> rs_type, vec2<bool> inv_pos) {
 
   UIItem* Area = NEW_DBG(UIItem) UIItem(nullptr);
 
@@ -455,6 +477,7 @@ UIItem* ui_add_area(UIItem* prnt, Rect<SCR_UINT> rect, Str name, vec2<bool> rs_t
   Area->DrawBody = area_draw;
   Area->ProcBody = area_proc;
   Area->idname = name;
+  Area->minsize = minsz;
   Area->rigid = rs_type;
   Area->inv_pos = inv_pos;
   Area->rect.size.assign((float)rect.size.x, (float)rect.size.y);
@@ -474,12 +497,13 @@ void UIdraw(UIItem* This, UIItem* project_to) {
   This->buff->clear(&color);
 }
 
-UIItem* ui_add_root(Rect<SCR_UINT> rect) {
+UIItem* ui_add_root(Rect<SCR_UINT> rect, vec2<float> minsz) {
 
   UIItem* UIroot = NEW_DBG(UIItem) UIItem(&rect.size);
 
   UIroot->ProcBody = Uiproc;
   UIroot->DrawBody = UIdraw;
+  UIroot->minsize = minsz;
   UIroot->rigid.assign(false, false);
   UIroot->inv_pos.assign(0, 0);
   UIroot->rect.size.assign((float)rect.size.x, (float)rect.size.y);
@@ -495,25 +519,25 @@ UIItem* ui_add_root(Rect<SCR_UINT> rect) {
 
 UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* prnt) {
 
-  UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600));
+  UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600), vec2<float>(30, 30));
 
-  UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(100, 100, 300, 300), "View3d", vec2<bool>(0, 0), vec2<bool>(1, 1));
+  UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(100, 100, 300, 300), vec2<float>(30, 30), "View3d", vec2<bool>(0, 0), vec2<bool>(1, 1));
 
-  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), operators, vec2<bool>(0, 0), vec2<bool>(0, 0));
+  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), vec2<float>(30, 30), operators, vec2<bool>(0, 0), vec2<bool>(0, 0));
 
-  UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), vec2<bool>(1, 1));
+  // UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), vec2<bool>(1, 1));
 
   short width = 25;
   short border = 10;
   Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, (SCR_UINT)UIroot->rect.size.y - width - border, (SCR_UINT)UIroot->rect.size.x - border * 2, width);
-  UIItem* Area2 = ui_add_area(UIroot, rect, "topbar", vec2<bool>(0, 1), vec2<bool>(0, 1));
+  UIItem* Area2 = ui_add_area(UIroot, rect, vec2<float>(30, 10), "topbar", vec2<bool>(0, 1), vec2<bool>(0, 1));
 
-  ui_add_button(Area2, vec2<SCR_UINT>(3, 3), operators, &Str("Toggle Console"), vec2<bool>(1, 1), vec2<bool>(0, 0));
-  ui_add_button(Area2, vec2<SCR_UINT>(3 + 40 * 1, 3), operators, &Str("End Seance"), vec2<bool>(1, 1), vec2<bool>(0, 0));
-  ui_add_button(Area2, vec2<SCR_UINT>(3 + 80 * 2, 3), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
+  ui_add_button(Area2, vec2<SCR_UINT>(2, 3), vec2<float>(30, 10), operators, &Str("Toggle Console"), vec2<bool>(1, 1), vec2<bool>(0, 0));
+  ui_add_button(Area2, vec2<SCR_UINT>(4 + 40 * 1, 3), vec2<float>(30, 10), operators, &Str("End Seance"), vec2<bool>(1, 1), vec2<bool>(0, 0));
+  ui_add_button(Area2, vec2<SCR_UINT>(6 + 40 * 2, 3), vec2<float>(30, 10), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
 
-  UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
-  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 300, 200, 200), "right", vec2<bool>(1, 0), vec2<bool>(1, 0));
-  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 60, 200), "left", vec2<bool>(1, 0), vec2<bool>(0, 0));
+  UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), vec2<float>(30, 30), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
+  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 300, 200, 200), vec2<float>(30, 30), "right", vec2<bool>(1, 0), vec2<bool>(1, 0));
+  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 60, 200), vec2<float>(30, 30), "left", vec2<bool>(1, 0), vec2<bool>(0, 0));
   return UIroot;
 }

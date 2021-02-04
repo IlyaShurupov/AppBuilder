@@ -33,7 +33,7 @@ struct UIItem {
   bool hide = false;
   Rect<float> rect;
   Rect<float> prev_rect;
-  vec2<SCR_UINT> minsize;
+  vec2<float> minsize;
   vec2<bool> rigid;
   vec2<bool> inv_pos;
   Wrap wrap;
@@ -61,6 +61,7 @@ struct UIItem {
   void ResizeBody(Rect<float>& out, bool dir);
   void clear_flags();
   void save_config();
+  bool valid_resize(Rect<float>& newrec, bool dir);
 };
 
 UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* prnt);
