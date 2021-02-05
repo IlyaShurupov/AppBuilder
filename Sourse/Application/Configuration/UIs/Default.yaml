@@ -7,21 +7,13 @@ UIItems:
         Type: "Canvas"
         
         Dimentions:
-            Size: 
-                - 500
-                - 500
-            Pos: 
-                - 200
-                - 200
+            Size: [300, 300]
+            Pos: [100, 100]
 
         Rules:
             AttachCorner: "TOPLEFT"
-            Rigid: 
-                - true
-                - false
-            MinSize: 
-                - 10
-                - 10
+            Rigid: [0, 0]
+            MinSize: [30, 30]
 
         KeyMap:
             -

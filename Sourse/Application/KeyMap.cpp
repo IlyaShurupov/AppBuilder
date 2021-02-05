@@ -42,6 +42,8 @@ inline Range find_idname_straigt(Str* str, const char start_kw, const char end_k
   return Range(p1, p2);
 }
 
+// ---------------------------- //
+
 Input::Input() {}
 
 Input::Input(const char* idname, InputState state) {
@@ -81,9 +83,7 @@ COpBindings::COpBindings() {
 }
 
 COpBindings::~COpBindings() {
-  //invoke.conditions.free();
   modal_keymap.free();
-  //DELETE_DBG() thread_ptr;
 }
 
 void CompiledKeyMap::ProcEvents(List<OpThread>* op_threads) {

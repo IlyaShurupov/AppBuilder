@@ -47,5 +47,4 @@ struct Window {
   // This is where interactin with the system happends
   // Only things we need from the system are Fbuffer & user inputs
   struct SystemHandler* SysH;
-  struct CompiledKeyMap *compiled_key_map;
 };

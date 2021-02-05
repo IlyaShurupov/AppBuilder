@@ -3,23 +3,20 @@
 #include "Object.h"
 #include "public/KeyMap.h"
 #include "public/Seance.h"
+#include "public/FileReader.h"
 
-UIItem::UIItem(vec2<SCR_UINT>* size) {
-
+UIItem::UIItem() {
   flag = 0;
-  rigid.assign(false, false);
   state = UIstate::NONE;
-  inv_pos.assign(0, 0);
   ProcBody = nullptr;
   DrawBody = nullptr;
-
-  if (this->ownbuff = (bool)size) {
-    buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(size->x, size->y);
-  }
+  buff = nullptr;
+  keymap = NEW_DBG(CompiledKeyMap) CompiledKeyMap();
 }
 
 UIItem::~UIItem() {
   hrchy.childs.del();
+  DELETE_DBG(CompiledKeyMap, keymap);
   if (buff) {
     DELETE_DBG(FBuff<RGBA_32>, buff);
   }
@@ -362,31 +359,13 @@ void button_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, 1);
 }
 
-UIItem* ui_add_button(UIItem* prnt, vec2<SCR_UINT> pos, vec2<float> minsz, List<Operator>* operators, Str* op_idname, vec2<bool> rs_type, vec2<bool> inv_pos) {
-
-  UIItem* button = NEW_DBG(UIItem) UIItem(nullptr);
-
-  button->hrchy.join(prnt);
-  button->rigid = rs_type;
+void ui_add_button(UIItem* button, List<Operator>* operators, Str* op_idname) {
   button->ownbuff = false;
-  button->minsize = minsz;
   button->DrawBody = button_draw;
   button->ProcBody = button_proc;
-  button->inv_pos = inv_pos;
-  button->rect.size.assign(40, 20);
-  button->rect.pos.assign((float)pos.x, (float)pos.y);
-
-  // own
   Operator* op_ptr = find_op(operators, op_idname);
-  if (!op_ptr) {
-    return nullptr;
-  }
   button->CustomData = (void*)op_ptr;
-  // own
-
-  return button;
 }
-
 
 // --------- Region ---------------- //
 
@@ -415,43 +394,19 @@ void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* us
   }
 }
 
-void region_draw(UIItem* This, UIItem* project_to) {}
-
-UIItem* ui_add_region(UIItem* prnt, Rect<SCR_UINT> rect, vec2<float> minsz, List<Operator>* operators, vec2<bool> rs_type, vec2<bool> inv_pos) {
-
-
-  UIItem* region = NEW_DBG(UIItem) UIItem(&rect.size);
-
-  region->hrchy.join(prnt);
-
+void ui_add_region(UIItem* region, List<Operator>* operators) {
+ 
   region->ownbuff = true;
-  region->DrawBody = region_draw;
   region->ProcBody = region_proc;
-  region->inv_pos = inv_pos;
-  region->minsize = minsz;
-  region->rect.size.assign((float)rect.size.x, (float)rect.size.y);
-  region->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
-
-  region->rigid = rs_type;
-
-  // own
+ 
   Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
-  if (!op_ptr) {
-    return nullptr;
-  }
 
   UIRegionData* rd = NEW_DBG(UIRegionData) UIRegionData();
   region->CustomData = (void*)rd;
   rd->op = op_ptr;
-  // own
-
-  return region;
 }
 
-
 // ---------  Area ---------------- //
-
-void area_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {}
 
 void area_draw(UIItem* This, UIItem* project_to) {
 
@@ -467,77 +422,76 @@ void area_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 
-UIItem* ui_add_area(UIItem* prnt, Rect<SCR_UINT> rect, vec2<float> minsz, Str name, vec2<bool> rs_type, vec2<bool> inv_pos) {
-
-  UIItem* Area = NEW_DBG(UIItem) UIItem(nullptr);
-
-  Area->hrchy.join(prnt);
-
+void ui_add_area(UIItem* Area) {
   Area->ownbuff = false;
   Area->DrawBody = area_draw;
-  Area->ProcBody = area_proc;
-  Area->idname = name;
-  Area->minsize = minsz;
-  Area->rigid = rs_type;
-  Area->inv_pos = inv_pos;
-  Area->rect.size.assign((float)rect.size.x, (float)rect.size.y);
-  Area->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
-
-  // own
-
-  return Area;
 }
 
 // ------------------ UI Root --------------------------------- //
-
-void Uiproc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C) {}
 
 void UIdraw(UIItem* This, UIItem* project_to) {
   RGBA_32 color = 0xff1d1d21;
   This->buff->clear(&color);
 }
 
-UIItem* ui_add_root(Rect<SCR_UINT> rect, vec2<float> minsz) {
-
-  UIItem* UIroot = NEW_DBG(UIItem) UIItem(&rect.size);
-
-  UIroot->ProcBody = Uiproc;
+void ui_add_root(UIItem * UIroot) {
   UIroot->DrawBody = UIdraw;
-  UIroot->minsize = minsz;
-  UIroot->rigid.assign(false, false);
-  UIroot->inv_pos.assign(0, 0);
-  UIroot->rect.size.assign((float)rect.size.x, (float)rect.size.y);
-  UIroot->rect.pos.assign((float)rect.pos.x, (float)rect.pos.y);
-
-  UIroot->minsize.y = 60;
-  UIroot->minsize.x = 100;
-  UIroot->ownbuff = true;
-  return UIroot;
+  UIroot->ownbuff = true;;
+  UIroot->buff->resize(UIroot->rect.size.x, UIroot->rect.size.y);
 }
 
 // ---------------------- UI compiling -------------------------  //
 
+void dimentions_db_to_rect(Rect<float>& rect, DataBlock* db) {
+  DataBlock* rectdb = db->find(Str("Dimentions"));
+  DataBlock* size = rectdb->find(Str("Size"));
+  DataBlock* pos = rectdb->find(Str("Pos"));
+  rect.size = vec2<float>((float)size->list[0]->integer, (float)size->list[1]->integer);
+  rect.pos = vec2<float>((float)pos->list[0]->integer, (float)pos->list[1]->integer);
+}
+
+struct PreCompUII {
+  PreCompUII(UIItem* item, Str* parent) {
+    this->item = item;
+    this->parent = parent;
+  }
+  UIItem* item;
+  Str* parent;
+};
+
 UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* prnt) {
 
-  UIItem* UIroot = ui_add_root(Rect<SCR_UINT>(550, 200, 900, 600), vec2<float>(30, 30));
+  DataBlock* UIItemsdb = Read_Yaml(ui_path)->find(Str("UIItems"));
 
-  UIItem* Area = ui_add_area(UIroot, Rect<SCR_UINT>(100, 100, 300, 300), vec2<float>(30, 30), "View3d", vec2<bool>(0, 0), vec2<bool>(1, 1));
+  List<PreCompUII> pcuii;
 
-  UIItem* Region = ui_add_region(Area, Rect<SCR_UINT>(5, 5, 290, 290), vec2<float>(30, 30), operators, vec2<bool>(0, 0), vec2<bool>(0, 0));
+  FOREACH(&UIItemsdb->list, DataBlock, inode) {
 
-  // UIItem* Button = ui_add_button(Region, vec2<SCR_UINT>(200, 200), operators, &Str("Add Plane"), vec2<bool>(1, 1), vec2<bool>(1, 1));
+    DataBlock* UIdb = inode->Data;
+    UIItem* uiitem = NEW_DBG(UIItem) UIItem();
 
-  short width = 25;
-  short border = 10;
-  Rect<SCR_UINT> rect = Rect<SCR_UINT>(border, (SCR_UINT)UIroot->rect.size.y - width - border, (SCR_UINT)UIroot->rect.size.x - border * 2, width);
-  UIItem* Area2 = ui_add_area(UIroot, rect, vec2<float>(30, 10), "topbar", vec2<bool>(0, 1), vec2<bool>(0, 1));
+    uiitem->hrchy.id = UIdb->find(Str("Name"))->string; 
+    dimentions_db_to_rect(uiitem->rect, UIdb);
 
-  ui_add_button(Area2, vec2<SCR_UINT>(2, 3), vec2<float>(30, 10), operators, &Str("Toggle Console"), vec2<bool>(1, 1), vec2<bool>(0, 0));
-  ui_add_button(Area2, vec2<SCR_UINT>(4 + 40 * 1, 3), vec2<float>(30, 10), operators, &Str("End Seance"), vec2<bool>(1, 1), vec2<bool>(0, 0));
-  ui_add_button(Area2, vec2<SCR_UINT>(6 + 40 * 2, 3), vec2<float>(30, 10), operators, &Str("Log Heap"), vec2<bool>(1, 1), vec2<bool>(0, 0));
+    Str* uiitype = &UIdb->find(Str("Type"))->string; 
+    if (*uiitype == "canvas") {
+      ui_add_root(uiitem);
+    }
 
-  UIItem* Area3 = ui_add_area(UIroot, Rect<SCR_UINT>(100, 5, 500, 50), vec2<float>(30, 30), "bottom bar", vec2<bool>(0, 1), vec2<bool>(0, 0));
-  UIItem* Area4 = ui_add_area(UIroot, Rect<SCR_UINT>(500, 300, 200, 200), vec2<float>(30, 30), "right", vec2<bool>(1, 0), vec2<bool>(1, 0));
-  UIItem* Area5 = ui_add_area(UIroot, Rect<SCR_UINT>(10, 50, 60, 200), vec2<float>(30, 30), "left", vec2<bool>(1, 0), vec2<bool>(0, 0));
-  return UIroot;
+    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, &UIdb->find(Str("Parent"))->string)); 
+  }
+
+  FOREACH(&pcuii, PreCompUII, inode) {
+    if (!(*inode->Data->parent == "None")) {
+      FOREACH(&pcuii, PreCompUII, jnode) {
+        if (*jnode->Data->parent == inode->Data->item->hrchy.id) {
+          jnode->Data->item->hrchy.join(inode->Data->item);
+          break;
+        }
+      }
+    }
+  }
+
+  pcuii.del();
+  return nullptr;
 }

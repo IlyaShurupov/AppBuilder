@@ -19,11 +19,26 @@ struct Wrap {
 
 struct UIItem {
 
-  UIItem(vec2<SCR_UINT>* size);
+  UIItem();
   ~UIItem();
 
-  Hierarchy<UIItem, List<UIItem>, 0> hrchy;
-  Str idname;
+  Hrchy<UIItem> hrchy;
+  struct CompiledKeyMap* keymap;
+
+  // Save UI of window
+  void OnWrite();
+
+  // Restore saved UI
+  void OnRead();
+
+  // User difined callbacks wrapers
+  void Resize(Rect<float>& newrect);
+  void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void Draw(UIItem* project_to);
+
+  // User defined callbacks
+  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void (*DrawBody)(UIItem* This, UIItem* project_to);
 
   // Event info
   UIstate state;
@@ -33,31 +48,17 @@ struct UIItem {
   char flag = 0;
   Wrap wrap;
   bool hide = false;
+  Rect<float> prev_rect;
   Rect<float> rect;
   vec2<float> minsize;
   vec2<bool> rigid;
   vec2<bool> inv_pos;
-  Rect<float> prev_rect;
 
   // Draw info
   bool ownbuff = true;
   FBuff<RGBA_32>* buff = nullptr;
-
-  // User difined callbacks wrapers
-  void Resize(Rect<float>& newrect);
-  void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
-  void Draw(UIItem* project_to);
-
-  // Save UI of window
-  void OnWrite();
-
-  // Restore saved UI
-  void OnRead();
-
-  // User defined callbacks
-  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
-  void (*DrawBody)(UIItem* This, UIItem* project_to);
   void* CustomData = nullptr;
+
 
  private:
   void resize_discard(bool dir);

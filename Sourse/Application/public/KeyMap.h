@@ -8,6 +8,8 @@
 
 #define USRINPUT_DECL(INPUT_NAME) Input INPUT_NAME = Input(NAME(INPUT_NAME), InputState::NONE)
 
+struct UserInputs;
+
 enum class InputState {
   NONE = 0,
   HOLD,
@@ -20,6 +22,42 @@ struct Input {
   Input(const char* idname, InputState state = InputState::NONE);
   struct Str idname;
   InputState state = InputState::NONE;
+};
+
+
+struct CKeyCondition {
+  InputState* input_ptr;
+  InputState trigger_state;
+  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
+  bool IsTrue();
+};
+
+struct CShortcut {
+  Stack<CKeyCondition> conditions;
+  struct ModalEvent modal_event;
+  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
+  bool IsShortcut();
+  ~CShortcut();
+};
+
+struct COpBindings {
+  CShortcut invoke;
+  Stack<CShortcut> modal_keymap;
+  struct Operator* op_ptr;
+  struct OpThread* thread_ptr;
+  bool Compile(List<Operator>* ops, UserInputs* usins, struct Str* str, struct Range bnds);
+  ModalEvent* IsModalEvent();
+  bool IsInvoked();
+  COpBindings();
+  ~COpBindings();
+};
+
+struct CompiledKeyMap {
+  
+  Stack<COpBindings> op_bindings;
+  void Compile(List<Operator>* ops, UserInputs* usins, struct Str* filepath);
+  void ProcEvents(List<OpThread>* exec_queue);
+  ~CompiledKeyMap();
 };
 
 struct UserInputs {
@@ -53,9 +91,9 @@ struct UserInputs {
 
   Input A = Input("A", InputState::NONE);
   Input D = Input("D", InputState::NONE);
-  //USRINPUT_DECL(A);
+  // USRINPUT_DECL(A);
   USRINPUT_DECL(S);
-  //USRINPUT_DECL(D);
+  // USRINPUT_DECL(D);
   USRINPUT_DECL(F);
   USRINPUT_DECL(G);
   USRINPUT_DECL(H);
@@ -100,53 +138,4 @@ struct UserInputs {
   vec2<SCR_UINT> Cdelta;
   vec2<SCR_UINT> Cursor;
   vec2<SCR_UINT> PrevCursor;
-};
-
-
-
-
-// compiled map for practical use
-struct CKeyCondition {
-  InputState* input_ptr;
-  InputState trigger_state;
-
-  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
-
-  bool IsTrue();
-};
-
-struct CShortcut {
-  Stack<CKeyCondition> conditions;
-  struct ModalEvent modal_event;
-
-  bool Compile(UserInputs* usins, struct Str* str, struct Range& bnds);
-
-  bool IsShortcut();
-  ~CShortcut();
-};
-
-struct COpBindings {
-  CShortcut invoke;
-  Stack<CShortcut> modal_keymap;
-  struct Operator* op_ptr;
-  struct OpThread* thread_ptr;
-
-  bool Compile(List<Operator>* ops, UserInputs* usins, struct Str* str, struct Range bnds);
-
-  ModalEvent* IsModalEvent();
-  bool IsInvoked();
-  COpBindings();
-  ~COpBindings();
-};
-
-// one per window
-struct CompiledKeyMap {
-  
-  Stack<COpBindings> op_bindings;
-
-  void Compile(List<Operator>* ops, UserInputs* usins, struct Str* filepath);
-
-  void ProcEvents(List<OpThread>* exec_queue);
-
-  ~CompiledKeyMap();
 };

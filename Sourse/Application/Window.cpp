@@ -8,19 +8,11 @@
 //#include "public/Print.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
-
-  compiled_key_map = NEW_DBG(CompiledKeyMap) CompiledKeyMap();
   user_inputs = NEW_DBG(UserInputs) UserInputs();
-
-  // compile kmap
-  Str keymap_path;
-  keymap_path = *configfolder;
-  keymap_path += Str("KeyMaps\\Default.txt");
-  compiled_key_map->Compile(operators, user_inputs, &keymap_path);
 
   Str ui_path;
   ui_path = *configfolder;
-  ui_path += Str("UIs\\Default.txt");
+  ui_path += Str("UIs\\Default.yaml");
   UIroot = UI_compile(operators, &ui_path, this);
 
   // init sys handler
@@ -44,7 +36,6 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
 Window::~Window() {
   DELETE_DBG(UIItem, UIroot);
-  DELETE_DBG(CompiledKeyMap, compiled_key_map);
   DELETE_DBG(UserInputs, user_inputs);
   DELETE_DBG(SystemHandler, SysH);
 }
@@ -60,10 +51,9 @@ void Window::Draw() {
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   SysH->getUserInputs(user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs->IsEvent) {
-    compiled_key_map->ProcEvents(op_threads);
+    vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
+    UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
   }
-  vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {
