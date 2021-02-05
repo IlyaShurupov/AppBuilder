@@ -30,14 +30,14 @@ struct UIItem {
   bool redraw = true;
 
   // Edit info
+  char flag = 0;
+  Wrap wrap;
   bool hide = false;
   Rect<float> rect;
-  Rect<float> prev_rect;
   vec2<float> minsize;
   vec2<bool> rigid;
   vec2<bool> inv_pos;
-  Wrap wrap;
-  char flag = 0;
+  Rect<float> prev_rect;
 
   // Draw info
   bool ownbuff = true;

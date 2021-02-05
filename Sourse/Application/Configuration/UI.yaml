@@ -1,0 +1,51 @@
+
+UIItems:
+
+#   UIItem:
+    -
+        Name: "Root"
+        Parent: "NULL"
+
+        Dimentions:
+            Size: [500, 500]
+            Pos: [200, 200]
+
+        Rules:
+            Rigid: [1, 0]
+            MinSize: [10, 10]
+            AttachCorner: "TOPLEFT"
+
+        KeyMap:
+            -
+                Command: "Toggle Console"
+                Conditions:
+                    - [Name: "ALT_L", State: "HOLD"]
+                    - [Name: "C", State: "RELEASSED"]
+
+#   UIItem:
+    -
+        Name: "ViewPortGroup"
+        Parent: "Root"
+        Group: true
+
+        Dimentions:
+            Size: [100, 100]
+            Pos: [100, 100]
+
+        Rules:
+            Rigid: [1, 0]
+            MinSize: [10, 10]
+            AttachCorner: "BOTTOMLEFT"
+
+        KeyMap:
+            -
+                Command: "Resize Window"
+                Conditions:
+                    - [Name: "ALT_L", State: "HOLD"]
+                    - [Name: "RMB", State: "PRESSED"]
+
+                RuntimeArgs:
+                    -
+                        val: "FINISH"
+                        Conditions:
+                            - [Name: "RMB", State: "RELEASE"]

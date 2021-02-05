@@ -13,7 +13,7 @@ set (HEADERS
     "public/Window.h"
     "public/UILayout.h"
     "public/KeyMap.h"
-)
+ "public/FileReader.h")
 
 # Source files
 set (SOURCES
@@ -25,7 +25,7 @@ set (SOURCES
     "Win32API.cpp"
     "KeyMap.cpp"
     "Print.cpp"
-)
+ "FileReader.cpp")
 
 
 

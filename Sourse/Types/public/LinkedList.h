@@ -320,8 +320,6 @@ inline void List<Type>::del() {
 }
 
 template <typename Type>
-List<Type>::~List() {
-  if (length) {
-    delnode(0, length - 1);
-  }
+List<Type>::~List() {  
+  del();
 }

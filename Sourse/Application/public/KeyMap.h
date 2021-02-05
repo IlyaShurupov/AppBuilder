@@ -103,6 +103,8 @@ struct UserInputs {
 };
 
 
+
+
 // compiled map for practical use
 struct CKeyCondition {
   InputState* input_ptr;

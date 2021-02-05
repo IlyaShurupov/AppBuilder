@@ -9,6 +9,7 @@ struct Range {
   str_idx len();
   bool valid();
   Range();
+  Range(Range& rng);
   Range(str_idx strt, str_idx end);
 };
 

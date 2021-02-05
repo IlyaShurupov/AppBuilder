@@ -27,13 +27,21 @@ char* getExecutablePath() {
 str_idx Range::len() {
   return end - strt + 1;
 }
+
 bool Range::valid() {
   return (strt > 0 && end > 0 && end >= strt);
 }
+
 Range::Range() {}
+
 Range::Range(str_idx strt, str_idx end) {
   this->strt = strt;
   this->end = end;
+}
+
+Range::Range(Range& rng) {
+  strt = rng.strt;
+  end = rng.end;
 }
 
 
