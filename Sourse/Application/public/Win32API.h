@@ -13,7 +13,7 @@ struct SystemHandler {
   ~SystemHandler();
 
   // UserInputs
-  void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
+  void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
   void SysOutput(FBuff<RGBAf>* buff);

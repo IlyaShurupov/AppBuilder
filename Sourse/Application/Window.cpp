@@ -2,13 +2,13 @@
 #include "public/Window.h"
 #include "public/Operator.h"
 #include "public/Win32API.h"
-#include "public/KeyMap.h"
-#include "public/UILayout.h"
+#include "public/UInputsMap.h"
+#include "public/UInterface.h"
 
 //#include "public/Print.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
-  user_inputs = NEW_DBG(UserInputs) UserInputs();
+  user_inputs = NEW_DBG(UInputs) UInputs();
 
   Str ui_path;
   ui_path = *configfolder;
@@ -36,7 +36,7 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
 Window::~Window() {
   DELETE_DBG(UIItem, UIroot);
-  DELETE_DBG(UserInputs, user_inputs);
+  DELETE_DBG(UInputs, user_inputs);
   DELETE_DBG(SystemHandler, SysH);
 }
 

@@ -13,6 +13,11 @@ struct Range {
   Range(str_idx strt, str_idx end);
 };
 
+struct StrRef {
+  struct Str *str;
+  Range rng;
+};
+
 struct Str {
 
   char* str = nullptr;

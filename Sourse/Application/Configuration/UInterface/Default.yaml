@@ -1,0 +1,16 @@
+
+
+UIItems:
+    -
+        Name: "Root"
+        Parent: "None"
+        Type: "Canvas"
+        
+        Dimentions:
+            Size: [300, 300]
+            Pos: [100, 100]
+
+        Rules:
+            AttachCorner: "TOPLEFT"
+            Rigid: [0, 0]
+            MinSize: [30, 30]

@@ -2,7 +2,7 @@
 
 #include "public/Seance.h"
 #include "public/Window.h"
-#include "public/KeyMap.h"
+#include "public/UInputsMap.h"
 
 #include "../RenderEngines/RayCast/public/RayCast.h"
 
@@ -14,15 +14,15 @@
 #define OPDATA_FROM_OP(Type, name) Type* name = (Type*)op->CustomData;
 
 Operator* find_op(List<Operator>* operators, Str* op_idname) {
-  Operator* op_ptr = nullptr;
+  Operator* target = nullptr;
   Range bnds = Range(0, op_idname->len());
   FOREACH_NODE(Operator, operators, op_node) {
     if (op_node->Data->idname.match(bnds, *op_idname, bnds)) {
-      op_ptr = op_node->Data;
+      target = op_node->Data;
       break;
     }
   }
-  return op_ptr;
+  return target;
 }
 
 // -----------  End Seance Operator ----------------------- //
@@ -152,7 +152,7 @@ bool WindowResize_poll(Seance* C, Operator* op) {
   return data->win = C->project.C_actWin();
 }
 
-void WindowResize_modal(Seance* C, Operator* op, ModalEvent* event) {
+void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
@@ -195,7 +195,7 @@ void WindowResize_create(Seance* C, Operator* op) {
   op->Invoke = WindowResize_invoke;
   op->Modal = WindowResize_modal;
 
-  op->modal_events.add(NEW_DBG(ModalEvent) ModalEvent("FINISH"));
+  op->modal_events.add(NEW_DBG(OpArg) OpArg("FINISH"));
 }
 
 
@@ -212,7 +212,7 @@ bool WindowDrag_poll(Seance* C, Operator* op) {
   return op->CustomData = C->project.C_actWin();
 }
 
-void WindowDrag_modal(Seance* C, Operator* op, ModalEvent* event) {
+void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
   Window* data = (Window*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
@@ -314,7 +314,7 @@ void AddPlane_create(Seance* C, Operator* op) {
   op->Poll = AddPlane_poll;
   op->Execute = AddPlane_ecec;
 
-  op->modal_events.add(NEW_DBG(ModalEvent) ModalEvent("FINISH"));
+  op->modal_events.add(NEW_DBG(OpArg) OpArg("FINISH"));
 }
 
 // -----------  Operator ----------------------- //
@@ -325,8 +325,8 @@ void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   C->prefferences.operators.add(op);
 }
 
-OpThread::OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event)
-    : op(op), modal_event(modal_event), op_event(op_event) {
+OpThread::OpThread(Operator* op, OpEvState op_event, OpArg* modalevent)
+    : op(op), modalevent(modalevent), op_event(op_event) {
 
   state = ThreadState::RUNNING;
 }

@@ -1,47 +1,45 @@
 
-#include "public/UILayout.h"
+#include "public/UInterface.h"
 #include "Object.h"
-#include "public/KeyMap.h"
 #include "public/Seance.h"
+#include "public/UInputsMap.h"
 #include "public/FileReader.h"
 
 UIItem::UIItem() {
   flag = 0;
-  state = UIstate::NONE;
+  state = UIIstate::NONE;
   ProcBody = nullptr;
   DrawBody = nullptr;
   buff = nullptr;
-  keymap = NEW_DBG(CompiledKeyMap) CompiledKeyMap();
 }
 
 UIItem::~UIItem() {
   hrchy.childs.del();
-  DELETE_DBG(CompiledKeyMap, keymap);
   if (buff) {
     DELETE_DBG(FBuff<RGBA_32>, buff);
   }
 }
 
-void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void UIItem::ProcEvent(List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
   IF(hide, return );
 
-  UIstate newState;
+  UIIstate newState;
 
   if (rect.inside((float)cursor.x, (float)cursor.y)) {
 
-    if (state == UIstate::NONE) {
-      newState = UIstate::ENTERED;
+    if (state == UIIstate::NONE) {
+      newState = UIIstate::ENTERED;
     } else {
-      newState = UIstate::INSIDE;
+      newState = UIIstate::INSIDE;
       redraw = true;
     }
 
   } else {
-    if (state == UIstate::INSIDE) {
-      newState = UIstate::LEAVED;
+    if (state == UIIstate::INSIDE) {
+      newState = UIIstate::LEAVED;
     } else {
-      newState = UIstate::NONE;
+      newState = UIIstate::NONE;
     }
   }
 
@@ -50,7 +48,7 @@ void UIItem::ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_input
     state = newState;
   }
 
-  if (state == UIstate::INSIDE) {
+  if (state == UIIstate::INSIDE) {
     IF(ProcBody, ProcBody(this, op_threads, user_inputs, cursor, C))
   }
 
@@ -244,6 +242,23 @@ void UIItem::ResizeBody(Rect<float>& out, bool dir) {
   }
 }
 
+UIItem* UIItem::find(Str* string) {
+
+  if (hrchy.id == *string) {
+    return this;
+  }
+
+  UIItem* item; 
+
+  FOREACH(&hrchy.childs, UIItem, node) {
+    if (item = node->Data->find(string)) {
+      return item;
+    }
+  }
+
+  return nullptr;
+}
+
 void UIItem::update_neighbors(bool recursive) {
 
 
@@ -339,9 +354,9 @@ void UIItem::save_config() {
 
 // --------- Button ---------------- //
 
-void button_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void button_proc(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
   if (user_inputs->LMB.state == InputState::RELEASED) {
-    op_threads->add(NEW_DBG(OpThread) OpThread((Operator*)This->CustomData, OpEventState::EXECUTE, nullptr));
+    op_threads->add(NEW_DBG(OpThread) OpThread((Operator*)This->CustomData, OpEvState::EXECUTE, nullptr));
   }
 }
 
@@ -349,7 +364,7 @@ void button_draw(UIItem* This, UIItem* project_to) {
 
   RGBA_32 color1 = 0xffffffff;
   RGBA_32 color2 = 0xff090909;
-  if (This->state == UIstate::LEAVED || This->state == UIstate::NONE) {
+  if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
     color1 = 0xffaaaaaa;
   }
 
@@ -363,8 +378,8 @@ void ui_add_button(UIItem* button, List<Operator>* operators, Str* op_idname) {
   button->ownbuff = false;
   button->DrawBody = button_draw;
   button->ProcBody = button_proc;
-  Operator* op_ptr = find_op(operators, op_idname);
-  button->CustomData = (void*)op_ptr;
+  Operator* target = find_op(operators, op_idname);
+  button->CustomData = (void*)target;
 }
 
 // --------- Region ---------------- //
@@ -374,13 +389,13 @@ typedef struct UIRegionData {
   Object* RS_ptr = nullptr;
 } UIRegionData;
 
-void region_proc(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void region_proc(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
 
   UIRegionData* rd = (UIRegionData*)This->CustomData;
 
   if (rd->RS_ptr) {
 
-    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEventState::EXECUTE, nullptr));
+    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
 
   } else {
 
@@ -399,11 +414,11 @@ void ui_add_region(UIItem* region, List<Operator>* operators) {
   region->ownbuff = true;
   region->ProcBody = region_proc;
  
-  Operator* op_ptr = find_op(operators, &Str("Render To Buff"));
+  Operator* target = find_op(operators, &Str("Render To Buff"));
 
   UIRegionData* rd = NEW_DBG(UIRegionData) UIRegionData();
   region->CustomData = (void*)rd;
-  rd->op = op_ptr;
+  rd->op = target;
 }
 
 // ---------  Area ---------------- //
@@ -413,7 +428,7 @@ void area_draw(UIItem* This, UIItem* project_to) {
   RGBA_32 color2 = 0xff050505;
   short thick = 3;
 
-  if (This->state == UIstate::LEAVED || This->state == UIstate::NONE) {
+  if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
     color2 = 0xff101010;
     thick = 2;
   }
@@ -443,9 +458,9 @@ void ui_add_root(UIItem * UIroot) {
 // ---------------------- UI compiling -------------------------  //
 
 void dimentions_db_to_rect(Rect<float>& rect, DataBlock* db) {
-  DataBlock* rectdb = db->find(Str("Dimentions"));
-  DataBlock* size = rectdb->find(Str("Size"));
-  DataBlock* pos = rectdb->find(Str("Pos"));
+  DataBlock* rectdb = db->find("Dimentions");
+  DataBlock* size = rectdb->find("Size");
+  DataBlock* pos = rectdb->find("Pos");
   rect.size = vec2<float>((float)size->list[0]->integer, (float)size->list[1]->integer);
   rect.pos = vec2<float>((float)pos->list[0]->integer, (float)pos->list[1]->integer);
 }
@@ -459,26 +474,25 @@ struct PreCompUII {
   Str* parent;
 };
 
-UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* prnt) {
-
-  DataBlock* UIItemsdb = Read_Yaml(ui_path)->find(Str("UIItems"));
+void UIItem::Compile(List<Operator>* ops, DataBlock* db, Window* prnt) {
 
   List<PreCompUII> pcuii;
+  UIItem* self = nullptr; 
 
-  FOREACH(&UIItemsdb->list, DataBlock, inode) {
+  FOREACH(&db->list, DataBlock, inode) {
 
     DataBlock* UIdb = inode->Data;
     UIItem* uiitem = NEW_DBG(UIItem) UIItem();
 
-    uiitem->hrchy.id = UIdb->find(Str("Name"))->string; 
+    uiitem->hrchy.id = UIdb->find("Name")->string; 
     dimentions_db_to_rect(uiitem->rect, UIdb);
 
-    Str* uiitype = &UIdb->find(Str("Type"))->string; 
+    Str* uiitype = &UIdb->find("Type")->string; 
     if (*uiitype == "canvas") {
       ui_add_root(uiitem);
     }
 
-    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, &UIdb->find(Str("Parent"))->string)); 
+    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, &UIdb->find("Parent")->string)); 
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {
@@ -492,6 +506,6 @@ UIItem* UI_compile(List<Operator>* operators, Str* ui_path, Window* prnt) {
     }
   }
 
+
   pcuii.del();
-  return nullptr;
 }

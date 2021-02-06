@@ -1,0 +1,20 @@
+
+
+KeyMap:
+    -
+        Operator: "Toggle Console"
+        Triggers:
+            -
+                OnlyRunTime: true
+                Argument: "FINISH"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "ALT_L", State: "HOLD"]
+                            - [Name: "C", State: "RELEASSED"]
+                    Scopes:
+                        Logic: "ANY"
+                        List:
+                            - [Name: "View3D", State: "LEAVE"]
+                            - [Name: "TopBad", State: "ENTER"]

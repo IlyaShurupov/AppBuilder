@@ -30,13 +30,13 @@ int main(int argc, char* argv[]) {
     for (Node<OpThread>* node = &C.op_threads.first(); node;) {
 
       OpThread* thread = node->Data;
-      OpEventState* op_event = &thread->op_event;
+      OpEvState* op_event = &thread->op_event;
       Operator* op = thread->op;
 
       switch (op->state) {
 
         case OpState::RUNNING_MODAL: // keep running    
-          op->Modal(&C, op, node->Data->modal_event);
+          op->Modal(&C, op, node->Data->modalevent);
           break;
 
         case OpState::CANCELED:
@@ -60,11 +60,11 @@ int main(int argc, char* argv[]) {
 
           switch (*op_event) {
 
-            case OpEventState::EXECUTE:
+            case OpEvState::EXECUTE:
               op->Execute(&C, op);
               break;
 
-            case OpEventState::INVOKE:
+            case OpEvState::INVOKE:
               op->Invoke(&C, op);
           }
         }

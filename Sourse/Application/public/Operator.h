@@ -1,6 +1,6 @@
 #pragma once
 #include "Property.h"
-enum class OpEventState {
+enum class OpEvState {
   EXECUTE,
   INVOKE,
   MODAL_EVENT,
@@ -19,12 +19,12 @@ enum class ThreadState {
   DENIED,
 };
 
-struct ModalEvent {
+struct OpArg {
   Str idname;
 
-  ModalEvent(){};
-  ModalEvent(Str idname) { this->idname = idname; }
-  ModalEvent(char* idname) { this->idname = idname; }
+  OpArg(){};
+  OpArg(Str idname) { this->idname = idname; }
+  OpArg(char* idname) { this->idname = idname; }
 };
 
 struct Operator {
@@ -35,7 +35,7 @@ struct Operator {
   OpState state = OpState::NONE;
 
   // Modal Map event idnames
-  class List<ModalEvent> modal_events;
+  class List<OpArg> modal_events;
 
   // Arguments
   Properties Props;
@@ -43,7 +43,7 @@ struct Operator {
   // Callbacks
   void (*Invoke)(struct Seance* C, Operator* op) = nullptr;
   void (*Execute)(struct Seance* C, Operator* op) = nullptr;
-  void (*Modal)(struct Seance* C, Operator* op, ModalEvent* modal_ev) = nullptr;
+  void (*Modal)(struct Seance* C, Operator* op, OpArg* modal_ev) = nullptr;
   bool (*Poll)(struct Seance* C, Operator* op) = nullptr;
 
   // Modal cache data
@@ -53,12 +53,12 @@ struct Operator {
 };
 
 struct OpThread {
-  OpThread(Operator* op, OpEventState op_event, ModalEvent* modal_event);
+  OpThread(Operator* op, OpEvState op_event, OpArg* modalevent);
 
   ThreadState state;
   Operator* op;
-  OpEventState op_event;
-  ModalEvent* modal_event;
+  OpEvState op_event;
+  OpArg* modalevent;
 };
 
 void initOps(struct Seance* C);

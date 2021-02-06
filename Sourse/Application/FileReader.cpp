@@ -5,9 +5,14 @@
 #include <fstream>
 #include <sstream>
 
-DataBlock* DataBlock::find(Str& BlockName) {
-  DO_FOREACH_IF(return iter, DataBlock, list, iter->BlockName == BlockName);
+DataBlock* DataBlock::find(char* BlockName) {
+  Str name(BlockName);
+  DO_FOREACH_IF(return iter, DataBlock, list, iter->BlockName == name);
   return nullptr;
+}
+
+DataBlock::~DataBlock() {
+  list.del();
 }
 
 void file_to_str(Str* filepath, Str& out) {
@@ -75,7 +80,7 @@ void write_val_yml(DataBlock* db, Str* str, DBType type, Range rng) {
     }
 
     case DBType::BOOL: {
-      db->bollean = str->str[rng.strt] == 't' ? 1 : 0;
+      db->boolean = str->str[rng.strt] == 't' ? 1 : 0;
       return;
     }
 

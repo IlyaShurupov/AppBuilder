@@ -9,7 +9,7 @@ struct Window {
 
   // UI layout of window
   struct UIItem *UIroot;
-  struct UserInputs *user_inputs;
+  struct UInputs *user_inputs;
 
   // Creates empty window
   Window(struct Str* configfolder, List<struct Operator>* operators);

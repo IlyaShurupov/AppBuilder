@@ -17,11 +17,12 @@ struct DataBlock {
 
   int integer = 0;
   float floating = 0;
-  bool bollean = 0;
+  bool boolean = 0;
   Str string;
   List<DataBlock> list;
 
-  DataBlock* find(Str& BlockName);
+  DataBlock* find(char* BlockName);
+  ~DataBlock();
 };
 
 struct DataBlock* Read_Yaml(struct Str* filepath);
