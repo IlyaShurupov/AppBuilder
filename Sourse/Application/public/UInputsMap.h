@@ -106,20 +106,9 @@ struct UInputs {
 
 template <class type>
 struct Cond {
-
   type* target = nullptr;
   type trigger_state;
-
-  type* (*find_target)(Str* string, void* sourse) = nullptr;
-  type (*to_state)(Str* string) = nullptr;
-
   bool met() { return *target == trigger_state; }
-
-  void Compile(DataBlock* db, void* sourse) {
-    target = find_target(&db->find("Name")->string, sourse);
-    trigger_state = to_state(&db->find("State")->string);
-  }
-
 };
 
 template <class type>
@@ -139,17 +128,23 @@ struct Conditions {
     return true;
   }
 
+  type* (*find_target)(Str* string, void* sourse) = nullptr;
+  type (*to_state)(Str* string) = nullptr;
+
   void Compile(DataBlock* db, void* sourse) {
 
-    any = db->find("Logic")->boolean;
+    DataBlock* condlistdb = nullptr;
+    any = db->find("Logic")->string == "ANY";
     List<DataBlock>* conds_list = &db->find("List")->list;
-
     FOREACH(conds_list, DataBlock, node) {
       Cond<type>* cond = NEW_DBG(Cond<type>) Cond<type>();
-      cond->Compile(node->Data, sourse);
+      cond->target = find_target(&node->Data->find("Name")->string, sourse);
+      cond->trigger_state = to_state(&node->Data->find("State")->string);
+      conds.add(cond);
     }
   }
 
+  ~Conditions() { conds.del(); }
 };
 
 struct Trigger {
@@ -174,6 +169,7 @@ struct OPInterface {
   void proc(List<OpThread>* queue);
 
   void Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIItem* root);
+  ~OPInterface();
 };
 
 struct KeyMap {

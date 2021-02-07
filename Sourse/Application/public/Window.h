@@ -10,7 +10,7 @@ struct Window {
   // UI layout of window
   struct UIItem *UIroot;
   struct UInputs *user_inputs;
-
+  struct KeyMap* keymap;
   // Creates empty window
   Window(struct Str* configfolder, List<struct Operator>* operators);
 

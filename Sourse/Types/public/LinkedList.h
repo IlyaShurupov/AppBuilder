@@ -305,7 +305,9 @@ void List<Type>::delnode(Node<Type>* node) {
 
 template <typename Type>
 inline void List<Type>::release() {
-  del(0, length, false);
+  if (length) {
+    del(0, length - 1, false);
+  }
 }
 
 template <typename Type>

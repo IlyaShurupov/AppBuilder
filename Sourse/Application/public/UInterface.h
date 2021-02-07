@@ -39,6 +39,12 @@ struct UIItem {
   void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
 
+  Rect<float> rect;
+  vec2<bool> rigid;
+  vec2<bool> inv_pos;
+  vec2<float> minsize;
+  bool ownbuff = true;
+
   // Event info
   UIIstate state;
   bool redraw = true;
@@ -48,17 +54,11 @@ struct UIItem {
   Wrap wrap;
   bool hide = false;
   Rect<float> prev_rect;
-  Rect<float> rect;
-  vec2<float> minsize;
-  vec2<bool> rigid;
-  vec2<bool> inv_pos;
-
+  
   // Draw info
-  bool ownbuff = true;
   FBuff<RGBA_32>* buff = nullptr;
   void* CustomData = nullptr;
 
-  void Compile(List<Operator>* ops, struct DataBlock* db, struct Window* prnt);
   UIItem* find(struct Str* string);
 
  private:
@@ -71,3 +71,5 @@ struct UIItem {
   void save_config();
   bool valid_resize(Rect<float>& newrec, bool dir);
 };
+
+UIItem* UICompile(List<Operator>* ops, struct DataBlock* db, struct Window* prnt);

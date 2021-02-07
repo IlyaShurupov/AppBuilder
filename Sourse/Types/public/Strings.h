@@ -1,10 +1,10 @@
 #pragma once
 
-typedef long long int str_idx;
+typedef long int str_idx;
 
 struct Range {
-  str_idx strt = -1;
-  str_idx end = -1;
+  str_idx strt;
+  str_idx end;
 
   str_idx len();
   bool valid();

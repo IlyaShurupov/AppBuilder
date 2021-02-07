@@ -50,32 +50,81 @@ void exclude_spaces(Str* str, Range* rng) {
   }
 }
 
-void touple_from_str(Str* str, Range& rng, int tpl[2]) {
-  Range tplrng[2];
-  tplrng[0].strt++;
-  tplrng[1].strt--;
-  tplrng[0].end = tplrng[1].strt = str->find(',', tplrng[0]);
-
-  for (char i = 0; i < 2; i++) {
-    exclude_spaces(str, &tplrng[i]);
-    Str integer;
-    integer.coppy(*str, tplrng[i]);
-    tpl[0] = std::stoi(std::string(integer.str));
+void write_coppound_name(DataBlock* db, Str* str, Range in) {
+  exclude_spaces(str, &in);
+  if (str->str[in.strt] == '-') {
+    db->BlockName = "ListItem";
+    return;
   }
+  in.end = str->rfind(':', in) - 1;
+  db->BlockName.coppy(*str, in);
 }
 
-void write_val_yml(DataBlock* db, Str* str, DBType type, Range rng) {
+void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng);
+DBType dblock_type_yml(DataBlock* db, Str* str, Range* in);
 
-  str_idx assign = str->find(':', rng);
-  db->BlockName.coppy(*str, Range(rng.strt, assign));
-  rng.strt = assign;
+void write_array_yml(DataBlock* db, Str* str, Range rng) {
+
+  DataBlock* writeto = db;
+
+  if (str->str[rng.strt] == '-') {
+    write_coppound_name(db, str, rng);
+    //DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+    //db->type = DBType::COMPOUND;
+    //db->list.add(newdb);
+    //writeto = newdb;
+  } else {
+    write_coppound_name(db, str, rng);
+  }
+
+  rng.strt = str->find('[', rng);
+
+  Range irange(rng);
+  while ((irange.end = str->find(',', irange)) != -1) {
+
+    DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+    db->list.add(newdb);
+
+    irange.end--;
+    irange.strt++;
+    write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
+    irange.end += 2;
+    irange.strt = irange.end;
+  }
+
+  DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+  db->list.add(newdb);
+  irange.end = rng.end - 1;
+  write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
+}
+
+void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng) {
 
   exclude_spaces(str, &rng);
 
-  switch (db->type) {
+  if (type == DBType::COMPOUND) {
+    write_coppound_name(db, str, rng);
+    return;
+
+  } else if (type == DBType::ARRAY) {
+    write_array_yml(db, str, rng);
+    return;
+  }
+
+  str_idx assign = str->find(':', rng) - 1;
+  if (assign == -2) {
+    db->BlockName = "UNNAMED";
+  } else {
+    db->BlockName.coppy(*str, Range(rng.strt, assign));
+    rng.strt = assign + 2;
+  }
+
+  exclude_spaces(str, &rng);
+
+  switch (type) {
 
     case DBType::STRING: {
-      db->string.coppy(*str, rng);
+      db->string.coppy(*str, Range(rng.strt + 1, rng.end - 1));
       return;
     }
 
@@ -97,47 +146,38 @@ void write_val_yml(DataBlock* db, Str* str, DBType type, Range rng) {
       db->integer = std::stoi(std::string(integer.str));
       return;
     }
-
-    case DBType::TOUPLE: {
-      int intgr[2]; 
-      touple_from_str(str, rng, intgr);
-      db->list.add(NEW_DBG(DataBlock) DataBlock());
-      db->list.last().Data->integer = intgr[0];
-      db->list.add(NEW_DBG(DataBlock) DataBlock());
-      db->list.last().Data->integer = intgr[1];
-    }
   }
 }
 
-DBType dblock_type_yml(Str* str, Range* in) {
+DBType dblock_type_yml(DataBlock* db, Str* str, Range* in) {
 
   exclude_spaces(str, in);
 
-  switch (str->str[in->strt]) {
+  switch (str->str[in->end]) {
     case ':':
     case '-':
-      return DBType::COMPOUND;
+      return db->type = DBType::COMPOUND;
 
     case 'e':
     case 's':
-      return DBType::BOOL;
+      return db->type = DBType::BOOL;
 
     case '"':
-      return DBType::STRING;
+      return db->type = DBType::STRING;
 
     case ']':
-      return DBType::TOUPLE;
+      return db->type = DBType::ARRAY;
 
     default:
       for (str_idx i = in->strt; i < in->end; i++) {
         if (str->str[i] == '.') {
-          return DBType::FLOAT;
+          return db->type = DBType::FLOAT;
         }
       }
-      return DBType::INT;
+      return db->type = DBType::INT;
   }
 
-  return DBType::BOOL;
+  return db->type = DBType::BOOL;
 }
 
 bool find_dblock_yml(Str* str, Range in, Range& out) {
@@ -168,12 +208,15 @@ bool find_dblock_yml(Str* str, Range in, Range& out) {
       }
 
       if (!nonempthy) {
+        out.strt = out.end + 1;
+        in.strt = out.end + 1;
         continue;
       }
     }
     keep = false;
   }
-  
+
+  out.end--;
   return true;
 }
 
@@ -185,27 +228,26 @@ int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range& in) {
 
   while (find_dblock_yml(str, in, dbrange)) {
 
-    in.strt = dbrange.end;
-
     clm = str_tab_size(str, dbrange.strt);
 
-    if (clm < coloum) {
+    if (clm <= coloum) {
       return clm;
-    } 
+    }
+
+    in.strt = dbrange.end + 2;
 
     DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
-    DBType dbtype = dblock_type_yml(str, &dbrange);
+    DBType dbtype = dblock_type_yml(newdb, str, &dbrange);
 
     prnt->list.add(newdb);
+
+    write_to_db_yml(newdb, str, dbtype, dbrange);
 
     if (dbtype == DBType::COMPOUND) {
       if (read_dblock_yml(newdb, str, clm, in) < clm) {
         return clm;
       }
-    } else {
-      write_val_yml(newdb, str, dbtype, dbrange);
     }
-
   }
 
   return 0;
@@ -215,7 +257,12 @@ DataBlock* Read_Yaml(Str* filepath) {
   Str file;
   file_to_str(filepath, file);
 
+  if (file.str[file.length - 1] != '\n') {
+    file += Str("\n");
+  }
+
   DataBlock* dblock = NEW_DBG(DataBlock) DataBlock();
+  dblock->BlockName.coppy(*filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
   read_dblock_yml(dblock, &file, -1, Range(0, file.length));
   return dblock;
 }

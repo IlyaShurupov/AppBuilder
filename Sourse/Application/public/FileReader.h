@@ -8,7 +8,7 @@ enum class DBType {
   BOOL,
   STRING,
   COMPOUND,
-  TOUPLE,
+  ARRAY,
 };
 
 struct DataBlock {

@@ -11,17 +11,28 @@ bool Trigger::active() {
 
 void OPInterface::proc(List<OpThread>* queue) {
   if (op_thread && op_thread->state != ThreadState::RUNNING) {
-    FREE(op_thread);
+    DELETE_DBG(OpThread, op_thread);
     op_thread = nullptr;
   }
 
   FOREACH(&triggers, Trigger, node) {
     Trigger* trigger = node->Data;
     if ((!op_thread && !trigger->runtime) || (op_thread && trigger->runtime)) {
-      IF(!node->Data->active(), continue;);
-      queue->add(NEW_DBG(OpThread) OpThread(target, OpEvState::INVOKE, &trigger->arg));
+      if (node->Data->active()) {
+
+        if (node->Data->runtime) {
+          op_thread->modalevent = &node->Data->arg;
+        } else {
+          op_thread = NEW_DBG(OpThread) OpThread(target, OpEvState::INVOKE, nullptr);
+          queue->add(op_thread);
+        }
+      }
     }
   }
+}
+
+OPInterface::~OPInterface() {
+  triggers.del(); 
 }
 
 void KeyMap::evaluate(List<OpThread>* exec_queue) {
@@ -38,13 +49,15 @@ InputState* input_state_find(Str* string, void* uinputs) {
     if (input->idname == *string) {
       return &input->state;
     }
+    input = input + 1;
   }
 
   return nullptr;
 }
 
 UIIstate* uii_state_find(Str* string, void* uiroot) {
-  
+  UIItem* root = (UIItem*)uiroot;
+  return &root->find(string)->state;
 }
 
 InputState input_state_from_str(Str* string) {
@@ -75,12 +88,23 @@ UIIstate uii_state_from_str(Str* string) {
 
 void Trigger::Compile(DataBlock* db, UInputs* uinputs, UIItem* root) {
 
-  runtime = db->find("OnlyRunTime")->boolean;
-  arg.idname = db->find("Argument")->string;
   DataBlock* conditionsdb = db->find("Conditions");
+  runtime = db->find("Runtime")->boolean;
+  arg.idname = db->find("Argument")->string;
   
-  key_conds.Compile(conditionsdb->find("Keys"), uinputs);
-  scope_conds.Compile(conditionsdb->find("Scopes"), root);
+  DataBlock* keycondsdb = conditionsdb->find("Keys");
+  if (keycondsdb) {
+    key_conds.find_target = input_state_find;
+    key_conds.to_state = input_state_from_str;
+    key_conds.Compile(keycondsdb, uinputs);
+  }
+
+  DataBlock* scopecondsdb = conditionsdb->find("Scopes");
+  if (scopecondsdb) {
+    scope_conds.find_target = uii_state_find;
+    scope_conds.to_state = uii_state_from_str;
+    scope_conds.Compile(scopecondsdb, root);
+  }
 }
 
 
@@ -101,7 +125,7 @@ void KeyMap::Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIIte
 
   DataBlock* kmdb = db->find("KeyMap");
 
-  FOREACH(&db->list, DataBlock, opi_node) {
+  FOREACH(&kmdb->list, DataBlock, opi_node) {
     
     OPInterface* opintrface = NEW_DBG(OPInterface) OPInterface();
     opintrface->Compile(opi_node->Data, ops, uinputs, root);

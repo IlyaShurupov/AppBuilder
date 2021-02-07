@@ -7,8 +7,8 @@ UIItems:
         Type: "Canvas"
         
         Dimentions:
-            Size: [300, 300]
-            Pos: [100, 100]
+            Size: [1300, 700]
+            Pos: [290, 150]
 
         Rules:
             AttachCorner: "TOPLEFT"

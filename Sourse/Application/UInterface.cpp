@@ -452,18 +452,11 @@ void UIdraw(UIItem* This, UIItem* project_to) {
 void ui_add_root(UIItem * UIroot) {
   UIroot->DrawBody = UIdraw;
   UIroot->ownbuff = true;;
-  UIroot->buff->resize(UIroot->rect.size.x, UIroot->rect.size.y);
+  UIroot->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(UIroot->rect.size.x, UIroot->rect.size.y);
 }
 
 // ---------------------- UI compiling -------------------------  //
 
-void dimentions_db_to_rect(Rect<float>& rect, DataBlock* db) {
-  DataBlock* rectdb = db->find("Dimentions");
-  DataBlock* size = rectdb->find("Size");
-  DataBlock* pos = rectdb->find("Pos");
-  rect.size = vec2<float>((float)size->list[0]->integer, (float)size->list[1]->integer);
-  rect.pos = vec2<float>((float)pos->list[0]->integer, (float)pos->list[1]->integer);
-}
 
 struct PreCompUII {
   PreCompUII(UIItem* item, Str* parent) {
@@ -474,21 +467,34 @@ struct PreCompUII {
   Str* parent;
 };
 
-void UIItem::Compile(List<Operator>* ops, DataBlock* db, Window* prnt) {
+UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
 
+  UIItem* root = nullptr;
   List<PreCompUII> pcuii;
-  UIItem* self = nullptr; 
+  DataBlock* uilistdb = db->find("UIItems");
 
-  FOREACH(&db->list, DataBlock, inode) {
+  FOREACH(&uilistdb->list, DataBlock, inode) {
 
     DataBlock* UIdb = inode->Data;
     UIItem* uiitem = NEW_DBG(UIItem) UIItem();
 
     uiitem->hrchy.id = UIdb->find("Name")->string; 
-    dimentions_db_to_rect(uiitem->rect, UIdb);
+
+    DataBlock* dimentionsdb = UIdb->find("Dimentions");
+    DataBlock* size = dimentionsdb->find("Size");
+    DataBlock* pos = dimentionsdb->find("Pos");
+    uiitem->rect.size = vec2<float>((float)size->list[0]->integer, (float)size->list[1]->integer);
+    uiitem->rect.pos = vec2<float>((float)pos->list[0]->integer, (float)pos->list[1]->integer);
+
+    DataBlock* rulesdb = UIdb->find("Rules");
+    DataBlock* min = rulesdb->find("MinSize");
+    uiitem->minsize = vec2<float>((float)min->list[0]->integer, (float)min->list[1]->integer);
+
+    DataBlock* rigiddb = rulesdb->find("Rigid");
+    uiitem->rigid = vec2<bool>(rigiddb->list[0]->boolean, rigiddb->list[1]->boolean);
 
     Str* uiitype = &UIdb->find("Type")->string; 
-    if (*uiitype == "canvas") {
+    if (*uiitype == "Canvas") {
       ui_add_root(uiitem);
     }
 
@@ -496,7 +502,9 @@ void UIItem::Compile(List<Operator>* ops, DataBlock* db, Window* prnt) {
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {
-    if (!(*inode->Data->parent == "None")) {
+    if (*inode->Data->parent == "None") {
+      root = inode->Data->item;
+    } else {
       FOREACH(&pcuii, PreCompUII, jnode) {
         if (*jnode->Data->parent == inode->Data->item->hrchy.id) {
           jnode->Data->item->hrchy.join(inode->Data->item);
@@ -506,6 +514,5 @@ void UIItem::Compile(List<Operator>* ops, DataBlock* db, Window* prnt) {
     }
   }
 
-
-  pcuii.del();
+  return root;
 }

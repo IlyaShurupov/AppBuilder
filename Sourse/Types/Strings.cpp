@@ -32,7 +32,9 @@ bool Range::valid() {
   return (strt > 0 && end > 0 && end >= strt);
 }
 
-Range::Range() {}
+Range::Range() {
+  strt = end = -1;
+}
 
 Range::Range(str_idx strt, str_idx end) {
   this->strt = strt;

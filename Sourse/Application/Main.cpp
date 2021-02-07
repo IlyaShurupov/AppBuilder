@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
       Node<OpThread>* del_node = node;
       node = node->Next;
       if (thread->state == ThreadState::DENIED || thread->state == ThreadState::CLOSED) {
-        C.op_threads.del(del_node);
+        C.op_threads.delnode(del_node);
       }
     }
 

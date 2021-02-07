@@ -12,8 +12,16 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
   Str ui_path;
   ui_path = *configfolder;
-  ui_path += Str("UIs\\Default.yaml");
-  UIroot = UI_compile(operators, &ui_path, this);
+  ui_path += Str("UInterface\\Default.yaml");
+  DataBlock* uidb = Read_Yaml(&ui_path);
+  UIroot = UICompile(operators, uidb, this);
+
+  Str km_path;
+  km_path = *configfolder;
+  km_path += Str("UInputsMap\\Default.yaml");
+  DataBlock* kmdb = Read_Yaml(&km_path);
+  keymap = NEW_DBG(KeyMap) KeyMap();
+  keymap->Compile(kmdb, operators, user_inputs, UIroot);
 
   // init sys handler
   Rect<SCR_UINT> rect(UIroot->rect);
@@ -51,9 +59,10 @@ void Window::Draw() {
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   SysH->getUserInputs(user_inputs, scr_size.y);
   if (this->IsActive() && user_inputs->IsEvent) {
-    vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-    UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
+    keymap->evaluate(op_threads);
   }
+  vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
+  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {
