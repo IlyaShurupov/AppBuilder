@@ -184,7 +184,7 @@ str_idx Str::find(Str& string, Range& range) {
 }
 
 str_idx Str::find(const char character, Range& range) {
-  for (str_idx i = range.strt; i < range.end; i++) {
+  for (str_idx i = range.strt; i <= range.end; i++) {
     if (character == str[i]) {
       return i;
     }
@@ -193,7 +193,7 @@ str_idx Str::find(const char character, Range& range) {
 }
 
 str_idx Str::rfind(const char character, Range& range) {
-  for (str_idx i = range.end; i > range.strt; i--) {
+  for (str_idx i = range.end; i >= range.strt; i--) {
     if (character == str[i]) {
       return i;
     }

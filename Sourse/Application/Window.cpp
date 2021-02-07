@@ -62,7 +62,7 @@ void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
     keymap->evaluate(op_threads);
   }
   vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->Cursor + pos, C);
+  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->PrevCursor + pos, C);
 }
 
 void Window::SendBuffToSystem() {

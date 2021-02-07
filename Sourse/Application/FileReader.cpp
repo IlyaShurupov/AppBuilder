@@ -48,6 +48,7 @@ void exclude_spaces(Str* str, Range* rng) {
     }
     break;
   }
+
 }
 
 void write_coppound_name(DataBlock* db, Str* str, Range in) {
@@ -56,7 +57,7 @@ void write_coppound_name(DataBlock* db, Str* str, Range in) {
     db->BlockName = "ListItem";
     return;
   }
-  in.end = str->rfind(':', in) - 1;
+  in.end = str->find(':', in) - 1;
   db->BlockName.coppy(*str, in);
 }
 
@@ -67,15 +68,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
 
   DataBlock* writeto = db;
 
-  if (str->str[rng.strt] == '-') {
-    write_coppound_name(db, str, rng);
-    //DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
-    //db->type = DBType::COMPOUND;
-    //db->list.add(newdb);
-    //writeto = newdb;
-  } else {
-    write_coppound_name(db, str, rng);
-  }
+  write_coppound_name(db, str, rng);
 
   rng.strt = str->find('[', rng);
 
@@ -90,6 +83,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
     write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
     irange.end += 2;
     irange.strt = irange.end;
+    irange.end = rng.end;
   }
 
   DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
