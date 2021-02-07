@@ -1,6 +1,0 @@
-< "Resize Window" ({"RMB":"HOLD"}  {"ALT_L":"HOLD"}) [[ "FINISH" : ({"RMB":"RELEASED"}) ]]>
-< "Move Window" ({"ALT_L":"HOLD"} {"LMB":"HOLD"}) [[ "FINISH" : ({"LMB":"RELEASED"}) ]]>
-< "End Seance" ({"ESCAPE":"RELEASED"}) >
-< "End Seance" ({"SYS_DESTROY_COMMAND":"PRESSED"}) >
-< "Toggle Console" ({"C":"RELEASED"} {"ALT_R":"HOLD"}) >
-< "dummy_op"  : (  {"D":"PRESSED" }  {"A":"HOLD"}) [ [  "CANCEL" : ({"G":"RELEASED"})] ["CANCEL" : ( {"D":"PRESSED"} {"D":"PRESSED" } )]]>

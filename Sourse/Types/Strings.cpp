@@ -27,13 +27,23 @@ char* getExecutablePath() {
 str_idx Range::len() {
   return end - strt + 1;
 }
+
 bool Range::valid() {
   return (strt > 0 && end > 0 && end >= strt);
 }
-Range::Range() {}
+
+Range::Range() {
+  strt = end = -1;
+}
+
 Range::Range(str_idx strt, str_idx end) {
   this->strt = strt;
   this->end = end;
+}
+
+Range::Range(Range& rng) {
+  strt = rng.strt;
+  end = rng.end;
 }
 
 
@@ -174,7 +184,7 @@ str_idx Str::find(Str& string, Range& range) {
 }
 
 str_idx Str::find(const char character, Range& range) {
-  for (str_idx i = range.strt; i < range.end; i++) {
+  for (str_idx i = range.strt; i <= range.end; i++) {
     if (character == str[i]) {
       return i;
     }
@@ -183,7 +193,7 @@ str_idx Str::find(const char character, Range& range) {
 }
 
 str_idx Str::rfind(const char character, Range& range) {
-  for (str_idx i = range.end; i > range.strt; i--) {
+  for (str_idx i = range.end; i >= range.strt; i--) {
     if (character == str[i]) {
       return i;
     }

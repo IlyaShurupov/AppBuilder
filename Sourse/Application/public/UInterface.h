@@ -3,7 +3,7 @@
 #include "FrameBuff.h"
 #include "Operator.h"
 
-enum struct UIstate {
+enum struct UIIstate {
   NONE = 0,
   ENTERED,
   INSIDE,
@@ -19,39 +19,47 @@ struct Wrap {
 
 struct UIItem {
 
-  UIItem(vec2<SCR_UINT>* size);
+  UIItem();
   ~UIItem();
 
-  Hierarchy<UIItem, List<UIItem>, 0> hrchy;
-  Str idname;
+  Hrchy<UIItem> hrchy;
 
-  // Event info
-  UIstate state;
-  bool redraw = true;
+  // Save UI of window
+  void OnWrite();
 
-  // Edit info
-  bool hide = false;
-  Rect<float> rect;
-  Rect<float> prev_rect;
-  vec2<float> minsize;
-  vec2<bool> rigid;
-  vec2<bool> inv_pos;
-  Wrap wrap;
-  char flag = 0;
-
-  // Draw info
-  bool ownbuff = true;
-  FBuff<RGBA_32>* buff = nullptr;
+  // Restore saved UI
+  void OnRead();
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
-  void ProcEvent(List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void ProcEvent(List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UserInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
+
+  Rect<float> rect;
+  vec2<bool> rigid;
+  vec2<bool> inv_pos;
+  vec2<float> minsize;
+  bool ownbuff = true;
+
+  // Event info
+  UIIstate state;
+  bool redraw = true;
+
+  // Edit info
+  char flag = 0;
+  Wrap wrap;
+  bool hide = false;
+  Rect<float> prev_rect;
+  
+  // Draw info
+  FBuff<RGBA_32>* buff = nullptr;
   void* CustomData = nullptr;
+
+  UIItem* find(struct Str* string);
 
  private:
   void resize_discard(bool dir);
@@ -64,4 +72,4 @@ struct UIItem {
   bool valid_resize(Rect<float>& newrec, bool dir);
 };
 
-UIItem* UI_compile(List<Operator>* operators, Str* ui_path, struct Window* prnt);
+UIItem* UICompile(List<Operator>* ops, struct DataBlock* db, struct Window* prnt);

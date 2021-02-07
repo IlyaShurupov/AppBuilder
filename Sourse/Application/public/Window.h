@@ -9,8 +9,8 @@ struct Window {
 
   // UI layout of window
   struct UIItem *UIroot;
-  struct UserInputs *user_inputs;
-
+  struct UInputs *user_inputs;
+  struct KeyMap* keymap;
   // Creates empty window
   Window(struct Str* configfolder, List<struct Operator>* operators);
 
@@ -47,5 +47,4 @@ struct Window {
   // This is where interactin with the system happends
   // Only things we need from the system are Fbuffer & user inputs
   struct SystemHandler* SysH;
-  struct CompiledKeyMap *compiled_key_map;
 };

@@ -16,7 +16,7 @@
 #include <d2d1.h>
 #include <windows.h>
 #include "FrameBuff.h"
-#include "public/KeyMap.h"
+#include "public/UInputsMap.h"
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -36,7 +36,7 @@ struct SystemHandler {
   ~SystemHandler();
 
   // UserInputs
-  void getUserInputs(struct UserInputs* user_inputs, SCR_UINT scry);
+  void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
 
   // Draw Fbuff.
   void SysOutput(FBuff<RGBAf>* buff);
@@ -404,10 +404,10 @@ void UpdKeySate(Input& key, bool down, bool& IsEvent) {
   }
 }
 
-void SystemHandler::getUserInputs(UserInputs* user_inputs, SCR_UINT scry) {
+void SystemHandler::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
 
   POINT cursor;
-  UserInputs& usin = *user_inputs;
+  UInputs& usin = *user_inputs;
 
   usin.IsEvent = false;
 

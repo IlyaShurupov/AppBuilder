@@ -6,7 +6,7 @@
 #include "Rect.h"
 
 #define RGBA_32 int
-#define FBFF_COLOR RGBA_32
+#define COLOR RGBA_32
 
 #define COL32_A 0xff000000
 #define COL32_R 0x00ff0000

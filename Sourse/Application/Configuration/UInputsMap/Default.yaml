@@ -1,0 +1,83 @@
+
+
+KeyMap:
+    -
+        Operator: "End Seance"
+        Triggers:
+            -   
+                Runtime: False
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "ESCAPE", State: "RELEASED"]
+
+    -
+        Operator: "Toggle Console"
+        Triggers:
+            -   
+                Runtime: False
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "ALT_L", State: "HOLD"]
+                            - [Name: "C", State: "PRESSED"]
+
+    -
+        Operator: "Resize Window"
+        Triggers:
+            -   
+                Runtime: false
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "ALT_L", State: "HOLD"]
+                            - [Name: "RMB", State: "PRESSED"]
+            -   
+                Runtime: true
+                Argument: "FINISH"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "RMB", State: "RELEASED"]
+
+
+    -
+        Operator: "Move Window"
+        Triggers:
+            -   
+                Runtime: false
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "ALT_L", State: "HOLD"]
+                            - [Name: "LMB", State: "PRESSED"]
+            -   
+                Runtime: true
+                Argument: "FINISH"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "LMB", State: "RELEASED"]
+
+    -
+        Operator: "Log Heap"
+        Triggers:
+            -   
+                Runtime: false
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "I", State: "RELEASED"]
+

@@ -11,9 +11,9 @@ set (HEADERS
     "public/Operator.h"
     "public/Seance.h"
     "public/Window.h"
-    "public/UILayout.h"
-    "public/KeyMap.h"
-)
+    "public/UInterface.h"
+    "public/UInputsMap.h"
+ "public/FileReader.h")
 
 # Source files
 set (SOURCES
@@ -21,11 +21,11 @@ set (SOURCES
     "Operator.cpp"
     "Seance.cpp"
     "Main.cpp"
-    "UILayout.cpp"
+    "UInterface.cpp"
     "Win32API.cpp"
-    "KeyMap.cpp"
+    "UInputsMap.cpp"
     "Print.cpp"
-)
+ "FileReader.cpp")
 
 
 

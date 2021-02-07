@@ -1,0 +1,44 @@
+
+UIItems:
+    -
+        Name: "Root"
+        Parent: "__NONE__"
+        Size: [1300, 700]
+        Pos: [290, 150]
+        Rigid: [false, false]
+        MinSize: [30, 30]
+        AttachCorner: "TOPLEFT"
+
+    -
+        Name: "Buttons"
+        Parent: "Root"
+        Size: [400, 200]
+        Pos: [100, 100]
+        Rigid: [true, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: false
+                Frame: true
+                Pallete: [In: 429273033, Out: 428937489]
+                Thickness: [In: 3, Out: 2]
+
+    -
+        Name: "Move Item"
+        Parent: "Buttons"
+        Size: [40, 20]
+        Pos: [20, 50]
+        Rigid: [false, false]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Button"
+            With:
+                Operator: "Move Window"
+                On: "PRESSED"
+                Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
+                Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]

@@ -1,12 +1,24 @@
 #pragma once
 
+#include "Mem.h"
+
 #define FOREACH_NODE(NodeType, List, iter_node) \
   for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
 
-#define FOREACH(List, Type, node) \
-  for (Node<Type>* node = &(List)->first(); node; node= node->Next)
+#define FOREACH(List, Type, node) for (Node<Type>* node = &(List)->first(); node; node = node->Next)
 
-#include "Mem.h"
+#define DO_FOREACH_IF(action, type, list, cond)                                         \
+  for (Node<type>* iter_node = &list.first(); iter_node; iter_node = iter_node->Next) { \
+    type* iter = iter_node->Data;                                                       \
+    if (cond)                                                                           \
+      action;                                                                           \
+  }
+
+#define FOREACH_DO(list, type, action)                                                  \
+  for (Node<type>* iter_node = &list.first(); iter_node; iter_node = iter_node->Next) { \
+    type* iter = iter_node->Data;                                                       \
+    action;                                                                             \
+  }
 
 template <typename Type>
 class Node {
@@ -69,6 +81,7 @@ class List {
   void delnode(size_t idx);
   void delnode(size_t idx_start, size_t idx_end);
   void delnode(Node<Type>* node);
+  void release();
 
   Node<Type>& first();
   Node<Type>& last();
@@ -291,6 +304,13 @@ void List<Type>::delnode(Node<Type>* node) {
 }
 
 template <typename Type>
+inline void List<Type>::release() {
+  if (length) {
+    del(0, length - 1, false);
+  }
+}
+
+template <typename Type>
 void List<Type>::popnode() {
   pop(false);
 }
@@ -312,7 +332,7 @@ size_t List<Type>::len() {
   return length;
 }
 
-template<typename Type>
+template <typename Type>
 inline void List<Type>::del() {
   if (length) {
     del(0, length - 1, true);
@@ -321,7 +341,5 @@ inline void List<Type>::del() {
 
 template <typename Type>
 List<Type>::~List() {
-  if (length) {
-    delnode(0, length - 1);
-  }
+  release();
 }
