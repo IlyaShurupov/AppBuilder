@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 3.8)
 project(PhysEngene)
 
 set (PROJECT_HEADERS
-    "public/PhysEngene.h"
+    "PhysEngene.h"
 )
 
 set (PROJECT_SOURCES
-    "PhysEngene.cpp"
+    "private/PhysEngene.cpp"
 )
 
 

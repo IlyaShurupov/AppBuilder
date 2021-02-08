@@ -6,26 +6,28 @@ project(Gamuncool)
 
 
 set (HEADERS
-    "public/Win32API.h"
-    "public/Print.h"
-    "public/Operator.h"
-    "public/Seance.h"
-    "public/Window.h"
-    "public/UInterface.h"
-    "public/UInputsMap.h"
- "public/FileReader.h")
+    "Platform/Win32API.h"
+    "Core/Print.h"
+    "Core/Operator.h"
+    "Core/Seance.h"
+    "UI/Window.h"
+    "UI/UITemplates.h"
+    "UI/UInterface.h"
+    "UI/UInputsMap.h"
+    "UI/UInputs.h" "Platform/SysHandler.h")
+
 
 # Source files
 set (SOURCES
-    "Window.cpp"
-    "Operator.cpp"
-    "Seance.cpp"
-    "Main.cpp"
-    "UInterface.cpp"
-    "Win32API.cpp"
-    "UInputsMap.cpp"
-    "Print.cpp"
- "FileReader.cpp")
+    "UI/private/Window.cpp"
+    "Core/private/Operator.cpp"
+    "Core/private/Seance.cpp"
+    "Core/private/Main.cpp"
+    "UI/private/UInterface.cpp"
+    "Platform/private/Win32API.cpp"
+    "UI/private/UITemplates.cpp"
+    "UI/private/UInputsMap.cpp"
+    "Core/private/Log.cpp")
 
 
 
@@ -36,10 +38,10 @@ add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types/public>
-              $<INSTALL_INTERFACE:/Sourse/Types/public>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast/public>
-              $<INSTALL_INTERFACE:/Sourse/RenderEngines/RayCast/public>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Application>
+              $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast>
+
 )
 
 target_link_libraries(${PROJECT_NAME} "Types.lib" "RayCast.lib" "d2d1.lib")
@@ -49,4 +51,5 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Configuration)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_CURRENT_SOURCE_DIR}/Configuration/ ${CMAKE_BINARY_DIR}/bin/Configuration)
+                       ${CMAKE_CURRENT_SOURCE_DIR}/UI/Configuration/ ${CMAKE_BINARY_DIR}/bin/Configuration)
+
