@@ -5,12 +5,12 @@
 struct HWND_;
 typedef struct HWND_* HWND;
 
-struct SystemHandler {
+struct Win32Window {
 
   bool close = false;
 
-  SystemHandler(Rect<SCR_UINT>& rect);
-  ~SystemHandler();
+  Win32Window(Rect<SCR_UINT>& rect);
+  ~Win32Window();
 
   // UserInputs
   void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
@@ -19,6 +19,7 @@ struct SystemHandler {
   void SysOutput(FBuff<RGBAf>* buff);
   void SysOutput(FBuff<RGBA_32>* buff);
 
+  void ProcSysEvents();
 
   void ShowInitializedWindow();
   void consoletoggle();
@@ -31,7 +32,7 @@ struct SystemHandler {
 
  private:
 
- static __int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+ static __int64 __stdcall win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
 
   void* hWindowIcon;
   void* hWindowIconBig;

@@ -29,12 +29,12 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 bool consolehidden = false;
 
-struct SystemHandler {
+struct Win32Window {
 
   bool close = false;
 
-  SystemHandler(Rect<SCR_UINT>& rect);
-  ~SystemHandler();
+  Win32Window(Rect<SCR_UINT>& rect);
+  ~Win32Window();
 
   // UserInputs
   void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
@@ -43,7 +43,8 @@ struct SystemHandler {
   void SysOutput(FBuff<RGBAf>* buff);
   void SysOutput(FBuff<RGBA_32>* buff);
 
-
+  void ProcSysEvents();
+  
   void ShowInitializedWindow();
   void consoletoggle();
   bool active();
@@ -55,7 +56,7 @@ struct SystemHandler {
 
   private:
 
-  static __int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+  static __int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
 
   void* hWindowIcon;
   void* hWindowIconBig;
@@ -75,7 +76,7 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-SystemHandler::SystemHandler(Rect<SCR_UINT> &rect) {
+Win32Window::Win32Window(Rect<SCR_UINT> &rect) {
 
   hWindowIcon = nullptr;
   hWindowIconBig = nullptr;
@@ -109,7 +110,7 @@ SystemHandler::SystemHandler(Rect<SCR_UINT> &rect) {
     // Register the window class.
     WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
     wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = SystemHandler::win_proc;
+    wcex.lpfnWndProc = Win32Window::win_proc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = sizeof(LONG_PTR);
     wcex.hInstance = HINST_THISCOMPONENT;
@@ -158,29 +159,28 @@ SystemHandler::SystemHandler(Rect<SCR_UINT> &rect) {
   rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
 }
 
-SystemHandler::~SystemHandler() {
+Win32Window::~Win32Window() {
   KillTimer((HWND)m_hwnd, 10);
   ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
   //((ID2D1Factory*)m_pDirect2dFactory)->Release();
   SafeRelease(&f);
-  CoUninitialize();
 }
 
 
-__int64 __stdcall SystemHandler::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
+__int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
 
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-    SystemHandler* pDemoApp = (SystemHandler*)pcs->lpCreateParams;
+    Win32Window* pDemoApp = (Win32Window*)pcs->lpCreateParams;
     SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
     result = 1;
 
   } else {
 
     LONG_PTR pDemoAppptr = static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
-    SystemHandler* pDemoApp = reinterpret_cast<SystemHandler*>(pDemoAppptr);
+    Win32Window* pDemoApp = reinterpret_cast<Win32Window*>(pDemoAppptr);
 
     bool wasHandled = false;
 
@@ -277,7 +277,7 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   ReleaseDC(NULL, hdcScr);
 }
 
-void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
+void Win32Window::SysOutput(FBuff<RGBAf>* buff) {
 
   FBuff<RGBA_32> rgba32bit;
   rgba32bit.coppy(buff);
@@ -285,7 +285,7 @@ void SystemHandler::SysOutput(FBuff<RGBAf>* buff) {
   SysOutput(&rgba32bit);
 }
 
-void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
+void Win32Window::SysOutput(FBuff<RGBA_32>* buff) {
 
   HDC hdcWindow = GetDC((HWND)m_hwnd);
 
@@ -302,7 +302,8 @@ void SystemHandler::SysOutput(FBuff<RGBA_32>* buff) {
   ReleaseDC((HWND)m_hwnd, hdcWindow);
 }
 
-void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
+
+void Win32Window::drawRect(Rect<SCR_UINT>& rect) {
   /*
   HDC hdc = BeginPaint(m_hwnd, &ps);
   //hdc = BeginPaint(m_hWnd, &ps);
@@ -349,22 +350,22 @@ void SystemHandler::drawRect(Rect<SCR_UINT>& rect) {
 }
 
 
-void SystemHandler::consoletoggle() {
+void Win32Window::consoletoggle() {
   ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
   consolehidden = !consolehidden;
 }
 
-bool SystemHandler::active() {
+bool Win32Window::active() {
   return GetForegroundWindow() == (HWND)m_hwnd;
 }
 
 // very slow!!!!!
-void SystemHandler::getScreenSize(vec2<SCR_UINT>& rect) {
+void Win32Window::getScreenSize(vec2<SCR_UINT>& rect) {
   rect.y = GetDeviceCaps(GetDC(NULL), VERTRES);
   rect.x = GetDeviceCaps(GetDC(NULL), HORZRES);
 }
 
-void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+void Win32Window::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
 
   LPRECT wrect_p = &RECT();
   GetWindowRect((HWND)m_hwnd, wrect_p);
@@ -380,7 +381,7 @@ void SystemHandler::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   rect.inv_y(scry);
 }
 
-void SystemHandler::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+void Win32Window::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   Rect<SCR_UINT> cprect = rect;
   vec2<SCR_UINT> scr_size;
 
@@ -405,74 +406,23 @@ void UpdKeySate(Input& key, bool down, bool& IsEvent) {
   }
 }
 
-void SystemHandler::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
+void Win32Window::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
 
-  POINT cursor;
   UInputs& usin = *user_inputs;
 
   usin.IsEvent = false;
 
-  usin.PrevCursor = usin.Cursor;
+  for (int i = 48; i < 58; i++) {
+    UpdKeySate((&usin.K0)[i - 48], GetAsyncKeyState(i) & 0x8000, usin.IsEvent);
+  }
 
-  GetCursorPos(&cursor);
-  cursor.y = scry - cursor.y;
-  usin.Cursor.x = (SCR_UINT)cursor.x;
-  usin.Cursor.y = (SCR_UINT)(cursor.y);
-
-  Rect<SCR_UINT> rect;
-  getRect(rect, scry);
-
-  rect.pos.x;
-  usin.Cursor = usin.Cursor - rect.pos;
-
-  usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
-  usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
-
-  usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y;
+  for (int i = 65; i < 90; i++) {
+    UpdKeySate((&usin.A)[i - 65], GetAsyncKeyState(i) & 0x8000, usin.IsEvent);
+  }
 
   UpdKeySate(usin.LMB, GetAsyncKeyState(VK_LBUTTON) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.RMB, GetAsyncKeyState(VK_RBUTTON) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.MMB, GetAsyncKeyState(VK_MBUTTON) & 0x8000, usin.IsEvent);
-
-  UpdKeySate(usin.K0, GetAsyncKeyState('0') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K1, GetAsyncKeyState('1') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K2, GetAsyncKeyState('2') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K3, GetAsyncKeyState('3') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K4, GetAsyncKeyState('4') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K5, GetAsyncKeyState('5') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K6, GetAsyncKeyState('6') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K7, GetAsyncKeyState('7') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K8, GetAsyncKeyState('8') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K9, GetAsyncKeyState('9') & 0x8000, usin.IsEvent);
-
-  UpdKeySate(usin.Q, GetAsyncKeyState('Q') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.W, GetAsyncKeyState('W') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.E, GetAsyncKeyState('E') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.R, GetAsyncKeyState('R') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.T, GetAsyncKeyState('T') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.Y, GetAsyncKeyState('Y') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.U, GetAsyncKeyState('U') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.I, GetAsyncKeyState('I') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.O, GetAsyncKeyState('O') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.P, GetAsyncKeyState('P') & 0x8000, usin.IsEvent);
-
-  UpdKeySate(usin.A, GetAsyncKeyState('A') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.S, GetAsyncKeyState('S') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.D, GetAsyncKeyState('D') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.F, GetAsyncKeyState('F') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.G, GetAsyncKeyState('G') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.H, GetAsyncKeyState('H') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.J, GetAsyncKeyState('J') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.K, GetAsyncKeyState('K') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.L, GetAsyncKeyState('L') & 0x8000, usin.IsEvent);
-
-  UpdKeySate(usin.Z, GetAsyncKeyState('Z') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.X, GetAsyncKeyState('X') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.C, GetAsyncKeyState('C') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.V, GetAsyncKeyState('V') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.B, GetAsyncKeyState('B') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.N, GetAsyncKeyState('N') & 0x8000, usin.IsEvent);
-  UpdKeySate(usin.M, GetAsyncKeyState('M') & 0x8000, usin.IsEvent);
 
   UpdKeySate(usin.SPACE, GetAsyncKeyState(VK_SPACE) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.ENTER, GetAsyncKeyState(VK_SEPARATOR) & 0x8000, usin.IsEvent);
@@ -488,21 +438,30 @@ void SystemHandler::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
   UpdKeySate(usin.CTR_R, GetAsyncKeyState(VK_RCONTROL) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.ALT_L, GetAsyncKeyState(VK_MENU) & 0x8000, usin.IsEvent);
   UpdKeySate(usin.ALT_R, GetAsyncKeyState(VK_MENU) & 0x8000, usin.IsEvent);
+  
+  usin.PrevCursor = usin.Cursor;
 
-  usin.SYS_DESTROY_COMMAND.state = close ? InputState::PRESSED : InputState::NONE;
+  POINT cursor;
+  GetCursorPos(&cursor);
+  cursor.y = scry - cursor.y;
 
-  // USRINPUT_DECL(ARROW_UP);
-  // USRINPUT_DECL(ARROW_DOWN);
-  // USRINPUT_DECL(ARROW_LEFT);
-  // USRINPUT_DECL(ARROW_RIGHT);
+  usin.Cursor.x = (SCR_UINT)cursor.x;
+  usin.Cursor.y = (SCR_UINT)(cursor.y);
 
+  usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
+  usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
+
+  usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y || usin.IsEvent;
+}
+
+void Win32Window::ProcSysEvents() {
   while (PeekMessage(&(*(MSG*)msg), (HWND)m_hwnd, 0, 0, PM_REMOVE)) {
     DispatchMessage(&(*(MSG*)msg));
     TranslateMessage(&(*(MSG*)msg));
   }
 }
 
-void SystemHandler::SetIcon(Str& stricon) {
+void Win32Window::SetIcon(Str& stricon) {
   if (hWindowIcon != NULL)
     DestroyIcon((HICON)hWindowIcon);
   if (hWindowIconBig != NULL)
@@ -518,7 +477,7 @@ void SystemHandler::SetIcon(Str& stricon) {
   }
 }
 
-void SystemHandler::ShowInitializedWindow() {
+void Win32Window::ShowInitializedWindow() {
   ShowWindow((HWND)m_hwnd, SW_SHOWNORMAL);
   UpdateWindow((HWND)m_hwnd);
 }

@@ -25,7 +25,7 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 
   // init sys handler
   Rect<SCR_UINT> rect(UIroot->rect);
-  SysH = NEW_DBG(SystemHandler) SystemHandler(rect);
+  SysH = NEW_DBG(Win32Window) Win32Window(rect);
 
   // Set icon
   Str icon_path;
@@ -46,7 +46,7 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
 Window::~Window() {
   DELETE_DBG(UIItem, UIroot);
   DELETE_DBG(UInputs, user_inputs);
-  DELETE_DBG(SystemHandler, SysH);
+  DELETE_DBG(Win32Window, SysH);
 }
 
 void Window::OnWrite() {}
@@ -59,11 +59,12 @@ void Window::Draw() {
 
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   SysH->getUserInputs(user_inputs, scr_size.y);
+  SysH->ProcSysEvents();
   if (this->IsActive() && user_inputs->IsEvent) {
     keymap->evaluate(op_threads);
   }
-  vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->PrevCursor + pos, C);
+  //vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
+  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->PrevCursor, C);
 }
 
 void Window::SendBuffToSystem() {
@@ -112,8 +113,8 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   }
 
   // update cursor pos
-  user_inputs->Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
-  user_inputs->Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
+  //user_inputs->Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
+  //user_inputs->Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
 
   Rect<float> flt_rec;
   flt_rec.size.assign((float)newrect.size.x, (float)newrect.size.y);

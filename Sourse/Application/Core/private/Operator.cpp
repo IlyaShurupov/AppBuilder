@@ -130,17 +130,17 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
 
-  vec2<SCR_UINT>* crsr = &data->win->user_inputs->Cursor;
+  vec2<SCR_UINT> crsr(data->win->user_inputs->Cursor);
   Rect<SCR_UINT> rect;
   data->win->getRect(rect);
-
+  crsr -= rect.pos;
   float fracx = rect.size.x / 3.f;
   float fracy = rect.size.y / 3.f;
 
-  data->top = crsr->y > fracy * 2.f;
-  data->right = crsr->x > fracx * 2.f;
-  data->bottom = crsr->y < fracy;
-  data->left = crsr->x < fracx;
+  data->top = crsr.y > fracy * 2.f;
+  data->right = crsr.x > fracx * 2.f;
+  data->bottom = crsr.y < fracy;
+  data->left = crsr.x < fracx;
 
   op->state = OpState::RUNNING_MODAL;
 }

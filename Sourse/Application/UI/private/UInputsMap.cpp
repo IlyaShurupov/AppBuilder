@@ -47,7 +47,7 @@ void KeyMap::evaluate(List<OpThread>* exec_queue) {
 
 InputState* input_state_find(Str* string, void* uinputs) {
   UInputs* usins = (UInputs*)uinputs;
-  Input* input = &usins->SYS_DESTROY_COMMAND;
+  Input* input = &usins->K0;
 
   while (!(input->idname == "_UIEND_")) {
     if (input->idname == *string) {

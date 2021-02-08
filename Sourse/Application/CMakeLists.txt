@@ -27,7 +27,7 @@ set (SOURCES
     "Platform/private/Win32API.cpp"
     "UI/private/UITemplates.cpp"
     "UI/private/UInputsMap.cpp"
-    "Core/private/Log.cpp")
+    "Core/private/Log.cpp" "Platform/private/SysHandler.cpp")
 
 
 

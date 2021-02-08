@@ -46,5 +46,5 @@ struct Window {
  private:
   // This is where interactin with the system happends
   // Only things we need from the system are Fbuffer & user inputs
-  struct SystemHandler* SysH;
+  struct Win32Window* SysH;
 };
