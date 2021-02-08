@@ -14,7 +14,7 @@ set (HEADERS
     "UI/UITemplates.h"
     "UI/UInterface.h"
     "UI/UInputsMap.h"
-    "UI/UInputs.h")
+    "UI/UInputs.h" "Platform/SysHandler.h")
 
 
 # Source files
