@@ -1,10 +1,10 @@
 
-#include "public/UInterface.h"
-#include "../public/Seance.h"
+#include "UI/UInterface.h"
+#include "Core/Seance.h"
 #include "Object.h"
 #include "Parser.h"
-#include "public/UITemplates.h"
-#include "public/UInputsMap.h"
+#include "UI/UITemplates.h"
+#include "UI/UInputsMap.h"
 
 UIItem::UIItem() {
   flag = 0;

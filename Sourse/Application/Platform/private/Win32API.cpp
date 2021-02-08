@@ -16,8 +16,8 @@
 #include <d2d1.h>
 #include <windows.h>
 #include "FrameBuff.h"
-#include "UI/public/UInputsMap.h"
-#include "UI/public/UInputs.h"
+#include "UI/UInputsMap.h"
+#include "UI/UInputs.h"
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

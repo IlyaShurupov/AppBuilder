@@ -1,8 +1,8 @@
 
-#include "public/UInputsMap.h"
-#include "../public/Operator.h"
-#include "public/UInterface.h"
-#include "public/UInputs.h"
+#include "UI/UInputsMap.h"
+#include "Core/Operator.h"
+#include "UI/UInterface.h"
+#include "UI/UInputs.h"
 #include "Parser.h"
 
 Input::Input(const char* name) {

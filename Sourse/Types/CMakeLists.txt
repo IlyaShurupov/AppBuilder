@@ -4,40 +4,40 @@ cmake_minimum_required(VERSION 3.8)
 project(Types)
 
 set (TYPES_HEADERS
-    "public/Vec2.h"
-    "public/Hierarchy.h"
-    "public/Strings.h"
-    "public/Rect.h"
-    "public/Mem.h"
-    "public/MathMacros.h"
-    "public/Property.h"
-    "public/Vec3.h"
-    "public/FrameBuff.h"
-    "public/LinkedList.h"
-    "public/Ray.h"
-    "public/Timer.h"
-    "public/Types.h"
-    "public/Mesh.h"
-    "public/Stack.h"
-    "public/Matrix.h"
-    "public/Object.h"
-    "public/Trig.h"
-    "public/Parser.h"
+    "Vec2.h"
+    "Hierarchy.h"
+    "Strings.h"
+    "Rect.h"
+    "Mem.h"
+    "MathMacros.h"
+    "Property.h"
+    "Vec3.h"
+    "FrameBuff.h"
+    "LinkedList.h"
+    "Ray.h"
+    "Timer.h"
+    "Types.h"
+    "Mesh.h"
+    "Stack.h"
+    "Matrix.h"
+    "Object.h"
+    "Trig.h"
+    "Parser.h"
 )
 
 
 # Source files
 set (TYPES_SOURCES
-    "Property.cpp"
-    "FrameBuff.cpp"
-    "Ray.cpp"
-    "Timer.cpp"
-    "Mem.cpp"
-    "Strings.cpp"
-    "Mesh.cpp"
-    "Object.cpp"
-    "Trig.cpp"
-    "Parser.cpp"
+    "private/Property.cpp"
+    
+    "private/Ray.cpp"
+    "private/Timer.cpp"
+    "private/Mem.cpp"
+    "private/Strings.cpp"
+    "private/Mesh.cpp"
+    "private/Object.cpp"
+    "private/Trig.cpp"
+    "private/Parser.cpp"
 )
 
 # Create the library
@@ -52,7 +52,6 @@ set_target_properties(${PROJECT_NAME}
 
 #target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-#target_include_directories(${PROJECT_NAME} PUBLIC
-#             $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Common/Memory/public>
-#             $<INSTALL_INTERFACE:/Sourse/Common/Memory/public>
-#)
+target_include_directories(${PROJECT_NAME} PUBLIC
+              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
+)

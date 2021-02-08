@@ -1,4 +1,4 @@
-#include "public/Mesh.h"
+#include "Mesh.h"
 
 StaticMesh::StaticMesh() {
 }

@@ -1,4 +1,4 @@
-#include "public/Mem.h"
+#include "Mem.h"
 
 #ifdef MEM_DEBUG
 
@@ -13,7 +13,7 @@ typedef char int1;
 #define WRAP_FILL_VAL 1  // bytes
 #endif
 
-#include "public/LinkedList.h"
+#include "LinkedList.h"
 
 struct MemHead {
   alloc_size size = 0;

@@ -3,7 +3,7 @@
 
 #include "LinkedList.h"
 #include "Strings.h"
-#include "..//..//public/Operator.h"
+#include "Core/Operator.h"
 
 struct UInputs;
 struct DataBlock;

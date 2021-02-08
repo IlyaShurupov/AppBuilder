@@ -1,11 +1,11 @@
 
-#include "public/UITemplates.h"
-#include "../public/Seance.h"
+#include "UI/UITemplates.h"
+#include "Core/Seance.h"
 #include "Object.h"
 #include "Parser.h"
-#include "public/UInputs.h"
-#include "public/UInputsMap.h"
-#include "public/UInterface.h"
+#include "UI/UInputs.h"
+#include "UI/UInputsMap.h"
+#include "UI/UInterface.h"
 
 typedef struct UIRegionData {
   Operator* op = nullptr;

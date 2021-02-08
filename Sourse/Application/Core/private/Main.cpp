@@ -2,9 +2,9 @@
 #include "Mem.h"
 #include "Strings.h"
 #include "Timer.h"
-#include "public/Operator.h"
-#include "public/Seance.h"
-#include "UI/public/Window.h"
+#include "Core/Operator.h"
+#include "Core/Seance.h"
+#include "UI/Window.h"
 
 #define FPS 120.f
 

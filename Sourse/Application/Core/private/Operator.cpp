@@ -1,12 +1,11 @@
-#include "public/Operator.h"
+#include "Core/Operator.h"
 
-#include "public/Seance.h"
-#include "UI/public/Window.h"
-#include "UI/public/UInputsMap.h"
-#include "UI/public/UInputs.h"
-#include "../RenderEngines/RayCast/public/RayCast.h"
+#include "Core/Seance.h"
+#include "UI/Window.h"
+#include "UI/UInputsMap.h"
+#include "UI/UInputs.h"
+#include "..//RenderEngines/RayCast/RayCast.h"
 
-#include "RayCast.h"
 #include "Types.h"
 
 #include <stdlib.h>

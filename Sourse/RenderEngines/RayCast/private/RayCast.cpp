@@ -1,4 +1,4 @@
-#include "public/RayCast.h"
+#include "RayCast.h"
 #include "Object.h"
 #include "Ray.h"
 

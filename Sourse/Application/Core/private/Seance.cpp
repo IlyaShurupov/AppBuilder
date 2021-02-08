@@ -1,21 +1,18 @@
 #pragma once
 
-#include "public/Seance.h"
-#include "RayCast.h"
-#include "Types.h"
-#include "public/Operator.h"
-#include "UI/public/Window.h"
-//#include "public/Print.h"
+#include "Core/Seance.h"
+#include "Core/Operator.h"
+#include "UI/Window.h"
+#include "Object.h"
 
 Seance::Seance(Str* Path) {
 
-  if (/*file specified*/ false) {
+  if (/*file specified*/ false) {  // load project
 
-    // load project
     OnRead(/*file path*/);
-  } else {
 
-    // Create dummy
+  } else {  // Load defaults
+
     initOps(this);
 
     Path->trim(Range(0, Path->rfind('\\', Range(0, Path->length))));
@@ -24,7 +21,6 @@ Seance::Seance(Str* Path) {
     Window* win2 = NEW_DBG(Window) Window(Path, &prefferences.operators);
 
     project.windows.add(win2);
-
   }
 }
 
@@ -41,14 +37,11 @@ void Seance::OnRead(/*file path*/) {}
 
 Window* Project::C_actWin() {
 
-  //return windows[0];
-
   FOREACH_NODE(Window, (&windows), win_node) {
     if (win_node->Data->IsActive()) {
       return win_node->Data;
     }
   }
-  //post_MSG(CMSGType::ERRORtype, "Active Window Not Found");
   return nullptr;
 }
 

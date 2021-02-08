@@ -1,7 +1,7 @@
 
-#include "public/Strings.h"
+#include "Strings.h"
 
-#include "public/Mem.h"
+#include "Mem.h"
 
 #include <cstdlib>
 

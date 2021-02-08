@@ -1,11 +1,11 @@
 
-#include "public/Window.h"
-#include "../public/Operator.h"
-#include "../public/Win32API.h"
+#include "UI//Window.h"
+#include "Core/Operator.h"
 #include "Parser.h"
-#include "public/UInputs.h"
-#include "public/UInputsMap.h"
-#include "public/UInterface.h"
+#include "Platform/Win32API.h"
+#include "UI/UInputs.h"
+#include "UI/UInputsMap.h"
+#include "UI/UInterface.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
   user_inputs = NEW_DBG(UInputs) UInputs();
