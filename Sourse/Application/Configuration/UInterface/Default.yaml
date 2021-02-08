@@ -14,7 +14,7 @@ UIItems:
         Parent: "Root"
         Size: [400, 200]
         Pos: [100, 100]
-        Rigid: [true, true]
+        Rigid: [false, false]
         MinSize: [10, 10]
         AttachCorner: "TOPLEFT"
 
@@ -31,7 +31,7 @@ UIItems:
         Parent: "Buttons"
         Size: [40, 20]
         Pos: [20, 50]
-        Rigid: [false, false]
+        Rigid: [true, true]
         MinSize: [10, 10]
         AttachCorner: "TOPLEFT"
 

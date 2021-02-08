@@ -1,11 +1,11 @@
 
 #include "public/Window.h"
-#include "public/Operator.h"
-#include "public/Win32API.h"
+#include "../public/Operator.h"
+#include "../public/Win32API.h"
+#include "Parser.h"
+#include "public/UInputs.h"
 #include "public/UInputsMap.h"
 #include "public/UInterface.h"
-
-//#include "public/Print.h"
 
 Window::Window(Str* configfolder, List<Operator>* operators) {
   user_inputs = NEW_DBG(UInputs) UInputs();
@@ -28,7 +28,8 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   SysH = NEW_DBG(SystemHandler) SystemHandler(rect);
 
   // Set icon
-  Str icon_path; icon_path = *configfolder;
+  Str icon_path;
+  icon_path = *configfolder;
   icon_path += Str("icon.ico");
   SysH->SetIcon(icon_path);
 

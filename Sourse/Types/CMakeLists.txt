@@ -22,6 +22,7 @@ set (TYPES_HEADERS
     "public/Matrix.h"
     "public/Object.h"
     "public/Trig.h"
+    "public/Parser.h"
 )
 
 
@@ -36,6 +37,7 @@ set (TYPES_SOURCES
     "Mesh.cpp"
     "Object.cpp"
     "Trig.cpp"
+    "Parser.cpp"
 )
 
 # Create the library

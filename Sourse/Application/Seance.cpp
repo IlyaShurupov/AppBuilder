@@ -4,7 +4,7 @@
 #include "RayCast.h"
 #include "Types.h"
 #include "public/Operator.h"
-#include "public/Window.h"
+#include "UI/public/Window.h"
 //#include "public/Print.h"
 
 Seance::Seance(Str* Path) {

@@ -1,5 +1,9 @@
 
 #include "public/UInputsMap.h"
+#include "../public/Operator.h"
+#include "public/UInterface.h"
+#include "public/UInputs.h"
+#include "Parser.h"
 
 Input::Input(const char* name) {
   idname = name;

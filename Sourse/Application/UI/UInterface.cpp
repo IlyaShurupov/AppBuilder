@@ -1,9 +1,10 @@
 
 #include "public/UInterface.h"
+#include "../public/Seance.h"
 #include "Object.h"
-#include "public/Seance.h"
+#include "Parser.h"
+#include "public/UITemplates.h"
 #include "public/UInputsMap.h"
-#include "public/FileReader.h"
 
 UIItem::UIItem() {
   flag = 0;
@@ -117,7 +118,7 @@ bool UIItem::valid_resize(Rect<float>& newrec, bool dir) {
 
   return true;
 
- DISKARD:
+DISKARD:
   rect.size[dir] = prev_rect.size[dir];
   rect.pos[dir] = prev_rect.pos[dir];
   flag = 0;
@@ -249,7 +250,7 @@ UIItem* UIItem::find(Str* string) {
     return this;
   }
 
-  UIItem* item; 
+  UIItem* item;
 
   FOREACH(&hrchy.childs, UIItem, node) {
     if (item = node->Data->find(string)) {
@@ -351,206 +352,8 @@ void UIItem::save_config() {
   FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->save_config(); }
 }
 
-// ------------------------------------ Templates  ------------------------------------------------------------- //
-
-
-// --------- Region ---------------- //
-
-typedef struct UIRegionData {
-  Operator* op = nullptr;
-  Object* RS_ptr = nullptr;
-} UIRegionData;
-
-void region_proc(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
-
-  UIRegionData* rd = (UIRegionData*)This->CustomData;
-
-  if (rd->RS_ptr) {
-
-    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
-
-  } else {
-
-    FOREACH_NODE(Object, (&C->project.collection), obj_node) {
-      if (obj_node->Data->GetRenderComponent()) {
-        rd->RS_ptr = obj_node->Data;
-        rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
-        rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
-      }
-    }
-  }
-}
-
-void ui_add_region(UIItem* region, List<Operator>* operators) {
-
-  region->ProcBody = region_proc;
- 
-  Operator* target = find_op(operators, &Str("Render To Buff"));
-
-  UIRegionData* rd = NEW_DBG(UIRegionData) UIRegionData();
-  region->CustomData = (void*)rd;
-  rd->op = target;
-}
-
-
-// --------- Button ---------------- //
-
-typedef struct Button {
-  Operator* target = nullptr;
-  OpThread* thread;
-
-  bool onpress = false;
-  COLOR col_in;
-  COLOR col_out;
-  COLOR col_hold;
-
-  OpArg pressed;
-  OpArg hold;
-  OpArg released;
-
-  bool drawhold = false;
-} Button;
-
-void button_proc(UIItem* This, List<OpThread>* queue, struct UInputs* uinpts, vec2<SCR_UINT>& crs, Seance* C) {
-  Button* btn = (Button*)This->CustomData;
-
-  if (btn->thread && btn->thread->state != ThreadState::RUNNING) {
-    DELETE_DBG(OpThread, btn->thread);
-    btn->thread = nullptr;
-    btn->drawhold = false;
-  }
-
-  if (uinpts->LMB.state == InputState::PRESSED) {
-
-    if (btn->onpress) {
-      btn->thread = NEW_DBG(OpThread) OpThread(btn->target, OpEvState::INVOKE, &btn->pressed);
-      queue->add(btn->thread);
-      btn->drawhold = true;
-    }
-
-  } else if (uinpts->LMB.state == InputState::RELEASED) {
-
-    if (!btn->onpress) {
-      btn->thread = NEW_DBG(OpThread) OpThread(btn->target, OpEvState::INVOKE, &btn->released);
-      queue->add(btn->thread);
-      btn->drawhold = true;
-
-    } else if (btn->thread) {
-      btn->thread->modalevent = &btn->released;
-    }
-
-  } else if (uinpts->LMB.state == InputState::HOLD && btn->thread) {
-    btn->thread->modalevent = &btn->hold;
-  }
-
-}
-
-void button_draw(UIItem* This, UIItem* project_to) {
-  Button* btn = (Button*)This->CustomData;
-
-  RGBA_32 color1 = 0xffffffff;
-  
-  if (btn->drawhold) {
-    color1 = btn->col_hold;
-
-  } else if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    color1 = btn->col_in;
-
-  } else {
-    color1 = btn->col_out;
-  }
-
-  Rect<SCR_UINT> rect(This->rect);
-  project_to->buff->DrawRect(rect, color1);
-}
- 
-void ui_template_button(UIItem* button, List<Operator>* operators, DataBlock* db) {
-
-  button->DrawBody = button_draw;
-  button->ProcBody = button_proc;
-  button->ownbuff = false;
-
-  Button* btn = NEW_DBG(Button) Button();
-  btn->target = find_op(operators, &db->find("Operator")->string);
-  btn->onpress = db->find("On")->string == "PRESSED";
-
-  DataBlock* argsdb = db->find("Args");
-  btn->released.idname = argsdb->find("Pressed")->string;
-  btn->hold.idname = argsdb->find("Hold")->string;
-  btn->released.idname = argsdb->find("Released")->string;
-
-  DataBlock* palleteb = db->find("Pallete");
-  btn->col_out = palleteb->find("In")->integer;
-  btn->col_in = palleteb->find("Out")->integer;
-  btn->col_hold = palleteb->find("Hold")->integer;
-
-  button->CustomData = btn;
-}
-
-// ---------  Group ---------------- //
-
-typedef struct Group {
-  COLOR in;
-  COLOR out;
-  bool frame = true;
-  int thickin;
-  int thickout;
-} Group;
-
-void group_draw(UIItem* This, UIItem* project_to) {
-
-  Group* grp = (Group*)This->CustomData;
-
-  if (!grp->frame) {
-    return;
-  }
-
-  RGBA_32 color2 = grp->in;
-  short thick = grp->thickin;
-
-  if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    color2 = grp->out;
-    thick = grp->thickout;
-  }
-
-  Rect<SCR_UINT> rect(This->rect);
-  project_to->buff->DrawBounds(rect, color2, thick);
-}
-
-void ui_template_group(UIItem* uii, DataBlock* db) {
-
-  uii->ownbuff = false;
-  uii->DrawBody = group_draw;
-
-  Group* grp = NEW_DBG(Group) Group();
-  uii->CustomData = grp;
-
-  grp->frame = db->find("Frame")->boolean;
-  
-  DataBlock* thickness = db->find("Thickness");
-  grp->thickin = thickness->find("In")->integer;
-  grp->thickout = thickness->find("Out")->integer;
-  
-  DataBlock* pallete = db->find("Pallete");
-  grp->in = pallete->find("In")->integer;
-  grp->out = pallete->find("Out")->integer;
-}
-
-// ------------------ UI Root --------------------------------- //
-
-void root_draw(UIItem* This, UIItem* project_to) {
-  RGBA_32 color = 0xff1d1d21;
-  This->buff->clear(&color);
-}
-
-void ui_template_root(UIItem* uii) {
-  uii->ownbuff = true;
-  uii->DrawBody = root_draw;
-  uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>((int)uii->rect.size.x, (int)uii->rect.size.y);
-}
 
 // ---------------------- UI compiling -------------------------  //
-
 
 struct PreCompUII {
   PreCompUII(UIItem* item, Str* parent) {
@@ -572,7 +375,7 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
     DataBlock* UIdb = inode->Data;
     UIItem* uiitem = NEW_DBG(UIItem) UIItem();
 
-    uiitem->hrchy.id = UIdb->find("Name")->string; 
+    uiitem->hrchy.id = UIdb->find("Name")->string;
     Str* parent = &UIdb->find("Parent")->string;
 
     DataBlock* size = UIdb->find("Size");
@@ -594,7 +397,7 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
 
     } else {
 
-      DataBlock * templatedb = UIdb->find("Template");
+      DataBlock* templatedb = UIdb->find("Template");
       DataBlock* usingdb = templatedb->find("Using");
       DataBlock* withdb = templatedb->find("With");
 
@@ -603,10 +406,9 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
       } else if (usingdb->string == "Group") {
         ui_template_group(uiitem, withdb);
       }
+    }
 
-    } 
-
-    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, parent)); 
+    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, parent));
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {

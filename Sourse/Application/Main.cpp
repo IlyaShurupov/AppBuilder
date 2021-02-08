@@ -4,7 +4,7 @@
 #include "Timer.h"
 #include "public/Operator.h"
 #include "public/Seance.h"
-#include "public/Window.h"
+#include "UI/public/Window.h"
 
 #define FPS 120.f
 

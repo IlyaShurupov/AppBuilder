@@ -10,22 +10,24 @@ set (HEADERS
     "public/Print.h"
     "public/Operator.h"
     "public/Seance.h"
-    "public/Window.h"
-    "public/UInterface.h"
-    "public/UInputsMap.h"
- "public/FileReader.h")
+    "UI/public/Window.h"
+    "UI/public/UITemplates.h"
+    "UI/public/UInterface.h"
+    "UI/public/UInputsMap.h"
+    "UI/public/UInputs.h")
+
 
 # Source files
 set (SOURCES
-    "Window.cpp"
+    "UI/Window.cpp"
     "Operator.cpp"
     "Seance.cpp"
     "Main.cpp"
-    "UInterface.cpp"
+    "UI/UInterface.cpp"
     "Win32API.cpp"
-    "UInputsMap.cpp"
-    "Print.cpp"
- "FileReader.cpp")
+    "UI/UITemplates.cpp"
+    "UI/UInputsMap.cpp"
+    "Log.cpp")
 
 
 

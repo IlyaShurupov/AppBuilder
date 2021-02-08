@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FrameBuff.h"
-#include "Operator.h"
+#include "..//..//public/Operator.h"
 
 enum struct UIIstate {
   NONE = 0,

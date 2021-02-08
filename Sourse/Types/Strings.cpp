@@ -3,8 +3,6 @@
 
 #include "public/Mem.h"
 
-
-//#include <string.h> // get rid of
 #include <cstdlib>
 
 inline str_idx cstrlen(const char* str) {

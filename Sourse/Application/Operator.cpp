@@ -1,9 +1,9 @@
 #include "public/Operator.h"
 
 #include "public/Seance.h"
-#include "public/Window.h"
-#include "public/UInputsMap.h"
-
+#include "UI/public/Window.h"
+#include "UI/public/UInputsMap.h"
+#include "UI/public/UInputs.h"
 #include "../RenderEngines/RayCast/public/RayCast.h"
 
 #include "RayCast.h"
