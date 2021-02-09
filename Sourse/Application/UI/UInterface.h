@@ -65,16 +65,16 @@ struct UIItem {
   void SetRect(Rect<float>& newrec);
   void move(float dx, float dy);
   void WrldPos(vec2<float>& out);
+  bool valid_resize(Rect<float>& newrec, bool dir);
 
  private:
   void resize_discard(bool dir);
-  bool resize_dir(float rescale, bool dir);
+  bool resize_dir(float rescale, bool dir, bool& root);
   void update_neighbors(bool recursive);
   void update_buff(bool recursive);
   void ResizeBody(Rect<float>& out, bool dir);
   void clear_flags();
   void save_config();
-  bool valid_resize(Rect<float>& newrec, bool dir);
 };
 
 UIItem* UICompile(List<Operator>* ops, struct DataBlock* db);

@@ -65,6 +65,7 @@ void UIItem::ProcEvent(Seance* C, vec2<SCR_UINT>& cursor) {
 void UIItem::Draw(UIItem* project_to) {
 
   IF(hide, return );
+  IF(!redraw && ownbuff, return );
 
   IF(DrawBody && (ownbuff || project_to), DrawBody(this, project_to));
 
@@ -105,10 +106,12 @@ void UIItem::Draw(UIItem* project_to) {
 void UIItem::Resize(Rect<float>& newrect) {
   update_neighbors(true);
   save_config();
-  if (resize_dir(newrect.size.y / rect.size.y, 1)) {
+  bool root = true;
+  if (resize_dir(newrect.size.y / rect.size.y, 1, root)) {
     rect.pos.y = newrect.pos.y;
   }
-  if (resize_dir(newrect.size.x / rect.size.x, 0)) {
+  root = true;
+  if (resize_dir(newrect.size.x / rect.size.x, 0, root)) {
     rect.pos.x = newrect.pos.x;
   }
   update_buff(true);
@@ -145,19 +148,17 @@ DISKARD:
   return false;
 }
 
-bool UIItem::resize_dir(float rescale, bool dir) {
+bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
   prev_rect.size[dir] = rect.size[dir];
   prev_rect.pos[dir] = rect.pos[dir];
 
-  if (!hrchy.prnt) {
-
+  if (root) {
     rect.size[dir] *= rescale;
+    root = false;
 
   } else {
-
     ResizeBody(rect, dir);
-
     IF(!valid_resize(rect, dir), return false);
   }
 
@@ -167,7 +168,7 @@ bool UIItem::resize_dir(float rescale, bool dir) {
 
   FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
     if (child_node->Data->rigid[dir]) {
-      if (!child_node->Data->resize_dir(chld_rscl, dir)) {
+      if (!child_node->Data->resize_dir(chld_rscl, dir, root)) {
         reset = true;
         break;
       }
@@ -177,7 +178,7 @@ bool UIItem::resize_dir(float rescale, bool dir) {
   if (!reset) {
     FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
       if (!(child_node->Data->rigid[dir])) {
-        if (!child_node->Data->resize_dir(chld_rscl, dir)) {
+        if (!child_node->Data->resize_dir(chld_rscl, dir, root)) {
           reset = true;
           break;
         }

@@ -27,6 +27,10 @@ struct Rect {
     return *this;
   }
 
+  bool operator==(Rect<Type>& rect) {
+    return (pos == rect.pos && size == rect.size);
+  }
+
   bool enclosed_in(Rect<Type>& rect, bool prnt = false) { 
 
     if (prnt) {

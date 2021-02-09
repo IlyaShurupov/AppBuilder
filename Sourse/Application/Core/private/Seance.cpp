@@ -8,7 +8,6 @@
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
-#include "UI/Window.h"
 
 Seance::Seance(Str* path) {
 
@@ -56,12 +55,24 @@ void Seance::OnWrite(/*file path*/) {}
 void Seance::OnRead(/*file path*/) {}
 
 void UserInterface::Input(Seance& C) {
+
+  if (!sysh->Active()) {
+    return;
+  }
+
   sysh->Inputs(*kmap->uinputs);
-  kmap->evaluate(&C.threads);
-  UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
+  
+  if (kmap->uinputs->IsEvent) {
+    kmap->evaluate(&C.threads);
+    UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
+  }
+
 }
 
 void UserInterface::Output() {
-  UIroot->Draw(nullptr);
-  sysh->Output(UIroot);
+
+  if (kmap->uinputs->IsEvent) {
+    UIroot->Draw(nullptr);
+    sysh->Output(UIroot);
+  }
 }

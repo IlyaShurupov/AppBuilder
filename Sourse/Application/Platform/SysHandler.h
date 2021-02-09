@@ -21,4 +21,5 @@ struct SysHandler {
 
   void ConsoleToggle();
   void SetIcon(Str& stricon);
+  bool Active();
 };

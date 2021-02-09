@@ -4,7 +4,6 @@
 #include "Timer.h"
 #include "Core/Operator.h"
 #include "Core/Seance.h"
-#include "UI/Window.h"
 #include "UI/UInputs.h"
 #include "Platform/SysHandler.h"
 #include "UI/UInterface.h"

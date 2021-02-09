@@ -2,7 +2,6 @@
 #include "Platform/SysHandler.h"
 
 #include "UI/UInputs.h"
-#include "UI/Window.h"
 #include "UI/UInterface.h"
 #include "Platform/private/Win32Window.h"
 
@@ -133,6 +132,22 @@ void SysHandler::ConsoleToggle() {
 
 void SysHandler::SetIcon(Str& stricon) {
   ((SyshWin32*)PlatformDepended)->icon = stricon;
+}
+
+
+bool SysHandler::Active() {
+  SyshWin32* dt = (SyshWin32*)PlatformDepended;
+
+  if (!dt->win32windows.len()) {
+    return true;
+  }
+
+  FOREACH(&dt->win32windows, Win32Window, winnode) {
+    if (winnode->Data->active()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 #elif __APPLE__

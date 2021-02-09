@@ -149,9 +149,14 @@ void ui_template_button(UIItem* button, List<Operator>* operators, DataBlock* db
 // ---------  Group ---------------- //
 
 typedef struct Group {
-  COLOR in;
-  COLOR out;
+
+  COLOR Framein;
+  COLOR Frameout;
+  COLOR Fillin;
+  COLOR Fillout;
+
   bool frame = true;
+  bool fill = false;
   int thickin;
   int thickout;
 } Group;
@@ -160,22 +165,28 @@ void group_draw(UIItem* This, UIItem* project_to) {
 
   Group* grp = (Group*)This->CustomData;
 
-  if (!grp->frame) {
-    return;
-  }
-
-  RGBA_32 color2 = grp->in;
+  RGBA_32 fillcol = grp->Fillin;
+  RGBA_32 framecol = grp->Framein;
   short thick = grp->thickin;
 
   if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    color2 = grp->out;
+    fillcol = grp->Fillout;
+    framecol = grp->Frameout;
     thick = grp->thickout;
   }
-
+  
   Rect<SCR_UINT> rect;
   rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
   rect.size.assign(This->rect.size.x, This->rect.size.y);
-  project_to->buff->DrawBounds(rect, color2, thick);
+
+  if (grp->fill) {
+    project_to->buff->DrawRect(rect, fillcol);
+  }
+
+  if (grp->frame) {
+    project_to->buff->DrawBounds(rect, framecol, thick);
+  }
+
 }
 
 void ui_template_group(UIItem* uii, DataBlock* db) {
@@ -186,6 +197,7 @@ void ui_template_group(UIItem* uii, DataBlock* db) {
   uii->CustomData = grp;
 
   grp->frame = db->find("Frame")->boolean;
+  grp->fill = db->find("Fill")->boolean;
 
   if (uii->ownbuff = db->find("OwnBuff")->boolean) {
     uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(uii->rect.size.x, uii->rect.size.y);
@@ -196,19 +208,8 @@ void ui_template_group(UIItem* uii, DataBlock* db) {
   grp->thickout = thickness->find("Out")->integer;
 
   DataBlock* pallete = db->find("Pallete");
-  grp->in = pallete->find("In")->integer;
-  grp->out = pallete->find("Out")->integer;
-}
-
-// ------------------ UI Root --------------------------------- //
-
-void root_draw(UIItem* This, UIItem* project_to) {
-  RGBA_32 color = 0xff1d1d21;
-  This->buff->clear(&color);
-}
-
-void ui_template_root(UIItem* uii) {
-  uii->ownbuff = true;
-  uii->DrawBody = root_draw;
-  uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>((int)uii->rect.size.x, (int)uii->rect.size.y);
+  grp->Framein = pallete->find("FrameIn")->integer;
+  grp->Frameout = pallete->find("FrameOut")->integer;
+  grp->Fillin = pallete->find("FillIn")->integer;
+  grp->Fillout = pallete->find("FillOut")->integer;
 }

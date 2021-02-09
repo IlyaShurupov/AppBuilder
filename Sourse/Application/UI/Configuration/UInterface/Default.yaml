@@ -3,7 +3,7 @@ UIItems:
     -
         Name: "Root"
         Parent: "__NONE__"
-        Size: [2000, 2000]
+        Size: [1920, 1080]
         Pos: [0, 0]
         Rigid: [false, false]
         MinSize: [30, 30]
@@ -14,7 +14,8 @@ UIItems:
             With:
                 OwnBuff: false
                 Frame: true
-                Pallete: [In: 429273033, Out: 428937489]
+                Fill: false
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
                 Thickness: [In: 3, Out: 2]
 
     -
@@ -31,23 +32,8 @@ UIItems:
             With:
                 OwnBuff: true
                 Frame: true
-                Pallete: [In: 429273033, Out: 428937489]
-                Thickness: [In: 3, Out: 2]
-    -
-        Name: "Window2"
-        Parent: "Root"
-        Size: [50, 50]
-        Pos: [100, 100]
-        Rigid: [false, false]
-        MinSize: [10, 10]
-        AttachCorner: "TOPLEFT"
-
-        Template:
-            Using: "Group"
-            With:
-                OwnBuff: true
-                Frame: true
-                Pallete: [In: 429273033, Out: 428937489]
+                Fill: true
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
                 Thickness: [In: 3, Out: 2]
 
     -
@@ -64,7 +50,8 @@ UIItems:
             With:
                 OwnBuff: false
                 Frame: true
-                Pallete: [In: 429273033, Out: 428937489]
+                Fill: false
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
                 Thickness: [In: 3, Out: 2]
 
     -

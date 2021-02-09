@@ -200,9 +200,16 @@ Win32Window::Win32Window(UIItem* uii) {
 }
 
 void Win32Window::Draw(UIItem* uii) {
+  
   ProcSysEvents();
-  SetRect(uii->rect, (SCR_UINT)scr_y, m_hwnd);
+
+  if (!(uii->rect == prevrec)) {
+    SetRect(uii->rect, (SCR_UINT)scr_y, m_hwnd);
+  }
+  
   Draw_RGBA_32(uii->buff, m_hwnd, hdcMem);
+
+  prevrec = uii->rect;
 }
 
 bool Win32Window::active() {

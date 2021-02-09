@@ -28,6 +28,6 @@ struct Win32Window {
   void* m_hwnd;
   void* m_pDirect2dFactory;
   void* msg;
-
+  Rect<float> prevrec;
   static __int64 __stdcall win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
 };

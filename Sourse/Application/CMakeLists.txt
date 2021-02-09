@@ -10,7 +10,7 @@ set (HEADERS
     "Core/Print.h"
     "Core/Operator.h"
     "Core/Seance.h"
-    "UI/Window.h"
+    
     "UI/UITemplates.h"
     "UI/UInterface.h"
     "UI/UInputsMap.h"
@@ -20,7 +20,7 @@ set (HEADERS
 
 # Source files
 set (SOURCES
-    "UI/private/Window.cpp"
+    
     "Core/private/Operator.cpp"
     "Core/private/Seance.cpp"
     "Core/private/Main.cpp"

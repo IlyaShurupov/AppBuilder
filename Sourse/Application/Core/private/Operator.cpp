@@ -1,11 +1,11 @@
 #include "Core/Operator.h"
 
 #include "Core/Seance.h"
-#include "UI/Window.h"
 #include "UI/UInputsMap.h"
+#include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "..//RenderEngines/RayCast/RayCast.h"
-
+#include "Platform/SysHandler.h"
 #include "Types.h"
 
 #include <stdlib.h>
@@ -89,11 +89,8 @@ void LogHeap_create(Seance* C, Operator* op) {
 // -----------  Console Toggle Operator ----------------------- //
 
 void ToggleConcole_ecec(Seance* C, Operator* op) {
-  /*
-  if (C->project.windows.len())
-    C->project.windows[0]->ToggleConsole();
+  C->ui.sysh->ConsoleToggle();
   op->state = OpState::FINISHED;
-  */
 }
 
 void ToggleConcole_invoke(Seance* C, Operator* op) {
@@ -117,11 +114,13 @@ void ToggleConcole_create(Seance* C, Operator* op) {
 // -----------  Window Resize Operator ----------------------- //
 
 struct WinResizeData {
+
   bool top = false;
   bool right = false;
   bool bottom = false;
   bool left = false;
-  //Window* win = nullptr;
+
+  UIItem* target = nullptr;
 };
 
 
@@ -131,65 +130,60 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
+  data->target = C->ui.UIroot->active_lower();
 
-  /*
-  vec2<SCR_UINT> crsr(data->win->user_inputs->Cursor);
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
-  crsr -= rect.pos;
-  float fracx = rect.size.x / 3.f;
-  float fracy = rect.size.y / 3.f;
+  vec2<float> crsr;
+  crsr.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  vec2<float> wrldpos;
+  data->target->WrldPos(wrldpos);
+  crsr -= wrldpos;
+  float fracx = data->target->rect.size.x / 3.f;
+  float fracy = data->target->rect.size.y / 3.f;
 
   data->top = crsr.y > fracy * 2.f;
   data->right = crsr.x > fracx * 2.f;
   data->bottom = crsr.y < fracy;
   data->left = crsr.x < fracx;
-  */
 
   op->state = OpState::RUNNING_MODAL;
 }
 
 // Checks if operator can be inveked
 bool WindowResize_poll(Seance* C, Operator* op) {
-  /*
-  WinResizeData* data = (WinResizeData*)op->CustomData;
-  return data->win = C->project.C_actWin();
-  */
+  UIItem* target = C->ui.UIroot->active_lower();
+  if (target->hrchy.prnt) {
+    op->CustomData = NEW_DBG(WinResizeData) WinResizeData();
+    return true;
+  }
   return false;
 }
 
 void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
-  WinResizeData* data = (WinResizeData*)op->CustomData;
+  WinResizeData* dt = (WinResizeData*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
     return;
   }
+  
+  int dx = C->ui.kmap->uinputs->Cdelta.x;
+  int dy = C->ui.kmap->uinputs->Cdelta.y;
 
-  /*
-  int dx = data->win->user_inputs->Cdelta.x;
-  int dy = data->win->user_inputs->Cdelta.y;
+  Rect<float> rect(dt->target->rect);
+  rect.size.y += dy * dt->top;
+  rect.size.x += dx * dt->right;
 
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
-
-  // rect.size.y += 2;
-  // rect.pos.y += -1;
-  rect.size.y += dy * data->top;
-  rect.size.x += dx * data->right;
-
-  if (data->bottom) {
+  if (dt->bottom) {
     rect.pos.y += dy;
     rect.size.y -= dy;
   }
 
-  if (data->left) {
+  if (dt->left) {
     rect.pos.x += dx;
     rect.size.x -= dx;
   }
 
-  data->win->setRect(rect);
-  */
+  dt->target->Resize(rect);
 }
 
 void WindowResize_create(Seance* C, Operator* op) {
@@ -207,20 +201,35 @@ void WindowResize_create(Seance* C, Operator* op) {
 
 // -----------  Window Drag Operator ----------------------- //
 
+struct Move {
+  vec2<float> startpos;
+  vec2<float> startcrs;
+  UIItem* target = nullptr;
+};
+
 void WindowDrag_ecec(Seance* C, Operator* op) {}
 
 void WindowDrag_invoke(Seance* C, Operator* op) {
+  Move* dt = (Move*)op->CustomData;
+  dt->startcrs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  dt->startpos.assign(dt->target->rect.pos.x, dt->target->rect.pos.y);
   op->state = OpState::RUNNING_MODAL;
 }
 
 // Checks if operator can be inveked
 bool WindowDrag_poll(Seance* C, Operator* op) {
-  //return op->CustomData = C->project.C_actWin();
+  UIItem* target = C->ui.UIroot->active_lower();
+  if (target->hrchy.prnt) {
+    Move* mvdt = NEW_DBG(Move) Move();
+    mvdt->target = target;
+    op->CustomData = mvdt;
+    return true;
+  }
   return false;
 }
 
 void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
-  //Window* data = (Window*)op->CustomData;
+  Move* dt = (Move*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
@@ -228,12 +237,18 @@ void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
     return;
   }
 
-  /*
-  Rect<SCR_UINT> rect;
-  data->getRect(rect);
-  rect.move(data->user_inputs->Cdelta.x, data->user_inputs->Cdelta.y);
-  data->setRect(rect);
-  */
+  vec2<float> crs;
+  crs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  vec2<float> delta = crs - dt->startcrs;
+
+  dt->target->prev_rect = dt->target->rect;
+
+  dt->target->rect.pos.x = dt->startpos.x + delta.x;
+  dt->target->valid_resize(dt->target->rect, 0);
+
+  dt->target->rect.pos.y = dt->startpos.y + delta.y;
+  dt->target->valid_resize(dt->target->rect, 1);
+
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {
