@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
       FOREACH_NODE(Window, (&C.project.windows), win_node) {
         Window* win = win_node->Data;
         win->Draw();
-        win->SendBuffToSystem();
+        //win->SendBuffToSystem();
       }
     }
 
