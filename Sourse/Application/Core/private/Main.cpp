@@ -5,6 +5,9 @@
 #include "Core/Operator.h"
 #include "Core/Seance.h"
 #include "UI/Window.h"
+#include "UI/UInputs.h"
+#include "Platform/SysHandler.h"
+#include "UI/UInterface.h"
 
 #define FPS 120.f
 
@@ -20,14 +23,11 @@ int main(int argc, char* argv[]) {
 
     timer.reset();
 
-    // Handle events for each window
-    FOREACH_NODE(Window, (&C.project.windows), win_node) {
-      Window* win = win_node->Data;
-      win->ProcessEvents(&C.op_threads, &C);
-    }
+    // Evaluate User's inputs
+    C.ui.Input(C);
 
-    // Run Operators from queu (This is where the fun happends)
-    for (Node<OpThread>* node = &C.op_threads.first(); node;) {
+    // Run Operators from queue
+    for (Node<OpThread>* node = &C.threads.first(); node;) {
 
       OpThread* thread = node->Data;
       OpEvState* op_event = &thread->op_event;
@@ -74,19 +74,11 @@ int main(int argc, char* argv[]) {
       Node<OpThread>* del_node = node;
       node = node->Next;
       if (thread->state == ThreadState::DENIED || thread->state == ThreadState::CLOSED) {
-        C.op_threads.delnode(del_node);
+        C.threads.delnode(del_node);
       }
     }
 
-    // if (C.op_threads.len())
-    {
-      // Draw each window & show updates
-      FOREACH_NODE(Window, (&C.project.windows), win_node) {
-        Window* win = win_node->Data;
-        win->Draw();
-        win->SendBuffToSystem();
-      }
-    }
+    C.ui.Output();
 
     if (!timer.timeout()) {
       TreadSleep(timer.remain());

@@ -32,11 +32,11 @@ struct UIItem {
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
-  void ProcEvent(List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void ProcEvent(Seance* C, vec2<SCR_UINT>& loc_cursor);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  void (*ProcBody)(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& loc_cursor, Seance* C);
+  void (*ProcBody)(UIItem* This, Seance* C, vec2<SCR_UINT>& loc_cursor);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
 
   Rect<float> rect;
@@ -72,4 +72,4 @@ struct UIItem {
   bool valid_resize(Rect<float>& newrec, bool dir);
 };
 
-UIItem* UICompile(List<Operator>* ops, struct DataBlock* db, struct Window* prnt);
+UIItem* UICompile(List<Operator>* ops, struct DataBlock* db);

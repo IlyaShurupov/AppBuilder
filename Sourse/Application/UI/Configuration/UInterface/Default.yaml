@@ -3,15 +3,56 @@ UIItems:
     -
         Name: "Root"
         Parent: "__NONE__"
-        Size: [1300, 700]
-        Pos: [290, 150]
+        Size: [2000, 2000]
+        Pos: [0, 0]
         Rigid: [false, false]
         MinSize: [30, 30]
         AttachCorner: "TOPLEFT"
 
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: false
+                Frame: true
+                Pallete: [In: 429273033, Out: 428937489]
+                Thickness: [In: 3, Out: 2]
+
+    -
+        Name: "Window"
+        Parent: "Root"
+        Size: [1300, 700]
+        Pos: [290, 150]
+        Rigid: [false, false]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: true
+                Frame: true
+                Pallete: [In: 429273033, Out: 428937489]
+                Thickness: [In: 3, Out: 2]
+    -
+        Name: "Window2"
+        Parent: "Root"
+        Size: [50, 50]
+        Pos: [100, 100]
+        Rigid: [false, false]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: true
+                Frame: true
+                Pallete: [In: 429273033, Out: 428937489]
+                Thickness: [In: 3, Out: 2]
+
     -
         Name: "Buttons"
-        Parent: "Root"
+        Parent: "Window"
         Size: [400, 200]
         Pos: [100, 100]
         Rigid: [false, false]

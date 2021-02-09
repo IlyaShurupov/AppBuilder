@@ -12,17 +12,20 @@ typedef struct UIRegionData {
   Object* RS_ptr = nullptr;
 } UIRegionData;
 
-void region_proc(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void region_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
+
+  UInputs* user_inputs = C->ui.kmap->uinputs;
+  List<OpThread>* threads = &C->threads;
 
   UIRegionData* rd = (UIRegionData*)This->CustomData;
 
   if (rd->RS_ptr) {
 
-    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
+    threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
 
   } else {
 
-    FOREACH_NODE(Object, (&C->project.collection), obj_node) {
+    FOREACH_NODE(Object, (&C->objects), obj_node) {
       if (obj_node->Data->GetRenderComponent()) {
         rd->RS_ptr = obj_node->Data;
         rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
@@ -62,7 +65,11 @@ typedef struct Button {
   bool drawhold = false;
 } Button;
 
-void button_proc(UIItem* This, List<OpThread>* queue, struct UInputs* uinpts, vec2<SCR_UINT>& crs, Seance* C) {
+void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
+
+  UInputs* uinpts = C->ui.kmap->uinputs;
+  List<OpThread>* queue = &C->threads;
+
   Button* btn = (Button*)This->CustomData;
 
   if (btn->thread && btn->thread->state != ThreadState::RUNNING) {
@@ -169,13 +176,16 @@ void group_draw(UIItem* This, UIItem* project_to) {
 
 void ui_template_group(UIItem* uii, DataBlock* db) {
 
-  uii->ownbuff = false;
   uii->DrawBody = group_draw;
 
   Group* grp = NEW_DBG(Group) Group();
   uii->CustomData = grp;
 
   grp->frame = db->find("Frame")->boolean;
+
+  if (uii->ownbuff = db->find("OwnBuff")->boolean) {
+    uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(uii->rect.size.x, uii->rect.size.y);
+  }
 
   DataBlock* thickness = db->find("Thickness");
   grp->thickin = thickness->find("In")->integer;

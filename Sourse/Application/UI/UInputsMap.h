@@ -1,10 +1,11 @@
 
 #pragma once
 
+#include "Core/Operator.h"
 #include "LinkedList.h"
 #include "Strings.h"
-#include "Core/Operator.h"
 
+struct UInputs;
 struct UInputs;
 struct DataBlock;
 struct UIItem;
@@ -94,9 +95,13 @@ struct OPInterface {
 
 struct KeyMap {
 
-  List<OPInterface> opiterfaces;  
+  KeyMap();
+  ~KeyMap();
+
+  List<OPInterface> opiterfaces;
+  UInputs* uinputs;
 
   void evaluate(List<OpThread>* exec_queue);
 
-  void Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIItem* root);
+  void Compile(DataBlock* db, List<Operator>* ops, UIItem* root);
 };

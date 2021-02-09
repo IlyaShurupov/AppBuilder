@@ -89,9 +89,11 @@ void LogHeap_create(Seance* C, Operator* op) {
 // -----------  Console Toggle Operator ----------------------- //
 
 void ToggleConcole_ecec(Seance* C, Operator* op) {
+  /*
   if (C->project.windows.len())
     C->project.windows[0]->ToggleConsole();
   op->state = OpState::FINISHED;
+  */
 }
 
 void ToggleConcole_invoke(Seance* C, Operator* op) {
@@ -119,7 +121,7 @@ struct WinResizeData {
   bool right = false;
   bool bottom = false;
   bool left = false;
-  Window* win = nullptr;
+  //Window* win = nullptr;
 };
 
 
@@ -130,6 +132,7 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
 
+  /*
   vec2<SCR_UINT> crsr(data->win->user_inputs->Cursor);
   Rect<SCR_UINT> rect;
   data->win->getRect(rect);
@@ -141,14 +144,18 @@ void WindowResize_invoke(Seance* C, Operator* op) {
   data->right = crsr.x > fracx * 2.f;
   data->bottom = crsr.y < fracy;
   data->left = crsr.x < fracx;
+  */
 
   op->state = OpState::RUNNING_MODAL;
 }
 
 // Checks if operator can be inveked
 bool WindowResize_poll(Seance* C, Operator* op) {
+  /*
   WinResizeData* data = (WinResizeData*)op->CustomData;
   return data->win = C->project.C_actWin();
+  */
+  return false;
 }
 
 void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
@@ -159,6 +166,7 @@ void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
     return;
   }
 
+  /*
   int dx = data->win->user_inputs->Cdelta.x;
   int dy = data->win->user_inputs->Cdelta.y;
 
@@ -179,10 +187,9 @@ void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
     rect.pos.x += dx;
     rect.size.x -= dx;
   }
-  /*
-   */
 
   data->win->setRect(rect);
+  */
 }
 
 void WindowResize_create(Seance* C, Operator* op) {
@@ -208,11 +215,12 @@ void WindowDrag_invoke(Seance* C, Operator* op) {
 
 // Checks if operator can be inveked
 bool WindowDrag_poll(Seance* C, Operator* op) {
-  return op->CustomData = C->project.C_actWin();
+  //return op->CustomData = C->project.C_actWin();
+  return false;
 }
 
 void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
-  Window* data = (Window*)op->CustomData;
+  //Window* data = (Window*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
@@ -220,10 +228,12 @@ void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
     return;
   }
 
+  /*
   Rect<SCR_UINT> rect;
   data->getRect(rect);
   rect.move(data->user_inputs->Cdelta.x, data->user_inputs->Cdelta.y);
   data->setRect(rect);
+  */
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {
@@ -266,7 +276,7 @@ void RenderToBuff_create(Seance* C, Operator* op) {
 void AddPlane_ecec(Seance* C, Operator* op) {
 
   Object* MeshObj = NEW_DBG(Object) Object();
-  C->project.collection.add(MeshObj);
+  C->objects.add(MeshObj);
 
   StaticMesh* mesh = NEW_DBG(StaticMesh) StaticMesh();
   MeshObj->SetStaticMeshComponent(mesh);
@@ -279,7 +289,7 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   mesh->Trigs.add(trig);
 
   Object* CamObj = NEW_DBG(Object) Object();
-  C->project.collection.add(CamObj);
+  C->objects.add(CamObj);
   CamObj->Pos.z += 2;
 
   Camera* cam = NEW_DBG(Camera) Camera();
@@ -288,15 +298,13 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   CamObj->SetCameraComponent(cam);
 
   Object* RndObj = NEW_DBG(Object) Object();
-  C->project.collection.add(RndObj);
+  C->objects.add(RndObj);
 
   RenderSettings* rs = NEW_DBG(RenderSettings) RenderSettings();
   RndObj->SetRenderComponent(rs);
 
   rs->setCamera(CamObj);
-  rs->setObjList(&C->project.collection);
-  /*
-  */
+  rs->setObjList(&C->objects);
 
   op->state = OpState::FINISHED;
 }
@@ -321,7 +329,7 @@ void AddPlane_create(Seance* C, Operator* op) {
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = NEW_DBG(Operator) Operator;
   Create(C, op);
-  C->prefferences.operators.add(op);
+  C->operators.add(op);
 }
 
 OpThread::OpThread(Operator* op, OpEvState op_event, OpArg* modalevent)
@@ -342,58 +350,7 @@ void initOps(Seance* C) {
 
 Operator::~Operator() {
   if (CustomData) {
-    //DELETE_DBG() CustomData;
+    FREE(CustomData);
   }
   modal_events.del();
 }
-
-
-/*
-// -----------  Operator template ----------------------- //
-
-typedef struct opnameData {
-  bool top = false;
-  bool right = false;
-  bool bottom = false;
-  bool left = false;
-  Window* win = nullptr;
-}opnameData;
-
-
-void opname_ecec(Seance * C, Operator * op) {
-  op->state = OpState::FINISHED;
-}
-
-void opname_invoke(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  op->state = OpState::RUNNING_MODAL;
-}
-
-// Checks if operator can be inveked
-bool opname_poll(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-  return data->win = C->project.C_actWin();
-}
-
-void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  if (event && event->idname == "FINISH") {
-    op->state = OpState::FINISHED;
-    return;
-  }
-}
-
-void opname_create(Seance * C, Operator * op) {
-  op->state = OpState::NONE;
-  op->CustomData = NEW_DBG() opnameData();
-
-  op->idname = "opname";
-  op->Poll = opname_poll;
-  op->Invoke = opname_invoke;
-  op->Modal = opname_modal;
-
-  op->modal_events.add(NEW_DBG() ModalEvent("FINISH"));
-}
-*/

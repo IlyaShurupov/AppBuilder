@@ -3,7 +3,8 @@
 
 #include "UI/UInputs.h"
 #include "UI/Window.h"
-
+#include "UI/UInterface.h"
+#include "Platform/private/Win32Window.h"
 
 void UpdInputSate(Input& key, bool down, bool& IsEvent) {
   if ((int)key.state == (int)down) {
@@ -25,17 +26,26 @@ void UpdInputSate(Input& key, bool down, bool& IsEvent) {
 
 #include <windows.h>
 
+struct SyshWin32 {
+  List<Win32Window> win32windows;
+  bool consolehidden = false;
+  Str icon;
+  int scr_y = GetDeviceCaps(GetDC(NULL), VERTRES);
+};
+
 SysHandler::SysHandler() {
-  CoInitialize(NULL);
-  scrsize.y = GetDeviceCaps(GetDC(NULL), VERTRES);
-  scrsize.x = GetDeviceCaps(GetDC(NULL), HORZRES);
+  PlatformDepended = NEW_DBG(SyshWin32) SyshWin32();
+  IF(SUCCEEDED(CoInitialize(NULL)));
+  ConsoleToggle();
 }
 
 SysHandler::~SysHandler() {
   CoUninitialize();
 }
 
-void SysHandler::UserInputs(UInputs& usin) {
+void SysHandler::Inputs(UInputs& usin) {
+
+  SyshWin32* dt = (SyshWin32*)PlatformDepended;
 
   usin.IsEvent = false;
 
@@ -70,7 +80,7 @@ void SysHandler::UserInputs(UInputs& usin) {
 
   POINT cursor;
   GetCursorPos(&cursor);
-  cursor.y = scrsize.y - cursor.y;
+  cursor.y = dt->scr_y - cursor.y;
 
   usin.Cursor.x = (SCR_UINT)cursor.x;
   usin.Cursor.y = (SCR_UINT)cursor.y;
@@ -81,11 +91,49 @@ void SysHandler::UserInputs(UInputs& usin) {
   usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y || usin.IsEvent;
 }
 
-void SysHandler::Output(List<Window>& windows) {}
+void SysHandler::Output(UIItem* UIroot) {
 
-void SysHandler::ConsoleToggle() {}
+  SyshWin32* dt = (SyshWin32*)PlatformDepended;
 
-void SysHandler::SetIcon(Str& stricon) {}
+  FOREACH(&UIroot->hrchy.childs, UIItem, uiinode) {
+
+    Win32Window* couple = nullptr;
+
+    FOREACH(&dt->win32windows, Win32Window, winnode) {
+      if (uiinode->Data->hrchy.id == winnode->Data->id) {
+        couple = winnode->Data;
+        break;
+      }
+    }
+
+    if (!couple) {
+      couple = NEW_DBG(Win32Window) Win32Window(uiinode->Data);
+      couple->SetIcon(dt->icon);
+      couple->id = uiinode->Data->hrchy.id;
+      dt->win32windows.add(couple);
+    }
+
+    couple->Draw(uiinode->Data);
+    couple->editflag = 1;
+  }
+
+  FOREACH(&dt->win32windows, Win32Window, winnode) {
+    if (!winnode->Data->editflag) {
+      dt->win32windows.del(winnode);
+    }
+  }
+
+}
+
+void SysHandler::ConsoleToggle() {
+  SyshWin32* dt = (SyshWin32*)PlatformDepended;
+  ShowWindow(::GetConsoleWindow(), dt->consolehidden ? SW_SHOW : SW_HIDE);
+  dt->consolehidden = !dt->consolehidden;
+}
+
+void SysHandler::SetIcon(Str& stricon) {
+  ((SyshWin32*)PlatformDepended)->icon = stricon;
+}
 
 #elif __APPLE__
 #elif __linux__

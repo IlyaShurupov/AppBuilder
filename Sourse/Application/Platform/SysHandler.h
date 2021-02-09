@@ -4,7 +4,7 @@
 #include "LinkedList.h"
 #include "Vec2.h"
 
-struct Window;
+struct UIItem;
 struct UInputs;
 struct Str;
 
@@ -13,11 +13,9 @@ struct SysHandler {
   SysHandler();
   ~SysHandler();
 
-  vec2<SCR_UINT> scrsize;
+  void Inputs(UInputs& uinputs);
 
-  void UserInputs(UInputs& uinputs);
-
-  void Output(List<Window>& windows);
+  void Output(UIItem* UIroot);
 
   void* PlatformDepended = nullptr;
 

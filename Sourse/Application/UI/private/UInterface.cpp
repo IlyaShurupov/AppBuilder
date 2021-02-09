@@ -22,7 +22,7 @@ UIItem::~UIItem() {
   }
 }
 
-void UIItem::ProcEvent(List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void UIItem::ProcEvent(Seance* C, vec2<SCR_UINT>& cursor) {
 
   IF(hide, return );
 
@@ -51,13 +51,13 @@ void UIItem::ProcEvent(List<OpThread>* op_threads, struct UInputs* user_inputs, 
   }
 
   if (state == UIIstate::INSIDE) {
-    IF(ProcBody, ProcBody(this, op_threads, user_inputs, cursor, C))
+    IF(ProcBody, ProcBody(this, C, cursor))
   }
 
   if (redraw) {
     FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
       vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
-      child_node->Data->ProcEvent(op_threads, user_inputs, (cursor - pos), C);
+      child_node->Data->ProcEvent(C, (cursor - pos));
     }
   }
 }
@@ -66,18 +66,33 @@ void UIItem::Draw(UIItem* project_to) {
 
   IF(hide, return );
 
-  IF(DrawBody, DrawBody(this, project_to));
+  IF(DrawBody && (ownbuff || project_to), DrawBody(this, project_to));
 
-  FOREACH_NODE(UIItem, (&hrchy.childs), child_node) {
+  FOREACH_NODE(UIItem, (&hrchy.childs), child) {
 
     if (ownbuff) {
-      child_node->Data->Draw(this);
+      child->Data->Draw(this);
       continue;
     }
 
-    child_node->Data->rect.pos += rect.pos;
-    child_node->Data->Draw(project_to);
-    child_node->Data->rect.pos -= rect.pos;
+    vec2<float> wrldpos;
+    
+    if (project_to) {
+
+      for (UIItem* iter = this; iter != project_to; iter = iter->hrchy.prnt) {
+        wrldpos += iter->rect.pos;
+      }
+
+      child->Data->rect.pos += wrldpos;
+      child->Data->Draw(project_to);
+      child->Data->rect.pos -= wrldpos;
+      continue;
+    }
+
+    wrldpos = child->Data->rect.pos;
+    child->Data->rect.pos.assign(0, 0);
+    child->Data->Draw(child->Data);
+    child->Data->rect.pos = wrldpos;
   }
 
   if (ownbuff && project_to) {
@@ -364,7 +379,7 @@ struct PreCompUII {
   Str* parent;
 };
 
-UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
+UIItem* UICompile(List<Operator>* ops, DataBlock* db) {
 
   UIItem* root = nullptr;
   List<PreCompUII> pcuii;
@@ -390,23 +405,16 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
     DataBlock* rigiddb = UIdb->find("Rigid");
     uiitem->rigid = vec2<bool>(rigiddb->list[0]->boolean, rigiddb->list[1]->boolean);
 
+    DataBlock* templatedb = UIdb->find("Template");
+    DataBlock* usingdb = templatedb->find("Using");
+    DataBlock* withdb = templatedb->find("With");
 
-    if (*parent == "__NONE__") {
-      root = uiitem;
-      ui_template_root(uiitem);
-
-    } else {
-
-      DataBlock* templatedb = UIdb->find("Template");
-      DataBlock* usingdb = templatedb->find("Using");
-      DataBlock* withdb = templatedb->find("With");
-
-      if (usingdb->string == "Button") {
-        ui_template_button(uiitem, ops, withdb);
-      } else if (usingdb->string == "Group") {
-        ui_template_group(uiitem, withdb);
-      }
+    if (usingdb->string == "Button") {
+      ui_template_button(uiitem, ops, withdb);
+    } else if (usingdb->string == "Group") {
+      ui_template_group(uiitem, withdb);
     }
+
 
     pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, parent));
   }
@@ -419,6 +427,8 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db, Window* prnt) {
           break;
         }
       }
+    } else {
+      root = inode->Data->item;
     }
   }
 
