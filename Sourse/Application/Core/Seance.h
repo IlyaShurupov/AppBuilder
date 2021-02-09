@@ -3,57 +3,50 @@
 #include "LinkedList.h"
 
 class Object;
-struct Window;
+struct UIItem;
 struct Operator;
 struct Str;
 struct OpThread;
+struct SysHandler;
+struct KeyMap;
+struct UInputs;
 
-struct Project {
-  // MeshObjects, Cameras, Renders...
-  List<Object> collection;
+struct UserInterface {
 
-  // UI layout
-  List<Window> windows;
+  // Visual Interface
+  UIItem* UIroot;
 
-  // save project
-  void OnWrite();
+  // Tactile Interface
+  KeyMap* kmap;
 
-  // load project
-  void OnRead();
+  // Interlayer
+  SysHandler* sysh;
 
-  Window* C_actWin();
-  ~Project();
-};
 
-struct Prefferences {
-  //UserKeyMap key_map;
-  List<Operator> operators;
-  //List<Editor> editors;
-
-  // save prefs
-  void OnWrite();
-
-  // load prefs
-  void OnRead();
-
-  ~Prefferences();
+  void Input(struct Seance& C);
+  void Output();
 };
 
 struct Seance {
+
   Seance(Str* basePath);
   ~Seance();
 
-  Prefferences prefferences;
+  // Mesh Objects, Cameras, Renders...
+  List<Object> objects;
+  
+  // Functionality of an application
+  List<Operator> operators;
 
-  // Application project
-  Project project;
+  // User Interface
+  UserInterface ui;
 
-  // All execute commands from UI (pointers to predefined operators)
-  List<OpThread> op_threads;
+  // UI requests
+  List<OpThread> threads;
 
-  // Save current context
+  // Save current seance
   void OnWrite(/*file path*/);
 
-  // load context
+  // load Seance
   void OnRead(/*file path*/);
 };

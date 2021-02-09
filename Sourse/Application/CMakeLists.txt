@@ -6,28 +6,30 @@ project(Gamuncool)
 
 
 set (HEADERS
-    "Platform/Win32API.h"
+    "Platform/private/Win32Window.h"
     "Core/Print.h"
     "Core/Operator.h"
     "Core/Seance.h"
-    "UI/Window.h"
+    
     "UI/UITemplates.h"
     "UI/UInterface.h"
     "UI/UInputsMap.h"
-    "UI/UInputs.h" "Platform/SysHandler.h")
+    "UI/UInputs.h" 
+    "Platform/SysHandler.h")
 
 
 # Source files
 set (SOURCES
-    "UI/private/Window.cpp"
+    
     "Core/private/Operator.cpp"
     "Core/private/Seance.cpp"
     "Core/private/Main.cpp"
     "UI/private/UInterface.cpp"
-    "Platform/private/Win32API.cpp"
+    "Platform/private/Win32Window.cpp"
     "UI/private/UITemplates.cpp"
     "UI/private/UInputsMap.cpp"
-    "Core/private/Log.cpp")
+    "Core/private/Log.cpp" 
+    "Platform/private/SysHandler.cpp")
 
 
 

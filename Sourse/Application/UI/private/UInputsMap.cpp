@@ -43,11 +43,19 @@ void KeyMap::evaluate(List<OpThread>* exec_queue) {
   FOREACH_DO(opiterfaces, OPInterface, iter->proc(exec_queue));
 }
 
+KeyMap::KeyMap() {
+  uinputs = NEW_DBG(UInputs) UInputs();
+}
+
+KeyMap::~KeyMap() {
+  FREE(uinputs);
+}
+
 // ---------------------------- compile -------------------------------------------- //
 
 InputState* input_state_find(Str* string, void* uinputs) {
   UInputs* usins = (UInputs*)uinputs;
-  Input* input = &usins->SYS_DESTROY_COMMAND;
+  Input* input = &usins->K0;
 
   while (!(input->idname == "_UIEND_")) {
     if (input->idname == *string) {
@@ -125,7 +133,7 @@ void OPInterface::Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, 
   }
 }
 
-void KeyMap::Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIItem* root) {
+void KeyMap::Compile(DataBlock* db, List<Operator>* ops, UIItem* root) {
 
   DataBlock* kmdb = db->find("KeyMap");
 

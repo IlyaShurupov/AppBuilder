@@ -152,26 +152,21 @@ void FBuff<Color_t>::DrawRect(Rect<SCR_UINT>& rect, Color_t& color) {
 template <typename Color_t>
 void FBuff<Color_t>::DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thickness) {
 
-  SCR_UINT lastpxlx = rect.pos.x + rect.size.x;
-  SCR_UINT lastpxly = rect.pos.y + rect.size.y;
+  SCR_UINT lastpxlx = rect.pos.x + rect.size.x - 1;
+  SCR_UINT lastpxly = rect.pos.y + rect.size.y - 1;
 
-  short th1 = -1;
-  short th2 = 0;
-
-  if (thickness != 1) {
-    th1 = -thickness/2;
-    th2 = th1 + thickness;
-  }
+  short th1 = 0;
+  short th2 = thickness;
 
   while (th1 < th2) {
-    for (SCR_UINT i = rect.pos.x -thickness / 2; i < lastpxlx + thickness / 2; i++) {
+    for (SCR_UINT i = rect.pos.x; i < lastpxlx; i++) {
       set(i, rect.pos.y + th1, &color);
-      set(i, rect.pos.y + rect.size.y + th1, &color);
+      set(i, lastpxly - th1, &color);
     }
 
     for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
       set(rect.pos.x + th1, j, &color);
-      set(rect.pos.x + rect.size.x + th1, j, &color);
+      set(lastpxlx - th1, j, &color);
     }
 
     th1++;

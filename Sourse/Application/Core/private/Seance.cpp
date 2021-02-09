@@ -2,49 +2,77 @@
 
 #include "Core/Seance.h"
 #include "Core/Operator.h"
-#include "UI/Window.h"
 #include "Object.h"
+#include "Parser.h"
+#include "Platform/SysHandler.h"
+#include "UI/UInputs.h"
+#include "UI/UInputsMap.h"
+#include "UI/UInterface.h"
 
-Seance::Seance(Str* Path) {
+Seance::Seance(Str* path) {
 
-  if (/*file specified*/ false) {  // load project
-
+  // load project
+  if (/*file specified*/ false) {  
     OnRead(/*file path*/);
+    return;
+  }  
 
-  } else {  // Load defaults
+  // Load defaults
+  initOps(this);
 
-    initOps(this);
+  path->trim(Range(0, path->rfind('\\', Range(0, path->length))));
+  *path += Str("Configuration\\");
 
-    Path->trim(Range(0, Path->rfind('\\', Range(0, Path->length))));
-    *Path += Str("Configuration\\");
+  Str ui_path;
+  ui_path = *path;
+  ui_path += Str("UInterface\\Default.yaml");
+  ui.UIroot = UICompile(&operators, Read_Yaml(&ui_path));
 
-    Window* win2 = NEW_DBG(Window) Window(Path, &prefferences.operators);
+  Str km_path;
+  km_path = *path;
+  km_path += Str("UInputsMap\\Default.yaml");
 
-    project.windows.add(win2);
-  }
+  (ui.kmap = NEW_DBG(KeyMap) KeyMap())->Compile(Read_Yaml(&km_path), &operators, ui.UIroot);
+
+  ui.sysh = NEW_DBG(SysHandler) SysHandler();
+
+  // Set icon
+  Str icon_path;
+  icon_path = *path;
+  icon_path += Str("icon.ico");
+  ui.sysh->SetIcon(icon_path);
+
 }
 
 Seance::~Seance() {
-  project.collection.del();
-  prefferences.operators.del();
-  project.windows.del();
-  op_threads.del();
+  objects.del();
+  operators.del();
+  threads.del();
 }
 
 void Seance::OnWrite(/*file path*/) {}
 
 void Seance::OnRead(/*file path*/) {}
 
-Window* Project::C_actWin() {
+void UserInterface::Input(Seance& C) {
 
-  FOREACH_NODE(Window, (&windows), win_node) {
-    if (win_node->Data->IsActive()) {
-      return win_node->Data;
-    }
+  if (!sysh->Active()) {
+    return;
   }
-  return nullptr;
+
+  sysh->Inputs(*kmap->uinputs);
+  
+  if (kmap->uinputs->IsEvent) {
+    kmap->evaluate(&C.threads);
+    UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
+  }
+
 }
 
-Project::~Project() {}
+void UserInterface::Output() {
 
-Prefferences::~Prefferences() {}
+  if (kmap->uinputs->IsEvent) {
+    UIroot->Draw(nullptr);
+    sysh->Output(UIroot);
+  }
+}

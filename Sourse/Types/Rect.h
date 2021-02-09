@@ -11,11 +11,6 @@ struct Rect {
 
   Rect() {}
 
-  Rect(Rect<float>& rec) {
-    pos.assign((SCR_UINT)rec.pos.x, (SCR_UINT)rec.pos.y);
-    size.assign((SCR_UINT)rec.size.x, (SCR_UINT)rec.size.y);
-  }
-
   Rect(vec2<Type>& pos, vec2<Type>& size) {
     this->pos = pos;
     this->size = size;
@@ -30,6 +25,10 @@ struct Rect {
     pos = rect.pos;
     size = rect.size;
     return *this;
+  }
+
+  bool operator==(Rect<Type>& rect) {
+    return (pos == rect.pos && size == rect.size);
   }
 
   bool enclosed_in(Rect<Type>& rect, bool prnt = false) { 
@@ -54,7 +53,7 @@ struct Rect {
 
   void inv_y(Type scr_y) { pos.y = scr_y - pos.y - size.y; }
 
-  void move(Type& dx, Type& dy) {
+  void move(Type dx, Type dy) {
     pos.x += dx;
     pos.y += dy;
   }

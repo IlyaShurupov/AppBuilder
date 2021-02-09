@@ -12,17 +12,20 @@ typedef struct UIRegionData {
   Object* RS_ptr = nullptr;
 } UIRegionData;
 
-void region_proc(UIItem* This, List<OpThread>* op_threads, struct UInputs* user_inputs, vec2<SCR_UINT>& cursor, Seance* C) {
+void region_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
+
+  UInputs* user_inputs = C->ui.kmap->uinputs;
+  List<OpThread>* threads = &C->threads;
 
   UIRegionData* rd = (UIRegionData*)This->CustomData;
 
   if (rd->RS_ptr) {
 
-    op_threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
+    threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
 
   } else {
 
-    FOREACH_NODE(Object, (&C->project.collection), obj_node) {
+    FOREACH_NODE(Object, (&C->objects), obj_node) {
       if (obj_node->Data->GetRenderComponent()) {
         rd->RS_ptr = obj_node->Data;
         rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
@@ -62,7 +65,11 @@ typedef struct Button {
   bool drawhold = false;
 } Button;
 
-void button_proc(UIItem* This, List<OpThread>* queue, struct UInputs* uinpts, vec2<SCR_UINT>& crs, Seance* C) {
+void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
+
+  UInputs* uinpts = C->ui.kmap->uinputs;
+  List<OpThread>* queue = &C->threads;
+
   Button* btn = (Button*)This->CustomData;
 
   if (btn->thread && btn->thread->state != ThreadState::RUNNING) {
@@ -110,7 +117,9 @@ void button_draw(UIItem* This, UIItem* project_to) {
     color1 = btn->col_out;
   }
 
-  Rect<SCR_UINT> rect(This->rect);
+  Rect<SCR_UINT> rect;
+  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
+  rect.size.assign(This->rect.size.x, This->rect.size.y);
   project_to->buff->DrawRect(rect, color1);
 }
 
@@ -140,9 +149,14 @@ void ui_template_button(UIItem* button, List<Operator>* operators, DataBlock* db
 // ---------  Group ---------------- //
 
 typedef struct Group {
-  COLOR in;
-  COLOR out;
+
+  COLOR Framein;
+  COLOR Frameout;
+  COLOR Fillin;
+  COLOR Fillout;
+
   bool frame = true;
+  bool fill = false;
   int thickin;
   int thickout;
 } Group;
@@ -151,50 +165,51 @@ void group_draw(UIItem* This, UIItem* project_to) {
 
   Group* grp = (Group*)This->CustomData;
 
-  if (!grp->frame) {
-    return;
-  }
-
-  RGBA_32 color2 = grp->in;
+  RGBA_32 fillcol = grp->Fillin;
+  RGBA_32 framecol = grp->Framein;
   short thick = grp->thickin;
 
   if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    color2 = grp->out;
+    fillcol = grp->Fillout;
+    framecol = grp->Frameout;
     thick = grp->thickout;
   }
+  
+  Rect<SCR_UINT> rect;
+  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
+  rect.size.assign(This->rect.size.x, This->rect.size.y);
 
-  Rect<SCR_UINT> rect(This->rect);
-  project_to->buff->DrawBounds(rect, color2, thick);
+  if (grp->fill) {
+    project_to->buff->DrawRect(rect, fillcol);
+  }
+
+  if (grp->frame) {
+    project_to->buff->DrawBounds(rect, framecol, thick);
+  }
+
 }
 
 void ui_template_group(UIItem* uii, DataBlock* db) {
 
-  uii->ownbuff = false;
   uii->DrawBody = group_draw;
 
   Group* grp = NEW_DBG(Group) Group();
   uii->CustomData = grp;
 
   grp->frame = db->find("Frame")->boolean;
+  grp->fill = db->find("Fill")->boolean;
+
+  if (uii->ownbuff = db->find("OwnBuff")->boolean) {
+    uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(uii->rect.size.x, uii->rect.size.y);
+  }
 
   DataBlock* thickness = db->find("Thickness");
   grp->thickin = thickness->find("In")->integer;
   grp->thickout = thickness->find("Out")->integer;
 
   DataBlock* pallete = db->find("Pallete");
-  grp->in = pallete->find("In")->integer;
-  grp->out = pallete->find("Out")->integer;
-}
-
-// ------------------ UI Root --------------------------------- //
-
-void root_draw(UIItem* This, UIItem* project_to) {
-  RGBA_32 color = 0xff1d1d21;
-  This->buff->clear(&color);
-}
-
-void ui_template_root(UIItem* uii) {
-  uii->ownbuff = true;
-  uii->DrawBody = root_draw;
-  uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>((int)uii->rect.size.x, (int)uii->rect.size.y);
+  grp->Framein = pallete->find("FrameIn")->integer;
+  grp->Frameout = pallete->find("FrameOut")->integer;
+  grp->Fillin = pallete->find("FillIn")->integer;
+  grp->Fillout = pallete->find("FillOut")->integer;
 }

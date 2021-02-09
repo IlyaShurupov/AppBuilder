@@ -3,15 +3,42 @@ UIItems:
     -
         Name: "Root"
         Parent: "__NONE__"
-        Size: [1300, 700]
-        Pos: [290, 150]
+        Size: [1920, 1080]
+        Pos: [0, 0]
         Rigid: [false, false]
         MinSize: [30, 30]
         AttachCorner: "TOPLEFT"
 
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: false
+                Frame: true
+                Fill: false
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
+                Thickness: [In: 3, Out: 2]
+
+    -
+        Name: "Window"
+        Parent: "Root"
+        Size: [1300, 700]
+        Pos: [290, 150]
+        Rigid: [false, false]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: true
+                Frame: true
+                Fill: true
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
+                Thickness: [In: 3, Out: 2]
+
     -
         Name: "Buttons"
-        Parent: "Root"
+        Parent: "Window"
         Size: [400, 200]
         Pos: [100, 100]
         Rigid: [false, false]
@@ -23,8 +50,11 @@ UIItems:
             With:
                 OwnBuff: false
                 Frame: true
-                Pallete: [In: 429273033, Out: 428937489]
+                Fill: false
+                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
                 Thickness: [In: 3, Out: 2]
+
+
 
     -
         Name: "Move Item"
@@ -41,4 +71,21 @@ UIItems:
                 Operator: "Move Window"
                 On: "PRESSED"
                 Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
+                Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]
+
+    -
+        Name: "console"
+        Parent: "Buttons"
+        Size: [40, 20]
+        Pos: [90, 50]
+        Rigid: [true, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Button"
+            With:
+                Operator: "Toggle Console"
+                On: "RELEASED"
+                Args: [Pressed: "NONE", Hold: "NONE", Released: "NONE"]        
                 Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]

@@ -1,11 +1,11 @@
 #include "Core/Operator.h"
 
 #include "Core/Seance.h"
-#include "UI/Window.h"
 #include "UI/UInputsMap.h"
+#include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "..//RenderEngines/RayCast/RayCast.h"
-
+#include "Platform/SysHandler.h"
 #include "Types.h"
 
 #include <stdlib.h>
@@ -89,8 +89,7 @@ void LogHeap_create(Seance* C, Operator* op) {
 // -----------  Console Toggle Operator ----------------------- //
 
 void ToggleConcole_ecec(Seance* C, Operator* op) {
-  if (C->project.windows.len())
-    C->project.windows[0]->ToggleConsole();
+  C->ui.sysh->ConsoleToggle();
   op->state = OpState::FINISHED;
 }
 
@@ -115,11 +114,15 @@ void ToggleConcole_create(Seance* C, Operator* op) {
 // -----------  Window Resize Operator ----------------------- //
 
 struct WinResizeData {
+
   bool top = false;
   bool right = false;
   bool bottom = false;
   bool left = false;
-  Window* win = nullptr;
+
+  UIItem* target = nullptr;
+  Rect<float> startrec;
+  vec2<float> startcrs;
 };
 
 
@@ -128,61 +131,63 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 }
 
 void WindowResize_invoke(Seance* C, Operator* op) {
-  WinResizeData* data = (WinResizeData*)op->CustomData;
+  WinResizeData* dt = (WinResizeData*)op->CustomData;
+  dt->target = C->ui.UIroot->active_lower();
 
-  vec2<SCR_UINT>* crsr = &data->win->user_inputs->Cursor;
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
+  dt->startcrs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  dt->startrec = dt->target->rect;
 
-  float fracx = rect.size.x / 3.f;
-  float fracy = rect.size.y / 3.f;
+  vec2<float> crsr = dt->startcrs;
+  vec2<float> wrldpos;
+  dt->target->WrldPos(wrldpos);
+  crsr -= wrldpos;
+  float fracx = dt->target->rect.size.x / 3.f;
+  float fracy = dt->target->rect.size.y / 3.f;
 
-  data->top = crsr->y > fracy * 2.f;
-  data->right = crsr->x > fracx * 2.f;
-  data->bottom = crsr->y < fracy;
-  data->left = crsr->x < fracx;
+  dt->top = crsr.y > fracy * 2.f;
+  dt->right = crsr.x > fracx * 2.f;
+  dt->bottom = crsr.y < fracy;
+  dt->left = crsr.x < fracx;
 
   op->state = OpState::RUNNING_MODAL;
 }
 
 // Checks if operator can be inveked
 bool WindowResize_poll(Seance* C, Operator* op) {
-  WinResizeData* data = (WinResizeData*)op->CustomData;
-  return data->win = C->project.C_actWin();
+  UIItem* target = C->ui.UIroot->active_lower();
+  if (target->hrchy.prnt) {
+    op->CustomData = NEW_DBG(WinResizeData) WinResizeData();
+    return true;
+  }
+  return false;
 }
 
 void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
-  WinResizeData* data = (WinResizeData*)op->CustomData;
+  WinResizeData* dt = (WinResizeData*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
     return;
   }
+  
+  int dx = C->ui.kmap->uinputs->Cursor.x - dt->startcrs.x;
+  int dy = C->ui.kmap->uinputs->Cursor.y - dt->startcrs.y;
 
-  int dx = data->win->user_inputs->Cdelta.x;
-  int dy = data->win->user_inputs->Cdelta.y;
+  Rect<float> rect(dt->startrec);
+  rect.size.y += dy * dt->top;
+  rect.size.x += dx * dt->right;
 
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
-
-  // rect.size.y += 2;
-  // rect.pos.y += -1;
-  rect.size.y += dy * data->top;
-  rect.size.x += dx * data->right;
-
-  if (data->bottom) {
+  if (dt->bottom) {
     rect.pos.y += dy;
     rect.size.y -= dy;
   }
 
-  if (data->left) {
+  if (dt->left) {
     rect.pos.x += dx;
     rect.size.x -= dx;
   }
-  /*
-   */
 
-  data->win->setRect(rect);
+  dt->target->Resize(rect);
 }
 
 void WindowResize_create(Seance* C, Operator* op) {
@@ -200,30 +205,53 @@ void WindowResize_create(Seance* C, Operator* op) {
 
 // -----------  Window Drag Operator ----------------------- //
 
+struct Move {
+  vec2<float> startpos;
+  vec2<float> startcrs;
+  UIItem* target = nullptr;
+};
+
 void WindowDrag_ecec(Seance* C, Operator* op) {}
 
 void WindowDrag_invoke(Seance* C, Operator* op) {
+  Move* dt = (Move*)op->CustomData;
+  dt->startcrs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  dt->startpos.assign(dt->target->rect.pos.x, dt->target->rect.pos.y);
   op->state = OpState::RUNNING_MODAL;
 }
 
 // Checks if operator can be inveked
 bool WindowDrag_poll(Seance* C, Operator* op) {
-  return op->CustomData = C->project.C_actWin();
+  UIItem* target = C->ui.UIroot->active_lower();
+  if (target->hrchy.prnt) {
+    Move* mvdt = NEW_DBG(Move) Move();
+    mvdt->target = target;
+    op->CustomData = mvdt;
+    return true;
+  }
+  return false;
 }
 
 void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
-  Window* data = (Window*)op->CustomData;
+  Move* dt = (Move*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
-    op->CustomData = nullptr;
+
+    Rect<float> rec = dt->target->hrchy.prnt->rect;
+
+    dt->target->inv_pos.x = (dt->target->rect.pos.x > rec.size.x / 2);
+    dt->target->inv_pos.y = (dt->target->rect.pos.y + dt->target->rect.size.y > rec.size.y / 2);
+
     return;
   }
 
-  Rect<SCR_UINT> rect;
-  data->getRect(rect);
-  rect.move(data->user_inputs->Cdelta.x, data->user_inputs->Cdelta.y);
-  data->setRect(rect);
+  vec2<float> crs;
+  crs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  vec2<float> delta = crs - dt->startcrs;
+
+  vec2<float> pos = dt->startpos + delta;
+  dt->target->move(pos);
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {
@@ -266,7 +294,7 @@ void RenderToBuff_create(Seance* C, Operator* op) {
 void AddPlane_ecec(Seance* C, Operator* op) {
 
   Object* MeshObj = NEW_DBG(Object) Object();
-  C->project.collection.add(MeshObj);
+  C->objects.add(MeshObj);
 
   StaticMesh* mesh = NEW_DBG(StaticMesh) StaticMesh();
   MeshObj->SetStaticMeshComponent(mesh);
@@ -279,7 +307,7 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   mesh->Trigs.add(trig);
 
   Object* CamObj = NEW_DBG(Object) Object();
-  C->project.collection.add(CamObj);
+  C->objects.add(CamObj);
   CamObj->Pos.z += 2;
 
   Camera* cam = NEW_DBG(Camera) Camera();
@@ -288,15 +316,13 @@ void AddPlane_ecec(Seance* C, Operator* op) {
   CamObj->SetCameraComponent(cam);
 
   Object* RndObj = NEW_DBG(Object) Object();
-  C->project.collection.add(RndObj);
+  C->objects.add(RndObj);
 
   RenderSettings* rs = NEW_DBG(RenderSettings) RenderSettings();
   RndObj->SetRenderComponent(rs);
 
   rs->setCamera(CamObj);
-  rs->setObjList(&C->project.collection);
-  /*
-  */
+  rs->setObjList(&C->objects);
 
   op->state = OpState::FINISHED;
 }
@@ -321,7 +347,7 @@ void AddPlane_create(Seance* C, Operator* op) {
 void AddOperator(Seance* C, void (*Create)(Seance* C, Operator* op)) {
   Operator* op = NEW_DBG(Operator) Operator;
   Create(C, op);
-  C->prefferences.operators.add(op);
+  C->operators.add(op);
 }
 
 OpThread::OpThread(Operator* op, OpEvState op_event, OpArg* modalevent)
@@ -342,58 +368,7 @@ void initOps(Seance* C) {
 
 Operator::~Operator() {
   if (CustomData) {
-    //DELETE_DBG() CustomData;
+    FREE(CustomData);
   }
   modal_events.del();
 }
-
-
-/*
-// -----------  Operator template ----------------------- //
-
-typedef struct opnameData {
-  bool top = false;
-  bool right = false;
-  bool bottom = false;
-  bool left = false;
-  Window* win = nullptr;
-}opnameData;
-
-
-void opname_ecec(Seance * C, Operator * op) {
-  op->state = OpState::FINISHED;
-}
-
-void opname_invoke(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  op->state = OpState::RUNNING_MODAL;
-}
-
-// Checks if operator can be inveked
-bool opname_poll(Seance * C, Operator * op) {
-  opnameData* data = (opnameData*)op->CustomData;
-  return data->win = C->project.C_actWin();
-}
-
-void opname_modal(Seance * C, Operator * op, ModalEvent * event) {
-  opnameData* data = (opnameData*)op->CustomData;
-
-  if (event && event->idname == "FINISH") {
-    op->state = OpState::FINISHED;
-    return;
-  }
-}
-
-void opname_create(Seance * C, Operator * op) {
-  op->state = OpState::NONE;
-  op->CustomData = NEW_DBG() opnameData();
-
-  op->idname = "opname";
-  op->Poll = opname_poll;
-  op->Invoke = opname_invoke;
-  op->Modal = opname_modal;
-
-  op->modal_events.add(NEW_DBG() ModalEvent("FINISH"));
-}
-*/
