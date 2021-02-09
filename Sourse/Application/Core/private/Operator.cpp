@@ -2,6 +2,7 @@
 
 #include "Core/Seance.h"
 #include "UI/Window.h"
+#include "UI/UInterface.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInputs.h"
 #include "..//RenderEngines/RayCast/RayCast.h"
@@ -90,7 +91,7 @@ void LogHeap_create(Seance* C, Operator* op) {
 
 void ToggleConcole_ecec(Seance* C, Operator* op) {
   if (C->project.windows.len())
-    C->project.windows[0]->ToggleConsole();
+    //C->project.windows[0]->ToggleConsole();
   op->state = OpState::FINISHED;
 }
 
@@ -120,6 +121,7 @@ struct WinResizeData {
   bool bottom = false;
   bool left = false;
   Window* win = nullptr;
+  UIItem* target = nullptr;
 };
 
 
@@ -129,20 +131,25 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 
 void WindowResize_invoke(Seance* C, Operator* op) {
   WinResizeData* data = (WinResizeData*)op->CustomData;
+  data->target = data->win->UIroot->active_lower();
 
-  vec2<SCR_UINT> crsr(data->win->user_inputs->Cursor);
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
-  crsr -= rect.pos;
-  float fracx = rect.size.x / 3.f;
-  float fracy = rect.size.y / 3.f;
+  /*
+  vec2<SCR_UINT>* crsr = &data->win->user_inputs->Cursor;
 
-  data->top = crsr.y > fracy * 2.f;
-  data->right = crsr.x > fracx * 2.f;
-  data->bottom = crsr.y < fracy;
-  data->left = crsr.x < fracx;
+  vec2<float> worldpos;
+  data->target->WrldPos(worldpos);
+
+  float fracx = data->target->rect.size.x / 3.f;
+  float fracy = data->target->rect.size.y / 3.f;
+
+  data->top = crsr->y - worldpos.y > fracy * 2.f;
+  data->right = crsr->x - worldpos.x > fracx * 2.f;
+  data->bottom = crsr->y - worldpos.y < fracy;
+  data->left = crsr->x - worldpos.x < fracx;
+
 
   op->state = OpState::RUNNING_MODAL;
+  */
 }
 
 // Checks if operator can be inveked
@@ -152,6 +159,7 @@ bool WindowResize_poll(Seance* C, Operator* op) {
 }
 
 void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
+  /*
   WinResizeData* data = (WinResizeData*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
@@ -161,12 +169,9 @@ void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
 
   int dx = data->win->user_inputs->Cdelta.x;
   int dy = data->win->user_inputs->Cdelta.y;
+  
+  Rect<float> rect = data->target->rect;
 
-  Rect<SCR_UINT> rect;
-  data->win->getRect(rect);
-
-  // rect.size.y += 2;
-  // rect.pos.y += -1;
   rect.size.y += dy * data->top;
   rect.size.x += dx * data->right;
 
@@ -179,10 +184,23 @@ void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
     rect.pos.x += dx;
     rect.size.x -= dx;
   }
-  /*
-   */
 
-  data->win->setRect(rect);
+  data->target->Resize(rect);
+
+  if (!data->target->hrchy.prnt) {
+
+    if (data->bottom) {
+      data->win->user_inputs->Cursor.y -= data->win->user_inputs->Cdelta.y;
+    }
+
+    if (data->left) {
+       data->win->user_inputs->Cursor.x -= data->win->user_inputs->Cdelta.x;
+    }
+
+    data->win->setRect(data->target->rect);
+  }
+  */
+
 }
 
 void WindowResize_create(Seance* C, Operator* op) {
@@ -200,6 +218,11 @@ void WindowResize_create(Seance* C, Operator* op) {
 
 // -----------  Window Drag Operator ----------------------- //
 
+struct MoveUII {
+  Window* win = nullptr;
+  UIItem* target = nullptr;
+};
+
 void WindowDrag_ecec(Seance* C, Operator* op) {}
 
 void WindowDrag_invoke(Seance* C, Operator* op) {
@@ -208,11 +231,24 @@ void WindowDrag_invoke(Seance* C, Operator* op) {
 
 // Checks if operator can be inveked
 bool WindowDrag_poll(Seance* C, Operator* op) {
-  return op->CustomData = C->project.C_actWin();
+  /*
+  MoveUII* data = NEW_DBG(MoveUII) MoveUII();
+  data->win = C->project.C_actWin();
+  op->CustomData = data;
+
+  if (!data->win) {
+    return false;
+  }
+
+  data->target = data->win->UIroot->active_lower();
+  */
+
+  return false;
 }
 
 void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
-  Window* data = (Window*)op->CustomData;
+  /*
+  MoveUII* data = (MoveUII*)op->CustomData;
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
@@ -220,10 +256,18 @@ void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
     return;
   }
 
-  Rect<SCR_UINT> rect;
-  data->getRect(rect);
-  rect.move(data->user_inputs->Cdelta.x, data->user_inputs->Cdelta.y);
-  data->setRect(rect);
+  vec2<SCR_UINT>* delta = &data->win->user_inputs->Cdelta;
+  data->target->move((float)delta->x, (float)delta->y);
+
+  if (!data->target->hrchy.prnt) {
+    
+    data->win->user_inputs->Cursor.x -= data->win->user_inputs->Cdelta.x;
+    data->win->user_inputs->Cursor.y -= data->win->user_inputs->Cdelta.y;
+
+    data->win->setRect(data->target->rect);
+  }
+  */
+
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {
@@ -342,7 +386,7 @@ void initOps(Seance* C) {
 
 Operator::~Operator() {
   if (CustomData) {
-    //DELETE_DBG() CustomData;
+    FREE(CustomData);
   }
   modal_events.del();
 }

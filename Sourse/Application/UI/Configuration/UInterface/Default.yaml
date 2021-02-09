@@ -42,3 +42,20 @@ UIItems:
                 On: "PRESSED"
                 Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
                 Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]
+
+    -
+        Name: "console"
+        Parent: "Buttons"
+        Size: [40, 20]
+        Pos: [90, 50]
+        Rigid: [true, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Button"
+            With:
+                Operator: "Toggle Console"
+                On: "RELEASED"
+                Args: [Pressed: "NONE", Hold: "NONE", Released: "NONE"]        
+                Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]

@@ -18,9 +18,9 @@ Seance::Seance(Str* Path) {
     Path->trim(Range(0, Path->rfind('\\', Range(0, Path->length))));
     *Path += Str("Configuration\\");
 
-    Window* win2 = NEW_DBG(Window) Window(Path, &prefferences.operators);
+    //Window* win2 = NEW_DBG(Window) Window(Path, &prefferences.operators);
 
-    project.windows.add(win2);
+    //project.windows.add(win2);
   }
 }
 

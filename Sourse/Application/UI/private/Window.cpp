@@ -7,7 +7,9 @@
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
 
-Window::Window(Str* configfolder, List<Operator>* operators) {
+Window::Window() {
+
+  /*
   user_inputs = NEW_DBG(UInputs) UInputs();
 
   Str ui_path;
@@ -22,7 +24,9 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   DataBlock* kmdb = Read_Yaml(&km_path);
   keymap = NEW_DBG(KeyMap) KeyMap();
   keymap->Compile(kmdb, operators, user_inputs, UIroot);
+  */
 
+  /*
   // init sys handler
   Rect<SCR_UINT> rect(UIroot->rect);
   SysH = NEW_DBG(Win32Window) Win32Window(rect);
@@ -38,15 +42,22 @@ Window::Window(Str* configfolder, List<Operator>* operators) {
   // draw initialized window
   Draw();
 
-  SysH->setRect(rect, scr_size.y);
+
+  Rect<float> scr_rec;
+  scr_rec.pos.assign(rect.pos.x, rect.pos.y);
+  scr_rec.size.assign(rect.size.x, rect.size.y);
+
+  SysH->setRect(scr_rec, scr_size.y);
   SysH->ShowInitializedWindow();
   SendBuffToSystem();
+  */
 }
 
 Window::~Window() {
+  /*
   DELETE_DBG(UIItem, UIroot);
   DELETE_DBG(UInputs, user_inputs);
-  DELETE_DBG(Win32Window, SysH);
+  DELETE_DBG(SystemHandler, SysH);
 }
 
 void Window::OnWrite() {}
@@ -58,40 +69,35 @@ void Window::Draw() {
 }
 
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
+  /*
   SysH->getUserInputs(user_inputs, scr_size.y);
   SysH->ProcSysEvents();
   if (this->IsActive() && user_inputs->IsEvent) {
     keymap->evaluate(op_threads);
   }
-  //vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
-  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->PrevCursor, C);
+  vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)UIroot->rect.pos.x, (SCR_UINT)UIroot->rect.pos.y);
+  UIroot->ProcEvent(op_threads, user_inputs, user_inputs->PrevCursor + pos, C);
+  */
 }
 
-void Window::SendBuffToSystem() {
-  SysH->SysOutput(UIroot->buff);
-}
 
 bool Window::IsActive() {
-  return SysH->active();
+  //return SysH->active();
+  return false;
 }
 
-void Window::ToggleConsole() {
-  SysH->consoletoggle();
-}
+  /*
 
-void Window::getRect(Rect<SCR_UINT>& rect) {
-  rect = Rect<SCR_UINT>(UIroot->rect);
-}
+void Window::setRect(Rect<float>& newrect) {
 
-void Window::setRect(Rect<SCR_UINT>& newrect) {
-
+  
   // SysH->getRect(rect, scr_size.y);
 
   // clamp new rect first
   if (newrect.size.x < UIroot->minsize.x) {
     if (newrect.pos.x > UIroot->rect.pos.x) {
       // left -> right
-      newrect.pos.x = (SCR_UINT)UIroot->rect.size_vec_w().x - UIroot->minsize.x;
+      newrect.pos.x = UIroot->rect.size_vec_w().x - UIroot->minsize.x;
       newrect.size.x = UIroot->minsize.x;
 
     } else {
@@ -103,7 +109,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   if (newrect.size.y < UIroot->minsize.y) {
     if (newrect.pos.y > UIroot->rect.pos.y) {
       // top <- bottom
-      newrect.pos.y = (SCR_UINT)UIroot->rect.size_vec_w().y - UIroot->minsize.y;
+      newrect.pos.y = UIroot->rect.size_vec_w().y - UIroot->minsize.y;
       newrect.size.y = UIroot->minsize.y;
 
     } else {
@@ -113,8 +119,10 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   }
 
   // update cursor pos
-  //user_inputs->Cursor.x -= newrect.pos.x - (SCR_UINT)UIroot->rect.pos.x;
-  //user_inputs->Cursor.y -= newrect.pos.y - (SCR_UINT)UIroot->rect.pos.y;
+
+  user_inputs->Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
+  user_inputs->Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
+
 
   Rect<float> flt_rec;
   flt_rec.size.assign((float)newrect.size.x, (float)newrect.size.y);
@@ -126,4 +134,7 @@ void Window::setRect(Rect<SCR_UINT>& newrect) {
   newrect.size.assign((SCR_UINT)UIroot->rect.size.x, (SCR_UINT)UIroot->rect.size.y);
   SysH->setRect(newrect, scr_size.y);
   // SendBuffToSystem();
+
 }
+
+  */

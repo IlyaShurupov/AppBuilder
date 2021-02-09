@@ -110,7 +110,9 @@ void button_draw(UIItem* This, UIItem* project_to) {
     color1 = btn->col_out;
   }
 
-  Rect<SCR_UINT> rect(This->rect);
+  Rect<SCR_UINT> rect;
+  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
+  rect.size.assign(This->rect.size.x, This->rect.size.y);
   project_to->buff->DrawRect(rect, color1);
 }
 
@@ -163,7 +165,9 @@ void group_draw(UIItem* This, UIItem* project_to) {
     thick = grp->thickout;
   }
 
-  Rect<SCR_UINT> rect(This->rect);
+  Rect<SCR_UINT> rect;
+  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
+  rect.size.assign(This->rect.size.x, This->rect.size.y);
   project_to->buff->DrawBounds(rect, color2, thick);
 }
 

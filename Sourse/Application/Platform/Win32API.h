@@ -5,12 +5,12 @@
 struct HWND_;
 typedef struct HWND_* HWND;
 
-struct Win32Window {
 
-  bool close = false;
+struct WindowWin32 {
 
-  Win32Window(Rect<SCR_UINT>& rect);
-  ~Win32Window();
+  WindowWin32(Rect<SCR_UINT>& rect);
+  ~WindowWin32();
+
 
   // UserInputs
   void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
@@ -22,11 +22,10 @@ struct Win32Window {
   void ProcSysEvents();
 
   void ShowInitializedWindow();
-  void consoletoggle();
   bool active();
   void getScreenSize(vec2<SCR_UINT>& rect);
   void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
-  void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
+  void setRect(Rect<float>& rect, SCR_UINT scry);
   void SetIcon(struct Str& stricon);
   void drawRect(Rect<SCR_UINT>& rect);
 
@@ -42,3 +41,5 @@ struct Win32Window {
 
   void* msg;
 };
+
+  void consoletoggle();

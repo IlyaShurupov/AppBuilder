@@ -29,12 +29,13 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 bool consolehidden = false;
 
-struct Win32Window {
+
+struct WindowWin32 {
 
   bool close = false;
 
-  Win32Window(Rect<SCR_UINT>& rect);
-  ~Win32Window();
+  WindowWin32(Rect<SCR_UINT>& rect);
+  ~WindowWin32();
 
   // UserInputs
   void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
@@ -46,17 +47,17 @@ struct Win32Window {
   void ProcSysEvents();
   
   void ShowInitializedWindow();
-  void consoletoggle();
   bool active();
   void getScreenSize(vec2<SCR_UINT>& rect);
   void getRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
-  void setRect(Rect<SCR_UINT>& rect, SCR_UINT scry);
+  void setRect(Rect<float>& rect, SCR_UINT scry);
   void SetIcon(struct Str& stricon);
   void drawRect(Rect<SCR_UINT>& rect);
 
   private:
 
-  static __int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+  static __int64 __stdcall WindowWin32::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+
 
   void* hWindowIcon;
   void* hWindowIconBig;
@@ -76,7 +77,8 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-Win32Window::Win32Window(Rect<SCR_UINT> &rect) {
+WindowWin32::WindowWin32(Rect<SCR_UINT> &rect) {
+
 
   hWindowIcon = nullptr;
   hWindowIconBig = nullptr;
@@ -110,7 +112,9 @@ Win32Window::Win32Window(Rect<SCR_UINT> &rect) {
     // Register the window class.
     WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
     wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = Win32Window::win_proc;
+
+    wcex.lpfnWndProc = WindowWin32::win_proc;
+
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = sizeof(LONG_PTR);
     wcex.hInstance = HINST_THISCOMPONENT;
@@ -159,7 +163,9 @@ Win32Window::Win32Window(Rect<SCR_UINT> &rect) {
   rect.inv_y(GetDeviceCaps(GetDC(NULL), VERTRES));
 }
 
-Win32Window::~Win32Window() {
+
+WindowWin32::~WindowWin32() {
+
   KillTimer((HWND)m_hwnd, 10);
   ID2D1Factory* f = ((ID2D1Factory*)m_pDirect2dFactory);
   //((ID2D1Factory*)m_pDirect2dFactory)->Release();
@@ -167,20 +173,24 @@ Win32Window::~Win32Window() {
 }
 
 
-__int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
+__int64 __stdcall WindowWin32::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
+
 
   LRESULT result = 0;
 
   if (message == WM_CREATE) {
     LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-    Win32Window* pDemoApp = (Win32Window*)pcs->lpCreateParams;
+
+    WindowWin32* pDemoApp = (WindowWin32*)pcs->lpCreateParams;
+
     SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pDemoApp));
     result = 1;
 
   } else {
 
     LONG_PTR pDemoAppptr = static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
-    Win32Window* pDemoApp = reinterpret_cast<Win32Window*>(pDemoAppptr);
+    WindowWin32* pDemoApp = reinterpret_cast<WindowWin32*>(pDemoAppptr);
+
 
     bool wasHandled = false;
 
@@ -277,7 +287,9 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   ReleaseDC(NULL, hdcScr);
 }
 
-void Win32Window::SysOutput(FBuff<RGBAf>* buff) {
+
+void WindowWin32::SysOutput(FBuff<RGBAf>* buff) {
+
 
   FBuff<RGBA_32> rgba32bit;
   rgba32bit.coppy(buff);
@@ -285,7 +297,9 @@ void Win32Window::SysOutput(FBuff<RGBAf>* buff) {
   SysOutput(&rgba32bit);
 }
 
-void Win32Window::SysOutput(FBuff<RGBA_32>* buff) {
+
+void WindowWin32::SysOutput(FBuff<RGBA_32>* buff) {
+
 
   HDC hdcWindow = GetDC((HWND)m_hwnd);
 
@@ -303,7 +317,8 @@ void Win32Window::SysOutput(FBuff<RGBA_32>* buff) {
 }
 
 
-void Win32Window::drawRect(Rect<SCR_UINT>& rect) {
+void WindowWin32::drawRect(Rect<SCR_UINT>& rect) {
+
   /*
   HDC hdc = BeginPaint(m_hwnd, &ps);
   //hdc = BeginPaint(m_hWnd, &ps);
@@ -350,22 +365,30 @@ void Win32Window::drawRect(Rect<SCR_UINT>& rect) {
 }
 
 
-void Win32Window::consoletoggle() {
+
+void consoletoggle() {
+
   ShowWindow(::GetConsoleWindow(), consolehidden ? SW_SHOW : SW_HIDE);
   consolehidden = !consolehidden;
 }
 
-bool Win32Window::active() {
+
+bool WindowWin32::active() {
+
   return GetForegroundWindow() == (HWND)m_hwnd;
 }
 
 // very slow!!!!!
-void Win32Window::getScreenSize(vec2<SCR_UINT>& rect) {
+
+void WindowWin32::getScreenSize(vec2<SCR_UINT>& rect) {
+
   rect.y = GetDeviceCaps(GetDC(NULL), VERTRES);
   rect.x = GetDeviceCaps(GetDC(NULL), HORZRES);
 }
 
-void Win32Window::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+
+void WindowWin32::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
+
 
   LPRECT wrect_p = &RECT();
   GetWindowRect((HWND)m_hwnd, wrect_p);
@@ -381,8 +404,12 @@ void Win32Window::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
   rect.inv_y(scry);
 }
 
-void Win32Window::setRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
-  Rect<SCR_UINT> cprect = rect;
+
+void WindowWin32::setRect(Rect<float>& rect, SCR_UINT scry) {
+  Rect<SCR_UINT> cprect;
+  cprect.pos.assign(rect.pos.x, rect.pos.y);
+  cprect.size.assign(rect.size.x, rect.size.y);
+
   vec2<SCR_UINT> scr_size;
 
   cprect.inv_y(scry);
@@ -406,7 +433,9 @@ void UpdKeySate(Input& key, bool down, bool& IsEvent) {
   }
 }
 
-void Win32Window::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
+
+void WindowWin32::getUserInputs(UInputs* user_inputs, SCR_UINT scry) {
+
 
   UInputs& usin = *user_inputs;
 
@@ -461,7 +490,9 @@ void Win32Window::ProcSysEvents() {
   }
 }
 
-void Win32Window::SetIcon(Str& stricon) {
+
+void WindowWin32::SetIcon(Str& stricon) {
+
   if (hWindowIcon != NULL)
     DestroyIcon((HICON)hWindowIcon);
   if (hWindowIconBig != NULL)
@@ -477,7 +508,9 @@ void Win32Window::SetIcon(Str& stricon) {
   }
 }
 
-void Win32Window::ShowInitializedWindow() {
+
+void WindowWin32::ShowInitializedWindow() {
+
   ShowWindow((HWND)m_hwnd, SW_SHOWNORMAL);
   UpdateWindow((HWND)m_hwnd);
 }
