@@ -29,7 +29,7 @@ Window::Window() {
   /*
   // init sys handler
   Rect<SCR_UINT> rect(UIroot->rect);
-  SysH = NEW_DBG(SystemHandler) SystemHandler(rect);
+  SysH = NEW_DBG(Win32Window) Win32Window(rect);
 
   // Set icon
   Str icon_path;
@@ -58,7 +58,6 @@ Window::~Window() {
   DELETE_DBG(UIItem, UIroot);
   DELETE_DBG(UInputs, user_inputs);
   DELETE_DBG(SystemHandler, SysH);
-  */
 }
 
 void Window::OnWrite() {}
@@ -72,6 +71,7 @@ void Window::Draw() {
 void Window::ProcessEvents(List<OpThread>* op_threads, Seance* C) {
   /*
   SysH->getUserInputs(user_inputs, scr_size.y);
+  SysH->ProcSysEvents();
   if (this->IsActive() && user_inputs->IsEvent) {
     keymap->evaluate(op_threads);
   }
@@ -119,8 +119,10 @@ void Window::setRect(Rect<float>& newrect) {
   }
 
   // update cursor pos
+
   user_inputs->Cursor.x -= newrect.pos.x - UIroot->rect.pos.x;
   user_inputs->Cursor.y -= newrect.pos.y - UIroot->rect.pos.y;
+
 
   Rect<float> flt_rec;
   flt_rec.size.assign((float)newrect.size.x, (float)newrect.size.y);

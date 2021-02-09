@@ -5,10 +5,12 @@
 struct HWND_;
 typedef struct HWND_* HWND;
 
+
 struct WindowWin32 {
 
   WindowWin32(Rect<SCR_UINT>& rect);
   ~WindowWin32();
+
 
   // UserInputs
   void getUserInputs(struct UInputs* user_inputs, SCR_UINT scry);
@@ -17,6 +19,7 @@ struct WindowWin32 {
   void SysOutput(FBuff<RGBAf>* buff);
   void SysOutput(FBuff<RGBA_32>* buff);
 
+  void ProcSysEvents();
 
   void ShowInitializedWindow();
   bool active();

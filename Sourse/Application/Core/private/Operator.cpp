@@ -147,6 +147,7 @@ void WindowResize_invoke(Seance* C, Operator* op) {
   data->bottom = crsr->y - worldpos.y < fracy;
   data->left = crsr->x - worldpos.x < fracx;
 
+
   op->state = OpState::RUNNING_MODAL;
   */
 }
