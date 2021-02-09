@@ -121,6 +121,8 @@ struct WinResizeData {
   bool left = false;
 
   UIItem* target = nullptr;
+  Rect<float> startrec;
+  vec2<float> startcrs;
 };
 
 
@@ -129,21 +131,23 @@ void WindowResize_ecec(Seance* C, Operator* op) {
 }
 
 void WindowResize_invoke(Seance* C, Operator* op) {
-  WinResizeData* data = (WinResizeData*)op->CustomData;
-  data->target = C->ui.UIroot->active_lower();
+  WinResizeData* dt = (WinResizeData*)op->CustomData;
+  dt->target = C->ui.UIroot->active_lower();
 
-  vec2<float> crsr;
-  crsr.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  dt->startcrs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
+  dt->startrec = dt->target->rect;
+
+  vec2<float> crsr = dt->startcrs;
   vec2<float> wrldpos;
-  data->target->WrldPos(wrldpos);
+  dt->target->WrldPos(wrldpos);
   crsr -= wrldpos;
-  float fracx = data->target->rect.size.x / 3.f;
-  float fracy = data->target->rect.size.y / 3.f;
+  float fracx = dt->target->rect.size.x / 3.f;
+  float fracy = dt->target->rect.size.y / 3.f;
 
-  data->top = crsr.y > fracy * 2.f;
-  data->right = crsr.x > fracx * 2.f;
-  data->bottom = crsr.y < fracy;
-  data->left = crsr.x < fracx;
+  dt->top = crsr.y > fracy * 2.f;
+  dt->right = crsr.x > fracx * 2.f;
+  dt->bottom = crsr.y < fracy;
+  dt->left = crsr.x < fracx;
 
   op->state = OpState::RUNNING_MODAL;
 }
@@ -166,10 +170,10 @@ void WindowResize_modal(Seance* C, Operator* op, OpArg* event) {
     return;
   }
   
-  int dx = C->ui.kmap->uinputs->Cdelta.x;
-  int dy = C->ui.kmap->uinputs->Cdelta.y;
+  int dx = C->ui.kmap->uinputs->Cursor.x - dt->startcrs.x;
+  int dy = C->ui.kmap->uinputs->Cursor.y - dt->startcrs.y;
 
-  Rect<float> rect(dt->target->rect);
+  Rect<float> rect(dt->startrec);
   rect.size.y += dy * dt->top;
   rect.size.x += dx * dt->right;
 
@@ -233,7 +237,12 @@ void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
 
   if (event && event->idname == "FINISH") {
     op->state = OpState::FINISHED;
-    op->CustomData = nullptr;
+
+    Rect<float> rec = dt->target->hrchy.prnt->rect;
+
+    dt->target->inv_pos.x = (dt->target->rect.pos.x > rec.size.x / 2);
+    dt->target->inv_pos.y = (dt->target->rect.pos.y + dt->target->rect.size.y > rec.size.y / 2);
+
     return;
   }
 
@@ -241,14 +250,8 @@ void WindowDrag_modal(Seance* C, Operator* op, OpArg* event) {
   crs.assign(C->ui.kmap->uinputs->Cursor.x, C->ui.kmap->uinputs->Cursor.y);
   vec2<float> delta = crs - dt->startcrs;
 
-  dt->target->prev_rect = dt->target->rect;
-
-  dt->target->rect.pos.x = dt->startpos.x + delta.x;
-  dt->target->valid_resize(dt->target->rect, 0);
-
-  dt->target->rect.pos.y = dt->startpos.y + delta.y;
-  dt->target->valid_resize(dt->target->rect, 1);
-
+  vec2<float> pos = dt->startpos + delta;
+  dt->target->move(pos);
 }
 
 void WindowDrag_create(Seance* C, Operator* op) {

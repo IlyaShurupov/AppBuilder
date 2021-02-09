@@ -104,62 +104,68 @@ void UIItem::Draw(UIItem* project_to) {
 }
 
 void UIItem::Resize(Rect<float>& newrect) {
+  
   update_neighbors(true);
   save_config();
-  bool root = true;
-  if (resize_dir(newrect.size.y / rect.size.y, 1, root)) {
-    rect.pos.y = newrect.pos.y;
+
+  rect = newrect;
+
+  for (char i = 0; i < 2; i++) {
+
+    rect.pos[i] = newrect.pos[i];
+    rect.size[i] = newrect.size[i];
+
+    if (!valid(rect, i)) {
+      rect.pos[i] = prev_rect.pos[i];
+      rect.size[i] = prev_rect.size[i];
+      continue;
+    }
+
+    bool root = true;
+    resize_dir(newrect.size[i] / rect.size[i], i, root);
   }
-  root = true;
-  if (resize_dir(newrect.size.x / rect.size.x, 0, root)) {
-    rect.pos.x = newrect.pos.x;
-  }
+
   update_buff(true);
 }
 
-bool UIItem::valid_resize(Rect<float>& newrec, bool dir) {
-  bool pass = true;
+bool UIItem::valid(Rect<float>& newrec, bool dir) {
 
   if (!hrchy.prnt) {
     return true;
   }
 
   // Hide if overlaped or min size triggered
-  if (!rect.enclosed_in(hrchy.prnt->rect, true)) {
-    goto DISKARD;
+  if (!newrec.enclosed_in(hrchy.prnt->rect, true)) {
+    return false;
   }
 
   if (minsize[dir] >= newrec.size[dir]) {
-    goto DISKARD;
+    return false;
   }
 
   FOREACH_NODE(UIItem, (&hrchy.prnt->hrchy.childs), child_node) {
     if (child_node->Data != this && rect.overlap(child_node->Data->rect)) {
-      goto DISKARD;
+      return false;
     }
   }
 
   return true;
-
-DISKARD:
-  rect.size[dir] = prev_rect.size[dir];
-  rect.pos[dir] = prev_rect.pos[dir];
-  flag = 0;
-  return false;
+  
 }
 
 bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
-  prev_rect.size[dir] = rect.size[dir];
-  prev_rect.pos[dir] = rect.pos[dir];
+  if (!root) {
 
-  if (root) {
-    rect.size[dir] *= rescale;
-    root = false;
+    ResizeBody(rect, dir);
+    if (!valid(rect, dir)) {
+      rect = prev_rect;
+      flag = 0;
+      return false;
+    }
 
   } else {
-    ResizeBody(rect, dir);
-    IF(!valid_resize(rect, dir), return false);
+    root = false;
   }
 
   // repead recursively
@@ -390,13 +396,12 @@ UIItem* UIItem::active_lower() {
   return this;
 }
 
-void UIItem::move(float dx, float dy) {
+void UIItem::move(vec2<float> pos) {
+  prev_rect = rect;
   for (char i = 0; i < 2; i++) {
-    rect.move(dx * !i, dy * i);
-    if (valid_resize(rect, i)) {
-      prev_rect = rect;
-    } else {
-      rect = prev_rect;
+    rect.pos[i] = pos[i];
+    if (!valid(rect, i)) {
+      rect.pos[i] = prev_rect.pos[i];
     }
   }
 }
@@ -408,7 +413,7 @@ void UIItem::SetRect(Rect<float>& newrec) {
     rect.pos[i] = newrec.pos[i];
     rect.size[i] = newrec.size[i];
 
-    if (valid_resize(rect, i)) {
+    if (valid(rect, i)) {
       prev_rect = rect;
     } else {
       rect = prev_rect;

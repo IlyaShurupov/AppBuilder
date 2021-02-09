@@ -63,9 +63,9 @@ struct UIItem {
 
   UIItem* active_lower();
   void SetRect(Rect<float>& newrec);
-  void move(float dx, float dy);
+  void move(vec2<float> pos);
   void WrldPos(vec2<float>& out);
-  bool valid_resize(Rect<float>& newrec, bool dir);
+  bool valid(Rect<float>& newrec, bool dir);
 
  private:
   void resize_discard(bool dir);
