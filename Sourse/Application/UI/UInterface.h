@@ -61,6 +61,11 @@ struct UIItem {
 
   UIItem* find(struct Str* string);
 
+  UIItem* active_lower();
+  void SetRect(Rect<float>& newrec);
+  void move(float dx, float dy);
+  void WrldPos(vec2<float>& out);
+
  private:
   void resize_discard(bool dir);
   bool resize_dir(float rescale, bool dir);

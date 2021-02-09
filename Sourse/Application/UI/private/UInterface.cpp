@@ -116,6 +116,11 @@ void UIItem::Resize(Rect<float>& newrect) {
 
 bool UIItem::valid_resize(Rect<float>& newrec, bool dir) {
   bool pass = true;
+
+  if (!hrchy.prnt) {
+    return true;
+  }
+
   // Hide if overlaped or min size triggered
   if (!rect.enclosed_in(hrchy.prnt->rect, true)) {
     goto DISKARD;
@@ -365,6 +370,60 @@ void UIItem::clear_flags() {
 void UIItem::save_config() {
   prev_rect = rect;
   FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->Data->save_config(); }
+}
+
+UIItem* UIItem::active_lower() {
+
+  UIItem* active = nullptr;
+
+  if (state != UIIstate::INSIDE) {
+    return active;
+  }
+
+  FOREACH(&hrchy.childs, UIItem, node) {
+    if (active = node->Data->active_lower()) {
+      return active;
+    }
+  }
+
+  return this;
+}
+
+void UIItem::move(float dx, float dy) {
+  for (char i = 0; i < 2; i++) {
+    rect.move(dx * !i, dy * i);
+    if (valid_resize(rect, i)) {
+      prev_rect = rect;
+    } else {
+      rect = prev_rect;
+    }
+  }
+}
+
+void UIItem::SetRect(Rect<float>& newrec) {
+
+  for (char i = 0; i < 2; i++) {
+    
+    rect.pos[i] = newrec.pos[i];
+    rect.size[i] = newrec.size[i];
+
+    if (valid_resize(rect, i)) {
+      prev_rect = rect;
+    } else {
+      rect = prev_rect;
+    }
+  }
+}
+
+void UIItem::WrldPos(vec2<float>& out) {
+
+  if (hrchy.prnt) {
+    hrchy.prnt->WrldPos(out);
+    out += rect.pos;
+    return;
+  }
+  
+  out.assign(0, 0);
 }
 
 
