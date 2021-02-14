@@ -60,23 +60,8 @@ class List {
   void del();
 
   template <typename SortPolicy = SortMerge>
-  void sort(bool (*compare)(Type& obj1, Type& obj2)) {
-    SortPolicy SortP;
-    
-    Type** buffer = ALLOC_AR(Type*, length);
-    FOREACH(this, Type, node) { 
-      *(buffer + node->idx) = node->Data; 
-    }
-    
-    SortP.Sort(buffer, length, compare);
-    
-    FOREACH(this, Type, node) { 
-      node->Data = *(buffer + node->idx); 
-    }
-    
-    DEALLOC(buffer);
-  }
-
+  void sort(bool (*compare)(Type& obj1, Type& obj2));
+  void invert();
   void pop(bool recursice);
   void del(Type* node_data);
   void del(size_t idx, bool recursice);
@@ -277,6 +262,35 @@ template <typename Type>
 void List<Type>::del(Type* node_data) {
   Node<Type>* del_node = SearchNode(0, node_data);
   this->delnode(del_node);
+}
+
+template <typename Type>
+template <typename SortPolicy>
+void List<Type>::sort(bool (*compare)(Type& obj1, Type& obj2)) {
+  SortPolicy SortP;
+
+  Type** buffer = ALLOC_AR(Type*, length);
+  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
+
+  SortP.Sort(buffer, length, compare);
+
+  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
+
+  DEALLOC(buffer);
+}
+
+template <typename Type>
+void List<Type>::invert() {
+
+  Type** buffer = ALLOC_AR(Type*, length);
+  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
+
+  for (int i = 0; i < length / 2; i++) {
+    SWAP(buffer[i], buffer[length - i - 1], Type*);
+  }
+
+  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
+  DEALLOC(buffer);
 }
 
 //  -------------------------

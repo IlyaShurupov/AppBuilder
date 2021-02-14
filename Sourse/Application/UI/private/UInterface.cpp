@@ -109,8 +109,6 @@ void UIItem::Resize(Rect<float>& newrect) {
   update_neighbors(true);
   save_config();
 
-  //rect = newrect;
-
   for (char i = 0; i < 2; i++) {
 
     rect.pos[i] = newrect.pos[i];
@@ -123,7 +121,7 @@ void UIItem::Resize(Rect<float>& newrect) {
     }
 
     bool root = true;
-    resize_dir(newrect.size[i] / rect.size[i], i, root);
+    resize_dir(newrect.size[i] / prev_rect.size[i], i, root);
   }
 
   update_buff(true);
@@ -155,13 +153,13 @@ bool UIItem::valid(Rect<float>& newrec, bool dir) {
 
 bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
+  if (dir) {
+    hrchy.childs.sort<SortInsert>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.y > uii2.rect.pos.y; });
+  } else {
+    hrchy.childs.sort<SortMerge>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.x > uii2.rect.pos.x; });
+  }
+  
   if (!root) {
-
-    if (dir) {
-      hrchy.childs.sort<SortInsert>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.y > uii2.rect.pos.y; });
-    } else {
-      hrchy.childs.sort<SortMerge>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.x > uii2.rect.pos.x; });
-    }
 
     ResizeBody(rect, dir);
     if (!valid(rect, dir)) {
@@ -172,6 +170,10 @@ bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
   } else {
     root = false;
+  }
+
+  if (rescale > 1) {
+    hrchy.childs.invert();
   }
 
   // repead recursively
