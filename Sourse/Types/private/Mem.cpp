@@ -159,7 +159,7 @@ bool LogHeap(bool group, bool sort) {
         }
       }
       if (!in_grp) {
-        GRP* new_grp = NEW_DBG(GRP) GRP();
+        GRP* new_grp = NEW(GRP)();
         new_grp->size = iter->size;
         new_grp->type = *(std::string*)iter->type;
         Groups.add(new_grp);

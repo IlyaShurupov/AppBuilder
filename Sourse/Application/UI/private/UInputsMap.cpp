@@ -4,6 +4,7 @@
 #include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "Parser.h"
+#include "Ops/Ops.h"
 
 Input::Input(const char* name) {
   idname = name;
@@ -15,7 +16,7 @@ bool Trigger::active() {
 
 void OPInterface::proc(List<OpThread>* queue) {
   if (op_thread && op_thread->state != ThreadState::RUNNING) {
-    DELETE_DBG(OpThread, op_thread);
+    DEL(OpThread, op_thread);
     op_thread = nullptr;
   }
 
@@ -27,7 +28,7 @@ void OPInterface::proc(List<OpThread>* queue) {
         if (node->Data->runtime) {
           op_thread->modalevent = &node->Data->arg;
         } else {
-          op_thread = NEW_DBG(OpThread) OpThread(target, OpEvState::INVOKE, nullptr);
+          op_thread = NEW(OpThread)(target, OpEvState::INVOKE, nullptr);
           queue->add(op_thread);
         }
       }
@@ -44,11 +45,11 @@ void KeyMap::evaluate(List<OpThread>* exec_queue) {
 }
 
 KeyMap::KeyMap() {
-  uinputs = NEW_DBG(UInputs) UInputs();
+  uinputs = NEW(UInputs)();
 }
 
 KeyMap::~KeyMap() {
-  FREE(uinputs);
+  DEALLOC(uinputs);
 }
 
 // ---------------------------- compile -------------------------------------------- //
@@ -120,26 +121,26 @@ void Trigger::Compile(DataBlock* db, UInputs* uinputs, UIItem* root) {
 }
 
 
-void OPInterface::Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIItem* root) {
-  target = find_op(ops, &db->find("Operator")->string);
+void OPInterface::Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root) {
+  target = ops->find(&db->find("Operator")->string);
 
   DataBlock* triggersdb = db->find("Triggers");
 
   FOREACH(&triggersdb->list, DataBlock, t_node) {
 
-    Trigger* trigger = NEW_DBG(Trigger) Trigger();
+    Trigger* trigger = NEW(Trigger)();
     trigger->Compile(t_node->Data, uinputs, root);
     triggers.add(trigger);
   }
 }
 
-void KeyMap::Compile(DataBlock* db, List<Operator>* ops, UIItem* root) {
+void KeyMap::Compile(DataBlock* db, Operators* ops, UIItem* root) {
 
   DataBlock* kmdb = db->find("KeyMap");
 
   FOREACH(&kmdb->list, DataBlock, opi_node) {
     
-    OPInterface* opintrface = NEW_DBG(OPInterface) OPInterface();
+    OPInterface* opintrface = NEW(OPInterface)();
     opintrface->Compile(opi_node->Data, ops, uinputs, root);
     opiterfaces.add(opintrface);
   }

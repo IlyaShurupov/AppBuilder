@@ -75,7 +75,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
   Range irange(rng);
   while ((irange.end = str->find(',', irange)) != -1) {
 
-    DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+    DataBlock* newdb = NEW(DataBlock)();
     db->list.add(newdb);
 
     irange.end--;
@@ -86,7 +86,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
     irange.end = rng.end;
   }
 
-  DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+  DataBlock* newdb = NEW(DataBlock)();
   db->list.add(newdb);
   irange.end = rng.end - 1;
   write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
@@ -137,7 +137,7 @@ void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng) {
     case DBType::INT: {
       Str integer;
       integer.coppy(*str, rng);
-      db->integer = std::stoi(std::string(integer.str));
+      db->integer = std::stoll(std::string(integer.str));
       return;
     }
   }
@@ -230,7 +230,7 @@ int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range& in) {
 
     in.strt = dbrange.end + 2;
 
-    DataBlock* newdb = NEW_DBG(DataBlock) DataBlock();
+    DataBlock* newdb = NEW(DataBlock)();
     DBType dbtype = dblock_type_yml(newdb, str, &dbrange);
 
     prnt->list.add(newdb);
@@ -255,7 +255,7 @@ DataBlock* Read_Yaml(Str* filepath) {
     file += Str("\n");
   }
 
-  DataBlock* dblock = NEW_DBG(DataBlock) DataBlock();
+  DataBlock* dblock = NEW(DataBlock)();
   dblock->BlockName.coppy(*filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
   read_dblock_yml(dblock, &file, -1, Range(0, file.length));
   return dblock;

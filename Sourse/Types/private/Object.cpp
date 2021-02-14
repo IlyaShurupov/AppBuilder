@@ -9,13 +9,13 @@ Object::Object() {
 
 Object::~Object() {
   if (StaticMeshComponent) {
-    DELETE_DBG(StaticMesh, StaticMeshComponent);
+    DEL(StaticMesh, StaticMeshComponent);
   }
   if (CameraComponent) {
-    DELETE_DBG(Camera, CameraComponent);
+    DEL(Camera, CameraComponent);
   }
   if (RenderSettingsComponent) {
-    DELETE_DBG(RenderSettings, RenderSettingsComponent);
+    DEL(RenderSettings, RenderSettingsComponent);
   }
 }
 

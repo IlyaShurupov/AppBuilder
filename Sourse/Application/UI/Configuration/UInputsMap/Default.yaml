@@ -27,7 +27,7 @@ KeyMap:
                             - [Name: "C", State: "PRESSED"]
 
     -
-        Operator: "Resize Window"
+        Operator: "Resize UIItem"
         Triggers:
             -   
                 Runtime: false
@@ -49,7 +49,7 @@ KeyMap:
 
 
     -
-        Operator: "Move Window"
+        Operator: "Move UIItem"
         Triggers:
             -   
                 Runtime: false

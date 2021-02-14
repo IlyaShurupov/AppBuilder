@@ -9,6 +9,7 @@ struct UInputs;
 struct UInputs;
 struct DataBlock;
 struct UIItem;
+struct Operators;
 
 enum class InputState {
   NONE = 0,
@@ -58,7 +59,7 @@ struct Conditions {
     any = db->find("Logic")->string == "ANY";
     List<DataBlock>* conds_list = &db->find("List")->list;
     FOREACH(conds_list, DataBlock, node) {
-      Cond<type>* cond = NEW_DBG(Cond<type>) Cond<type>();
+      Cond<type>* cond = NEW(Cond<type>)();
       cond->target = find_target(&node->Data->find("Name")->string, sourse);
       cond->trigger_state = to_state(&node->Data->find("State")->string);
       conds.add(cond);
@@ -89,7 +90,7 @@ struct OPInterface {
 
   void proc(List<OpThread>* queue);
 
-  void Compile(DataBlock* db, List<Operator>* ops, UInputs* uinputs, UIItem* root);
+  void Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root);
   ~OPInterface();
 };
 
@@ -103,5 +104,5 @@ struct KeyMap {
 
   void evaluate(List<OpThread>* exec_queue);
 
-  void Compile(DataBlock* db, List<Operator>* ops, UIItem* root);
+  void Compile(DataBlock* db, Operators* ops, UIItem* root);
 };

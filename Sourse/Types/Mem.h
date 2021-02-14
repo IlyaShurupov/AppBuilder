@@ -21,16 +21,14 @@ void Free(void* ptr);
 bool LogHeap(bool group = true, bool sort = true);
 
 
-#define FREE(ptr) Free((void*)ptr);
+#define ALLOC(Type) (Type*)Alloc(sizeof(Type)
+#define ALLOC_AR(Type, len) (Type*)Alloc(sizeof(Type) * (len), #Type, __FILE__, __LINE__)
+#define DEALLOC(ptr) Free((void*)ptr)
 
-#define NEW_DBG(Type) new((Type*)Alloc(sizeof(Type), #Type, __FILE__, __LINE__))
-#define DELETE_DBG(Type, ptr) ptr->~Type(); Free((void*)ptr)
+#define NEW(Type) new ((Type*)Alloc(sizeof(Type), #Type, __FILE__, __LINE__)) Type 
+#define DEL(Type, ptr) ptr->~Type(); Free((void*)ptr)
 
-#define NEW_DBG_AR(Type, len) (Type*)Alloc(sizeof(Type) * (len), #Type, __FILE__, __LINE__)
-#define DELETE_DBG_AR(ptr) Free((void*)ptr)
-
-
-#define _CRTDBG_MAP_ALLOC
+//#define _CRTDBG_MAP_ALLOC
 
 /*
 #define ALLOC_DEF(Type, ptr) Type* ptr = (Type*)Alloc(sizeof(Type))

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Mem.h"
+#include "SortPolicy.h"
 
 #define FOREACH_NODE(NodeType, List, iter_node) \
   for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
@@ -43,29 +44,24 @@ class Node {
     this->idx = idx;
   }
 
-  void free() { DELETE_DBG(Type, Data); }
+  void free() { DEL(Type, Data); }
   ~Node() {}
 };
 
 template <typename Type>
 class List {
- private:
-  Node<Type>* First;
-  Node<Type>* Last;
-  Node<Type>* Buff;
-  size_t length;
-
-  Node<Type>* SearchNode(size_t index, Type* data);
-
  public:
   List();
   ~List();
-  void add(Type* data);
-  Type* operator[](size_t idx);
-  size_t len();
 
+  Type* operator[](size_t idx);
+
+  void add(Type* data);
   void del();
 
+  template <typename SortPolicy = SortMerge>
+  void sort(bool (*compare)(Type& obj1, Type& obj2));
+  void invert();
   void pop(bool recursice);
   void del(Type* node_data);
   void del(size_t idx, bool recursice);
@@ -85,23 +81,31 @@ class List {
 
   Node<Type>& first();
   Node<Type>& last();
+  size_t len();
+
+ private:
+  Node<Type>* First;
+  Node<Type>* Last;
+  size_t length;
+
+  Node<Type>* SearchNode(size_t index, Type* data);
+
 };
 
 template <typename Type>
 List<Type>::List() {
   First = nullptr;
   Last = nullptr;
-  Buff = nullptr;
   length = 0;
 }
 
 template <typename Type>
 void List<Type>::add(Type* data) {
   if (!length) {
-    First = NEW_DBG(Node<Type>) Node<Type>(Last, nullptr, length, data);
+    First = NEW(Node<Type>)(Last, nullptr, length, data);
     Last = First;
   } else {
-    Last->Next = NEW_DBG(Node<Type>) Node<Type>(Last, nullptr, length, data);
+    Last->Next = NEW(Node<Type>)(Last, nullptr, length, data);
     Last = Last->Next;
   }
   length += 1;
@@ -110,16 +114,12 @@ void List<Type>::add(Type* data) {
 template <typename Type>
 Type* List<Type>::operator[](size_t idx) {
   Node<Type>* item = SearchNode(idx, nullptr);
-  Buff = item->Next;
   return item->Data;
 }
 
+
 template <typename Type>
 Node<Type>* List<Type>::SearchNode(size_t index, Type* data) {
-
-  if (Buff && index == Buff->idx) {
-    return Buff;
-  }
 
   bool invert = index > length / 2;
   Node<Type>* item = (&First)[invert];
@@ -164,14 +164,14 @@ void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
 
   // Deleting Items
   Node<Type>* del_node;
-  Buff = first;
+  Node<Type>* Buff = first;
   for (size_t i = index_start; i <= index_end; i++) {
     del_node = Buff;
     Buff = Buff->Next;
     if (recursice) {
       del_node->free();
     }
-    DELETE_DBG(Node<Type>, del_node);
+    DEL(Node<Type>, del_node);
   }
 
   // Reconecting Links
@@ -218,7 +218,7 @@ void List<Type>::del(Node<Type>* node, bool recursice) {
   if (del_node->Next) {
     del_node->Next->Prev = del_node->Prev;
 
-    Buff = del_node;
+    Node<Type>* Buff = del_node;
 
     for (size_t i = del_node->idx; i < length; i++) {
       Buff->idx -= 1;
@@ -241,7 +241,7 @@ void List<Type>::del(Node<Type>* node, bool recursice) {
   if (recursice) {
     del_node->free();
   }
-  DELETE_DBG(Node<Type>, del_node);
+  DEL(Node<Type>, del_node);
 
   length -= 1;
 }
@@ -252,7 +252,7 @@ void List<Type>::pop(bool recursice) {
   if (recursice) {
     Last->free();
   }
-  DELETE_DBG(Node<Type>, Last);
+  DEL(Node<Type>, Last);
   Last = prev_item;
   prev_item->Next = 0;
   length -= 1;
@@ -262,6 +262,35 @@ template <typename Type>
 void List<Type>::del(Type* node_data) {
   Node<Type>* del_node = SearchNode(0, node_data);
   this->delnode(del_node);
+}
+
+template <typename Type>
+template <typename SortPolicy>
+void List<Type>::sort(bool (*compare)(Type& obj1, Type& obj2)) {
+  SortPolicy SortP;
+
+  Type** buffer = ALLOC_AR(Type*, length);
+  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
+
+  SortP.Sort(buffer, length, compare);
+
+  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
+
+  DEALLOC(buffer);
+}
+
+template <typename Type>
+void List<Type>::invert() {
+
+  Type** buffer = ALLOC_AR(Type*, length);
+  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
+
+  for (int i = 0; i < length / 2; i++) {
+    SWAP(buffer[i], buffer[length - i - 1], Type*);
+  }
+
+  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
+  DEALLOC(buffer);
 }
 
 //  -------------------------
@@ -340,6 +369,6 @@ inline void List<Type>::del() {
 }
 
 template <typename Type>
-List<Type>::~List() {
-  release();
+inline List<Type>::~List() {
+  del();
 }

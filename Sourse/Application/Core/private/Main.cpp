@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
   Timer timer = Timer(1 * int(1000 / FPS));
 
   // Create Seance
-  Seance& C = *NEW_DBG(Seance) Seance(&Str(getExecutablePath()));
+  Seance& C = *NEW(Seance)(&Str(getExecutablePath()));
 
   // Main loop: Handle events -> run operators -> show result
   MAINLOOP : {
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
       switch (op->state) {
 
         case OpState::RUNNING_MODAL: // keep running    
-          op->Modal(&C, op, node->Data->modalevent);
+          op->Modal(&C, node->Data->modalevent);
           break;
 
         case OpState::CANCELED:
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 
         case OpState::NONE: {
 
-          if (!op->Poll(&C, op)) {
+          if (!op->Poll(&C)) {
             thread->state = ThreadState::DENIED;
             op->state = OpState::NONE;
             break;
@@ -60,11 +60,11 @@ int main(int argc, char* argv[]) {
           switch (*op_event) {
 
             case OpEvState::EXECUTE:
-              op->Execute(&C, op);
+              op->Execute(&C);
               break;
 
             case OpEvState::INVOKE:
-              op->Invoke(&C, op);
+              op->Invoke(&C);
           }
         }
       }

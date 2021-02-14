@@ -33,7 +33,7 @@ struct SyshWin32 {
 };
 
 SysHandler::SysHandler() {
-  PlatformDepended = NEW_DBG(SyshWin32) SyshWin32();
+  PlatformDepended = NEW(SyshWin32)();
   IF(SUCCEEDED(CoInitialize(NULL)));
   ConsoleToggle();
 }
@@ -106,7 +106,7 @@ void SysHandler::Output(UIItem* UIroot) {
     }
 
     if (!couple) {
-      couple = NEW_DBG(Win32Window) Win32Window(uiinode->Data);
+      couple = NEW(Win32Window)(uiinode->Data);
       couple->SetIcon(dt->icon);
       couple->id = uiinode->Data->hrchy.id;
       dt->win32windows.add(couple);

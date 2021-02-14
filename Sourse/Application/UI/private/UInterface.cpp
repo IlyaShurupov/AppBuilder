@@ -5,6 +5,7 @@
 #include "Parser.h"
 #include "UI/UITemplates.h"
 #include "UI/UInputsMap.h"
+#include "Ops/Ops.h"
 
 UIItem::UIItem() {
   flag = 0;
@@ -15,10 +16,10 @@ UIItem::UIItem() {
 }
 
 UIItem::~UIItem() {
-  IF(CustomData, FREE(CustomData));
+  IF(CustomData, DEALLOC(CustomData));
   hrchy.childs.del();
   if (buff) {
-    DELETE_DBG(FBuff<RGBA_32>, buff);
+    DEL(FBuff<RGBA_32>, buff);
   }
 }
 
@@ -108,8 +109,6 @@ void UIItem::Resize(Rect<float>& newrect) {
   update_neighbors(true);
   save_config();
 
-  rect = newrect;
-
   for (char i = 0; i < 2; i++) {
 
     rect.pos[i] = newrect.pos[i];
@@ -122,7 +121,7 @@ void UIItem::Resize(Rect<float>& newrect) {
     }
 
     bool root = true;
-    resize_dir(newrect.size[i] / rect.size[i], i, root);
+    resize_dir(newrect.size[i] / prev_rect.size[i], i, root);
   }
 
   update_buff(true);
@@ -138,7 +137,7 @@ bool UIItem::valid(Rect<float>& newrec, bool dir) {
   if (!newrec.enclosed_in(hrchy.prnt->rect, true)) {
     return false;
   }
-
+ 
   if (minsize[dir] >= newrec.size[dir]) {
     return false;
   }
@@ -148,13 +147,18 @@ bool UIItem::valid(Rect<float>& newrec, bool dir) {
       return false;
     }
   }
-
-  return true;
   
+  return true;
 }
 
 bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
+  if (dir) {
+    hrchy.childs.sort<SortInsert>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.y > uii2.rect.pos.y; });
+  } else {
+    hrchy.childs.sort<SortMerge>([](UIItem& uii1, UIItem& uii2) { return uii1.rect.pos.x > uii2.rect.pos.x; });
+  }
+  
   if (!root) {
 
     ResizeBody(rect, dir);
@@ -166,6 +170,10 @@ bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
 
   } else {
     root = false;
+  }
+
+  if (rescale > 1) {
+    hrchy.childs.invert();
   }
 
   // repead recursively
@@ -444,7 +452,7 @@ struct PreCompUII {
   Str* parent;
 };
 
-UIItem* UICompile(List<Operator>* ops, DataBlock* db) {
+UIItem* UICompile(Operators* ops, DataBlock* db) {
 
   UIItem* root = nullptr;
   List<PreCompUII> pcuii;
@@ -453,7 +461,7 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db) {
   FOREACH(&uilistdb->list, DataBlock, inode) {
 
     DataBlock* UIdb = inode->Data;
-    UIItem* uiitem = NEW_DBG(UIItem) UIItem();
+    UIItem* uiitem = NEW(UIItem) ();
 
     uiitem->hrchy.id = UIdb->find("Name")->string;
     Str* parent = &UIdb->find("Parent")->string;
@@ -481,7 +489,7 @@ UIItem* UICompile(List<Operator>* ops, DataBlock* db) {
     }
 
 
-    pcuii.add(NEW_DBG(PreCompUII) PreCompUII(uiitem, parent));
+    pcuii.add(NEW(PreCompUII)(uiitem, parent));
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {
