@@ -6,46 +6,12 @@
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
+#include "Ops/Ops.h"
 
 typedef struct UIRegionData {
   Operator* op = nullptr;
   Object* RS_ptr = nullptr;
 } UIRegionData;
-
-void region_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
-
-  UInputs* user_inputs = C->ui.kmap->uinputs;
-  List<OpThread>* threads = &C->threads;
-
-  UIRegionData* rd = (UIRegionData*)This->CustomData;
-
-  if (rd->RS_ptr) {
-
-    threads->add(NEW_DBG(OpThread) OpThread(rd->op, OpEvState::EXECUTE, nullptr));
-
-  } else {
-
-    FOREACH_NODE(Object, (&C->objects), obj_node) {
-      if (obj_node->Data->GetRenderComponent()) {
-        rd->RS_ptr = obj_node->Data;
-        rd->op->Props.Pointers_Buff[0]->assign((void*)This->buff);
-        rd->op->Props.Pointers_Obj[0]->assign(rd->RS_ptr);
-      }
-    }
-  }
-}
-
-void ui_add_region(UIItem* region, List<Operator>* operators) {
-
-  region->ProcBody = region_proc;
-
-  Operator* target = find_op(operators, &Str("Render To Buff"));
-
-  UIRegionData* rd = NEW_DBG(UIRegionData) UIRegionData();
-  region->CustomData = (void*)rd;
-  rd->op = target;
-}
-
 
 // --------- Button ---------------- //
 
@@ -73,7 +39,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
   Button* btn = (Button*)This->CustomData;
 
   if (btn->thread && btn->thread->state != ThreadState::RUNNING) {
-    DELETE_DBG(OpThread, btn->thread);
+    DEL(OpThread, btn->thread);
     btn->thread = nullptr;
     btn->drawhold = false;
   }
@@ -81,7 +47,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
   if (uinpts->LMB.state == InputState::PRESSED) {
 
     if (btn->onpress) {
-      btn->thread = NEW_DBG(OpThread) OpThread(btn->target, OpEvState::INVOKE, &btn->pressed);
+      btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->pressed);
       queue->add(btn->thread);
       btn->drawhold = true;
     }
@@ -89,7 +55,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
   } else if (uinpts->LMB.state == InputState::RELEASED) {
 
     if (!btn->onpress) {
-      btn->thread = NEW_DBG(OpThread) OpThread(btn->target, OpEvState::INVOKE, &btn->released);
+      btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->released);
       queue->add(btn->thread);
       btn->drawhold = true;
 
@@ -123,14 +89,14 @@ void button_draw(UIItem* This, UIItem* project_to) {
   project_to->buff->DrawRect(rect, color1);
 }
 
-void ui_template_button(UIItem* button, List<Operator>* operators, DataBlock* db) {
+void ui_template_button(UIItem* button, Operators* ops, DataBlock* db) {
 
   button->DrawBody = button_draw;
   button->ProcBody = button_proc;
   button->ownbuff = false;
 
-  Button* btn = NEW_DBG(Button) Button();
-  btn->target = find_op(operators, &db->find("Operator")->string);
+  Button* btn = NEW(Button)();
+  btn->target = ops->find(&db->find("Operator")->string);
   btn->onpress = db->find("On")->string == "PRESSED";
 
   DataBlock* argsdb = db->find("Args");
@@ -193,14 +159,14 @@ void ui_template_group(UIItem* uii, DataBlock* db) {
 
   uii->DrawBody = group_draw;
 
-  Group* grp = NEW_DBG(Group) Group();
+  Group* grp = NEW(Group) ();
   uii->CustomData = grp;
 
   grp->frame = db->find("Frame")->boolean;
   grp->fill = db->find("Fill")->boolean;
 
   if (uii->ownbuff = db->find("OwnBuff")->boolean) {
-    uii->buff = NEW_DBG(FBuff<RGBA_32>) FBuff<RGBA_32>(uii->rect.size.x, uii->rect.size.y);
+    uii->buff = NEW(FBuff<RGBA_32>) (uii->rect.size.x, uii->rect.size.y);
   }
 
   DataBlock* thickness = db->find("Thickness");

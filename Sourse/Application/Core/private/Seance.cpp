@@ -1,13 +1,19 @@
-#pragma once
 
 #include "Core/Seance.h"
+
 #include "Core/Operator.h"
-#include "Object.h"
-#include "Parser.h"
+
 #include "Platform/SysHandler.h"
+
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
+
+#include "Object.h"
+#include "Parser.h"
+
+#include "Ops/Ops.h"
+
 
 Seance::Seance(Str* path) {
 
@@ -17,24 +23,21 @@ Seance::Seance(Str* path) {
     return;
   }  
 
-  // Load defaults
-  initOps(this);
-
   path->trim(Range(0, path->rfind('\\', Range(0, path->length))));
   *path += Str("Configuration\\");
 
   Str ui_path;
   ui_path = *path;
   ui_path += Str("UInterface\\Default.yaml");
-  ui.UIroot = UICompile(&operators, Read_Yaml(&ui_path));
+  ui.UIroot = UICompile(&ops, Read_Yaml(&ui_path));
 
   Str km_path;
   km_path = *path;
   km_path += Str("UInputsMap\\Default.yaml");
 
-  (ui.kmap = NEW_DBG(KeyMap) KeyMap())->Compile(Read_Yaml(&km_path), &operators, ui.UIroot);
+  (ui.kmap = NEW(KeyMap) ())->Compile(Read_Yaml(&km_path), &ops, ui.UIroot);
 
-  ui.sysh = NEW_DBG(SysHandler) SysHandler();
+  ui.sysh = NEW(SysHandler) ();
 
   // Set icon
   Str icon_path;
@@ -46,7 +49,6 @@ Seance::Seance(Str* path) {
 
 Seance::~Seance() {
   objects.del();
-  operators.del();
   threads.del();
 }
 

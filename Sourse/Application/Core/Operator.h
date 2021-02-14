@@ -1,5 +1,6 @@
 #pragma once
 #include "Property.h"
+
 enum class OpEvState {
   EXECUTE,
   INVOKE,
@@ -28,29 +29,25 @@ struct OpArg {
 };
 
 struct Operator {
+
   // OP idname
-  struct Str idname;
+  struct Str id;
+
+  bool continues;
 
   // Current state of op
   OpState state = OpState::NONE;
 
-  // Modal Map event idnames
-  class List<OpArg> modal_events;
-
-  // Arguments
-  Properties Props;
+  // Run Time Arguments
+  class List<OpArg> rtargs;
 
   // Callbacks
-  void (*Invoke)(struct Seance* C, Operator* op) = nullptr;
-  void (*Execute)(struct Seance* C, Operator* op) = nullptr;
-  void (*Modal)(struct Seance* C, Operator* op, OpArg* modal_ev) = nullptr;
-  bool (*Poll)(struct Seance* C, Operator* op) = nullptr;
-
-  // Modal cache data
-  void* CustomData = nullptr;
-
-  ~Operator();
+  virtual void Invoke(struct Seance* C) { Execute(C); }
+  virtual void Execute(struct Seance* C) { state = OpState::CANCELED; }
+  virtual void Modal(struct Seance* C, OpArg* rtarg) {}
+  virtual bool Poll(struct Seance* C) { return false; }
 };
+
 
 struct OpThread {
   OpThread(Operator* op, OpEvState op_event, OpArg* modalevent);
@@ -61,5 +58,3 @@ struct OpThread {
   OpArg* modalevent;
 };
 
-void initOps(struct Seance* C);
-Operator* find_op(List<Operator>* operators, Str* op_idname);

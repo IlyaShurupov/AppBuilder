@@ -15,7 +15,7 @@ set (HEADERS
     "UI/UInterface.h"
     "UI/UInputsMap.h"
     "UI/UInputs.h" 
-    "Platform/SysHandler.h")
+    "Platform/SysHandler.h" "Ops/Ops.h")
 
 
 # Source files
@@ -29,7 +29,7 @@ set (SOURCES
     "UI/private/UITemplates.cpp"
     "UI/private/UInputsMap.cpp"
     "Core/private/Log.cpp" 
-    "Platform/private/SysHandler.cpp")
+    "Platform/private/SysHandler.cpp" "Ops/private/Ops.cpp")
 
 
 

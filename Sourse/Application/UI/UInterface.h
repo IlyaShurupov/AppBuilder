@@ -77,4 +77,4 @@ struct UIItem {
   void save_config();
 };
 
-UIItem* UICompile(List<Operator>* ops, struct DataBlock* db);
+UIItem* UICompile(struct Operators* ops, struct DataBlock* db);

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "LinkedList.h"
+#include "Ops/Ops.h"
 
 class Object;
 struct UIItem;
-struct Operator;
+class Operator;
 struct Str;
 struct OpThread;
 struct SysHandler;
@@ -36,7 +37,7 @@ struct Seance {
   List<Object> objects;
   
   // Functionality of an application
-  List<Operator> operators;
+  Operators ops;
 
   // User Interface
   UserInterface ui;

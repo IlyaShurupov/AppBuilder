@@ -23,7 +23,7 @@ set (TYPES_HEADERS
     "Object.h"
     "Trig.h"
     "Parser.h"
-)
+ "SortPolicy.h" "AllocatorPolicy.h")
 
 
 # Source files
@@ -38,7 +38,7 @@ set (TYPES_SOURCES
     "private/Object.cpp"
     "private/Trig.cpp"
     "private/Parser.cpp"
-)
+ "private/SortPolicy.cpp" "private/AllocatorPolicy.cpp")
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})

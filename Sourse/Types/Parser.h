@@ -16,7 +16,7 @@ struct DataBlock {
   Str BlockName;
   DBType type = DBType::COMPOUND;
 
-  int integer = 0;
+  long long int integer = 0;
   float floating = 0;
   bool boolean = 0;
   Str string;

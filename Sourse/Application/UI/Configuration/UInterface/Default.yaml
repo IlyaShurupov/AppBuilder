@@ -15,7 +15,7 @@ UIItems:
                 OwnBuff: false
                 Frame: true
                 Fill: false
-                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
+                Pallete: [FrameIn: 4278913805, FrameOut: 4279374354, FillIn: 4279769116, FillOut: 4279769116]
                 Thickness: [In: 3, Out: 2]
 
     -
@@ -33,7 +33,7 @@ UIItems:
                 OwnBuff: true
                 Frame: true
                 Fill: true
-                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
+                Pallete: [FrameIn: 4278913805, FrameOut: 4279374354, FillIn: 4279769116, FillOut: 4279769116]
                 Thickness: [In: 3, Out: 2]
 
     -
@@ -51,27 +51,9 @@ UIItems:
                 OwnBuff: false
                 Frame: true
                 Fill: false
-                Pallete: [FrameIn: 429273033, FrameOut: 428937489, FillIn: 2, FillOut: 0]
+                Pallete: [FrameIn: 4278913805, FrameOut: 4279374354, FillIn: 4279769116, FillOut: 4279769116]
                 Thickness: [In: 3, Out: 2]
 
-
-
-    -
-        Name: "Move Item"
-        Parent: "Buttons"
-        Size: [40, 20]
-        Pos: [20, 50]
-        Rigid: [true, true]
-        MinSize: [10, 10]
-        AttachCorner: "TOPLEFT"
-
-        Template:
-            Using: "Button"
-            With:
-                Operator: "Move Window"
-                On: "PRESSED"
-                Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
-                Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]
 
     -
         Name: "console"
@@ -88,4 +70,21 @@ UIItems:
                 Operator: "Toggle Console"
                 On: "RELEASED"
                 Args: [Pressed: "NONE", Hold: "NONE", Released: "NONE"]        
-                Pallete: [In: 429273033, Out: 428937489, Hold: 429496729]
+                Pallete: [In: 4288914339, Out: 4284243036, Hold: 4290098613]
+
+    -
+        Name: "Move Item"
+        Parent: "Buttons"
+        Size: [40, 20]
+        Pos: [20, 50]
+        Rigid: [true, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Button"
+            With:
+                Operator: "Move UIItem"
+                On: "PRESSED"
+                Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
+                Pallete: [In: 4288914339, Out: 4284243036, Hold: 4290098613]
