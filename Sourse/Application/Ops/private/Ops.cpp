@@ -38,6 +38,38 @@ class OpEndSeance : Operator {
   OpEndSeance() { id = "End Seance"; }
 };
 
+class OpMoveCanvas : Operator {
+
+  UIItem* target = nullptr;
+
+  void Invoke(struct Seance* C) {
+    state = OpState::RUNNING_MODAL;
+  }
+
+  void Modal(Seance* C, OpArg* arg) {
+    if (arg && arg->idname == "FINISH") {
+      state = OpState::FINISHED;
+    }
+
+    vec2<float> del;
+    del.assign(C->ui.kmap->uinputs->Cdelta.x, C->ui.kmap->uinputs->Cdelta.y);
+
+    FOREACH(&target->hrchy.childs, UIItem, node) { 
+      node->move(node->rect.pos + del);
+    }    
+  }
+
+  bool Poll(struct Seance* C) { 
+    target = C->ui.UIroot->active_lower();
+    return target;
+  }
+
+ public:
+  OpMoveCanvas() { 
+    id = "Move Canvas";
+    rtargs.PushBack(NEW(OpArg)("FINISH"));
+  }
+};
 
 class OpUIIMove : Operator {
 
@@ -80,7 +112,7 @@ class OpUIIMove : Operator {
  public:
   OpUIIMove() {
     id = "Move UIItem";
-    rtargs.add(NEW(OpArg)("FINISH"));
+    rtargs.PushBack(NEW(OpArg)("FINISH"));
   }
 };
 
@@ -104,7 +136,7 @@ class OpUIIResize : Operator {
 
     vec2<float> crsr = startcrs;
     vec2<float> wrldpos;
-    target->WrldPos(wrldpos);
+    target->PosInParent(nullptr, wrldpos);
     crsr -= wrldpos;
     float fracx = target->rect.size.x / 3.f;
     float fracy = target->rect.size.y / 3.f;
@@ -151,7 +183,7 @@ class OpUIIResize : Operator {
  public:
   OpUIIResize() {
     id = "Resize UIItem";
-    rtargs.add(NEW(OpArg)("FINISH"));
+    rtargs.PushBack(NEW(OpArg)("FINISH"));
   }
 };
 
@@ -187,19 +219,20 @@ class OpConsoleToggle : Operator {
 };
 
 Operators::Operators() {
-  ops.add((Operator*)NEW(OpEndSeance)());
-  ops.add((Operator*)NEW(OpUIIMove)());
-  ops.add((Operator*)NEW(OpUIIResize)());
-  ops.add((Operator*)NEW(OpLogHeap)());
-  ops.add((Operator*)NEW(OpConsoleToggle)());
+  ops.PushBack((Operator*)NEW(OpEndSeance)());
+  ops.PushBack((Operator*)NEW(OpUIIMove)());
+  ops.PushBack((Operator*)NEW(OpUIIResize)());
+  ops.PushBack((Operator*)NEW(OpLogHeap)());
+  ops.PushBack((Operator*)NEW(OpConsoleToggle)());
+  ops.PushBack((Operator*)NEW(OpMoveCanvas)());
 }
 
 Operator* Operators::find(Str* id) {
   Operator* target = nullptr;
   Range bnds = Range(0, id->len());
   FOREACH(&ops, Operator, node) {
-    if (node->Data->id.match(bnds, *id, bnds)) {
-      target = node->Data;
+    if (node->id.match(bnds, *id, bnds)) {
+      target = node.Data();
       break;
     }
   }
@@ -207,5 +240,4 @@ Operator* Operators::find(Str* id) {
 }
 
 Operators::~Operators() {
-  ops.del();
 }

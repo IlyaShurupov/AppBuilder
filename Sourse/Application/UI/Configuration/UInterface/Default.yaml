@@ -39,7 +39,7 @@ UIItems:
     -
         Name: "Buttons"
         Parent: "Window"
-        Size: [400, 200]
+        Size: [300, 200]
         Pos: [100, 100]
         Rigid: [false, false]
         MinSize: [10, 10]
@@ -88,3 +88,56 @@ UIItems:
                 On: "PRESSED"
                 Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
                 Pallete: [In: 4288914339, Out: 4284243036, Hold: 4290098613]
+
+    -
+        Name: "Log Heap"
+        Parent: "Buttons"
+        Size: [40, 20]
+        Pos: [30, 100]
+        Rigid: [true, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Button"
+            With:
+                Operator: "Log Heap"
+                On: "RELEASED"
+                Args: [Pressed: "NONE", Hold: "NONE", Released: "FINISH"]        
+                Pallete: [In: 4288914339, Out: 4284243036, Hold: 4290098613]
+
+    -
+        Name: "topbar"
+        Parent: "Window"
+        Size: [300, 100]
+        Pos: [100, 400]
+        Rigid: [false, true]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: true
+                Frame: true
+                Fill: true
+                Pallete: [FrameIn: 4278913805, FrameOut: 4279374354, FillIn: 4279769116, FillOut: 4279769116]
+                Thickness: [In: 3, Out: 2]
+
+    -
+        Name: "props"
+        Parent: "Window"
+        Size: [300, 100]
+        Pos: [500, 400]
+        Rigid: [true, false]
+        MinSize: [10, 10]
+        AttachCorner: "TOPLEFT"
+
+        Template:
+            Using: "Group"
+            With:
+                OwnBuff: false
+                Frame: true
+                Fill: false
+                Pallete: [FrameIn: 4278913805, FrameOut: 4279374354, FillIn: 4279769116, FillOut: 4279769116]
+                Thickness: [In: 3, Out: 2]

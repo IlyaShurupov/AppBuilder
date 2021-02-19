@@ -48,7 +48,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
 
     if (btn->onpress) {
       btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->pressed);
-      queue->add(btn->thread);
+      queue->PushBack(btn->thread);
       btn->drawhold = true;
     }
 
@@ -56,7 +56,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
 
     if (!btn->onpress) {
       btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->released);
-      queue->add(btn->thread);
+      queue->PushBack(btn->thread);
       btn->drawhold = true;
 
     } else if (btn->thread) {
@@ -68,7 +68,7 @@ void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
   }
 }
 
-void button_draw(UIItem* This, UIItem* project_to) {
+void button_draw(UIItem* This, UIItem* draw_to) {
   Button* btn = (Button*)This->CustomData;
 
   RGBA_32 color1 = 0xffffffff;
@@ -83,10 +83,21 @@ void button_draw(UIItem* This, UIItem* project_to) {
     color1 = btn->col_out;
   }
 
+  vec2<float> save(This->rect.pos);
+  vec2<float> draw_to_pos;
+  This->PosInParent(draw_to, draw_to_pos);
+  This->rect.pos = draw_to_pos;
+
+  Rect<float> projectrect;
+  This->hrchy.prnt->rect.intersection(This->rect, projectrect);
+
   Rect<SCR_UINT> rect;
-  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
-  rect.size.assign(This->rect.size.x, This->rect.size.y);
-  project_to->buff->DrawRect(rect, color1);
+  rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
+  rect.size.assign(projectrect.size.x, projectrect.size.y);
+
+  draw_to->buff->DrawRect(rect, color1);
+
+  This->rect.pos = save;
 }
 
 void ui_template_button(UIItem* button, Operators* ops, DataBlock* db) {
@@ -127,9 +138,14 @@ typedef struct Group {
   int thickout;
 } Group;
 
-void group_draw(UIItem* This, UIItem* project_to) {
+void group_draw(UIItem* This, UIItem* draw_to) {
 
   Group* grp = (Group*)This->CustomData;
+
+  vec2<float> save(This->rect.pos);
+  vec2<float> draw_to_pos;
+  This->PosInParent(draw_to, draw_to_pos);
+  This->rect.pos = draw_to_pos;
 
   RGBA_32 fillcol = grp->Fillin;
   RGBA_32 framecol = grp->Framein;
@@ -140,19 +156,23 @@ void group_draw(UIItem* This, UIItem* project_to) {
     framecol = grp->Frameout;
     thick = grp->thickout;
   }
-  
+
+  Rect<float> projectrect(This->rect);
+  //This->hrchy.prnt->rect.intersection(This->rect, projectrect);
+
   Rect<SCR_UINT> rect;
-  rect.pos.assign(This->rect.pos.x, This->rect.pos.y);
-  rect.size.assign(This->rect.size.x, This->rect.size.y);
+  rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
+  rect.size.assign(projectrect.size.x, projectrect.size.y);
 
   if (grp->fill) {
-    project_to->buff->DrawRect(rect, fillcol);
+    draw_to->buff->DrawRect(rect, fillcol);
   }
 
   if (grp->frame) {
-    project_to->buff->DrawBounds(rect, framecol, thick);
+    draw_to->buff->DrawBounds(rect, framecol, thick);
   }
 
+  This->rect.pos = save;
 }
 
 void ui_template_group(UIItem* uii, DataBlock* db) {

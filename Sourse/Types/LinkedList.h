@@ -1,374 +1,212 @@
 #pragma once
 
-#include "Mem.h"
+#include "AllocatorPolicy.h"
 #include "SortPolicy.h"
 
-#define FOREACH_NODE(NodeType, List, iter_node) \
-  for (Node<NodeType>* iter_node = &List->first(); iter_node; iter_node = iter_node->Next)
+#define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
 
-#define FOREACH(List, Type, node) for (Node<Type>* node = &(List)->first(); node; node = node->Next)
-
-#define DO_FOREACH_IF(action, type, list, cond)                                         \
-  for (Node<type>* iter_node = &list.first(); iter_node; iter_node = iter_node->Next) { \
-    type* iter = iter_node->Data;                                                       \
-    if (cond)                                                                           \
-      action;                                                                           \
-  }
-
-#define FOREACH_DO(list, type, action)                                                  \
-  for (Node<type>* iter_node = &list.first(); iter_node; iter_node = iter_node->Next) { \
-    type* iter = iter_node->Data;                                                       \
-    action;                                                                             \
-  }
+template <class Type> class Iterator;
+template <class Type, typename AllocatorPolicy = AllocatorFixedSize> class List;
 
 template <typename Type>
 class Node {
  public:
-  Type* Data;
+  Type* data;
+  Node<Type>* next = nullptr;
+  Node<Type>* prev = nullptr;
 
-  Node<Type>* Next;
-  Node<Type>* Prev;
-  size_t idx;
+  Node(Type* p_data) { data = p_data; }
 
- public:
-  Node() {
-    Next = nullptr;
-    Prev = nullptr;
-    idx = -1;
-  }
+  Type* operator->() { return data; }
 
-  Node(Node<Type>* prev, Node<Type>* next, size_t idx, Type* data) {
-    this->Data = data;
-    this->Next = next;
-    this->Prev = prev;
-    this->idx = idx;
-  }
-
-  void free() { DEL(Type, Data); }
-  ~Node() {}
+  void FreeData() { DEL(Type, data); }
 };
 
-template <typename Type>
+template <typename Type, typename AllocatorPolicy>
 class List {
+
+  Node<Type>* first = nullptr;
+  Node<Type>* last = nullptr;
+  int length = 0;
+  AllocatorPolicy alloc;
+
  public:
-  List();
-  ~List();
+  bool recursive_free_on_destruction = true;
 
-  Type* operator[](size_t idx);
+ public:
+  inline Node<Type>* First() { return first; }
+  inline Node<Type>* Last() { return last; }
+  inline int Len() { return length; }
 
-  void add(Type* data);
-  void del();
+  void Attach(Node<Type>* node, Node<Type>* node_to) {
+    if (node_to) {
+      if (node_to->next) {
+        node->next = node_to->next;
+        node->next->prev = node;
+      }
+      node_to->next = node;
+      node->prev = node_to;
+      if (node_to == last) {
+        last = node;
+      }
+    } else {
+      if (first) {
+        first->prev = node;
+        node->next = first;
+        first = node;
+      } else {
+        first = last = node;
+      }
+    }
+    length++;
+  }
+
+  void Detach(Node<Type>* node) {
+    if (node->next) {
+      node->next = node->prev;
+    }
+    if (node->prev) {
+      node->prev = node->next;
+    }
+
+    if (node == last) {
+      last = last->prev;
+    }
+    if (node == first) {
+      first = first->next;
+    }
+
+    length--;
+  }
+
+  Node<Type>* Find(int idx) {
+    if (!First() || idx < 0 || idx > Len() - 1) {
+      return nullptr;
+    }
+    Node<Type>* found = First();
+    for (int i = 0; i != idx; i++) {
+      found = found->next;
+    }
+    return found;
+  }
+
+  Node<Type>* Find(Type* data) {
+    Node<Type>* found = First();
+    for (int i = 0; data != found->data; i++) {
+      if (!found->next) {
+        return nullptr;
+      }
+      found = found->next;
+    }
+    return found;
+  }
+
+  void ForEach(void (*functor)(List<Type>* list, Node<Type>* node)) {
+    for (Node<Type>* node = First(); node; node = node->next) {
+      functor(this, node);
+    }
+  }
 
   template <typename SortPolicy = SortMerge>
-  void sort(bool (*compare)(Type& obj1, Type& obj2));
-  void invert();
-  void pop(bool recursice);
-  void del(Type* node_data);
-  void del(size_t idx, bool recursice);
-  void del(size_t idx_start, size_t idx_end, bool recursice);
-  void del(Node<Type>* node, bool recursice);
+  void Sort(bool (*compare)(Type& obj1, Type& obj2)) {
+    SortPolicy SortP;
 
-  void pop();
-  void del(size_t idx);
-  void del(size_t idx_start, size_t idx_end);
-  void del(Node<Type>* node);
+    Type** buffer = ALLOC_AR(Type*, length);
 
-  void popnode();
-  void delnode(size_t idx);
-  void delnode(size_t idx_start, size_t idx_end);
-  void delnode(Node<Type>* node);
-  void release();
+    FOREACH(this, Type, iter) { *(buffer + iter.Idx()) = iter.Data(); }
 
-  Node<Type>& first();
-  Node<Type>& last();
-  size_t len();
+    SortP.Sort(buffer, length, compare);
 
- private:
-  Node<Type>* First;
-  Node<Type>* Last;
-  size_t length;
+    FOREACH(this, Type, iter) { iter.Node()->data = *(buffer + iter.Idx()); }
 
-  Node<Type>* SearchNode(size_t index, Type* data);
+    DEALLOC(buffer);
+  }
 
+  void Invert() {
+    Iterator<Type> i(this, 0);
+    Iterator<Type> j(this, Len() - 1);
+    while (i < Len() / 2) {
+      SWAP(i.Node()->data, j.Node()->data, Type*);
+      ++i;
+      --j;
+    }
+  }
+
+  inline Type& operator[](Iterator<Type>& iter) { return *iter.Node()->data; }
+  inline Type& operator[](int idx) { return *Find(idx)->data; }
+
+  void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
+  void PushBack(Type* data) { PushBack(ALLOCP_NEW(Node<Type>, alloc)(data)); }
+  void PushFront(Node<Type>* new_node) { Attach(new_node, nullptr); }
+  void PushFront(Type* data) { PushFront(ALLOCP_NEW(Node<Type>, alloc)(data)); }
+
+  void Insert(Node<Type>* node, int idx) {
+    Node<Type>* place_to = Find(idx);
+    Attach(node, place_to->prev);
+  }
+
+  void Insert(Type* data, int idx) { Insert(ALLOCP_NEW(Node<Type>, alloc)(data), idx); }
+
+  void DelNode(Node<Type>* node) {
+    Detach(node);
+    node->FreeData();
+    ALLOCP_DEL(Node<Type>, node, alloc);
+  }
+
+  void Release() {
+    ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+  }
+
+  void Delete() {
+    ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
+  }
+
+  List() {}
+  List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
+
+  ~List() {
+    if (recursive_free_on_destruction) {
+      Delete();
+    } else {
+      Release();
+    }
+  }
 };
 
 template <typename Type>
-List<Type>::List() {
-  First = nullptr;
-  Last = nullptr;
-  length = 0;
-}
+class Iterator {
 
-template <typename Type>
-void List<Type>::add(Type* data) {
-  if (!length) {
-    First = NEW(Node<Type>)(Last, nullptr, length, data);
-    Last = First;
-  } else {
-    Last->Next = NEW(Node<Type>)(Last, nullptr, length, data);
-    Last = Last->Next;
-  }
-  length += 1;
-}
+  Node<Type>* iter;
+  int idx;
 
-template <typename Type>
-Type* List<Type>::operator[](size_t idx) {
-  Node<Type>* item = SearchNode(idx, nullptr);
-  return item->Data;
-}
+ public:
+  int Idx() { return idx; }
+  Type* operator->() { return iter->data; }
+  Type* Data() { return iter->data; }
+  Node<Type>* Node() { return iter; }
 
-
-template <typename Type>
-Node<Type>* List<Type>::SearchNode(size_t index, Type* data) {
-
-  bool invert = index > length / 2;
-  Node<Type>* item = (&First)[invert];
-
-  // search by data
-  if (data) {
-    if (!invert) {
-      while (item->Data != data) {
-        item = item->Next;
-      }
-    } else {
-      while (item->Data != data) {
-        item = item->Prev;
-      }
-    }
-
-  } else {
-    // search by idx
-    if (!invert) {
-      while (item->idx != index) {
-        item = item->Next;
-      }
-    } else {
-      while (item->idx != index) {
-        item = item->Prev;
-      }
-    }
+  Iterator(List<Type>* list, int p_idx) {
+    idx = p_idx;
+    iter = list->Find(idx);
   }
 
-  return item;
-}
-
-template <typename Type>
-void List<Type>::del(size_t index_start, size_t index_end, bool recursice) {
-
-  Node<Type>* first = SearchNode(index_start, nullptr);
-  Node<Type>* last = SearchNode(index_end, nullptr);
-  Node<Type>* next = last->Next;
-  Node<Type>* prev = first->Prev;
-
-  size_t idx_diff = index_end - index_start;
-
-  // Deleting Items
-  Node<Type>* del_node;
-  Node<Type>* Buff = first;
-  for (size_t i = index_start; i <= index_end; i++) {
-    del_node = Buff;
-    Buff = Buff->Next;
-    if (recursice) {
-      del_node->free();
-    }
-    DEL(Node<Type>, del_node);
+  inline void operator++() {
+    iter = iter->next;
+    idx++;
   }
 
-  // Reconecting Links
-  if (next && prev) {
-    next->Prev = prev;
-    prev->Next = next;
-  } else {
-    if (!(next || prev)) {
-      Last = First = nullptr;
-    } else {
-      if (!next) {
-        prev->Next = nullptr;
-        Last = prev;
-      } else {
-        next->Prev = nullptr;
-        First = next;
-      }
-    }
+  inline void operator--() {
+    iter = iter->prev;
+    idx--;
   }
 
-  // Changing indexes
-  if (next) {
-    for (size_t i = index_end + 1; i < length - 1; i++) {
-      next->idx -= (idx_diff + 1);
-      next = next->Next;
-    }
-  }
+  bool operator==(Iterator<Type> IterNode) { return IterNode.iter == iter; }
 
-  length -= (idx_diff + 1);
-}
+  bool operator==(int p_idx) { return idx == p_idx; }
+  bool operator!=(int p_idx) { return idx != p_idx; }
+  bool operator>(int p_idx) { return idx > p_idx; }
+  bool operator<(int p_idx) { return idx < p_idx; }
+  bool operator>=(int p_idx) { return idx >= p_idx; }
+  bool operator<=(int p_idx) { return idx <= p_idx; }
 
-template <typename Type>
-void List<Type>::del(size_t index, bool recursice) {
-
-  Node<Type>* del_node = SearchNode(index, nullptr);
-
-  this->del(del_node, recursice);
-}
-
-template <typename Type>
-void List<Type>::del(Node<Type>* node, bool recursice) {
-  Node<Type>* del_node = node;
-
-  if (del_node->Next) {
-    del_node->Next->Prev = del_node->Prev;
-
-    Node<Type>* Buff = del_node;
-
-    for (size_t i = del_node->idx; i < length; i++) {
-      Buff->idx -= 1;
-      Buff = Buff->Next;
-    }
-    Buff = del_node->Next;
-  }
-  if (del_node->Prev) {
-    del_node->Prev->Next = del_node->Next;
-  }
-
-  if (del_node == this->First) {
-    this->First = del_node->Next;
-  }
-
-  if (del_node == this->Last) {
-    this->Last = del_node->Prev;
-  }
-
-  if (recursice) {
-    del_node->free();
-  }
-  DEL(Node<Type>, del_node);
-
-  length -= 1;
-}
-
-template <typename Type>
-void List<Type>::pop(bool recursice) {
-  Node<Type>* prev_item = Last->Prev;
-  if (recursice) {
-    Last->free();
-  }
-  DEL(Node<Type>, Last);
-  Last = prev_item;
-  prev_item->Next = 0;
-  length -= 1;
-}
-
-template <typename Type>
-void List<Type>::del(Type* node_data) {
-  Node<Type>* del_node = SearchNode(0, node_data);
-  this->delnode(del_node);
-}
-
-template <typename Type>
-template <typename SortPolicy>
-void List<Type>::sort(bool (*compare)(Type& obj1, Type& obj2)) {
-  SortPolicy SortP;
-
-  Type** buffer = ALLOC_AR(Type*, length);
-  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
-
-  SortP.Sort(buffer, length, compare);
-
-  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
-
-  DEALLOC(buffer);
-}
-
-template <typename Type>
-void List<Type>::invert() {
-
-  Type** buffer = ALLOC_AR(Type*, length);
-  FOREACH(this, Type, node) { *(buffer + node->idx) = node->Data; }
-
-  for (int i = 0; i < length / 2; i++) {
-    SWAP(buffer[i], buffer[length - i - 1], Type*);
-  }
-
-  FOREACH(this, Type, node) { node->Data = *(buffer + node->idx); }
-  DEALLOC(buffer);
-}
-
-//  -------------------------
-
-template <typename Type>
-void List<Type>::del(size_t index_start, size_t index_end) {
-  del(index_start, index_end, true);
-}
-
-template <typename Type>
-void List<Type>::del(size_t index) {
-  del(index, true);
-}
-
-template <typename Type>
-void List<Type>::del(Node<Type>* node) {
-  del(node, true);
-}
-
-template <typename Type>
-void List<Type>::pop() {
-  pop(true);
-}
-
-//  -------------------------
-
-template <typename Type>
-void List<Type>::delnode(size_t index_start, size_t index_end) {
-  del(index_start, index_end, false);
-}
-
-template <typename Type>
-void List<Type>::delnode(size_t index) {
-  del(index, false);
-}
-
-template <typename Type>
-void List<Type>::delnode(Node<Type>* node) {
-  del(node, false);
-}
-
-template <typename Type>
-inline void List<Type>::release() {
-  if (length) {
-    del(0, length - 1, false);
-  }
-}
-
-template <typename Type>
-void List<Type>::popnode() {
-  pop(false);
-}
-
-//  -------------------------
-
-template <typename Type>
-Node<Type>& List<Type>::last() {
-  return *this->Last;
-}
-
-template <typename Type>
-Node<Type>& List<Type>::first() {
-  return *this->First;
-}
-
-template <typename Type>
-size_t List<Type>::len() {
-  return length;
-}
-
-template <typename Type>
-inline void List<Type>::del() {
-  if (length) {
-    del(0, length - 1, true);
-  }
-}
-
-template <typename Type>
-inline List<Type>::~List() {
-  del();
-}
+};

@@ -112,8 +112,4 @@ PropertyFuncAdress::~PropertyFuncAdress() {
 }
 
 Properties::~Properties() {
-	Ints.del();
-	Floats.del();
-	Pointers_Buff.del();
-	Pointers_Obj.del();
 }

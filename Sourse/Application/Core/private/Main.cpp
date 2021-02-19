@@ -26,16 +26,15 @@ int main(int argc, char* argv[]) {
     C.ui.Input(C);
 
     // Run Operators from queue
-    for (Node<OpThread>* node = &C.threads.first(); node;) {
+    for (Iterator<OpThread> thread(&C.threads, 0); thread < C.threads.Len();) {
 
-      OpThread* thread = node->Data;
       OpEvState* op_event = &thread->op_event;
       Operator* op = thread->op;
 
       switch (op->state) {
 
         case OpState::RUNNING_MODAL: // keep running    
-          op->Modal(&C, node->Data->modalevent);
+          op->Modal(&C, thread->modalevent);
           break;
 
         case OpState::CANCELED:
@@ -69,12 +68,12 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      // Go to the next thread
-      Node<OpThread>* del_node = node;
-      node = node->Next;
       if (thread->state == ThreadState::DENIED || thread->state == ThreadState::CLOSED) {
-        C.threads.delnode(del_node);
+        C.threads.Detach(thread.Node());
       }
+
+      // Go to the next thread
+      ++thread;
     }
 
     C.ui.Output();

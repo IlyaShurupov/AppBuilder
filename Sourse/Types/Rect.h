@@ -34,13 +34,28 @@ struct Rect {
   bool enclosed_in(Rect<Type>& rect, bool prnt = false) { 
 
     if (prnt) {
-      return (pos.x + size.x < rect.size.x && pos.y + size.y < rect.size.y && pos.x > 0 && pos.y >0);
+      return (pos.x + size.x <= rect.size.x && pos.y + size.y <= rect.size.y && pos.x >= 0 && pos.y >= 0);
     }
 
     pos -= rect.pos;
     bool ret = this->enclosed_in(rect, true); 
     pos += rect.pos;
     return ret;
+  }
+
+  void intersection(Rect<Type>& rect, Rect<Type>& out) {
+    if (overlap(rect)) {
+      out = *this;
+      for (char i = 0; i < 2; i++) {
+        CLAMP(out.pos[i], rect.pos[i], rect.pos[i] + rect.size[i]);
+        SCR_UINT p2 = pos[i] + size[i]; 
+        CLAMP(p2, rect.pos[i], rect.pos[i] + rect.size[i]);
+        out.size[i] = p2 - out.pos[i];
+      }
+    } else {
+      out.size.assign(0, 0);
+      out.pos.assign(0, 0);
+    }
   }
 
   bool inside(vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }

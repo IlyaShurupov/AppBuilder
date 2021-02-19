@@ -20,6 +20,7 @@ endif()
 enable_testing()
 
 add_subdirectory("Sourse")
+add_subdirectory("Tests")
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

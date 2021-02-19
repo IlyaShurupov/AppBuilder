@@ -48,8 +48,6 @@ Seance::Seance(Str* path) {
 }
 
 Seance::~Seance() {
-  objects.del();
-  threads.del();
 }
 
 void Seance::OnWrite(/*file path*/) {}
@@ -69,6 +67,12 @@ void UserInterface::Input(Seance& C) {
     UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
   }
 
+}
+
+UserInterface::~UserInterface() {
+  DEL(UIItem, UIroot);
+  DEL(SysHandler, sysh);
+  DEL(KeyMap, kmap);
 }
 
 void UserInterface::Output() {

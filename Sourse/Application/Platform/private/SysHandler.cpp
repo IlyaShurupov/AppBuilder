@@ -99,26 +99,26 @@ void SysHandler::Output(UIItem* UIroot) {
     Win32Window* couple = nullptr;
 
     FOREACH(&dt->win32windows, Win32Window, winnode) {
-      if (uiinode->Data->hrchy.id == winnode->Data->id) {
-        couple = winnode->Data;
+      if (uiinode->hrchy.id == winnode->id) {
+        couple = winnode.Data();
         break;
       }
     }
 
     if (!couple) {
-      couple = NEW(Win32Window)(uiinode->Data);
+      couple = NEW(Win32Window)(uiinode.Data());
       couple->SetIcon(dt->icon);
-      couple->id = uiinode->Data->hrchy.id;
-      dt->win32windows.add(couple);
+      couple->id = uiinode->hrchy.id;
+      dt->win32windows.PushBack(couple);
     }
 
-    couple->Draw(uiinode->Data);
+    couple->Draw(uiinode.Data());
     couple->editflag = 1;
   }
 
   FOREACH(&dt->win32windows, Win32Window, winnode) {
-    if (!winnode->Data->editflag) {
-      dt->win32windows.del(winnode);
+    if (!winnode->editflag) {
+      dt->win32windows.Detach(winnode.Node());
     }
   }
 
@@ -138,12 +138,12 @@ void SysHandler::SetIcon(Str& stricon) {
 bool SysHandler::Active() {
   SyshWin32* dt = (SyshWin32*)PlatformDepended;
 
-  if (!dt->win32windows.len()) {
+  if (!dt->win32windows.Len()) {
     return true;
   }
 
   FOREACH(&dt->win32windows, Win32Window, winnode) {
-    if (winnode->Data->active()) {
+    if (winnode->active()) {
       return true;
     }
   }

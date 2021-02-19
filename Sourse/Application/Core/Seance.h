@@ -26,6 +26,8 @@ struct UserInterface {
 
   void Input(struct Seance& C);
   void Output();
+
+  ~UserInterface();
 };
 
 struct Seance {

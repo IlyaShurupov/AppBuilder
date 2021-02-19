@@ -47,6 +47,26 @@ KeyMap:
                         List:
                             - [Name: "RMB", State: "RELEASED"]
 
+    -
+        Operator: "Move Canvas"
+        Triggers:
+            -   
+                Runtime: false
+                Argument: "NONE"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "SHIFT_L", State: "HOLD"]
+                            - [Name: "LMB", State: "PRESSED"]
+            -   
+                Runtime: true
+                Argument: "FINISH"
+                Conditions:
+                    Keys:
+                        Logic: "ALL"
+                        List:
+                            - [Name: "LMB", State: "RELEASED"]
 
     -
         Operator: "Move UIItem"

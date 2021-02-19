@@ -151,10 +151,11 @@ bool LogHeap(bool group, bool sort) {
 
     for (iter = mem_debug_entry_ptr; iter; iter = iter->prev) {
       bool in_grp = false;
-      FOREACH(&Groups, GRP, grp) {
-        if (grp->Data->type == *(std::string*)iter->type) {
+
+      FOREACH(&Groups, GRP, i) {
+        if (Groups[i].type == *(std::string*)iter->type) {
           in_grp = true;
-          grp->Data->size += iter->size;
+          Groups[i].size += iter->size;
           break;
         }
       }
@@ -162,16 +163,18 @@ bool LogHeap(bool group, bool sort) {
         GRP* new_grp = NEW(GRP)();
         new_grp->size = iter->size;
         new_grp->type = *(std::string*)iter->type;
-        Groups.add(new_grp);
+        Groups.PushBack(new_grp);
       }
     }
 
-    FOREACH(&Groups, GRP, grp) {
-      std::cout << "   " << grp->Data->size << "    " << grp->Data->type.c_str() << "\n";
-      HeapSize += grp->Data->size;
+    Groups.Sort([](GRP& v1, GRP& v2) { return v1.size > v2.size; });
+    Groups.Invert();
+
+    FOREACH(&Groups, GRP, i) {
+      std::cout << "   " << Groups[i].size << "    " << Groups[i].type.c_str() << "\n";
+      HeapSize += Groups[i].size;
     }
 
-    Groups.del();
   }
 
 
