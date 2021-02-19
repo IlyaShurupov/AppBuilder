@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Matrix.h"
-#include "Mesh.h"
+#include "Geometry/Matrix.h"
+#include "Geometry/Mesh.h"
 #include "Property.h"
 #include "Hierarchy.h"
 

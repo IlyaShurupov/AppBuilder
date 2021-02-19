@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FrameBuff.h"
+#include "Color/FrameBuff.h"
 #include <Windows.h>
 #include "Strings.h"
 

@@ -1,5 +1,5 @@
-#include "Trig.h"
-#include "Ray.h"
+#include "Geometry/Trig.h"
+#include "Geometry/Ray.h"
 #include "MathMacros.h"
 
 Trig::Trig() {

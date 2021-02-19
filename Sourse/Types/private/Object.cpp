@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "Mesh.h"
+#include "Memory/Mem.h"
 
 Object::Object() {
   StaticMeshComponent = nullptr;

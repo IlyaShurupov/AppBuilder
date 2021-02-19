@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "Vec2.h"
+#include "Geometry/Vec2.h"
 #include "UInputsMap.h"
 
 #define USRINPUT_DECL(name) Input name = Input(#name)

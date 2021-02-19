@@ -1,5 +1,5 @@
-#include "Parser.h"
-#include "Mem.h"
+#include "IO/Parser.h"
+#include "Memory/Mem.h"
 
 #include <cassert>
 #include <fstream>

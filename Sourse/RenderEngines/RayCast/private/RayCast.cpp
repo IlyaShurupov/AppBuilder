@@ -1,6 +1,6 @@
 #include "RayCast.h"
 #include "Object.h"
-#include "Ray.h"
+#include "Geometry/Ray.h"
 
 
 struct CycleData;

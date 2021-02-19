@@ -2,8 +2,8 @@
 #pragma once
 
 #include "Hierarchy.h"
-#include "LinkedList.h"
-#include "Rect.h"
+#include "Containers/LinkedList.h"
+#include "Geometry/Rect.h"
 
 #define RGBA_32 int
 #define COLOR RGBA_32

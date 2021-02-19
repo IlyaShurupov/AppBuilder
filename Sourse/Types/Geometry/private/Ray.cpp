@@ -1,4 +1,4 @@
-#include "Ray.h"
+#include "Geometry/Ray.h"
 
 Ray::Ray() {
 }

@@ -4,41 +4,41 @@ cmake_minimum_required(VERSION 3.8)
 project(Types)
 
 set (TYPES_HEADERS
-    "Vec2.h"
+    "Geometry/Vec2.h"
     "Hierarchy.h"
     "Strings.h"
-    "Rect.h"
-    "Mem.h"
+    "Geometry/Rect.h"
+    "Memory/Mem.h"
     "MathMacros.h"
     "Property.h"
-    "Vec3.h"
-    "FrameBuff.h"
-    "LinkedList.h"
-    "Ray.h"
-    "Timer.h"
+    "Geometry/Vec3.h"
+    "Color/FrameBuff.h"
+    "Containers/LinkedList.h"
+    "Geometry/Ray.h"
+    "Time/Timer.h"
     "Types.h"
-    "Mesh.h"
-    "Stack.h"
-    "Matrix.h"
+    "Geometry/Mesh.h"
+    "Containers/Stack.h"
+    "Geometry/Matrix.h"
     "Object.h"
-    "Trig.h"
-    "Parser.h"
- "SortPolicy.h" "AllocatorPolicy.h" "Color.h" )
+    "Geometry/Trig.h"
+    "IO/Parser.h"
+ "SortPolicy.h" "Memory/AllocatorPolicy.h" "Color/Color.h" )
 
 
 # Source files
 set (TYPES_SOURCES
     "private/Property.cpp"
     
-    "private/Ray.cpp"
-    "private/Timer.cpp"
-    "private/Mem.cpp"
+    "Geometry/private/Ray.cpp"
+    "Time/private/Timer.cpp"
+    "Memory/private/Mem.cpp"
     "private/Strings.cpp"
-    "private/Mesh.cpp"
+    "Geometry/private/Mesh.cpp"
     "private/Object.cpp"
-    "private/Trig.cpp"
-    "private/Parser.cpp"
- "private/SortPolicy.cpp" "private/AllocatorPolicy.cpp")
+    "Geometry/private/Trig.cpp"
+    "IO/private/Parser.cpp"
+ "private/SortPolicy.cpp" "Memory/private/AllocatorPolicy.cpp")
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})

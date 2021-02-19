@@ -2,7 +2,7 @@
 #include "UI/UITemplates.h"
 #include "Core/Seance.h"
 #include "Object.h"
-#include "Parser.h"
+#include "IO/Parser.h"
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
