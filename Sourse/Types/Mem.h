@@ -28,16 +28,6 @@ bool LogHeap(bool group = true, bool sort = true);
 #define NEW(Type) new ((Type*)Alloc(sizeof(Type), #Type, __FILE__, __LINE__)) Type 
 #define DEL(Type, ptr) ptr->~Type(); Free((void*)ptr)
 
-//#define _CRTDBG_MAP_ALLOC
-
-/*
-#define ALLOC_DEF(Type, ptr) Type* ptr = (Type*)Alloc(sizeof(Type))
-#define ALLOC_DEF_AR(Type, len, ptr) Type* ptr = (Type*)Alloc(sizeof(Type) * (len))
-#define ALLOC_A(Type, ptr) ptr = (Type*)Alloc(sizeof(Type))
-#define ALLOC(Type) (Type*)Alloc(sizeof(Type))
-#define ALLOC_AR(Type, len, ptr) ptr = (Type*)Alloc(sizeof(Type) * (len))
-*/
-
 #else
 
 
@@ -47,4 +37,4 @@ bool LogHeap(bool group = true, bool sort = true);
 #define NEW_DBG_AR(Type, len) new Type[len]
 #define DELETE_DBG_AR(ptr) delete[] ptr
 
-#endif
+#endif                                                                                          

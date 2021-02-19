@@ -23,7 +23,7 @@ set (TYPES_HEADERS
     "Object.h"
     "Trig.h"
     "Parser.h"
- "SortPolicy.h" "AllocatorPolicy.h")
+ "SortPolicy.h" "AllocatorPolicy.h" "Color.h" )
 
 
 # Source files

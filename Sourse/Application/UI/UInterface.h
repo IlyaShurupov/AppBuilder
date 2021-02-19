@@ -3,6 +3,7 @@
 #include "FrameBuff.h"
 #include "Core/Operator.h"
 
+
 enum struct UIIstate {
   NONE = 0,
   ENTERED,
@@ -32,7 +33,7 @@ struct UIItem {
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
-  void ProcEvent(Seance* C, vec2<SCR_UINT>& loc_cursor);
+  void ProcEvent(struct Seance* C, vec2<SCR_UINT>& loc_cursor);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
@@ -44,6 +45,7 @@ struct UIItem {
   vec2<bool> inv_pos;
   vec2<float> minsize;
   bool ownbuff = true;
+  bool infinite_ = true;
 
   // Event info
   UIIstate state;
@@ -62,12 +64,12 @@ struct UIItem {
   UIItem* find(struct Str* string);
 
   UIItem* active_lower();
-  void SetRect(Rect<float>& newrec);
   void move(vec2<float> pos);
-  void WrldPos(vec2<float>& out);
-  bool valid(Rect<float>& newrec, bool dir);
+  void PosInParent(UIItem* inframe, vec2<float>& out);
+  bool valid(bool dir);
 
  private:
+  UIIstate State(vec2<SCR_UINT>& cursor);
   void resize_discard(bool dir);
   bool resize_dir(float rescale, bool dir, bool& root);
   void update_neighbors(bool recursive);

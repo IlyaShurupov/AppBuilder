@@ -21,13 +21,14 @@ struct Hierarchy {
   }
 
   void join(Type* parent) {
-    ((Hierarchy*)parent + hrch_idx)->childs.add((Type*)(this - hrch_idx));
+    ((Hierarchy*)parent + hrch_idx)->childs.PushBack((Type*)(this - hrch_idx));
     this->prnt = parent;
   }
 
   void leave() {
     if (prnt) {
-      ((Hierarchy*)prnt + hrch_idx)->childs.del((Type*)(this - hrch_idx));
+      Node<Type>* node = ((Hierarchy*)prnt + hrch_idx)->childs.Find((Type*)(this - hrch_idx));
+      ((Hierarchy*)prnt + hrch_idx)->childs.Detach(node);
     }
   }
 

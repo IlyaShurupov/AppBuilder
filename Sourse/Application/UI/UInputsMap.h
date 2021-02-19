@@ -40,7 +40,7 @@ struct Conditions {
 
   bool satisfies() {
     FOREACH(&conds, Cond<type>, node) {
-      if (node->Data->met()) {
+      if (node->met()) {
         if (any)
           return true;
         continue;
@@ -60,13 +60,13 @@ struct Conditions {
     List<DataBlock>* conds_list = &db->find("List")->list;
     FOREACH(conds_list, DataBlock, node) {
       Cond<type>* cond = NEW(Cond<type>)();
-      cond->target = find_target(&node->Data->find("Name")->string, sourse);
-      cond->trigger_state = to_state(&node->Data->find("State")->string);
-      conds.add(cond);
+      cond->target = find_target(&node->find("Name")->string, sourse);
+      cond->trigger_state = to_state(&node->find("State")->string);
+      conds.PushBack(cond);
     }
   }
 
-  ~Conditions() { conds.del(); }
+  ~Conditions() {  }
 };
 
 struct Trigger {

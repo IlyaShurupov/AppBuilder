@@ -21,15 +21,15 @@ void OPInterface::proc(List<OpThread>* queue) {
   }
 
   FOREACH(&triggers, Trigger, node) {
-    Trigger* trigger = node->Data;
+    Trigger* trigger = node.Data();
     if ((!op_thread && !trigger->runtime) || (op_thread && trigger->runtime)) {
-      if (node->Data->active()) {
+      if (node->active()) {
 
-        if (node->Data->runtime) {
-          op_thread->modalevent = &node->Data->arg;
+        if (node->runtime) {
+          op_thread->modalevent = &node->arg;
         } else {
           op_thread = NEW(OpThread)(target, OpEvState::INVOKE, nullptr);
-          queue->add(op_thread);
+          queue->PushBack(op_thread);
         }
       }
     }
@@ -37,11 +37,12 @@ void OPInterface::proc(List<OpThread>* queue) {
 }
 
 OPInterface::~OPInterface() {
-  triggers.del(); 
 }
 
 void KeyMap::evaluate(List<OpThread>* exec_queue) {
-  FOREACH_DO(opiterfaces, OPInterface, iter->proc(exec_queue));
+  FOREACH(&opiterfaces, OPInterface, opiterface) {
+    opiterface->proc(exec_queue);
+  }
 }
 
 KeyMap::KeyMap() {
@@ -129,8 +130,8 @@ void OPInterface::Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIIte
   FOREACH(&triggersdb->list, DataBlock, t_node) {
 
     Trigger* trigger = NEW(Trigger)();
-    trigger->Compile(t_node->Data, uinputs, root);
-    triggers.add(trigger);
+    trigger->Compile(t_node.Data(), uinputs, root);
+    triggers.PushBack(trigger);
   }
 }
 
@@ -141,7 +142,7 @@ void KeyMap::Compile(DataBlock* db, Operators* ops, UIItem* root) {
   FOREACH(&kmdb->list, DataBlock, opi_node) {
     
     OPInterface* opintrface = NEW(OPInterface)();
-    opintrface->Compile(opi_node->Data, ops, uinputs, root);
-    opiterfaces.add(opintrface);
+    opintrface->Compile(opi_node.Data(), ops, uinputs, root);
+    opiterfaces.PushBack(opintrface);
   }
 }

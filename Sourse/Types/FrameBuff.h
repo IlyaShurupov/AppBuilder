@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "LinkedList.h"
 #include "Hierarchy.h"
+#include "LinkedList.h"
 #include "Rect.h"
 
 #define RGBA_32 int
@@ -58,7 +58,7 @@ struct FBuff {
 
   void coppy(FBuff<RGBAf>* fbuff);
   void cast(FBuff& out, Rect<SCR_UINT>& bounds);
-  void project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos);
+  void project_to(FBuff<Color_t>* project_to);
   void move(SCR_UINT dx, SCR_UINT dy);
   void free();
   void premultiply();
@@ -110,17 +110,39 @@ void FBuff<Color_t>::free() {
   size.assign(0, 0);
 }
 
+#define LOOP_PROJECT_TO(idxfrom)                                                            \
+  for (SCR_UINT i = 0; i < lastpxlx; i++) {                                                 \
+    for (SCR_UINT j = 0; j < lastpxly; j++) {                                               \
+      SCR_UINT to = project_to->size.x * (projectrect.pos.y + j) + (projectrect.pos.x + i); \
+      SCR_UINT from = idxfrom;                                                              \
+      project_to->pxls[to] = pxls[from];                                                    \
+    }                                                                                       \
+  }
+
 template <typename Color_t>
-void FBuff<Color_t>::project_to(FBuff<Color_t>* project_to, vec2<SCR_UINT>& pos) {
+void FBuff<Color_t>::project_to(FBuff<Color_t>* project_to) {
 
-  SCR_UINT lastpxlx = size.x;
-  SCR_UINT lastpxly = size.y;
+  Rect<SCR_UINT> rect(pos, size);
+  Rect<SCR_UINT> prntrect(vec2<SCR_UINT>(), project_to->size);
 
-  for (SCR_UINT i = 0; i < lastpxlx; i++) {
-    for (SCR_UINT j = 0; j < lastpxly; j++) {
-      SCR_UINT pxl_idx = project_to->size.x * (pos.y + j) + (pos.x + i);
-      project_to->pxls[pxl_idx] = pxls[size.x * j + i];
-    }
+  Rect<SCR_UINT> projectrect;
+  rect.intersection(prntrect, projectrect);
+
+  SCR_UINT lastpxlx = projectrect.size.x;
+  SCR_UINT lastpxly = projectrect.size.y;
+
+  vec2<SCR_UINT> offset(rect.size - projectrect.size);
+
+  vec2<bool> mns(rect.pos.x < 0, rect.pos.y < 0);
+
+  if (mns.x && mns.y) {
+    LOOP_PROJECT_TO(size.x * (j + offset.y) + (i + offset.x));
+  } else if (!mns.x && !mns.y) {
+    LOOP_PROJECT_TO(size.x * j + i);
+  } else if (!mns.x && mns.y) {
+    LOOP_PROJECT_TO(size.x * (j + offset.y) + i);
+  } else {
+    LOOP_PROJECT_TO(size.x * j + (i + offset.x));
   }
 }
 
@@ -139,11 +161,16 @@ void FBuff<Color_t>::move(SCR_UINT dx, SCR_UINT dy) {
 template <typename Color_t>
 void FBuff<Color_t>::DrawRect(Rect<SCR_UINT>& rect, Color_t& color) {
 
-  SCR_UINT lastpxlx = rect.pos.x + rect.size.x;
-  SCR_UINT lastpxly = rect.pos.y + rect.size.y;
+  Rect<SCR_UINT> myrect(vec2<SCR_UINT>(), size);
+  
+  Rect<SCR_UINT> projectrect;
+  myrect.intersection(rect, projectrect);
 
-  for (SCR_UINT i = rect.pos.x; i < lastpxlx; i++) {
-    for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
+  SCR_UINT lastpxlx = projectrect.pos.x + projectrect.size.x;
+  SCR_UINT lastpxly = projectrect.pos.y + projectrect.size.y;
+
+  for (SCR_UINT i = projectrect.pos.x; i < lastpxlx; i++) {
+    for (SCR_UINT j = projectrect.pos.y; j < lastpxly; j++) {
       set(i, j, &color);
     }
   }
@@ -152,20 +179,25 @@ void FBuff<Color_t>::DrawRect(Rect<SCR_UINT>& rect, Color_t& color) {
 template <typename Color_t>
 void FBuff<Color_t>::DrawBounds(Rect<SCR_UINT>& rect, Color_t& color, short thickness) {
 
-  SCR_UINT lastpxlx = rect.pos.x + rect.size.x - 1;
-  SCR_UINT lastpxly = rect.pos.y + rect.size.y - 1;
+  Rect<SCR_UINT> myrect(vec2<SCR_UINT>(), size);
+
+  Rect<SCR_UINT> projectrect;
+  myrect.intersection(rect, projectrect);
+
+  SCR_UINT lastpxlx = projectrect.pos.x + projectrect.size.x - 1;
+  SCR_UINT lastpxly = projectrect.pos.y + projectrect.size.y - 1;
 
   short th1 = 0;
   short th2 = thickness;
 
   while (th1 < th2) {
-    for (SCR_UINT i = rect.pos.x; i < lastpxlx; i++) {
-      set(i, rect.pos.y + th1, &color);
+    for (SCR_UINT i = projectrect.pos.x; i < lastpxlx; i++) {
+      set(i, projectrect.pos.y + th1, &color);
       set(i, lastpxly - th1, &color);
     }
 
-    for (SCR_UINT j = rect.pos.y; j < lastpxly; j++) {
-      set(rect.pos.x + th1, j, &color);
+    for (SCR_UINT j = projectrect.pos.y; j < lastpxly; j++) {
+      set(projectrect.pos.x + th1, j, &color);
       set(lastpxlx - th1, j, &color);
     }
 

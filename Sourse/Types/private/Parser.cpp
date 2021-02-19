@@ -7,12 +7,16 @@
 
 DataBlock* DataBlock::find(char* BlockName) {
   Str name(BlockName);
-  DO_FOREACH_IF(return iter, DataBlock, list, iter->BlockName == name);
+
+  FOREACH(&list, DataBlock, block) {
+    if (block->BlockName == name) {
+      return block.Node()->data;
+    }
+  }
   return nullptr;
 }
 
 DataBlock::~DataBlock() {
-  list.del();
 }
 
 void file_to_str(Str* filepath, Str& out) {
@@ -76,7 +80,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
   while ((irange.end = str->find(',', irange)) != -1) {
 
     DataBlock* newdb = NEW(DataBlock)();
-    db->list.add(newdb);
+    db->list.PushBack(newdb);
 
     irange.end--;
     irange.strt++;
@@ -87,7 +91,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
   }
 
   DataBlock* newdb = NEW(DataBlock)();
-  db->list.add(newdb);
+  db->list.PushBack(newdb);
   irange.end = rng.end - 1;
   write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
 }
@@ -233,7 +237,7 @@ int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range& in) {
     DataBlock* newdb = NEW(DataBlock)();
     DBType dbtype = dblock_type_yml(newdb, str, &dbrange);
 
-    prnt->list.add(newdb);
+    prnt->list.PushBack(newdb);
 
     write_to_db_yml(newdb, str, dbtype, dbrange);
 

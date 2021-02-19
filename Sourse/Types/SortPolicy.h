@@ -42,7 +42,7 @@ struct SortMerge {
     int k = left;
 
     while (i < n1 && j < n2) {
-      if (Left[i] <= Right[j]) {
+      if (!(grater(*Left[i], *Right[j]))) {
         buff[k] = Left[i];
         i++;
       } else {
