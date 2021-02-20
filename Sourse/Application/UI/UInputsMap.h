@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 #include "Containers/List.h"
 #include "Strings.h"
 

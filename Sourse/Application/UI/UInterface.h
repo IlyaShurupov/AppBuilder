@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BitMap/BitMap.h"
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 #include "Hierarchy.h"
 
 enum struct UIIstate {
