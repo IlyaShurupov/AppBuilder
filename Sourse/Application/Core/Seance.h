@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Containers/List.h"
-#include "Ops/Ops.h"
+#include "Operator/Templates.h"
 
 class Object;
 class UIItem;

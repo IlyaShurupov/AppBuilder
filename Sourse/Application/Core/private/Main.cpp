@@ -1,5 +1,5 @@
 
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 #include "Core/Seance.h"
 #include "Memory/Mem.h"
 #include "Time/Timer.h"

@@ -1,10 +1,10 @@
 
 #include "UI/UInputsMap.h"
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 #include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "IO/Parser.h"
-#include "Ops/Ops.h"
+#include "Operator/Templates.h"
 
 Input::Input(const char* name) {
   idname = name;
@@ -25,7 +25,7 @@ void OPInterface::proc(List<OpThread>* queue) {
     if ((!op_thread && !trigger->runtime) || (op_thread && trigger->runtime)) {
       if (node->active()) {
 
-        if (node->runtime) {
+        if (node->runtime && op_thread) {
           op_thread->modalevent = &node->arg;
         } else {
           op_thread = NEW(OpThread)(target, OpEvState::INVOKE, nullptr);

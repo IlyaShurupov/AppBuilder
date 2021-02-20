@@ -5,7 +5,7 @@
 #include "IO/Parser.h"
 #include "UI/UITemplates.h"
 #include "UI/UInputsMap.h"
-#include "Ops/Ops.h"
+#include "Operator/Templates.h"
 
 UIItem::UIItem(DataBlock* UIdb) {
   flag = 0;

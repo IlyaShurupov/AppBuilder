@@ -1,7 +1,7 @@
 
-#include "Ops/Ops.h"
+#include "Operator/Templates.h"
 
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 #include "Core/Seance.h"
 
 #include "UI/UInputs.h"

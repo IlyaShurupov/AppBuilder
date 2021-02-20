@@ -1,4 +1,4 @@
-#include "Core/Operator.h"
+#include "Operator/Operator.h"
 
 #include "Core/Seance.h"
 #include "Types.h"

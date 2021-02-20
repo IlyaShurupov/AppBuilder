@@ -3,7 +3,7 @@
 #include "Core/Seance.h"
 #include "IO/Parser.h"
 #include "Object.h"
-#include "Ops/Ops.h"
+#include "Operator/Templates.h"
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
