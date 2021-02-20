@@ -7,16 +7,28 @@
 #include "UI/UInputsMap.h"
 #include "Ops/Ops.h"
 
-UIItem::UIItem() {
+UIItem::UIItem(DataBlock* UIdb) {
   flag = 0;
   state = UIIstate::NONE;
-  ProcBody = nullptr;
-  DrawBody = nullptr;
   buff = nullptr;
+
+  hrchy.id = UIdb->find("Name")->string;
+
+  DataBlock* size = UIdb->find("Size");
+  rect.size = vec2<float>((float)size->list[0].integer, (float)size->list[1].integer);
+
+  DataBlock* pos = UIdb->find("Pos");
+  rect.pos = vec2<float>((float)pos->list[0].integer, (float)pos->list[1].integer);
+
+  DataBlock* min = UIdb->find("MinSize");
+  minsize = vec2<float>((float)min->list[0].integer, (float)min->list[1].integer);
+
+  DataBlock* rigiddb = UIdb->find("Rigid");
+  rigid = vec2<bool>(rigiddb->list[0].boolean, rigiddb->list[1].boolean);
+
 }
 
 UIItem::~UIItem() {
-  IF(CustomData, DEALLOC(CustomData));
   if (buff) {
     DEL(BitMap<RGBA_32>, buff);
   }
@@ -48,7 +60,7 @@ void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
   }
 
   if (state == UIIstate::INSIDE) {
-    IF(ProcBody, ProcBody(this, C, cursor))
+    ProcBody(this, C, cursor);
     redraw = true;
   }
 
@@ -72,7 +84,7 @@ void UIItem::Draw(UIItem* project_to) {
       draw_to = this;
     } 
 
-    IF(DrawBody && draw_to, DrawBody(this, draw_to));
+    IF(draw_to, DrawBody(this, draw_to));
 
     FOREACH((&hrchy.childs), UIItem, child) {
       child->Draw(draw_to);
@@ -420,42 +432,27 @@ UIItem* UICompile(Operators* ops, DataBlock* db) {
 
   FOREACH(&uilistdb->list, DataBlock, UIdb) {
 
-    UIItem* uiitem = NEW(UIItem) ();
-
-    uiitem->hrchy.id = UIdb->find("Name")->string;
+    UIItem* newuii = nullptr;
     Str* parent = &UIdb->find("Parent")->string;
-
-    DataBlock* size = UIdb->find("Size");
-    uiitem->rect.size = vec2<float>((float)size->list[0].integer, (float)size->list[1].integer);
-
-    DataBlock* pos = UIdb->find("Pos");
-    uiitem->rect.pos = vec2<float>((float)pos->list[0].integer, (float)pos->list[1].integer);
-
-    DataBlock* min = UIdb->find("MinSize");
-    uiitem->minsize = vec2<float>((float)min->list[0].integer, (float)min->list[1].integer);
-
-    DataBlock* rigiddb = UIdb->find("Rigid");
-    uiitem->rigid = vec2<bool>(rigiddb->list[0].boolean, rigiddb->list[1].boolean);
 
     DataBlock* templatedb = UIdb->find("Template");
     DataBlock* usingdb = templatedb->find("Using");
     DataBlock* withdb = templatedb->find("With");
 
     if (usingdb->string == "Button") {
-      ui_template_button(uiitem, ops, withdb);
+      newuii = (UIItem*)NEW(UIIButton)(ops, withdb, UIdb.Data());
     } else if (usingdb->string == "Group") {
-      ui_template_group(uiitem, withdb);
+      newuii = (UIItem*)NEW(UIIGroup)(ops, withdb, UIdb.Data());
     }
-
-
-    pcuii.PushBack(NEW(PreCompUII)(uiitem, parent));
+    pcuii.PushBack(NEW(PreCompUII)(newuii, parent));
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {
     if (!(*inode->parent == "__NONE__")) {
       FOREACH(&pcuii, PreCompUII, jnode) {
         if (*inode->parent == jnode->item->hrchy.id) {
-          inode->item->hrchy.join(jnode->item);
+          jnode->item->hrchy.childs.PushBack(inode->item);
+          inode->item->hrchy.prnt = jnode->item;
           break;
         }
       }

@@ -8,7 +8,7 @@
 struct UInputs;
 struct UInputs;
 struct DataBlock;
-struct UIItem;
+class UIItem;
 struct Operators;
 
 enum class InputState {
