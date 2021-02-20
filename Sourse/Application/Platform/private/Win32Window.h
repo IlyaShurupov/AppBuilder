@@ -6,10 +6,10 @@
 
 struct Win32Window {
 
-  Win32Window(struct UIItem* uii);
+  Win32Window(class UIItem* uii);
   ~Win32Window();
 
-  void Draw(struct UIItem* uii);
+  void Draw(class UIItem* uii);
 
   void ProcSysEvents();
 

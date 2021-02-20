@@ -12,7 +12,7 @@ set (TYPES_HEADERS
     "Macros.h"
     "Property.h"
     "Geometry/Vec3.h"
-    "Color/FrameBuff.h"
+    "BitMap/BitMap.h"
     "Containers/List.h"
     "Geometry/Ray.h"
     "Time/Timer.h"
@@ -23,13 +23,14 @@ set (TYPES_HEADERS
     "Object.h"
     "Geometry/Trig.h"
     "IO/Parser.h"
- "Sort.h" "Memory/Allocators.h" "Color/Color.h" )
+    "Sort.h" 
+    "Memory/Allocators.h" 
+    "BitMap/Color.h" )
 
 
 # Source files
 set (TYPES_SOURCES
     "private/Property.cpp"
-    
     "Geometry/private/Ray.cpp"
     "Time/private/Timer.cpp"
     "Memory/private/Mem.cpp"
@@ -37,8 +38,7 @@ set (TYPES_SOURCES
     "Geometry/private/Mesh.cpp"
     "private/Object.cpp"
     "Geometry/private/Trig.cpp"
-    "IO/private/Parser.cpp"
-  )
+    "IO/private/Parser.cpp" )
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})

@@ -12,15 +12,15 @@ enum struct UIIstate {
 };
 
 struct Wrap {
-  struct UIItem* rig = nullptr;
-  struct UIItem* top = nullptr;
-  struct UIItem* lef = nullptr;
-  struct UIItem* bot = nullptr;
+  class UIItem* rig = nullptr;
+  class UIItem* top = nullptr;
+  class UIItem* lef = nullptr;
+  class UIItem* bot = nullptr;
 };
 
-struct UIItem {
-
-  UIItem();
+class UIItem {
+ public:
+  UIItem(struct DataBlock* UIdb);
   ~UIItem();
 
   Hrchy<UIItem> hrchy;
@@ -37,8 +37,8 @@ struct UIItem {
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  void (*ProcBody)(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor);
-  void (*DrawBody)(UIItem* This, UIItem* project_to);
+  virtual void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {}
+  virtual void DrawBody(UIItem* This, UIItem* draw_to) {}
 
   Rect<float> rect;
   vec2<bool> rigid;
@@ -59,7 +59,6 @@ struct UIItem {
   
   // Draw info
   BitMap<RGBA_32>* buff = nullptr;
-  void* CustomData = nullptr;
 
   UIItem* find(struct Str* string);
 

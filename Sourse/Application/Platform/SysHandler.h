@@ -1,7 +1,7 @@
 
 #pragma once
 
-struct UIItem;
+class UIItem;
 struct UInputs;
 struct Str;
 

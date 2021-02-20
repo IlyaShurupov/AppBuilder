@@ -4,7 +4,7 @@
 #include "Ops/Ops.h"
 
 class Object;
-struct UIItem;
+class UIItem;
 class Operator;
 struct Str;
 struct OpThread;

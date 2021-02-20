@@ -1,86 +1,78 @@
 
 #include "UI/UITemplates.h"
 #include "Core/Seance.h"
-#include "Object.h"
 #include "IO/Parser.h"
+#include "Object.h"
+#include "Ops/Ops.h"
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
-#include "Ops/Ops.h"
 
-typedef struct UIRegionData {
-  Operator* op = nullptr;
-  Object* RS_ptr = nullptr;
-} UIRegionData;
+UIIButton::UIIButton(Operators* ops, DataBlock* paramsdb, DataBlock* uiidb) : UIItem(uiidb) {
 
-// --------- Button ---------------- //
+  ownbuff = false;
 
-typedef struct Button {
-  Operator* target = nullptr;
-  OpThread* thread;
+  target = ops->find(&paramsdb->find("Operator")->string);
+  onpress = paramsdb->find("On")->string == "PRESSED";
 
-  bool onpress = false;
-  COLOR col_in;
-  COLOR col_out;
-  COLOR col_hold;
+  DataBlock* argsdb = paramsdb->find("Args");
+  released.idname = argsdb->find("Pressed")->string;
+  hold.idname = argsdb->find("Hold")->string;
+  released.idname = argsdb->find("Released")->string;
 
-  OpArg pressed;
-  OpArg hold;
-  OpArg released;
+  DataBlock* palleteb = paramsdb->find("Pallete");
+  col_out = (int)palleteb->find("In")->integer;
+  col_in = (int)palleteb->find("Out")->integer;
+  col_hold = (int)palleteb->find("Hold")->integer;
+}
 
-  bool drawhold = false;
-} Button;
+UIIButton::~UIIButton() {}
 
-void button_proc(UIItem* This, Seance* C, vec2<SCR_INT>& cursor) {
-
+void UIIButton::ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {
   UInputs* uinpts = C->ui.kmap->uinputs;
   List<OpThread>* queue = &C->threads;
 
-  Button* btn = (Button*)This->CustomData;
-
-  if (btn->thread && btn->thread->state != ThreadState::RUNNING) {
-    DEL(OpThread, btn->thread);
-    btn->thread = nullptr;
-    btn->drawhold = false;
+  if (thread && thread->state != ThreadState::RUNNING) {
+    DEL(OpThread, thread);
+    thread = nullptr;
+    drawhold = false;
   }
 
   if (uinpts->LMB.state == InputState::PRESSED) {
 
-    if (btn->onpress) {
-      btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->pressed);
-      queue->PushBack(btn->thread);
-      btn->drawhold = true;
+    if (onpress) {
+      thread = NEW(OpThread)(target, OpEvState::INVOKE, &pressed);
+      queue->PushBack(thread);
+      drawhold = true;
     }
 
   } else if (uinpts->LMB.state == InputState::RELEASED) {
 
-    if (!btn->onpress) {
-      btn->thread = NEW(OpThread)(btn->target, OpEvState::INVOKE, &btn->released);
-      queue->PushBack(btn->thread);
-      btn->drawhold = true;
+    if (!onpress) {
+      thread = NEW(OpThread)(target, OpEvState::INVOKE, &released);
+      queue->PushBack(thread);
+      drawhold = true;
 
-    } else if (btn->thread) {
-      btn->thread->modalevent = &btn->released;
+    } else if (thread) {
+      thread->modalevent = &released;
     }
 
-  } else if (uinpts->LMB.state == InputState::HOLD && btn->thread) {
-    btn->thread->modalevent = &btn->hold;
+  } else if (uinpts->LMB.state == InputState::HOLD && thread) {
+    thread->modalevent = &hold;
   }
 }
 
-void button_draw(UIItem* This, UIItem* draw_to) {
-  Button* btn = (Button*)This->CustomData;
-
+void UIIButton::DrawBody(UIItem* This, UIItem* draw_to) {
   RGBA_32 color1 = 0xffffffff;
 
-  if (btn->drawhold) {
-    color1 = btn->col_hold;
+  if (drawhold) {
+    color1 = col_hold;
 
   } else if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    color1 = btn->col_in;
+    color1 = col_in;
 
   } else {
-    color1 = btn->col_out;
+    color1 = col_out;
   }
 
   vec2<float> save(This->rect.pos);
@@ -100,102 +92,60 @@ void button_draw(UIItem* This, UIItem* draw_to) {
   This->rect.pos = save;
 }
 
-void ui_template_button(UIItem* button, Operators* ops, DataBlock* db) {
+UIIGroup::UIIGroup(Operators* ops, DataBlock* paramsdb, DataBlock* uiidb) : UIItem(uiidb) {
 
-  button->DrawBody = button_draw;
-  button->ProcBody = button_proc;
-  button->ownbuff = false;
+  frame = paramsdb->find("Frame")->boolean;
+  fill = paramsdb->find("Fill")->boolean;
 
-  Button* btn = NEW(Button)();
-  btn->target = ops->find(&db->find("Operator")->string);
-  btn->onpress = db->find("On")->string == "PRESSED";
+  if (ownbuff = paramsdb->find("OwnBuff")->boolean) {
+    buff = NEW(BitMap<RGBA_32>)(rect.size.x, rect.size.y);
+  }
 
-  DataBlock* argsdb = db->find("Args");
-  btn->released.idname = argsdb->find("Pressed")->string;
-  btn->hold.idname = argsdb->find("Hold")->string;
-  btn->released.idname = argsdb->find("Released")->string;
+  DataBlock* thickness = paramsdb->find("Thickness");
+  thickin = (int)thickness->find("In")->integer;
+  thickout = (int)thickness->find("Out")->integer;
 
-  DataBlock* palleteb = db->find("Pallete");
-  btn->col_out = (int)palleteb->find("In")->integer;
-  btn->col_in = (int)palleteb->find("Out")->integer;
-  btn->col_hold = (int)palleteb->find("Hold")->integer;
-
-  button->CustomData = btn;
+  DataBlock* pallete = paramsdb->find("Pallete");
+  Framein = (int)pallete->find("FrameIn")->integer;
+  Frameout = (int)pallete->find("FrameOut")->integer;
+  Fillin = (int)pallete->find("FillIn")->integer;
+  Fillout = (int)pallete->find("FillOut")->integer;
 }
 
-// ---------  Group ---------------- //
+UIIGroup::~UIIGroup() {}
 
-typedef struct Group {
+void UIIGroup::ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {}
 
-  COLOR Framein;
-  COLOR Frameout;
-  COLOR Fillin;
-  COLOR Fillout;
-
-  bool frame = true;
-  bool fill = false;
-  int thickin;
-  int thickout;
-} Group;
-
-void group_draw(UIItem* This, UIItem* draw_to) {
-
-  Group* grp = (Group*)This->CustomData;
-
+void UIIGroup::DrawBody(UIItem* This, UIItem* draw_to) {
   vec2<float> save(This->rect.pos);
   vec2<float> draw_to_pos;
   This->PosInParent(draw_to, draw_to_pos);
   This->rect.pos = draw_to_pos;
 
-  RGBA_32 fillcol = grp->Fillin;
-  RGBA_32 framecol = grp->Framein;
-  short thick = grp->thickin;
+  RGBA_32 fillcol = Fillin;
+  RGBA_32 framecol = Framein;
+  short thick = thickin;
 
   if (This->state == UIIstate::LEAVED || This->state == UIIstate::NONE) {
-    fillcol = grp->Fillout;
-    framecol = grp->Frameout;
-    thick = grp->thickout;
+    fillcol = Fillout;
+    framecol = Frameout;
+    thick = thickout;
   }
 
   Rect<float> projectrect(This->rect);
-  //This->hrchy.prnt->rect.intersection(This->rect, projectrect);
+  // This->hrchy.prnt->rect.intersection(This->rect, projectrect);
 
   Rect<SCR_INT> rect;
   rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
   rect.size.assign(projectrect.size.x, projectrect.size.y);
 
-  if (grp->fill) {
+  if (fill) {
     draw_to->buff->DrawRect(rect, fillcol);
   }
 
-  if (grp->frame) {
+  if (frame) {
     draw_to->buff->DrawBounds(rect, framecol, thick);
   }
 
   This->rect.pos = save;
-}
-
-void ui_template_group(UIItem* uii, DataBlock* db) {
-
-  uii->DrawBody = group_draw;
-
-  Group* grp = NEW(Group) ();
-  uii->CustomData = grp;
-
-  grp->frame = db->find("Frame")->boolean;
-  grp->fill = db->find("Fill")->boolean;
-
-  if (uii->ownbuff = db->find("OwnBuff")->boolean) {
-    uii->buff = NEW(BitMap<RGBA_32>) (uii->rect.size.x, uii->rect.size.y);
-  }
-
-  DataBlock* thickness = db->find("Thickness");
-  grp->thickin = (int)thickness->find("In")->integer;
-  grp->thickout = (int)thickness->find("Out")->integer;
-
-  DataBlock* pallete = db->find("Pallete");
-  grp->Framein = (int)pallete->find("FrameIn")->integer;
-  grp->Frameout = (int)pallete->find("FrameOut")->integer;
-  grp->Fillin = (int)pallete->find("FillIn")->integer;
-  grp->Fillout = (int)pallete->find("FillOut")->integer;
 }
