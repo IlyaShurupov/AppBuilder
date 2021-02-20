@@ -9,11 +9,11 @@ set (TYPES_HEADERS
     "Strings.h"
     "Geometry/Rect.h"
     "Memory/Mem.h"
-    "MathMacros.h"
+    "Macros.h"
     "Property.h"
     "Geometry/Vec3.h"
     "Color/FrameBuff.h"
-    "Containers/LinkedList.h"
+    "Containers/List.h"
     "Geometry/Ray.h"
     "Time/Timer.h"
     "Types.h"
@@ -23,7 +23,7 @@ set (TYPES_HEADERS
     "Object.h"
     "Geometry/Trig.h"
     "IO/Parser.h"
- "SortPolicy.h" "Memory/AllocatorPolicy.h" "Color/Color.h" )
+ "Sort.h" "Memory/Allocators.h" "Color/Color.h" )
 
 
 # Source files
@@ -38,7 +38,7 @@ set (TYPES_SOURCES
     "private/Object.cpp"
     "Geometry/private/Trig.cpp"
     "IO/private/Parser.cpp"
- "private/SortPolicy.cpp" "Memory/private/AllocatorPolicy.cpp")
+  )
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})

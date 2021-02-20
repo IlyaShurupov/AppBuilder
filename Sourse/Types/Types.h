@@ -2,5 +2,5 @@
 
 #include "Geometry/Ray.h"
 #include "Containers/Stack.h"
-#include "Color/FrameBuff.h"
+#include "BitMap/BitMap.h"
 #include "Time/Timer.h"

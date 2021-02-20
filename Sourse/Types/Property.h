@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Containers/LinkedList.h"
+#include "Containers/List.h"
 #include "Strings.h"
 
 class PropertyInt {
@@ -55,7 +55,7 @@ class PropertyObjectPtr {
 class PropertyBuffPtr {
  public:
   Str idname;
-  void* buff;
+  void* pxlbuff;
 
   void assign(void* buff_ptr);
   PropertyBuffPtr();

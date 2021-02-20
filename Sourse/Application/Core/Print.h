@@ -28,14 +28,12 @@ inline void DBG_print(std::string str = std::string(), float val = 0) {
 
 void post_MSG(CMSGType MSGtype = CMSGType::DEFAULT, std::string str = std::string(), float val = 0);
 
-void print(Vec3f& vec);
 void print(Mat3f& mat);
 void print(PropertyFloat& prp);
 void print(PropertyInt& prp);
 void print(RayHitData& HD);
 void print(Ray& ray);
 void print(Camera& cam);
-void print(FBuff<RGBA_32>& buff, bool PrintTexture = false);
 
 template <typename Type>
 void print(Stack<Type>& stack) {

@@ -34,7 +34,7 @@ struct SyshWin32 {
 
 SysHandler::SysHandler() {
   PlatformDepended = NEW(SyshWin32)();
-  IF(SUCCEEDED(CoInitialize(NULL)));
+  IF(SUCCEEDED(CoInitialize(NULL)), );
   ConsoleToggle();
 }
 
@@ -81,8 +81,8 @@ void SysHandler::Inputs(UInputs& usin) {
   GetCursorPos(&cursor);
   cursor.y = dt->scr_y - cursor.y;
 
-  usin.Cursor.x = (SCR_UINT)cursor.x;
-  usin.Cursor.y = (SCR_UINT)cursor.y;
+  usin.Cursor.x = (SCR_INT)cursor.x;
+  usin.Cursor.y = (SCR_INT)cursor.y;
 
   usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
   usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;

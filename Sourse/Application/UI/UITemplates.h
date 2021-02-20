@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Containers/LinkedList.h"
+#include "Containers/List.h"
 
 struct UIItem;
 struct DataBlock;
-struct Operator;
+class Operator;
 
 void ui_add_region(UIItem* region, struct Operators* ops);
 void ui_template_button(UIItem* button, struct Operators* ops, DataBlock* db);

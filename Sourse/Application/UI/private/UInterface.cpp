@@ -18,11 +18,11 @@ UIItem::UIItem() {
 UIItem::~UIItem() {
   IF(CustomData, DEALLOC(CustomData));
   if (buff) {
-    DEL(FBuff<RGBA_32>, buff);
+    DEL(BitMap<RGBA_32>, buff);
   }
 }
 
-UIIstate UIItem::State(vec2<SCR_UINT>& cursor) {
+UIIstate UIItem::State(vec2<SCR_INT>& cursor) {
   if (rect.inside((float)cursor.x, (float)cursor.y)) {
     if (state == UIIstate::NONE) {
       return UIIstate::ENTERED;
@@ -36,7 +36,7 @@ UIIstate UIItem::State(vec2<SCR_UINT>& cursor) {
   }
 }
 
-void UIItem::ProcEvent(Seance* C, vec2<SCR_UINT>& cursor) {
+void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
 
   IF(hide, return );
 
@@ -53,7 +53,7 @@ void UIItem::ProcEvent(Seance* C, vec2<SCR_UINT>& cursor) {
   }
 
   if (redraw) {
-    vec2<SCR_UINT> pos = vec2<SCR_UINT>((SCR_UINT)rect.pos.x, (SCR_UINT)rect.pos.y);
+    vec2<SCR_INT> pos = vec2<SCR_INT>((SCR_INT)rect.pos.x, (SCR_INT)rect.pos.y);
     FOREACH((&hrchy.childs), UIItem, child_node) {
       child_node->ProcEvent(C, (cursor - pos));
     }
@@ -83,9 +83,8 @@ void UIItem::Draw(UIItem* project_to) {
 
     vec2<float> wrldpos;
     PosInParent(project_to, wrldpos);
-    buff->pos.assign(wrldpos.x, wrldpos.y);
-
-    buff->project_to(project_to->buff);
+ 
+    project_to->buff->Project(buff, vec2<SCR_INT>(wrldpos.x, wrldpos.y));
   }
 
   redraw = false;
@@ -343,8 +342,7 @@ void UIItem::update_neighbors(bool recursive) {
 
 void UIItem::update_buff(bool recursive) {
   if (ownbuff && !hide) {
-    buff->resize((SCR_UINT)rect.size.x, (SCR_UINT)rect.size.y);
-    buff->pos.assign(rect.pos.x, rect.pos.y);
+    buff->resize((SCR_INT)rect.size.x, (SCR_INT)rect.size.y);
   }
   FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->update_buff(recursive); }
 }

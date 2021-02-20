@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Memory/AllocatorPolicy.h"
-#include "SortPolicy.h"
+#include "Memory/Allocators.h"
+#include "Sort.h"
+#include "Macros.h"
 
 #define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
 

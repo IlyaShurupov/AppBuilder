@@ -14,7 +14,7 @@
 #include "wingdi.h"
 #include <d2d1.h>
 #include <windows.h>
-#include "Color/FrameBuff.h"
+#include "BitMap/BitMap.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInputs.h"
 #include "UI/UInterface.h"
@@ -37,9 +37,9 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
   }
 }
 
-void SetRect(Rect<float>& rect, SCR_UINT scry, void* m_hwnd) {
+void SetRect(Rect<float>& rect, SCR_INT scry, void* m_hwnd) {
 
-  Rect<SCR_UINT> cprect;
+  Rect<SCR_INT> cprect;
   cprect.size.assign(rect.size.x, rect.size.y);
   cprect.pos.assign(rect.pos.x, rect.pos.y);
 
@@ -50,7 +50,7 @@ void SetRect(Rect<float>& rect, SCR_UINT scry, void* m_hwnd) {
 
 void drawbmp(HWND hwnd, HBITMAP hbmp) {
 
-  // get the size of the bitmap
+  // Get the size of the bitmap
   BITMAP bm;
   GetObject(hbmp, sizeof(bm), &bm);
   SIZE size = {bm.bmWidth, bm.bmHeight};
@@ -107,11 +107,11 @@ static HBITMAP CreateBitmapFromPixels(HDC hDC, UINT uWidth, UINT uHeight, UINT u
   return hBitmap;
 }
 
-void Draw_RGBA_32(FBuff<RGBA_32>* buff, void* m_hwnd, void* hdcMem) {
+void Draw_RGBA_32(BitMap<RGBA_32>* buff, void* m_hwnd, void* hdcMem) {
 
   HDC hdcWindow = GetDC((HWND)m_hwnd);
 
-  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxls);
+  HBITMAP hbmMem = CreateBitmapFromPixels(hdcWindow, buff->size.x, buff->size.y, 32, buff->pxlbuff);
 
 #ifdef TRANSPARENTCY
   drawbmp(m_hwnd, hbmMem);
@@ -126,7 +126,7 @@ void Draw_RGBA_32(FBuff<RGBA_32>* buff, void* m_hwnd, void* hdcMem) {
 
 Win32Window::Win32Window(UIItem* uii) {
 
-  Rect<SCR_UINT> rect;
+  Rect<SCR_INT> rect;
   rect.size.assign(uii->rect.size.x, uii->rect.size.y);
   rect.pos.assign(uii->rect.pos.x, uii->rect.pos.y);
   scr_y = GetDeviceCaps(GetDC(NULL), VERTRES);
@@ -204,7 +204,7 @@ void Win32Window::Draw(UIItem* uii) {
   ProcSysEvents();
 
   if (!(uii->rect == prevrec)) {
-    SetRect(uii->rect, (SCR_UINT)scr_y, m_hwnd);
+    SetRect(uii->rect, (SCR_INT)scr_y, m_hwnd);
   }
   
   Draw_RGBA_32(uii->buff, m_hwnd, hdcMem);
@@ -296,42 +296,8 @@ __int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigne
   return result;
 }
 
-/*
-void Win32Window::ShowInitializedWindow() {
-  ShowWindow((HWND)m_hwnd, SW_SHOWNORMAL);
-  UpdateWindow((HWND)m_hwnd);
-}
-*/
-
-/*
-// very slow!!!!!
-void Win32Window::getScreenSize(vec2<SCR_UINT>& rect) {
-  rect.y = GetDeviceCaps(GetDC(NULL), VERTRES);
-  rect.x = GetDeviceCaps(GetDC(NULL), HORZRES);
-}
-*/
-
-/*
-void Win32Window::getRect(Rect<SCR_UINT>& rect, SCR_UINT scry) {
-
-  LPRECT wrect_p = &RECT();
-  GetWindowRect((HWND)m_hwnd, wrect_p);
-
-  rect.pos.x = wrect_p->left;
-  rect.pos.y = wrect_p->top;
-
-  rect.size.y = wrect_p->bottom - wrect_p->top;
-  rect.size.x = wrect_p->right - wrect_p->left;
-
-  // vec2<SCR_UINT> scr_size;
-  // getScreenSize(scr_size);
-  rect.inv_y(scry);
-}
-*/
-
-
   /*
-void Win32Window::drawRect(Rect<SCR_UINT>& rect) {
+void Win32Window::drawRect(Rect<SCR_INT>& rect) {
 HDC hdc = BeginPaint(m_hwnd, &ps);
 //hdc = BeginPaint(m_hWnd, &ps);
 //    Initializing original object
@@ -373,11 +339,5 @@ Rectangle(hdc, 300, 150, 500, 300);
 
 //    Restoring the original object
 SelectObject(hdc, original);
-}
-*/
-
-/*
-void Win32Window::consoletoggle() {
-  
 }
 */

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cstdio>
 #include <iostream>
+#include "Containers/List.h"
 
 #ifdef MEM_DEBUG_WRAP
 #include <cassert>
@@ -13,7 +14,6 @@ typedef char int1;
 #define WRAP_FILL_VAL 1  // bytes
 #endif
 
-#include "Containers/LinkedList.h"
 
 struct MemHead {
   alloc_size size = 0;

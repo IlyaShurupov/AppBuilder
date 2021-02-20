@@ -28,8 +28,8 @@ struct OpArg {
   OpArg(char* idname) { this->idname = idname; }
 };
 
-struct Operator {
-
+class Operator {
+ public:
   // OP idname
   struct Str id;
 

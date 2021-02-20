@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MathMacros.h"
+#include "Macros.h"
 
 template <typename Type>
 class vec2 {
@@ -9,223 +9,121 @@ class vec2 {
   Type y;
 
   // Initialization
+  template <typename TypeIn>
+  vec2(TypeIn x, TypeIn y) {
+    this->x = (Type)x;
+    this->y = (Type)y;
+  }
+  template <typename TypeIn>
+  vec2(TypeIn vec[2]) {
+    x = (Type)vec[0];
+    y = (Type)vec[1];
+  }
+  vec2() { 
+    x = y = 0; 
+  }
+  template <typename TypeIn>
+  vec2(TypeIn val) { 
+    x = y = (Type)val; 
+  }
+  template <typename TypeIn>
+  vec2(vec2<TypeIn>& vec) {
+    x = (Type)vec.x;
+    y = (Type)vec.y;
+  }
 
-  vec2(Type x, Type y);
-  vec2(Type vec[2]);
-  vec2();
-  vec2(vec2& vec);
-  void assign(Type x, Type y);
-  void assign(vec2& vec);
-  void assign(Type vec[2]);
-  vec2& operator=(vec2& vec);
+  template <typename TypeIn>
+  void assign(TypeIn x, TypeIn y) {
+    this->x = (Type)x;
+    this->y = (Type)y;
+  }
+  template <typename TypeIn>
+  void assign(vec2<TypeIn>& vec) {
+    x = (Type)vec.x;
+    y = (Type)vec.y;
+  }
+  template <typename TypeIn>
+  void assign(TypeIn vec[2]) {
+    x = (Type)vec[0];
+    y = (Type)vec[1];
+  }
+  template <typename TypeIn>
+  vec2<Type>& operator=(TypeIn val) {
+    x = y = (Type)val;
+  }
+
+  // Conversion
+  template <typename TypeIn>
+  vec2<Type>& operator=(vec2<TypeIn> vec) {
+    x = (Type)vec.x;
+    y = (Type)vec.y;
+    return *this;
+  }
 
   // Fundamental create on stack
+  vec2 operator+(vec2& vec) { return vec2(x + vec.x, y + vec.y); }
+  vec2 operator-(vec2& vec) { return vec2(x - vec.x, y - vec.y); }
+  vec2 operator+(Type val) { return vec2(x + val, y + val); }
+  vec2 operator-(Type val) { return vec2(x - val, y - val); }
+  vec2 operator*(Type val) { return vec2(x * val, y * val); }
+  vec2 operator/(Type val) { return vec2(x / val, y / val); }
 
-  vec2 operator+(vec2& vec);
-  vec2 operator-(vec2& vec);
-  vec2 operator+(Type val);
-  vec2 operator-(Type val);
-  vec2 operator*(Type val);
-  vec2 operator/(Type val);
   // Fundamental write
+  void operator-=(Type val) {
+    x -= val;
+    y -= val;
+  }
+  void operator+=(Type val) {
+    x += val;
+    y += val;
+  }
+  void operator-=(vec2& vec) {
+    x -= vec.x;
+    y -= vec.y;
+  }
+  void operator+=(vec2& vec) {
+    x += vec.x;
+    y += vec.y;
+  }
+  void operator*=(Type val) {
+    x *= val;
+    y *= val;
+  }
+  void operator/=(Type val) {
+    x /= val;
+    y /= val;
+  }
 
-  void operator-=(Type val);
-  void operator+=(Type val);
-  void operator-=(vec2& vec);
-  void operator+=(vec2& vec);
-  void operator*=(Type val);
-  void operator/=(Type val);
+  bool operator>(vec2<Type>& vec) { return (x > vec.x && y > vec.y); }
+  bool operator>=(vec2<Type>& vec) { return (x >= vec.x && y >= vec.y); }
+  bool operator==(vec2<Type>& vec) { return (x == vec.x && y == vec.y); }
 
-  bool operator>(vec2<Type> &vec);
-  bool operator>=(vec2<Type>& vec);
-  bool operator==(vec2<Type> &vec);
-
-  Type& operator[](bool axes);
+  Type& operator[](bool axes) { return (&x)[axes]; }
 
   // Vector Properties
-  float Dot(vec2& vec);
-  float Length();
-  float LengthSqured();
-  vec2 Dir();
-  void Normalize();
+  float Dot(vec2& vec) { 
+    return (x * vec.x + y * vec.y); 
+  }
+  vec2 Dir() { 
+    return vec2(*this / (Type)this->Length()); 
+  }
+  void Normalize() { 
+    *this /= (Type)this->Length(); 
+  }
+  float LengthSqured() { 
+    return (x * x + y * y); 
+  }
+  float Length() {
+    Type sqred = (Type)(x * x + y * y);
+    return sqrt(sqred);
+  }
 
   // Vector Transformation
+  void Rot(float cosa, float sina) {
+    Type tmp = x;
+    x = x * cosa - y * sina;
+    y = tmp * sina + y * cosa;
+  }
 
-  void Rot(float cosa, float sina);
-  ~vec2();
+  ~vec2() {}
 };
-
-template <typename Type>
-inline vec2<Type>::vec2(Type x, Type y) {
-  this->x = x;
-  this->y = y;
-}
-
-template <typename Type>
-inline vec2<Type>::vec2(Type vec[2]) {
-  x = vec[0];
-  y = vec[1];
-}
-
-template <typename Type>
-inline vec2<Type>::vec2() {
-  x = y = 0;
-}
-
-template <typename Type>
-inline vec2<Type>::vec2(vec2& vec) {
-  x = vec.x;
-  y = vec.y;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator-=(Type val) {
-  x -= val;
-  y -= val;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator+=(Type val) {
-  x += val;
-  y += val;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator-=(vec2& vec) {
-  x -= vec.x;
-  y -= vec.y;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator+=(vec2& vec) {
-  x += vec.x;
-  y += vec.y;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator*=(Type val) {
-  x *= val;
-  y *= val;
-}
-
-template <typename Type>
-inline void vec2<Type>::operator/=(Type val) {
-  x /= val;
-  y /= val;
-}
-
-template <typename Type>
-inline void vec2<Type>::assign(Type x, Type y) {
-  this->x = x;
-  this->y = y;
-}
-
-template <typename Type>
-inline void vec2<Type>::assign(vec2& vec) {
-  x = vec.x;
-  y = vec.y;
-}
-
-template <typename Type>
-inline void vec2<Type>::assign(Type vec[2]) {
-  x = vec[0];
-  y = vec[1];
-}
-
-template <typename Type>
-inline vec2<Type>& vec2<Type>::operator=(vec2& vec) {
-  x = vec.x;
-  y = vec.y;
-  return *this;
-}
-
-// Fundamental create on stack
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator+(vec2& vec) {
-  return vec2(x + vec.x, y + vec.y);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator-(vec2& vec) {
-  return vec2(x - vec.x, y - vec.y);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator+(Type val) {
-  return vec2(x + val, y + val);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator-(Type val) {
-  return vec2(x - val, y - val);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator*(Type val) {
-  return vec2(x * val, y * val);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::operator/(Type val) {
-  return vec2(x / val, y / val);
-}
-
-template <typename Type>
-inline bool vec2<Type>::operator>(vec2<Type> &vec) {
-  return (x > vec.x && y > vec.y);
-}
-
-template <typename Type>
-inline bool vec2<Type>::operator>=(vec2<Type>& vec) {
-  return (x >= vec.x && y >= vec.y);
-}
-
-template <typename Type>
-inline bool vec2<Type>::operator==(vec2<Type> &vec) {
-  return (x == vec.x && y == vec.y);
-}
-
-// Vector Properties
-template <typename Type>
-inline float vec2<Type>::Dot(vec2& vec) {
-  return (x * vec.x + y * vec.y);
-}
-
-template <typename Type>
-inline float vec2<Type>::Length() {
-  Type sqred = (Type)(x * x + y * y);
-  return sqrt(sqred);
-}
-
-template <typename Type>
-inline float vec2<Type>::LengthSqured() {
-  return (x * x + y * y);
-}
-
-template <typename Type>
-inline vec2<Type> vec2<Type>::Dir() {
-  return vec2(*this / (Type)this->Length());
-}
-
-template <typename Type>
-inline void vec2<Type>::Normalize() {
-  *this /= (Type)this->Length();
-}
-
-
-template <typename Type>
-inline Type& vec2<Type>::operator[](bool axes) {
-  return (&x)[axes];
-}
-
-// Vector Transformation
-template <typename Type>
-inline void vec2<Type>::Rot(float cosa, float sina) {
-  Type tmp = x;
-  x = x * cosa - y * sina;
-  y = tmp * sina + y * cosa;
-}
-
-template <typename Type>
-inline vec2<Type>::~vec2() {}
