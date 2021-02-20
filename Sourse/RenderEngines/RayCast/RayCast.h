@@ -1,5 +1,5 @@
 #pragma once
 
-#include "FrameBuff.h"
+#include "BitMap/BitMap.h"
 
-void RenderToBuff(class RenderSettings* settings, FBuff<RGBA_32>* Buff);
+void RenderToBuff(class RenderSettings* settings, BitMap<RGBA_32>* Buff);

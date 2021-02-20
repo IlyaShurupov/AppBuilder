@@ -1,6 +1,6 @@
-#include "Trig.h"
-#include "Ray.h"
-#include "MathMacros.h"
+#include "Geometry/Trig.h"
+#include "Geometry/Ray.h"
+#include "Macros.h"
 
 Trig::Trig() {
 	V0.assign(0.f, 0.f, 0.f);
@@ -35,7 +35,7 @@ bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
 	h = ray.Dir.Cross(edge2);
 	a = edge1.Dot(h);
 
-	if (a > -EPSILON && a < EPSILON) {
+	if (a > -MATH_EPSILON && a < MATH_EPSILON) {
 		return false;
 	}
 
@@ -55,7 +55,7 @@ bool Trig::RayHit(class Ray& ray, Vec3f& HitPos) {
 	}
 
 	float t = f * edge2.Dot(q);
-	if (t > EPSILON) {
+        if (t > MATH_EPSILON) {
 		HitPos = ray.Pos + ray.Dir * t;
 		return true;
 	}

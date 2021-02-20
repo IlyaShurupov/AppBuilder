@@ -1,9 +1,9 @@
 
-#include "Mem.h"
-#include "Strings.h"
-#include "Timer.h"
 #include "Core/Operator.h"
 #include "Core/Seance.h"
+#include "Memory/Mem.h"
+#include "Time/Timer.h"
+#include "Strings.h"
 #include "UI/UInputs.h"
 #include "Platform/SysHandler.h"
 #include "UI/UInterface.h"

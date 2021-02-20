@@ -21,7 +21,9 @@ struct Rect {
     this->size.assign(sizex, sizey);
   }
 
-  Rect<Type>& operator=(Rect<Type>& rect) {
+  // convertion
+  template <typename ConversionType>
+  Rect<Type>& operator=(Rect<ConversionType>& rect) {
     pos = rect.pos;
     size = rect.size;
     return *this;
@@ -48,7 +50,7 @@ struct Rect {
       out = *this;
       for (char i = 0; i < 2; i++) {
         CLAMP(out.pos[i], rect.pos[i], rect.pos[i] + rect.size[i]);
-        SCR_UINT p2 = pos[i] + size[i]; 
+        Type p2 = pos[i] + size[i]; 
         CLAMP(p2, rect.pos[i], rect.pos[i] + rect.size[i]);
         out.size[i] = p2 - out.pos[i];
       }

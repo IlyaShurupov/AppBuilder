@@ -2,7 +2,7 @@
 #pragma once
 
 #include "Core/Operator.h"
-#include "LinkedList.h"
+#include "Containers/List.h"
 #include "Strings.h"
 
 struct UInputs;
@@ -84,7 +84,7 @@ struct Trigger {
 
 struct OPInterface {
 
-  struct Operator* target = nullptr;
+  class Operator* target = nullptr;
   OpThread* op_thread = nullptr;
   List<Trigger> triggers;
 

@@ -1,5 +1,5 @@
 #include "Property.h"
-#include "MathMacros.h"
+#include "Macros.h"
 
 PropertyInt::PropertyInt() {
 	max = INT_MAX;
@@ -93,11 +93,11 @@ PropertyObjectPtr::~PropertyObjectPtr() {
 }
 
 void PropertyBuffPtr::assign(void* buff_ptr) {
-	this->buff = buff_ptr;
+	this->pxlbuff = buff_ptr;
 }
 
 PropertyBuffPtr::PropertyBuffPtr() {
-	buff = nullptr;
+	pxlbuff = nullptr;
 	idname = Str();
 }
 

@@ -10,7 +10,7 @@
 #define TRG(trig) "v0:" << VEC(trig.V0) << "v1:" << VEC(trig.V1) << "v2:" << VEC(trig.V2)
 #define ENTR COUT "\n";
 #define CLASS_NAME(Type) << typeid(Type).name()
-#define PROP(prop) prop.get()
+#define PROP(prop) prop.Get()
 
 void print(Vec3f& vec) {
   ENTR COUT "Vec3f: " << VEC(vec) NL;
@@ -51,21 +51,14 @@ void print(Ray& ray) {
   COUT TAB "Dir: " << VEC(ray.Dir) NL;
 }
 
-void print(Camera& cam) {
-  ENTR COUT "Camera: " NL;
-  COUT TAB "Height" << PROP(cam.Height) NL;
-  COUT TAB "Width" << PROP(cam.Width) NL;
-  COUT TAB "Lens" << PROP(cam.Lens) NL;
-}
-
-void print(FBuff<RGBA_32>& buff, bool PrintText) {
+void print(BitMap<RGBA_32>& pxlbuff, bool PrintText) {
   if (PrintText) {
     HWND myconsole = GetConsoleWindow();
     HDC mydc = GetDC(myconsole);
 
-    for (SCR_UINT j = 0; j < buff.size.y; j++) {
-      for (SCR_UINT i = 0; i < buff.size.x; i++) {
-        // Color4* color = buff.get(i, j);
+    for (SCR_INT j = 0; j < pxlbuff.size.y; j++) {
+      for (SCR_INT i = 0; i < pxlbuff.size.x; i++) {
+        // Color4* color = pxlbuff.Get(i, j);
         // COLORREF COLOR = RGB(color->R * 255, color->G * 255, color->B * 255);
         // COLORREF COLOR = RGB(0, 255, 12);
         // SetPixel(mydc, (int)i + 30, (int)j + 30, COLOR);
@@ -75,8 +68,8 @@ void print(FBuff<RGBA_32>& buff, bool PrintText) {
     std::cin.ignore();
   } else {
     ENTR COUT "Frame Buffer: " NL;
-    COUT TAB "Height: " << buff.size.y NL;
-    COUT TAB "Width: " << buff.size.x NL;
+    COUT TAB "Height: " << pxlbuff.size.y NL;
+    COUT TAB "Width: " << pxlbuff.size.x NL;
   }
 }
 

@@ -155,8 +155,8 @@ class OpUIIResize : Operator {
       return;
     }
 
-    int dx = C->ui.kmap->uinputs->Cursor.x - startcrs.x;
-    int dy = C->ui.kmap->uinputs->Cursor.y - startcrs.y;
+    SCR_INT dx = C->ui.kmap->uinputs->Cursor.x - (SCR_INT)startcrs.x;
+    SCR_INT dy = C->ui.kmap->uinputs->Cursor.y - (SCR_INT)startcrs.y;
 
     Rect<float> rect(startrec);
     rect.size.y += dy * top;

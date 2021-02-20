@@ -2,7 +2,7 @@
 #include "UI/UITemplates.h"
 #include "Core/Seance.h"
 #include "Object.h"
-#include "Parser.h"
+#include "IO/Parser.h"
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
@@ -31,7 +31,7 @@ typedef struct Button {
   bool drawhold = false;
 } Button;
 
-void button_proc(UIItem* This, Seance* C, vec2<SCR_UINT>& cursor) {
+void button_proc(UIItem* This, Seance* C, vec2<SCR_INT>& cursor) {
 
   UInputs* uinpts = C->ui.kmap->uinputs;
   List<OpThread>* queue = &C->threads;
@@ -91,7 +91,7 @@ void button_draw(UIItem* This, UIItem* draw_to) {
   Rect<float> projectrect;
   This->hrchy.prnt->rect.intersection(This->rect, projectrect);
 
-  Rect<SCR_UINT> rect;
+  Rect<SCR_INT> rect;
   rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
   rect.size.assign(projectrect.size.x, projectrect.size.y);
 
@@ -116,9 +116,9 @@ void ui_template_button(UIItem* button, Operators* ops, DataBlock* db) {
   btn->released.idname = argsdb->find("Released")->string;
 
   DataBlock* palleteb = db->find("Pallete");
-  btn->col_out = palleteb->find("In")->integer;
-  btn->col_in = palleteb->find("Out")->integer;
-  btn->col_hold = palleteb->find("Hold")->integer;
+  btn->col_out = (int)palleteb->find("In")->integer;
+  btn->col_in = (int)palleteb->find("Out")->integer;
+  btn->col_hold = (int)palleteb->find("Hold")->integer;
 
   button->CustomData = btn;
 }
@@ -160,7 +160,7 @@ void group_draw(UIItem* This, UIItem* draw_to) {
   Rect<float> projectrect(This->rect);
   //This->hrchy.prnt->rect.intersection(This->rect, projectrect);
 
-  Rect<SCR_UINT> rect;
+  Rect<SCR_INT> rect;
   rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
   rect.size.assign(projectrect.size.x, projectrect.size.y);
 
@@ -186,16 +186,16 @@ void ui_template_group(UIItem* uii, DataBlock* db) {
   grp->fill = db->find("Fill")->boolean;
 
   if (uii->ownbuff = db->find("OwnBuff")->boolean) {
-    uii->buff = NEW(FBuff<RGBA_32>) (uii->rect.size.x, uii->rect.size.y);
+    uii->buff = NEW(BitMap<RGBA_32>) (uii->rect.size.x, uii->rect.size.y);
   }
 
   DataBlock* thickness = db->find("Thickness");
-  grp->thickin = thickness->find("In")->integer;
-  grp->thickout = thickness->find("Out")->integer;
+  grp->thickin = (int)thickness->find("In")->integer;
+  grp->thickout = (int)thickness->find("Out")->integer;
 
   DataBlock* pallete = db->find("Pallete");
-  grp->Framein = pallete->find("FrameIn")->integer;
-  grp->Frameout = pallete->find("FrameOut")->integer;
-  grp->Fillin = pallete->find("FillIn")->integer;
-  grp->Fillout = pallete->find("FillOut")->integer;
+  grp->Framein = (int)pallete->find("FrameIn")->integer;
+  grp->Frameout = (int)pallete->find("FrameOut")->integer;
+  grp->Fillin = (int)pallete->find("FillIn")->integer;
+  grp->Fillout = (int)pallete->find("FillOut")->integer;
 }

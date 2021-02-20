@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "Vec2.h"
+#include "Geometry/Vec2.h"
 #include "UInputsMap.h"
 
 #define USRINPUT_DECL(name) Input name = Input(#name)
@@ -73,8 +73,8 @@ struct UInputs {
   USRINPUT_DECL(_UIEND_);
 
   bool IsEvent = false;
-  vec2<SCR_UINT> Cdelta;
-  vec2<SCR_UINT> Cursor;
-  vec2<SCR_UINT> PrevCursor;
+  vec2<SCR_INT> Cdelta;
+  vec2<SCR_INT> Cursor;
+  vec2<SCR_INT> PrevCursor;
   struct Window* act_window;
 };

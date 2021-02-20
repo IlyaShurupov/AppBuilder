@@ -1,8 +1,8 @@
 #pragma once
 
-#include "FrameBuff.h"
+#include "BitMap/BitMap.h"
 #include "Core/Operator.h"
-
+#include "Hierarchy.h"
 
 enum struct UIIstate {
   NONE = 0,
@@ -33,11 +33,11 @@ struct UIItem {
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
-  void ProcEvent(struct Seance* C, vec2<SCR_UINT>& loc_cursor);
+  void ProcEvent(struct Seance* C, vec2<SCR_INT>& loc_cursor);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  void (*ProcBody)(UIItem* This, Seance* C, vec2<SCR_UINT>& loc_cursor);
+  void (*ProcBody)(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor);
   void (*DrawBody)(UIItem* This, UIItem* project_to);
 
   Rect<float> rect;
@@ -58,7 +58,7 @@ struct UIItem {
   Rect<float> prev_rect;
   
   // Draw info
-  FBuff<RGBA_32>* buff = nullptr;
+  BitMap<RGBA_32>* buff = nullptr;
   void* CustomData = nullptr;
 
   UIItem* find(struct Str* string);
@@ -69,7 +69,7 @@ struct UIItem {
   bool valid(bool dir);
 
  private:
-  UIIstate State(vec2<SCR_UINT>& cursor);
+  UIIstate State(vec2<SCR_INT>& cursor);
   void resize_discard(bool dir);
   bool resize_dir(float rescale, bool dir, bool& root);
   void update_neighbors(bool recursive);

@@ -1,7 +1,6 @@
 
-#include "Timer.h"
-#include "MathMacros.h"
-//#include <time.h>
+#include "Time/Timer.h"
+#include "Macros.h"
 #include <chrono>
 #include <thread>
 
