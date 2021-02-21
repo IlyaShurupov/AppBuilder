@@ -18,3 +18,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast>
 )
+
+target_link_libraries(${PROJECT_NAME} "Types.lib")
