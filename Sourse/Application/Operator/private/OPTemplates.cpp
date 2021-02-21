@@ -1,8 +1,8 @@
 
-#include "Operator/Templates.h"
+#include "Operator/OPTemplates.h"
 
 #include "Operator/Operator.h"
-#include "Core/Seance.h"
+#include "Data/Seance.h"
 
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
@@ -12,7 +12,7 @@
 
 #include "Types.h"
 
-#include <stdlib.h>
+#include <stdlib.h> // TreadSleap, Exit
 
 
 class OpEndSeance : Operator {
@@ -22,12 +22,10 @@ class OpEndSeance : Operator {
   void Execute(struct Seance* C) {
     DEL(Seance, C);
 
-#ifdef MEM_DEBUG
     if (LogHeap()) {
       exit(0);
     }
     TreadSleep(10000);
-#endif
 
     exit(0);
   }
@@ -192,9 +190,7 @@ class OpLogHeap : Operator {
   void Invoke(struct Seance* C) { Execute(C); }
 
   void Execute(struct Seance* C) {
-#ifdef MEM_DEBUG
     LogHeap();
-#endif
     state = OpState::FINISHED;
   }
 

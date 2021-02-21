@@ -4,7 +4,7 @@
 #include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "IO/Parser.h"
-#include "Operator/Templates.h"
+#include "Operator/OPTemplates.h"
 
 Input::Input(const char* name) {
   idname = name;

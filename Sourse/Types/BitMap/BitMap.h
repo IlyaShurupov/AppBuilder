@@ -4,6 +4,19 @@
 #include "Geometry/Rect.h"
 #include "Memory/Allocators.h"
 #include "Color.h"
+#include <thread>
+
+template <typename BMType>
+struct BitMap;
+
+template <typename BMType>
+void Fill(BitMap<BMType>* bm, Rect<int>* from_to,  BMType* value) {
+  for (int i = from_to->pos.x; i < from_to->size.x; i++) {
+    for (int j = from_to->pos.y; j < from_to->size.y; j++) {
+      bm->Set(i, j, value);
+    }
+  }
+}
 
 template <typename BMType>
 struct BitMap {
@@ -21,13 +34,15 @@ struct BitMap {
     DEALLOC(pxlbuff);
   }
 
-  BMType* Get(int x, int y) { return pxlbuff + (__int64)size.x * y + x; }
-  void Set(int x, int y, BMType* value) { *Get(x, y) = *value; }
+  inline BMType* Get(int x, int y) { return pxlbuff + (__int64)size.x * y + x; }
+  inline void Set(int x, int y, BMType* value) { *(pxlbuff + (__int64)size.x* y + x) = *value; }
 
   void resize(int width, int height) {
-    DEALLOC(pxlbuff);
-    pxlbuff = ALLOC_AR(BMType, height * (__int64)width);
-    size.assign(width, height);
+    if (size.x != width || size.y != height) {
+      DEALLOC(pxlbuff);
+      pxlbuff = ALLOC_AR(BMType, height * (__int64)width);
+      size.assign(width, height);
+    }
   }
 
   void Project(BitMap<BMType>* buff, vec2<int>& pos) {
@@ -75,16 +90,35 @@ struct BitMap {
 
   // draw methods
   void DrawRect(Rect<int>& rect, BMType& value) {
+    
     Rect<int> myrect(vec2<int>(), size);
     Rect<int> projectrect;
     myrect.intersection(rect, projectrect);
-    int lastpxlx = projectrect.pos.x + projectrect.size.x;
-    int lastpxly = projectrect.pos.y + projectrect.size.y;
-    for (int i = projectrect.pos.x; i < lastpxlx; i++) {
-      for (int j = projectrect.pos.y; j < lastpxly; j++) {
-        Set(i, j, &value);
-      }
-    }
+    
+    Rect<int> from_to1(projectrect);
+    from_to1.size.assign((projectrect.size_vec() / 2) + projectrect.pos);
+
+    Rect<int> from_to2(from_to1);
+    from_to2.size.y += projectrect.size.y / 2;
+    from_to2.pos.y += projectrect.size.y / 2;
+
+    Rect<int> from_to3(from_to1);
+    from_to3.pos += projectrect.size_vec() / 2;
+    from_to3.size += projectrect.size_vec() / 2;
+
+    Rect<int> from_to4(from_to1);
+    from_to4.size.x += projectrect.size.x / 2;
+    from_to4.pos.x += projectrect.size.x / 2;
+
+    std::thread t1(Fill<BMType>, this, &from_to1, &value);
+    std::thread t2(Fill<BMType>, this, &from_to2, &value);
+    std::thread t3(Fill<BMType>, this, &from_to3, &value);
+    std::thread t4(Fill<BMType>, this, &from_to4, &value);
+
+    t1.join(); 
+    t2.join();
+    t3.join(); 
+    t4.join(); 
   }
 
   void DrawBounds(Rect<int>& rect, BMType& value, short thickness) {
@@ -119,3 +153,4 @@ struct BitMap {
     }
   }
 };
+

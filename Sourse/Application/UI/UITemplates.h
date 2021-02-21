@@ -9,7 +9,7 @@ class Operator;
 class UIIButton : UIItem {
 
   Operator* target = nullptr;
-  OpThread* thread;
+  OpThread* thread = nullptr;
 
   bool onpress = false;
   COLOR col_in;

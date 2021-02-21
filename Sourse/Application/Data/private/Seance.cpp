@@ -1,5 +1,5 @@
 
-#include "Core/Seance.h"
+#include "Data/Seance.h"
 
 #include "Operator/Operator.h"
 
@@ -12,7 +12,7 @@
 #include "Object.h"
 #include "IO/Parser.h"
 
-#include "Operator/Templates.h"
+#include "Operator/OPTemplates.h"
 
 
 Seance::Seance(Str* path) {

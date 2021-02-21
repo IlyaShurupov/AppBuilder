@@ -1,6 +1,6 @@
 
 #include "Operator/Operator.h"
-#include "Core/Seance.h"
+#include "Data/Seance.h"
 #include "Memory/Mem.h"
 #include "Time/Timer.h"
 #include "Strings.h"
@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
   Timer timer = Timer(1 * int(1000 / FPS));
 
-  // Create Seance
+  // init Seance
   Seance& C = *NEW(Seance)(&Str(getExecutablePath()));
 
   // Main loop: Handle events -> run operators -> show result
@@ -26,14 +26,14 @@ int main(int argc, char* argv[]) {
     C.ui.Input(C);
 
     // Run Operators from queue
-    for (Iterator<OpThread> thread(&C.threads, 0); thread < C.threads.Len();) {
+    for (Iterator<OpThread> thread(&C.threads, 0); thread.Node();) {
 
       OpEvState* op_event = &thread->op_event;
       Operator* op = thread->op;
 
       switch (op->state) {
 
-        case OpState::RUNNING_MODAL: // keep running    
+        case OpState::RUNNING_MODAL:   
           op->Modal(&C, thread->modalevent);
           break;
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      if (thread->state == ThreadState::DENIED || thread->state == ThreadState::CLOSED) {
+      if (thread.Data()->state == ThreadState::DENIED || thread.Data()->state == ThreadState::CLOSED) {
         C.threads.Detach(thread.Node());
       }
 

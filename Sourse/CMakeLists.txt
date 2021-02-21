@@ -6,5 +6,5 @@ cmake_minimum_required(VERSION 3.8)
 
 add_subdirectory("Types")
 add_subdirectory("Application")
-add_subdirectory("PhysEngine")
-add_subdirectory("RenderEngines")
+add_subdirectory("Physics")
+add_subdirectory("Renders")
