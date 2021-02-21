@@ -1,9 +1,9 @@
 
 #include "UI/UITemplates.h"
-#include "Core/Seance.h"
+#include "Data/Seance.h"
 #include "IO/Parser.h"
 #include "Object.h"
-#include "Operator/Templates.h"
+#include "Operator/OPTemplates.h"
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"

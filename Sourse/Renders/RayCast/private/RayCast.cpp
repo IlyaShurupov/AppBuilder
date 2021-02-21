@@ -1,7 +1,7 @@
-#include "RayCast.h"
+#include "../RayCast.h"
 #include "Object.h"
 #include "Geometry/Ray.h"
-
+#include "BitMap/BitMap.h"
 
 struct CycleData;
 void RenderPass(RenderSettings* settings, Ray ray, COLOR& color);

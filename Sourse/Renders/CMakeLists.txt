@@ -14,4 +14,4 @@ set_target_properties(RayCast Raster
 
 set_target_properties(RayCast Raster
    PROPERTIES
-   FOLDER "RenderEngines")
+   FOLDER "Renders")

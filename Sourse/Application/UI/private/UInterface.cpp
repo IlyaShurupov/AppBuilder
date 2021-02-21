@@ -1,11 +1,11 @@
 
 #include "UI/UInterface.h"
-#include "Core/Seance.h"
+#include "Data/Seance.h"
 #include "Object.h"
 #include "IO/Parser.h"
 #include "UI/UITemplates.h"
 #include "UI/UInputsMap.h"
-#include "Operator/Templates.h"
+#include "Operator/OPTemplates.h"
 
 UIItem::UIItem(DataBlock* UIdb) {
   flag = 0;
@@ -121,10 +121,16 @@ void UIItem::Resize(Rect<float>& newrect) {
     bool root = true;
     clear_flags();
 
+    /*
     if (!resize_dir(newrect.size[i] / prev_rect.size[i], i, root)) {
       resize_discard(i);
     }
+    */
   }
+
+  vec2<float> del;
+  del = newrect.pos - prev_rect.pos;
+  FOREACH(&hrchy.childs, UIItem, node) { node->move(node->rect.pos - del); }
 
   update_buff(true);
 }

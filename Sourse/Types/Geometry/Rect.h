@@ -11,6 +11,11 @@ struct Rect {
 
   Rect() {}
 
+  Rect(Rect<Type>& rec) {
+    this->pos = rec.pos;
+    this->size = rec.size;
+  }
+
   Rect(vec2<Type>& pos, vec2<Type>& size) {
     this->pos = pos;
     this->size = size;

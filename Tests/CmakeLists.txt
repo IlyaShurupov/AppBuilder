@@ -21,7 +21,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAK
 target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Application>
-              $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/RenderEngines/RayCast>
 
 )
 

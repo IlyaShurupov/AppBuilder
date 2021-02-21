@@ -1,6 +1,5 @@
 #include "Memory/Mem.h"
 
-#ifdef MEM_DEBUG
 
 #include <stdlib.h>
 #include <cstdio>
@@ -182,4 +181,4 @@ bool LogHeap(bool group, bool sort) {
   return true;
 }
 
-#endif
+
