@@ -1,9 +1,10 @@
-#include "Memory/Mem.h"
 
+#include "Memory/Mem.h"
 
 #include <stdlib.h>
 #include <cstdio>
 #include <iostream>
+
 #include "Containers/List.h"
 
 #ifdef MEM_DEBUG_WRAP
@@ -12,7 +13,6 @@ typedef char int1;
 #define WRAP_LEN 8  // bytes
 #define WRAP_FILL_VAL 1  // bytes
 #endif
-
 
 struct MemHead {
   alloc_size size = 0;
@@ -25,7 +25,8 @@ struct MemHead {
 
 MemHead* mem_debug_entry_ptr;
 
-void* Alloc(alloc_size size, const char* Type, const char* File, int Line) {
+
+void* MemAllocHeap(alloc_size size, const char* Type, const char* File, int Line) {
 
 #ifdef MEM_DEBUG_WRAP
 
@@ -78,7 +79,7 @@ void* Alloc(alloc_size size, const char* Type, const char* File, int Line) {
   return nullptr;
 }
 
-void Free(void* ptr) {
+void MemFree(void* ptr) {
 
   if (!ptr) {
     return;

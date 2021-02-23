@@ -137,21 +137,28 @@ class List {
   inline Type& operator[](int idx) { return *Find(idx)->data; }
 
   void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
-  void PushBack(Type* data) { PushBack(ALLOCP_NEW(Node<Type>, alloc)(data)); }
   void PushFront(Node<Type>* new_node) { Attach(new_node, nullptr); }
-  void PushFront(Type* data) { PushFront(ALLOCP_NEW(Node<Type>, alloc)(data)); }
+
+  void PushBack(Type* data) { 
+    PushBack(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data)); 
+  }
+  void PushFront(Type* data) { 
+    PushFront(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data)); 
+  }
 
   void Insert(Node<Type>* node, int idx) {
     Node<Type>* place_to = Find(idx);
     Attach(node, place_to->prev);
   }
 
-  void Insert(Type* data, int idx) { Insert(ALLOCP_NEW(Node<Type>, alloc)(data), idx); }
+  void Insert(Type* data, int idx) { 
+    Insert(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data), idx); 
+  }
 
   void DelNode(Node<Type>* node) {
     Detach(node);
     node->FreeData();
-    ALLOCP_DEL(Node<Type>, node, alloc);
+    alloc.Deallocate(node);
   }
 
   void Release() {
