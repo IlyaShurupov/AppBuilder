@@ -1,11 +1,9 @@
 
 #include "UI/UInterface.h"
 #include "Data/Seance.h"
-#include "Object.h"
 #include "IO/Parser.h"
-#include "UI/UITemplates.h"
+#include "Object/Object.h"
 #include "UI/UInputsMap.h"
-#include "Operator/OPTemplates.h"
 
 UIItem::UIItem(DataBlock* UIdb) {
   flag = 0;
@@ -25,7 +23,6 @@ UIItem::UIItem(DataBlock* UIdb) {
 
   DataBlock* rigiddb = UIdb->find("Rigid");
   rigid = vec2<bool>(rigiddb->list[0].boolean, rigiddb->list[1].boolean);
-
 }
 
 UIItem::~UIItem() {
@@ -38,12 +35,12 @@ UIIstate UIItem::State(vec2<SCR_INT>& cursor) {
   if (rect.inside((float)cursor.x, (float)cursor.y)) {
     if (state == UIIstate::NONE) {
       return UIIstate::ENTERED;
-    } 
+    }
     return UIIstate::INSIDE;
   } else {
     if (state == UIIstate::INSIDE) {
       return UIIstate::LEAVED;
-    } 
+    }
     return UIIstate::NONE;
   }
 }
@@ -66,9 +63,7 @@ void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
 
   if (redraw) {
     vec2<SCR_INT> pos = vec2<SCR_INT>((SCR_INT)rect.pos.x, (SCR_INT)rect.pos.y);
-    FOREACH((&hrchy.childs), UIItem, child_node) {
-      child_node->ProcEvent(C, (cursor - pos));
-    }
+    FOREACH((&hrchy.childs), UIItem, child_node) { child_node->ProcEvent(C, (cursor - pos)); }
   }
 }
 
@@ -77,25 +72,23 @@ void UIItem::Draw(UIItem* project_to) {
   IF(hide, return );
 
   if (redraw || !ownbuff) {
-    
+
     UIItem* draw_to = project_to;
 
     if (ownbuff) {
       draw_to = this;
-    } 
+    }
 
     IF(draw_to, DrawBody(this, draw_to));
 
-    FOREACH((&hrchy.childs), UIItem, child) {
-      child->Draw(draw_to);
-    }
+    FOREACH((&hrchy.childs), UIItem, child) { child->Draw(draw_to); }
   }
 
   if (ownbuff && project_to) {
 
     vec2<float> wrldpos;
     PosInParent(project_to, wrldpos);
- 
+
     project_to->buff->Project(buff, vec2<SCR_INT>(wrldpos.x, wrldpos.y));
   }
 
@@ -103,7 +96,7 @@ void UIItem::Draw(UIItem* project_to) {
 }
 
 void UIItem::Resize(Rect<float>& newrect) {
-  
+
   update_neighbors(true);
   save_config();
 
@@ -158,12 +151,12 @@ bool UIItem::valid(bool dir) {
       }
     }
   }
-    
+
   return true;
 }
 
 bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
-  
+
   if (!root) {
     ResizeBody(rect, dir);
   } else {
@@ -206,9 +199,7 @@ void UIItem::resize_discard(bool dir) {
   rect.size[dir] = prev_rect.size[dir];
   rect.pos[dir] = prev_rect.pos[dir];
 
-  FOREACH((&hrchy.childs), UIItem, child_node) {
-    child_node->resize_discard(dir);
-  }
+  FOREACH((&hrchy.childs), UIItem, child_node) { child_node->resize_discard(dir); }
 }
 
 void UIItem::ResizeBody(Rect<float>& out, bool dir) {
@@ -405,7 +396,7 @@ void UIItem::move(vec2<float> pos) {
 void UIItem::PosInParent(UIItem* inframe, vec2<float>& out) {
 
   if (hrchy.prnt) {
-    
+
     if (inframe && inframe == this) {
       return;
     }
@@ -414,7 +405,7 @@ void UIItem::PosInParent(UIItem* inframe, vec2<float>& out) {
     out += rect.pos;
     return;
   }
-  
+
   out.assign(0, 0);
 }
 
@@ -430,7 +421,7 @@ struct PreCompUII {
   Str* parent;
 };
 
-UIItem* UICompile(Operators* ops, DataBlock* db) {
+UIItem* UICompile(Operators* ops, DataBlock* db, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb)) {
 
   UIItem* root = nullptr;
   List<PreCompUII> pcuii;
@@ -445,12 +436,10 @@ UIItem* UICompile(Operators* ops, DataBlock* db) {
     DataBlock* usingdb = templatedb->find("Using");
     DataBlock* withdb = templatedb->find("With");
 
-    if (usingdb->string == "Button") {
-      newuii = (UIItem*)NEW(UIIButton)(ops, withdb, UIdb.Data());
-    } else if (usingdb->string == "Group") {
-      newuii = (UIItem*)NEW(UIIGroup)(ops, withdb, UIdb.Data());
+    newuii = UIIFromStr(&usingdb->string, ops, withdb, UIdb.Data());
+    if (newuii) {
+      pcuii.PushBack(NEW(PreCompUII)(newuii, parent));
     }
-    pcuii.PushBack(NEW(PreCompUII)(newuii, parent));
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {

@@ -1,5 +1,5 @@
 #include "../RayCast.h"
-#include "Object.h"
+#include "Object/Object.h"
 #include "Geometry/Ray.h"
 #include "BitMap/BitMap.h"
 
@@ -99,28 +99,4 @@ inline void UpdYPass(CycleData& CData, SCR_INT& i) {
 inline void UpdXPass(CycleData& CData, SCR_INT& i) {
   i++;
   CData.CamRay.Dir += CData.step_x;
-}
-
-RenderSettings::RenderSettings() {
-  ObjList = nullptr;
-  Camera = nullptr;
-  Resolution.assign(0.5f, 0.1f, 1.f);
-}
-
-RenderSettings::~RenderSettings() {}
-
-void RenderSettings::setObjList(List<Object>* list) {
-  ObjList = list;
-}
-
-void RenderSettings::setCamera(Object* camera) {
-  Camera = camera;
-}
-
-Object* RenderSettings::getCamera() {
-  return Camera;
-}
-
-List<Object>* RenderSettings::getObjList() {
-  return ObjList;
 }

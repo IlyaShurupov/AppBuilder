@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Object.h"
+#include "Geometry/Mesh.h"
 
 struct RayHitData {
 	bool Hit = false;
-	Object* Obj = nullptr;
+	class Mesh* Obj = nullptr;
 	Trig* trig = nullptr;
 	Vec3f HitPos;
 };
@@ -21,5 +21,5 @@ public:
 	Ray(Vec3f& Dir, Vec3f& Pos);
 	Ray();
 	~Ray();
-	void Cast(List<Object>* objects, float ray_length);
+	void Cast(List<Mesh>* objects, float ray_length);
 };

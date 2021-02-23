@@ -1,4 +1,5 @@
 #include "Geometry/Ray.h"
+#include "Geometry/Mesh.h"
 
 Ray::Ray() {
 }
@@ -23,21 +24,15 @@ void WorldTransform(Trig* trig, Vec3f* pos, Mat3f* mat) {
 	trig->V2 + *pos;
 }
 
-void Ray::Cast(List<Object>* objects, float ray_length)
-{
+void Ray::Cast(List<Mesh>* objects, float ray_length) {
 	HitData.Hit = false;
 
-	FOREACH(objects, Object, obj) {
-
-		StaticMesh* mesh = obj->GetStaticMeshComponent();
-		if (!mesh) {
-			continue;
-		}
+	FOREACH(objects, Mesh, mesh) {
 
 		List<Trig>* trigs = &mesh->Trigs;
 		FOREACH(trigs, Trig, trig) {
 
-			WorldTransform(trig.Node()->data, &obj->Pos, &obj->TransformMat);
+			WorldTransform(trig.Node()->data, &mesh->Pos, &mesh->TransformMat);
 
 			Vec3f HitPos;
 			if (!trig->RayHit(*this, HitPos)) {
@@ -48,7 +43,7 @@ void Ray::Cast(List<Object>* objects, float ray_length)
 			if (dist < ray_length) {
 				
 				HitData.Hit = true;
-				HitData.Obj = obj.Node()->data;
+        HitData.Obj = mesh.Node()->data;
 				HitData.trig = trig.Node()->data;
 				HitData.HitPos = HitPos;
 

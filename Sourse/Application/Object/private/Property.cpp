@@ -1,4 +1,4 @@
-#include "Property.h"
+#include "Object/Property.h"
 #include "Macros.h"
 
 PropertyInt::PropertyInt() {

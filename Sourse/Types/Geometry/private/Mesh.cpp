@@ -1,8 +1,8 @@
 #include "Geometry/Mesh.h"
 
-StaticMesh::StaticMesh() {
+Mesh::Mesh() {
 }
 
 
-StaticMesh::~StaticMesh() {
+Mesh::~Mesh() {
 }

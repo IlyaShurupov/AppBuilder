@@ -21,6 +21,7 @@ enable_testing()
 
 add_subdirectory("Sourse")
 add_subdirectory("Tests")
+add_subdirectory("Examples")
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

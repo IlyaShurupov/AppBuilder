@@ -92,6 +92,10 @@ void SysHandler::Inputs(UInputs& usin) {
 
 void SysHandler::Output(UIItem* UIroot) {
 
+  if (!UIroot) {
+    return;
+  }
+
   SyshWin32* dt = (SyshWin32*)PlatformDepended;
 
   FOREACH(&UIroot->hrchy.childs, UIItem, uiinode) {

@@ -47,8 +47,8 @@ public:
 	Object();
 	~Object();
 
-	void SetStaticMeshComponent(StaticMesh* StaticMesh);
-	StaticMesh* GetStaticMeshComponent();
+	void SetStaticMeshComponent(Mesh* StaticMesh);
+	Mesh* GetStaticMeshComponent();
 	
 	void SetCameraComponent(Camera* CameraComponent);
 	Camera* GetCameraComponent();
@@ -61,6 +61,6 @@ public:
 
 private:
 	Camera* CameraComponent;
-	StaticMesh* StaticMeshComponent;
+	Mesh* StaticMeshComponent;
 	RenderSettings* RenderSettingsComponent;
 };

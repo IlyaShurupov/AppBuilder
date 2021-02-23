@@ -3,7 +3,7 @@
 
 #include "Operator/Operator.h"
 #include "Containers/List.h"
-#include "Strings.h"
+#include "Strings/Strings.h"
 
 struct UInputs;
 struct UInputs;
@@ -90,7 +90,7 @@ struct OPInterface {
 
   void proc(List<OpThread>* queue);
 
-  void Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root);
+  bool Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root);
   ~OPInterface();
 };
 
