@@ -1,21 +1,19 @@
 
 #include "Containers/List.h"
+#include "Containers/Array.h"
 
-class P {
- public:
-  int i;
-  P(int i) : i(i) {}
-};
 
 int main() {
-  List<P> list;
-  list.PushBack(&P(3));
-  list.PushBack(&P(2));
-  list.PushBack(&P(1));
+  Array<uint8> g(5);
 
-  list.Sort([](P& p1, P& p2) { return p1.i > p2.i; });
-
-  for (Iterator<P> iter(&list, 0); iter < 3; ++iter) {
-    list[iter] = 6;
+  for (uint4 i = 0; i < g.Len(); i++) {
+    g[i] = i;
   }
+
+  g.PushBack(5);
+  g.Remove(1);
+
+  List<int> fg;
+  int d = 5;
+  fg.Insert(&d, 0);
 }

@@ -25,7 +25,9 @@ set (TYPES_HEADERS
     "IO/Parser.h"
     "Sort.h" 
     "Memory/Allocators.h" 
-    "BitMap/Color.h" )
+    "BitMap/Color.h"  
+    "Containers/Array.h" 
+    )
 
 
 # Source files
