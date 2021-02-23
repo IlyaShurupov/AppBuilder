@@ -1,4 +1,4 @@
-#include "Object.h"
+#include "Object/Object.h"
 #include "Memory/Mem.h"
 
 Object::Object() {
@@ -9,7 +9,7 @@ Object::Object() {
 
 Object::~Object() {
   if (StaticMeshComponent) {
-    DEL(StaticMesh, StaticMeshComponent);
+    DEL(Mesh, StaticMeshComponent);
   }
   if (CameraComponent) {
     DEL(Camera, CameraComponent);
@@ -19,11 +19,11 @@ Object::~Object() {
   }
 }
 
-void Object::SetStaticMeshComponent(StaticMesh* static_mesh) {
+void Object::SetStaticMeshComponent(Mesh* static_mesh) {
   StaticMeshComponent = static_mesh;
 }
 
-StaticMesh* Object::GetStaticMeshComponent() {
+Mesh* Object::GetStaticMeshComponent() {
   return StaticMeshComponent;
 }
 
@@ -53,3 +53,27 @@ void Object::getWorldLocation(Vec3f& out) {
 }
 
 void Object::getWorldTransform(Mat3f& out) {}
+
+RenderSettings::RenderSettings() {
+  ObjList = nullptr;
+  Camera = nullptr;
+  Resolution.assign(0.5f, 0.1f, 1.f);
+}
+
+RenderSettings::~RenderSettings() {}
+
+void RenderSettings::setObjList(List<Object>* list) {
+  ObjList = list;
+}
+
+void RenderSettings::setCamera(Object* camera) {
+  Camera = camera;
+}
+
+Object* RenderSettings::getCamera() {
+  return Camera;
+}
+
+List<Object>* RenderSettings::getObjList() {
+  return ObjList;
+}

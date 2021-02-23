@@ -4,7 +4,6 @@
 #include "UI/UInterface.h"
 #include "UI/UInputs.h"
 #include "IO/Parser.h"
-#include "Operator/OPTemplates.h"
 
 Input::Input(const char* name) {
   idname = name;
@@ -122,8 +121,12 @@ void Trigger::Compile(DataBlock* db, UInputs* uinputs, UIItem* root) {
 }
 
 
-void OPInterface::Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root) {
+bool OPInterface::Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIItem* root) {
   target = ops->find(&db->find("Operator")->string);
+
+  if (!target) {
+    return false;
+  }
 
   DataBlock* triggersdb = db->find("Triggers");
 
@@ -133,6 +136,8 @@ void OPInterface::Compile(DataBlock* db, Operators* ops, UInputs* uinputs, UIIte
     trigger->Compile(t_node.Data(), uinputs, root);
     triggers.PushBack(trigger);
   }
+
+  return true;
 }
 
 void KeyMap::Compile(DataBlock* db, Operators* ops, UIItem* root) {
@@ -142,7 +147,10 @@ void KeyMap::Compile(DataBlock* db, Operators* ops, UIItem* root) {
   FOREACH(&kmdb->list, DataBlock, opi_node) {
     
     OPInterface* opintrface = NEW(OPInterface)();
-    opintrface->Compile(opi_node.Data(), ops, uinputs, root);
+    if (!opintrface->Compile(opi_node.Data(), ops, uinputs, root)) {
+      DEALLOC(opintrface);
+      continue;
+    }
     opiterfaces.PushBack(opintrface);
   }
 }

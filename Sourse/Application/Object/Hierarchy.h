@@ -1,5 +1,5 @@
 #pragma once
-#include "Strings.h"
+#include "Strings/Strings.h"
 #include "Containers/List.h"
 
 // idx tmpl param is the idx of hrchy member in the struct

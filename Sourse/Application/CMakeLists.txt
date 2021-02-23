@@ -2,53 +2,59 @@
 cmake_minimum_required(VERSION 3.8)
 
 # Project configuration
-project(Gamuncool)
+project(Application)
 
 
 set (HEADERS
+    "Application.h"
+    
     "Platform/private/Win32Window.h" 
+    "Platform/SysHandler.h" 
+    
     "Operator/Operator.h"
+    
     "Data/Seance.h"  
-    "UI/UITemplates.h"
+    
     "UI/UInterface.h"
     "UI/UInputsMap.h"
     "UI/UInputs.h" 
-    "Platform/SysHandler.h" 
-    "Operator/OPTemplates.h")
+    
+    "Object/Hierarchy.h"
+    "Object/Property.h"
+    "Object/Object.h"
+    )
 
 
 # Source files
 set (SOURCES
+    "Application.cpp"
+    
+    "Object/private/Property.cpp"
+    "Object/private/Object.cpp"
+    
     "Operator/private/Operator.cpp"
+    
     "Data/private/Seance.cpp"
-    "Core.cpp"
-    "UI/private/UInterface.cpp"
+    
     "Platform/private/Win32Window.cpp"
-    "UI/private/UITemplates.cpp"
-    "UI/private/UInputsMap.cpp" 
     "Platform/private/SysHandler.cpp" 
-    "Operator/private/OPTemplates.cpp")
 
+    "UI/private/UInterface.cpp"
+    "UI/private/UInputsMap.cpp" 
+    )
 
-# Create proj
-link_directories(${CMAKE_BINARY_DIR}/bin )
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
-
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Application>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Renders>
-
 )
 
-target_link_libraries(${PROJECT_NAME} "Types.lib" "RayCast.lib" "d2d1.lib")
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Configuration)
-
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_CURRENT_SOURCE_DIR}/UI/Configuration/ ${CMAKE_BINARY_DIR}/bin/Configuration)
-
+target_link_libraries(${PROJECT_NAME} "d2d1.lib" "Types.lib")

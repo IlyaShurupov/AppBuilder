@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Strings.h"
+#include "Strings/Strings.h"
 #include "Containers/List.h"
 
 enum class DBType {

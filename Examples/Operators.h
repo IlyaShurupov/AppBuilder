@@ -1,8 +1,8 @@
 
-#include "Operator/OPTemplates.h"
+#pragma once
 
-#include "Operator/Operator.h"
 #include "Data/Seance.h"
+#include "Operator/Operator.h"
 
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
@@ -12,7 +12,7 @@
 
 #include "Types.h"
 
-#include <stdlib.h> // TreadSleap, Exit
+#include <stdlib.h>  // TreadSleap, Exit
 
 
 class OpEndSeance : Operator {
@@ -40,9 +40,7 @@ class OpMoveCanvas : Operator {
 
   UIItem* target = nullptr;
 
-  void Invoke(struct Seance* C) {
-    state = OpState::RUNNING_MODAL;
-  }
+  void Invoke(struct Seance* C) { state = OpState::RUNNING_MODAL; }
 
   void Modal(Seance* C, OpArg* arg) {
     if (arg && arg->idname == "FINISH") {
@@ -52,18 +50,16 @@ class OpMoveCanvas : Operator {
     vec2<float> del;
     del.assign(C->ui.kmap->uinputs->Cdelta.x, C->ui.kmap->uinputs->Cdelta.y);
 
-    FOREACH(&target->hrchy.childs, UIItem, node) { 
-      node->move(node->rect.pos + del);
-    }    
+    FOREACH(&target->hrchy.childs, UIItem, node) { node->move(node->rect.pos + del); }
   }
 
-  bool Poll(struct Seance* C) { 
+  bool Poll(struct Seance* C) {
     target = C->ui.UIroot->active_lower();
     return target;
   }
 
  public:
-  OpMoveCanvas() { 
+  OpMoveCanvas() {
     id = "Move Canvas";
     rtargs.PushBack(NEW(OpArg)("FINISH"));
   }
@@ -213,27 +209,3 @@ class OpConsoleToggle : Operator {
  public:
   OpConsoleToggle() { id = "Toggle Console"; }
 };
-
-Operators::Operators() {
-  ops.PushBack((Operator*)NEW(OpEndSeance)());
-  ops.PushBack((Operator*)NEW(OpUIIMove)());
-  ops.PushBack((Operator*)NEW(OpUIIResize)());
-  ops.PushBack((Operator*)NEW(OpLogHeap)());
-  ops.PushBack((Operator*)NEW(OpConsoleToggle)());
-  ops.PushBack((Operator*)NEW(OpMoveCanvas)());
-}
-
-Operator* Operators::find(Str* id) {
-  Operator* target = nullptr;
-  Range bnds = Range(0, id->len());
-  FOREACH(&ops, Operator, node) {
-    if (node->id.match(bnds, *id, bnds)) {
-      target = node.Data();
-      break;
-    }
-  }
-  return target;
-}
-
-Operators::~Operators() {
-}

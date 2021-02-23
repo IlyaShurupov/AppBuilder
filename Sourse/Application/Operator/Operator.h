@@ -1,5 +1,5 @@
 #pragma once
-#include "Property.h"
+#include "Object/Property.h"
 
 enum class OpEvState {
   EXECUTE,
@@ -58,3 +58,11 @@ struct OpThread {
   OpArg* modalevent;
 };
 
+struct Operators {
+
+  Operators();
+  ~Operators();
+
+  List<class Operator> ops;
+  Operator* find(struct Str* id);
+};

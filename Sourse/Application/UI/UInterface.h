@@ -1,8 +1,10 @@
 #pragma once
 
 #include "BitMap/BitMap.h"
-#include "Operator/Operator.h"
-#include "Hierarchy.h"
+#include "Object/Hierarchy.h"
+
+struct Operators;
+struct DataBlock;
 
 enum struct UIIstate {
   NONE = 0,
@@ -78,4 +80,4 @@ class UIItem {
   void save_config();
 };
 
-UIItem* UICompile(struct Operators* ops, struct DataBlock* db);
+UIItem* UICompile(Operators* ops, DataBlock* db, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb));

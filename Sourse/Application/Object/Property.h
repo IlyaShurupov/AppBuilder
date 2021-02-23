@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Containers/List.h"
-#include "Strings.h"
+#include "Strings/Strings.h"
 
 class PropertyInt {
  public:

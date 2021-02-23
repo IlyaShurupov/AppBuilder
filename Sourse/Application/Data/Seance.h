@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Containers/List.h"
-#include "Operator/OPTemplates.h"
+#include "Operator/Operator.h"
 
 class Object;
 class UIItem;
-class Operator;
 struct Str;
 struct OpThread;
 struct SysHandler;
 struct KeyMap;
 struct UInputs;
+struct DataBlock;
 
 struct UserInterface {
 
@@ -32,7 +32,7 @@ struct UserInterface {
 
 struct Seance {
 
-  Seance(Str* basePath);
+  Seance();
   ~Seance();
 
   // Mesh Objects, Cameras, Renders...
@@ -51,5 +51,5 @@ struct Seance {
   void OnWrite(/*file path*/);
 
   // load Seance
-  void OnRead(/*file path*/);
+  void OnRead(Str* basePath, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb));
 };

@@ -5,42 +5,44 @@ project(Types)
 
 set (TYPES_HEADERS
     "Geometry/Vec2.h"
-    "Hierarchy.h"
-    "Strings.h"
     "Geometry/Rect.h"
-    "Memory/Mem.h"
-    "Macros.h"
-    "Property.h"
     "Geometry/Vec3.h"
-    "BitMap/BitMap.h"
-    "Containers/List.h"
     "Geometry/Ray.h"
-    "Time/Timer.h"
-    "Types.h"
     "Geometry/Mesh.h"
-    "Containers/Stack.h"
     "Geometry/Matrix.h"
-    "Object.h"
     "Geometry/Trig.h"
-    "IO/Parser.h"
-    "Sort.h" 
-    "Memory/Allocators.h" 
-    "BitMap/Color.h"  
+
+    "Containers/List.h"
+    "Containers/Stack.h"
+    "Containers/Sort.h" 
     "Containers/Array.h" 
+    
+    "Memory/Mem.h"
+    "Memory/Allocators.h" 
+    
+    "BitMap/BitMap.h"
+    "BitMap/Color.h"  
+    
+    "Time/Timer.h"
+    
+    "Strings/Strings.h"
+    "Macros.h"
+    "IO/Parser.h"
+    "Types.h"
     )
 
 
 # Source files
 set (TYPES_SOURCES
-    "private/Property.cpp"
     "Geometry/private/Ray.cpp"
+    "Geometry/private/Mesh.cpp"
+    "Geometry/private/Trig.cpp"
+    
     "Time/private/Timer.cpp"
     "Memory/private/Mem.cpp"
-    "private/Strings.cpp"
-    "Geometry/private/Mesh.cpp"
-    "private/Object.cpp"
-    "Geometry/private/Trig.cpp"
-    "IO/private/Parser.cpp" )
+    "IO/private/Parser.cpp" 
+    "Strings/private/Strings.cpp"
+    )
 
 # Create the library
 add_library(${PROJECT_NAME} ${TYPES_HEADERS} ${TYPES_SOURCES})

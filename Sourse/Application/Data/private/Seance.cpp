@@ -9,35 +9,31 @@
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
 
-#include "Object.h"
 #include "IO/Parser.h"
+#include "Object/Object.h"
 
-#include "Operator/OPTemplates.h"
+Seance::Seance() {
+  ui.sysh = NEW(SysHandler)();
+  ui.kmap = NEW(KeyMap)();
+  ui.UIroot = nullptr;
+}
 
+Seance::~Seance() {}
 
-Seance::Seance(Str* path) {
+void Seance::OnWrite(/*file path*/) {}
 
-  // load project
-  if (/*file specified*/ false) {  
-    OnRead(/*file path*/);
-    return;
-  }  
-
-  path->trim(Range(0, path->rfind('\\', Range(0, path->length))));
-  *path += Str("Configuration\\");
+void Seance::OnRead(Str* path, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb)) {
 
   Str ui_path;
   ui_path = *path;
   ui_path += Str("UInterface\\Default.yaml");
-  ui.UIroot = UICompile(&ops, Read_Yaml(&ui_path));
+  ui.UIroot = UICompile(&ops, Read_Yaml(&ui_path), UIIFromStr);
 
   Str km_path;
   km_path = *path;
   km_path += Str("UInputsMap\\Default.yaml");
 
-  (ui.kmap = NEW(KeyMap) ())->Compile(Read_Yaml(&km_path), &ops, ui.UIroot);
-
-  ui.sysh = NEW(SysHandler) ();
+  ui.kmap->Compile(Read_Yaml(&km_path), &ops, ui.UIroot);
 
   // Set icon
   Str icon_path;
@@ -47,13 +43,6 @@ Seance::Seance(Str* path) {
 
 }
 
-Seance::~Seance() {
-}
-
-void Seance::OnWrite(/*file path*/) {}
-
-void Seance::OnRead(/*file path*/) {}
-
 void UserInterface::Input(Seance& C) {
 
   if (!sysh->Active()) {
@@ -61,12 +50,13 @@ void UserInterface::Input(Seance& C) {
   }
 
   sysh->Inputs(*kmap->uinputs);
-  
+
   if (kmap->uinputs->IsEvent) {
     kmap->evaluate(&C.threads);
-    UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
+    if (UIroot) {
+      UIroot->ProcEvent(&C, kmap->uinputs->Cursor);
+    }
   }
-
 }
 
 UserInterface::~UserInterface() {
@@ -78,7 +68,9 @@ UserInterface::~UserInterface() {
 void UserInterface::Output() {
 
   if (kmap->uinputs->IsEvent) {
-    UIroot->Draw(nullptr);
+    if (UIroot) {
+      UIroot->Draw(nullptr);
+    }
     sysh->Output(UIroot);
   }
 }

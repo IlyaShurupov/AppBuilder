@@ -2,7 +2,7 @@
 
 #include "BitMap/BitMap.h"
 #include <Windows.h>
-#include "Strings.h"
+#include "Strings/Strings.h"
 
 struct Win32Window {
 
