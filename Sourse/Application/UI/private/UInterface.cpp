@@ -18,9 +18,6 @@ UIItem::UIItem(DataBlock* UIdb) {
   DataBlock* pos = UIdb->find("Pos");
   rect.pos = vec2<float>((float)pos->list[0].integer, (float)pos->list[1].integer);
 
-  DataBlock* min = UIdb->find("MinSize");
-  minsize = vec2<float>((float)min->list[0].integer, (float)min->list[1].integer);
-
   DataBlock* rigiddb = UIdb->find("Rigid");
   rigid = vec2<bool>(rigiddb->list[0].boolean, rigiddb->list[1].boolean);
 }
@@ -31,25 +28,23 @@ UIItem::~UIItem() {
   }
 }
 
-UIIstate UIItem::State(vec2<SCR_INT>& cursor) {
-  if (rect.inside((float)cursor.x, (float)cursor.y)) {
-    if (state == UIIstate::NONE) {
-      return UIIstate::ENTERED;
-    }
-    return UIIstate::INSIDE;
-  } else {
-    if (state == UIIstate::INSIDE) {
-      return UIIstate::LEAVED;
-    }
-    return UIIstate::NONE;
-  }
-}
-
 void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
 
   IF(hide, return );
 
-  UIIstate newState = State(cursor);
+  UIIstate newState;
+
+  if (rect.inside((float)cursor.x, (float)cursor.y)) {
+    if (state == UIIstate::NONE) {
+      newState = UIIstate::ENTERED;
+    }
+    newState = UIIstate::INSIDE;
+  } else {
+    if (state == UIIstate::INSIDE) {
+      newState = UIIstate::LEAVED;
+    }
+    newState = UIIstate::NONE;
+  }
 
   if (state != newState) {
     redraw = true;
@@ -97,7 +92,6 @@ void UIItem::Draw(UIItem* project_to) {
 
 void UIItem::Resize(Rect<float>& newrect) {
 
-  update_neighbors(true);
   save_config();
 
   for (char i = 0; i < 2; i++) {
@@ -105,54 +99,29 @@ void UIItem::Resize(Rect<float>& newrect) {
     rect.pos[i] = newrect.pos[i];
     rect.size[i] = newrect.size[i];
 
-    if (hrchy.prnt && !hrchy.prnt->valid(i)) {
+    if (!hrchy.prnt->Valid(i)) {
       rect.pos[i] = prev_rect.pos[i];
       rect.size[i] = prev_rect.size[i];
       continue;
     }
 
-    bool root = true;
-    clear_flags();
-
-    /*
-    if (!resize_dir(newrect.size[i] / prev_rect.size[i], i, root)) {
-      resize_discard(i);
+    if (recursive_trunsform) {
+      bool root = true;
+      if (!resize_dir(newrect.size[i] / prev_rect.size[i], i, root)) {
+        resize_discard(i);
+      }
     }
-    */
   }
 
-  vec2<float> del;
-  del = newrect.pos - prev_rect.pos;
-  FOREACH(&hrchy.childs, UIItem, node) { node->move(node->rect.pos - del); }
+  if (!recursive_trunsform) {
+    vec2<float> del;
+    del = rect.pos - prev_rect.pos;
+    FOREACH(&hrchy.childs, UIItem, node) {
+      node->rect.pos -= del;
+    }
+  }
 
   update_buff(true);
-}
-
-bool UIItem::valid(bool dir) {
-
-  FOREACH((&hrchy.childs), UIItem, mainnode) {
-
-    if (!infinite_) {
-      if (!mainnode->rect.enclosed_in(rect, true)) {
-        return false;
-      }
-    }
-
-    if (mainnode->minsize[dir] >= mainnode->rect.size[dir]) {
-      return false;
-    }
-
-    FOREACH((&hrchy.childs), UIItem, comparenode) {
-      if (mainnode == comparenode) {
-        continue;
-      }
-      if (mainnode->rect.overlap(comparenode->rect)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
 }
 
 bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
@@ -186,7 +155,7 @@ bool UIItem::resize_dir(float rescale, bool dir, bool& root) {
     }
   }
 
-  if (!valid(dir)) {
+  if (!Valid(dir)) {
     return false;
   }
 
@@ -200,60 +169,6 @@ void UIItem::resize_discard(bool dir) {
   rect.pos[dir] = prev_rect.pos[dir];
 
   FOREACH((&hrchy.childs), UIItem, child_node) { child_node->resize_discard(dir); }
-}
-
-void UIItem::ResizeBody(Rect<float>& out, bool dir) {
-
-  Rect<float>* prnt_p_rec = &hrchy.prnt->prev_rect;
-  Rect<float>* prnt_rec = &hrchy.prnt->rect;
-  float bounds[4];
-  UIItem* UIrigid;
-  float* bnds;
-
-  float fac[2];
-
-  if (!rigid[dir]) {
-
-    for (char offset = 0; offset <= 2; offset += 2) {
-
-      UIrigid = OFFSET(wrap.rig, offset + dir);
-      bnds = bounds + offset;
-
-      while (UIrigid) {
-        DOIF(break, UIrigid->rigid[dir]);
-        UIrigid = OFFSET(UIrigid->wrap.rig, dir + offset);
-      }
-
-      bool vanish = (bool)offset;
-
-      if (UIrigid && UIrigid->rigid[dir] && !UIrigid->hide) {
-        bnds[0] = UIrigid->rect.pos[dir] + (UIrigid->rect.size[dir] * vanish);
-        bnds[1] = UIrigid->prev_rect.pos[dir] + (UIrigid->prev_rect.size[dir] * vanish);
-
-      } else {
-        bnds[0] = prnt_rec->size[dir] * !vanish;
-        bnds[1] = prnt_p_rec->size[dir] * !vanish;
-      }
-    }
-
-    for (char plus = 0; plus <= 1; plus++) {
-      fac[!plus] = ((bounds + 2)[!plus] - bounds[plus]) / ((bounds + 2)[1] - bounds[1]);
-    }
-
-    out.pos[dir] -= bounds[3];
-    float pls_width = (out.size[dir] + out.pos[dir]) * fac[1];
-    out.pos[dir] *= fac[1];
-    out.size[dir] = pls_width - out.pos[dir];
-    out.pos[dir] += bounds[3];
-
-    float d1 = ((bounds + 2)[0] - (out.pos[dir] + out.size[dir])) * fac[0];
-    float pos = (bounds + 2)[0] - ((bounds + 2)[0] - out.pos[dir]) * fac[0];
-    out.size[dir] = (bounds + 2)[0] - out.pos[dir] - d1;
-    out.pos[dir] = pos;
-
-  } else if (inv_pos[dir]) {
-    out.pos[dir] += prnt_rec->size[dir] - hrchy.prnt->prev_rect.size[dir];
-  }
 }
 
 UIItem* UIItem::find(Str* string) {
@@ -271,82 +186,6 @@ UIItem* UIItem::find(Str* string) {
   }
 
   return nullptr;
-}
-
-void UIItem::update_neighbors(bool recursive) {
-
-
-  FOREACH(&hrchy.childs, UIItem, cld_node) {
-    UIItem& cld = *cld_node.Data();
-
-    cld_node->flag = 0;
-    for (char i = 0; i < 4; i++) {
-      OFFSET(cld_node->wrap.rig, i) = nullptr;
-    }
-
-    if (cld.wrap.top && cld.wrap.bot && cld.wrap.lef && cld.wrap.rig) {
-      continue;
-    }
-
-    float dist_t = FLT_MAX;
-    float dist_b = FLT_MAX;
-    float dist_l = FLT_MAX;
-    float dist_r = FLT_MAX;
-
-    FOREACH(&hrchy.childs, UIItem, ui_node) {
-
-      if (ui_node == cld_node) {
-        continue;
-      }
-
-      Rect<float>& rec = ui_node->rect;
-
-      if (cld.rect.intersect_y(rec)) {
-
-        float dist = rec.pos.y - (cld.rect.pos.y + cld.rect.size.y);
-
-        if (!cld.wrap.top && cld.rect.above(rec) && dist_t > dist) {
-          cld.wrap.top = ui_node.Data();
-          dist_t = dist;
-        } else {
-
-          dist = cld.rect.pos.y - (rec.pos.y + rec.size.y);
-
-          if (!cld.wrap.bot && cld.rect.bellow(rec) && dist_b > dist) {
-            dist_b = cld.rect.pos.y - rec.pos.y + rec.size.y;
-            cld.wrap.bot = ui_node.Data();
-            dist_b = dist;
-          }
-        }
-
-      } else if (cld.rect.intersect_x(rec)) {
-
-        float dist = rec.pos.x - (cld.rect.pos.x + cld.rect.size.x);
-
-        if (!cld.wrap.rig && cld.rect.right(rec) && dist_r > dist) {
-          cld.wrap.rig = ui_node.Data();
-          dist_r = dist;
-
-        } else {
-
-          dist = cld.rect.pos.x - (rec.pos.x + rec.size.x);
-
-          if (!cld.wrap.lef && cld.rect.left(rec) && dist_l > dist) {
-            cld.wrap.lef = ui_node.Data();
-            dist_l = dist;
-          }
-        }
-      }
-
-      if (cld.wrap.top && cld.wrap.bot && cld.wrap.lef && cld.wrap.rig) {
-        break;
-      }
-    }
-  }
-
-  if (recursive) {
-    FOREACH(&hrchy.childs, UIItem, ui_node) { ui_node->update_neighbors(recursive); }
-  }
 }
 
 void UIItem::update_buff(bool recursive) {
@@ -383,11 +222,27 @@ UIItem* UIItem::active_lower() {
   return this;
 }
 
+void UIItem::MoveChilds(vec2<float>& delta) {
+  
+  save_config();
+
+  FOREACH(&hrchy.childs, UIItem, chld) {
+    chld->rect.pos += delta;
+  }
+
+  for (char i = 0; i < 2; i++) {
+    if (!Valid(i)) {
+      resize_discard(i);
+    }
+  }
+}
+
 void UIItem::move(vec2<float> pos) {
   prev_rect = rect;
+
   for (char i = 0; i < 2; i++) {
     rect.pos[i] = pos[i];
-    if (hrchy.prnt && !hrchy.prnt->valid(i)) {
+    if (!hrchy.prnt->Valid(i)) {
       rect.pos[i] = prev_rect.pos[i];
     }
   }

@@ -13,25 +13,30 @@ enum struct UIIstate {
   LEAVED,
 };
 
-struct Wrap {
-  class UIItem* rig = nullptr;
-  class UIItem* top = nullptr;
-  class UIItem* lef = nullptr;
-  class UIItem* bot = nullptr;
-};
-
 class UIItem {
  public:
-  UIItem(struct DataBlock* UIdb);
-  ~UIItem();
 
   Hrchy<UIItem> hrchy;
 
-  // Save UI of window
-  void OnWrite();
+  // Draw info
+  Rect<float> rect;
+  BitMap<RGBA_32>* buff = nullptr;
 
-  // Restore saved UI
-  void OnRead();
+  bool ownbuff = true;
+  bool recursive_trunsform = false;
+  vec2<bool> rigid;
+
+  // Event info
+  UIIstate state;
+  bool hide = false;
+  bool redraw = true;
+
+  // Edit info
+  Rect<float> prev_rect;
+  char flag = 0;
+
+  UIItem(struct DataBlock* UIdb);
+  ~UIItem();
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
@@ -41,43 +46,21 @@ class UIItem {
   // User defined callbacks
   virtual void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {}
   virtual void DrawBody(UIItem* This, UIItem* draw_to) {}
-
-  Rect<float> rect;
-  vec2<bool> rigid;
-  vec2<bool> inv_pos;
-  vec2<float> minsize;
-  bool ownbuff = true;
-  bool infinite_ = true;
-
-  // Event info
-  UIIstate state;
-  bool redraw = true;
-
-  // Edit info
-  char flag = 0;
-  Wrap wrap;
-  bool hide = false;
-  Rect<float> prev_rect;
-  
-  // Draw info
-  BitMap<RGBA_32>* buff = nullptr;
+  virtual void ResizeBody(Rect<float>& out, bool dir) {}
+  virtual bool Valid(bool dir) { return true; }
 
   UIItem* find(struct Str* string);
-
   UIItem* active_lower();
+  void MoveChilds(vec2<float>& delta);
   void move(vec2<float> pos);
   void PosInParent(UIItem* inframe, vec2<float>& out);
-  bool valid(bool dir);
+  void save_config();
+  void resize_discard(bool dir);
+  void clear_flags();
+  void update_buff(bool recursive);
 
  private:
-  UIIstate State(vec2<SCR_INT>& cursor);
-  void resize_discard(bool dir);
   bool resize_dir(float rescale, bool dir, bool& root);
-  void update_neighbors(bool recursive);
-  void update_buff(bool recursive);
-  void ResizeBody(Rect<float>& out, bool dir);
-  void clear_flags();
-  void save_config();
 };
 
 UIItem* UICompile(Operators* ops, DataBlock* db, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb));
