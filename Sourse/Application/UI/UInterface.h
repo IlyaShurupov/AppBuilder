@@ -13,13 +13,6 @@ enum struct UIIstate {
   LEAVED,
 };
 
-struct Wrap {
-  class UIItem* rig = nullptr;
-  class UIItem* top = nullptr;
-  class UIItem* lef = nullptr;
-  class UIItem* bot = nullptr;
-};
-
 class UIItem {
  public:
 
@@ -53,14 +46,8 @@ class UIItem {
   // User defined callbacks
   virtual void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {}
   virtual void DrawBody(UIItem* This, UIItem* draw_to) {}
-
-  
-  void ResizeBody(Rect<float>& out, bool dir);
-  void update_neighbors(bool recursive);
-  bool valid(bool dir);
-  vec2<float> minsize;
-  vec2<bool> inv_pos;
-  Wrap wrap;
+  virtual void ResizeBody(Rect<float>& out, bool dir) {}
+  virtual bool Valid(bool dir) { return true; }
 
   UIItem* find(struct Str* string);
   UIItem* active_lower();

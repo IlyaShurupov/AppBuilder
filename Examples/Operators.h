@@ -81,13 +81,8 @@ class OpUIIMove : Operator {
   void Execute(struct Seance* C) { state = OpState::FINISHED; }
 
   void Modal(Seance* C, OpArg* arg) {
+
     if (arg && arg->idname == "FINISH") {
-
-      Rect<float> rec = target->hrchy.prnt->rect;
-
-      target->inv_pos.x = (target->rect.pos.x > rec.size.x / 2);
-      target->inv_pos.y = (target->rect.pos.y + target->rect.size.y > rec.size.y / 2);
-
       state = OpState::FINISHED;
     }
 
