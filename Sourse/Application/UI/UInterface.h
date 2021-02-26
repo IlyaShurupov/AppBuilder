@@ -47,7 +47,7 @@ class UIItem {
   vec2<bool> inv_pos;
   vec2<float> minsize;
   bool ownbuff = true;
-  bool infinite_ = true;
+  bool recursive_trunsform = false;
 
   // Event info
   UIIstate state;
@@ -65,19 +65,20 @@ class UIItem {
   UIItem* find(struct Str* string);
 
   UIItem* active_lower();
+  void MoveChilds(vec2<float>& delta);
   void move(vec2<float> pos);
   void PosInParent(UIItem* inframe, vec2<float>& out);
   bool valid(bool dir);
+  void save_config();
+  void resize_discard(bool dir);
 
  private:
   UIIstate State(vec2<SCR_INT>& cursor);
-  void resize_discard(bool dir);
   bool resize_dir(float rescale, bool dir, bool& root);
   void update_neighbors(bool recursive);
   void update_buff(bool recursive);
   void ResizeBody(Rect<float>& out, bool dir);
   void clear_flags();
-  void save_config();
 };
 
 UIItem* UICompile(Operators* ops, DataBlock* db, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb));

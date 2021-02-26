@@ -19,7 +19,7 @@ set (SOURCES
 
 
 # Create proj
-link_directories(${CMAKE_BINARY_DIR}/bin )
+link_directories("${CMAKE_BINARY_DIR}/bin" )
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )

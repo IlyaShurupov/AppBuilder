@@ -50,7 +50,8 @@ class OpMoveCanvas : Operator {
     vec2<float> del;
     del.assign(C->ui.kmap->uinputs->Cdelta.x, C->ui.kmap->uinputs->Cdelta.y);
 
-    FOREACH(&target->hrchy.childs, UIItem, node) { node->move(node->rect.pos + del); }
+    
+    target->MoveChilds(del); 
   }
 
   bool Poll(struct Seance* C) {
@@ -95,6 +96,7 @@ class OpUIIMove : Operator {
     vec2<float> delta = crs - startcrs;
 
     vec2<float> pos = startpos + delta;
+    
     target->move(pos);
   }
 

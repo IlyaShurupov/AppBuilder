@@ -105,25 +105,27 @@ void UIItem::Resize(Rect<float>& newrect) {
     rect.pos[i] = newrect.pos[i];
     rect.size[i] = newrect.size[i];
 
-    if (hrchy.prnt && !hrchy.prnt->valid(i)) {
+    if (!hrchy.prnt->valid(i)) {
       rect.pos[i] = prev_rect.pos[i];
       rect.size[i] = prev_rect.size[i];
       continue;
     }
 
-    bool root = true;
-    clear_flags();
-
-    /*
-    if (!resize_dir(newrect.size[i] / prev_rect.size[i], i, root)) {
-      resize_discard(i);
+    if (recursive_trunsform) {
+      bool root = true;
+      if (!resize_dir(newrect.size[i] / prev_rect.size[i], i, root)) {
+        resize_discard(i);
+      }
     }
-    */
   }
 
-  vec2<float> del;
-  del = newrect.pos - prev_rect.pos;
-  FOREACH(&hrchy.childs, UIItem, node) { node->move(node->rect.pos - del); }
+  if (!recursive_trunsform) {
+    vec2<float> del;
+    del = rect.pos - prev_rect.pos;
+    FOREACH(&hrchy.childs, UIItem, node) {
+      node->rect.pos -= del;
+    }
+  }
 
   update_buff(true);
 }
@@ -132,7 +134,7 @@ bool UIItem::valid(bool dir) {
 
   FOREACH((&hrchy.childs), UIItem, mainnode) {
 
-    if (!infinite_) {
+    if (recursive_trunsform) {
       if (!mainnode->rect.enclosed_in(rect, true)) {
         return false;
       }
@@ -383,11 +385,27 @@ UIItem* UIItem::active_lower() {
   return this;
 }
 
+void UIItem::MoveChilds(vec2<float>& delta) {
+  
+  save_config();
+
+  FOREACH(&hrchy.childs, UIItem, chld) {
+    chld->rect.pos += delta;
+  }
+
+  for (char i = 0; i < 2; i++) {
+    if (!valid(i)) {
+      resize_discard(i);
+    }
+  }
+}
+
 void UIItem::move(vec2<float> pos) {
   prev_rect = rect;
+
   for (char i = 0; i < 2; i++) {
     rect.pos[i] = pos[i];
-    if (hrchy.prnt && !hrchy.prnt->valid(i)) {
+    if (!hrchy.prnt->valid(i)) {
       rect.pos[i] = prev_rect.pos[i];
     }
   }
