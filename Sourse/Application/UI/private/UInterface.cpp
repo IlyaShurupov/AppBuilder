@@ -31,25 +31,23 @@ UIItem::~UIItem() {
   }
 }
 
-UIIstate UIItem::State(vec2<SCR_INT>& cursor) {
-  if (rect.inside((float)cursor.x, (float)cursor.y)) {
-    if (state == UIIstate::NONE) {
-      return UIIstate::ENTERED;
-    }
-    return UIIstate::INSIDE;
-  } else {
-    if (state == UIIstate::INSIDE) {
-      return UIIstate::LEAVED;
-    }
-    return UIIstate::NONE;
-  }
-}
-
 void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
 
   IF(hide, return );
 
-  UIIstate newState = State(cursor);
+  UIIstate newState;
+
+  if (rect.inside((float)cursor.x, (float)cursor.y)) {
+    if (state == UIIstate::NONE) {
+      newState = UIIstate::ENTERED;
+    }
+    newState = UIIstate::INSIDE;
+  } else {
+    if (state == UIIstate::INSIDE) {
+      newState = UIIstate::LEAVED;
+    }
+    newState = UIIstate::NONE;
+  }
 
   if (state != newState) {
     redraw = true;
