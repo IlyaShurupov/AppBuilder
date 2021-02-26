@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 # Project configuration
-project(Gamuncool VERSION 0.8.0 LANGUAGES CXX)
+project(AppBuilder VERSION 0.8.0 LANGUAGES CXX)
 
 # Set default build type
 set(default_build_type "Release")
