@@ -28,7 +28,7 @@ typedef unsigned int			 uint4;
 typedef long								int8;
 typedef unsigned long			 uint8;
 #else
-typedef long long					 uint8;
+typedef long long					  int8;
 typedef unsigned long long uint8;
 #endif
 
