@@ -2,16 +2,23 @@
 
 File structure:
 
-  - "ProjectName" 
+  - "ProjectName" // Folder
   
     -  cproject.json { 
       
-             "Type": "StaticLibrary",
-             "Files": [],
-             "Libraries": [ "d2d1.lib", "Types.lib" ],
+             "Type": "ProjectType", 
+             "Files": [], // cpp files
+             "Libraries": [], 
              "IncludePaths": [],
              "LibPaths": []
+             ...
        }
        
-    -   README.MD
-    -   srs files
+    -   README.MD // Describtion of the project
+    -   public
+          - file.h
+          - ...
+    -   srs 
+          -  file.cpp
+          -  subfolder 
+          - ...
