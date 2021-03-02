@@ -13,5 +13,5 @@ File structure:
              "LibPaths": []
        }
        
-   -   README.MD
-   -   srs files
+    -   README.MD
+    -   srs files
