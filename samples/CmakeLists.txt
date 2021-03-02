@@ -20,14 +20,14 @@ set (SOURCES
 
 # Create proj
 link_directories("${CMAKE_BINARY_DIR}/bin" )
+
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
-
 target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Application>
+              $<BUILD_INTERFACE:${SRS_DIR}/Types>
+              $<BUILD_INTERFACE:${SRS_DIR}/Application>
 )
+
 
 target_link_libraries(${PROJECT_NAME} "Application.lib" "Types.lib" "d2d1.lib")
 

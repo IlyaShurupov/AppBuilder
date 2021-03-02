@@ -8,7 +8,7 @@ project(Application)
 set (HEADERS
     "Application.h"
     
-    "Platform/private/Win32Window.h" 
+    "Platform/private/windows/Win32Window.h" 
     "Platform/SysHandler.h" 
     
     "Operator/Operator.h"
@@ -36,7 +36,7 @@ set (SOURCES
     
     "Data/private/Seance.cpp"
     
-    "Platform/private/Win32Window.cpp"
+    "Platform/private/windows/Win32Window.cpp"
     "Platform/private/SysHandler.cpp" 
 
     "UI/private/UInterface.cpp"
@@ -45,16 +45,11 @@ set (SOURCES
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Types>
-              $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Sourse/Application>
-)
+message(${SRS_DIR}/Types)
 
-set_target_properties(${PROJECT_NAME}
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+target_include_directories(${PROJECT_NAME} PUBLIC
+              $<BUILD_INTERFACE:${SRS_DIR}/Types>
+              $<BUILD_INTERFACE:${SRS_DIR}/Application>
 )
 
 target_link_libraries(${PROJECT_NAME} "d2d1.lib" "Types.lib")
