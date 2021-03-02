@@ -1,3 +1,3 @@
 # Application project
 
-Complete library for cross-platform application building.
+Complete library code for cross-platform application building.
