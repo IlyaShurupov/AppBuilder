@@ -2,11 +2,11 @@
   "configurations": [
     {
       "name": "x64-Debug (default)",
-      "generator": "Visual Studio 16 2019 Win64",
+      "generator": "Ninja",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "D:/dev/AppBuilder/build/bld",
-      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "buildRoot": "D:/dev/AppBuilder/build",
+      "installRoot": "D:/dev/AppBuilder/build",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",

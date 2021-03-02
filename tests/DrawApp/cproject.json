@@ -1,0 +1,10 @@
+
+{
+  "Type": "Executable",
+  "Name": "DrawApp",
+  "Files": ["private/main.cpp"],
+
+  "Libraries": [ "Application.lib", "Types.lib", "d2d1.lib" ],
+  "IncludePaths": [],
+  "LibPaths": []
+}
