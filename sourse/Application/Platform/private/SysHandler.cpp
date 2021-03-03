@@ -3,7 +3,7 @@
 
 #include "UI/UInputs.h"
 #include "UI/UInterface.h"
-#include "Platform/private/Win32Window.h"
+#include "Platform/private/windows/Win32Window.h"
 
 void UpdInputSate(Input& key, bool down, bool& IsEvent) {
   if ((int)key.state == (int)down) {

@@ -1,7 +1,6 @@
 
 {
   "Type": "StaticLibrary",
-  "Name": "Types",
 
   "Files": [
     "Geometry/private/Ray.cpp",
@@ -14,6 +13,6 @@
   ],
 
   "Libraries": [],
-  "IncludePaths": [],
+  "IncludePaths": [ "C."],
   "LibPaths": []
 }

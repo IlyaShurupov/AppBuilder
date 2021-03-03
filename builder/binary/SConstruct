@@ -1,0 +1,8 @@
+
+
+Env = Environment()
+Env.VariantDir('../../build', '../..', duplicate=0)
+
+SConscript('Builder.py')
+
+Export(Env)

@@ -1,7 +1,6 @@
 
 {
   "Type": "StaticLibrary",
-  "Name": "Application",
 
   "Files": [
     "Application.cpp",
@@ -15,7 +14,7 @@
     "UI/private/UInputsMap.cpp"
   ],
 
+  "IncludePaths": ["C.", "R.sourse\\Types"],
   "Libraries": [ "d2d1.lib", "Types.lib" ],
-  "IncludePaths": [],
   "LibPaths": []
 }

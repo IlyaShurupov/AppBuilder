@@ -1,8 +1,8 @@
 
 #include "Application.h"
 
-#include "../Operators.h"
-#include "../UInterfaces.h"
+#include "Operators.h"
+#include "UInterfaces.h"
 
 UIItem* resolveUiRef(Str* name, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb) {
   UIItem* newuii = nullptr;
