@@ -1,7 +1,7 @@
 
 Import('cbld')
 
-Includes = [cbld.path['ROOT'] + '/Sourse/Types', cbld.path['ROOT'] + '/Sourse/Application'] 
+Includes = ['Sourse/Types', 'Sourse/Application'] 
 Files = ['private/main.cpp']
 Libs = [
 	'Types', 
@@ -25,7 +25,10 @@ LibsPath = [cbld.path['OUT_ABS'] + '/Sourse/Types', cbld.path['OUT_ABS'] + '/Sou
 
 exe = cbld.Executable('DrawApp', Files, Includes, Libs, LibsPath)
 
-out = cbld.path['OUT_ABS'] + '/Examples/private' 
-input = cbld.path['ROOT'] + '/Configuration'
-Command(out, input, Copy("$TARGET", "$SOURCE"))
+out = cbld.path['OUT_ABS'] + '/Examples/private/Configuration' 
+inputfile = cbld.path['ROOT'] + '/Configuration'
+
+#Execute(Mkdir(out))
+Execute(Copy(out + '/', inputfile))
+
 

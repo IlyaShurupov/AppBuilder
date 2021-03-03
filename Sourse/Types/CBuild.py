@@ -1,7 +1,7 @@
 
 Import('cbld')
 
-Includes = [cbld.path['ROOT'] + '\Sourse\Types'] 
+Includes = ['Sourse/Types'] 
 
 Files = [ "Geometry/private/Ray.cpp",
           "Geometry/private/Mesh.cpp",

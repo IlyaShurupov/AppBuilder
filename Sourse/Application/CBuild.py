@@ -1,7 +1,7 @@
 
 Import('cbld')
 
-Includes = [cbld.path['ROOT'] + '/Sourse/Types', cbld.path['ROOT'] + '/Sourse/Application'] 
+Includes = ['Sourse/Types', 'Sourse/Application'] 
 
 Files = [ "Application.cpp",
           "Object/private/Property.cpp",
