@@ -2,15 +2,15 @@
 
 File structure:
 
-  - "ProjectName" // Folder
+  - "ProjectName" // Project Dir
   
     -  cproject.json { 
       
              "Type": "ProjectType", 
-             "Files": [], // cpp files
-             "Libraries": [], 
-             "IncludePaths": [],
+             "Libs": [], 
+             "InclPaths": [],
              "LibPaths": []
+             "FileDeps": []
              ...
        }
        
