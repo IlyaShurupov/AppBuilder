@@ -13,14 +13,14 @@ public:
 
 	Mat3f();
 	~Mat3f();
-	Mat3f(Vec3f& i, Vec3f& j, Vec3f& k);
-	Mat3f(Mat3f& Matx);
-	void Assign(Vec3f& i, Vec3f& j, Vec3f& k);
+	Mat3f(const Vec3f& i, const Vec3f& j, const Vec3f& k);
+	Mat3f(const Mat3f& Matx);
+	void Assign(const Vec3f& i, const Vec3f& j, const Vec3f& k);
 
 	// Fundamental create on stack
 
-	Mat3f operator+(Mat3f& Matx);
-	Mat3f operator-(Mat3f& Matx);
+	Mat3f operator+(const Mat3f& Matx);
+	Mat3f operator-(const Mat3f& Matx);
 	Mat3f operator+(float val);
 	Mat3f operator-(float val);
 	Mat3f operator*(float val);
@@ -28,9 +28,9 @@ public:
 
 	// Fundamental write
 
-	void operator=(Mat3f& Matx);
-	void operator+=(Mat3f& Matx);
-	void operator-=(Mat3f& Matx);
+	void operator=(const Mat3f& Matx);
+	void operator+=(const Mat3f& Matx);
+	void operator-=(const Mat3f& Matx);
 	void operator+=(float val);
 	void operator-=(float val);
 	void operator*=(float val);
@@ -51,19 +51,19 @@ inline Mat3f::Mat3f() {
 inline Mat3f::~Mat3f() {
 }
 
-inline Mat3f::Mat3f(Vec3f& i, Vec3f& j, Vec3f& k) {
+inline Mat3f::Mat3f(const Vec3f& i, const Vec3f& j, const Vec3f& k) {
 	I = i;
 	J = j;
 	K = k;
 }
 
-inline Mat3f::Mat3f(Mat3f& Matx) {
+inline Mat3f::Mat3f(const Mat3f& Matx) {
 	this->I = Matx.I;
 	this->J = Matx.J;
 	this->K = Matx.K;
 }
 
-inline void Mat3f::Assign(Vec3f& i, Vec3f& j, Vec3f& k) {
+inline void Mat3f::Assign(const Vec3f& i, const Vec3f& j, const Vec3f& k) {
 	I = i;
 	J = j;
 	K = k;
@@ -71,11 +71,11 @@ inline void Mat3f::Assign(Vec3f& i, Vec3f& j, Vec3f& k) {
 
 // Fundamental create on stack
 
-inline Mat3f Mat3f::operator+(Mat3f& Matx) {
+inline Mat3f Mat3f::operator+(const Mat3f& Matx) {
 	return Mat3f(this->I + Matx.I, this->J + Matx.J, this->K + Matx.K);
 }
 
-inline Mat3f Mat3f::operator-(Mat3f& Matx) {
+inline Mat3f Mat3f::operator-(const Mat3f& Matx) {
 	return Mat3f(this->I - Matx.I, this->J - Matx.J, this->K - Matx.K);
 }
 
@@ -97,19 +97,19 @@ inline Mat3f Mat3f::operator/(float val) {
 
 // Fundamental write
 
-inline void Mat3f::operator=(Mat3f& Matx) {
+inline void Mat3f::operator=(const Mat3f& Matx) {
 	this->I = Matx.I;
 	this->J = Matx.J;
 	this->K = Matx.K;
 }
 
-inline void Mat3f::operator+=(Mat3f& Matx) {
+inline void Mat3f::operator+=(const Mat3f& Matx) {
 	this->I += Matx.I;
 	this->J += Matx.J;
 	this->K += Matx.K;
 }
 
-inline void Mat3f::operator-=(Mat3f& Matx) {
+inline void Mat3f::operator-=(const Mat3f& Matx) {
 	this->I -= Matx.I;
 	this->J -= Matx.J;
 	this->K -= Matx.K;
@@ -155,7 +155,7 @@ inline Mat3f& Mat3f::Transform(Mat3f& Matx) {
 }
 
 
-inline void RotArbAxis(Mat3f& Mat, Vec3f& Dir, float angle) {
+inline void RotArbAxis(Mat3f& Mat, const Vec3f& Dir, float angle) {
 
 	float cosa = (float)cos(angle);
 	float sina = (float)sin(angle);

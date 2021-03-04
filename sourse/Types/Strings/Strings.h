@@ -9,7 +9,7 @@ struct Range {
   str_idx len();
   bool valid();
   Range();
-  Range(Range& rng);
+  Range(const Range& rng);
   Range(str_idx strt, str_idx end);
 };
 
@@ -48,13 +48,13 @@ struct Str {
 
   bool match(Range& range, Str& str2, Range& range2);
 
-  void coppy(Str& str, Range& range);
+  void coppy(Str* str, Range range);
 
-  str_idx find(Str& string, Range& range);
+  str_idx find(Str& string, Range range);
 
-  str_idx find(const char character, Range& range);
+  str_idx find(const char character, Range range);
 
-  str_idx rfind(const char character, Range& range);
+  str_idx rfind(const char character, Range range);
 
   void trim(Range& range);
 };

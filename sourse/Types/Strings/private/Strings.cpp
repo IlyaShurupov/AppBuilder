@@ -17,7 +17,7 @@ char* getExecutablePath() {
 
   char* exePath;
   if (_get_pgmptr(&exePath) != 0)
-    exePath = "";
+    exePath = new char[1];
   return exePath;
 }
 
@@ -39,7 +39,7 @@ Range::Range(str_idx strt, str_idx end) {
   this->end = end;
 }
 
-Range::Range(Range& rng) {
+Range::Range(const Range& rng) {
   strt = rng.strt;
   end = rng.end;
 }
@@ -156,14 +156,14 @@ bool Str::match(Range& range, Str& str2, Range& range2) {
   return true;
 }
 
-void Str::coppy(Str& str, Range& range) {
+void Str::coppy(Str* str, Range range) {
   alloc(range.len());
   for (str_idx i = 0; i < length; i++) {
-    this->str[i] = str[i + range.strt];
+    this->str[i] = (*str)[i + range.strt];
   }
 }
 
-str_idx Str::find(Str& string, Range& range) {
+str_idx Str::find(Str& string, Range range) {
   for (str_idx i = range.strt; i < range.end; i++) {
 
     str_idx m = 0;
@@ -181,7 +181,7 @@ str_idx Str::find(Str& string, Range& range) {
   return -1;
 }
 
-str_idx Str::find(const char character, Range& range) {
+str_idx Str::find(const char character, Range range) {
   for (str_idx i = range.strt; i <= range.end; i++) {
     if (character == str[i]) {
       return i;
@@ -190,7 +190,7 @@ str_idx Str::find(const char character, Range& range) {
   return -1;
 }
 
-str_idx Str::rfind(const char character, Range& range) {
+str_idx Str::rfind(const char character, Range range) {
   for (str_idx i = range.end; i >= range.strt; i--) {
     if (character == str[i]) {
       return i;

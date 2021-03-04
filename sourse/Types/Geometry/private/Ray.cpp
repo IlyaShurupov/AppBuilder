@@ -43,7 +43,7 @@ void Ray::Cast(List<Mesh>* objects, float ray_length) {
 			if (dist < ray_length) {
 				
 				HitData.Hit = true;
-        HitData.Obj = mesh.Node()->data;
+        		HitData.Obj = mesh.Node()->data;
 				HitData.trig = trig.Node()->data;
 				HitData.HitPos = HitPos;
 

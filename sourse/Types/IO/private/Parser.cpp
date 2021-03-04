@@ -62,7 +62,7 @@ void write_coppound_name(DataBlock* db, Str* str, Range in) {
     return;
   }
   in.end = str->find(':', in) - 1;
-  db->BlockName.coppy(*str, in);
+  db->BlockName.coppy(str, in);
 }
 
 void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng);
@@ -113,7 +113,7 @@ void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng) {
   if (assign == -2) {
     db->BlockName = "UNNAMED";
   } else {
-    db->BlockName.coppy(*str, Range(rng.strt, assign));
+    db->BlockName.coppy(str, Range(rng.strt, assign));
     rng.strt = assign + 2;
   }
 
@@ -122,7 +122,7 @@ void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng) {
   switch (type) {
 
     case DBType::STRING: {
-      db->string.coppy(*str, Range(rng.strt + 1, rng.end - 1));
+      db->string.coppy(str, Range(rng.strt + 1, rng.end - 1));
       return;
     }
 
@@ -133,14 +133,14 @@ void write_to_db_yml(DataBlock* db, Str* str, DBType type, Range rng) {
 
     case DBType::FLOAT: {
       Str flt;
-      flt.coppy(*str, rng);
+      flt.coppy(str, rng);
       db->floating = std::stof(std::string(flt.str));
       return;
     }
 
     case DBType::INT: {
       Str integer;
-      integer.coppy(*str, rng);
+      integer.coppy(str, rng);
       db->integer = std::stoll(std::string(integer.str));
       return;
     }
@@ -218,7 +218,7 @@ bool find_dblock_yml(Str* str, Range in, Range& out) {
   return true;
 }
 
-int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range& in) {
+int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range in) {
 
   Range dbrange;
   bool keep = true;
@@ -260,7 +260,7 @@ DataBlock* Read_Yaml(Str* filepath) {
   }
 
   DataBlock* dblock = NEW(DataBlock)();
-  dblock->BlockName.coppy(*filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
+  dblock->BlockName.coppy(filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
   read_dblock_yml(dblock, &file, -1, Range(0, file.length));
   return dblock;
 }

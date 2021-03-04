@@ -1,6 +1,6 @@
 #pragma once
 
-//#include <corecrt_math.h>
+#include <math.h>
 
 class Vec3f
 {
@@ -17,16 +17,16 @@ public:
 	Vec3f(float x, float y, float z);
 	Vec3f(float vec[3]);
 	Vec3f();
-	Vec3f(Vec3f& vec);
+	Vec3f(const Vec3f& vec);
 	void assign(float x, float y, float z);
-	void assign(Vec3f& vec);
+  void assign(const Vec3f& vec);
 	void assign(float vec[3]);
-	Vec3f& operator=(Vec3f& vec);
+  Vec3f& operator=(const Vec3f& vec);
 
 	// Fundamental create on stack
 
-	Vec3f operator+(Vec3f& vec);
-	Vec3f operator-(Vec3f& vec);
+	Vec3f operator+(const Vec3f& vec);
+  Vec3f operator-(const Vec3f& vec);
 	Vec3f operator+(float val);
 	Vec3f operator-(float val);
 	Vec3f operator*(float val);
@@ -35,19 +35,19 @@ public:
 
 	void operator -= (float val);
 	void operator += (float val);
-	void operator -= (Vec3f& vec);
-	void operator += (Vec3f& vec);
+	void operator -= (const Vec3f& vec);
+	void operator += (const Vec3f& vec);
 	void operator *= (float val);
 	void operator /= (float val);
 
 	// Vector Properties
 
-	float Dot(Vec3f& vec);
+	float Dot(const Vec3f& vec);
 	double Length();
 	float LengthSqured();
 	Vec3f Dir();
 	void Normalize();
-	Vec3f Cross(Vec3f& vec);
+	Vec3f Cross(const Vec3f& vec);
 
 	// Vector Transformation
 
@@ -75,7 +75,7 @@ inline Vec3f::Vec3f() {
 	x = y = z = 0;
 }
 
-inline Vec3f::Vec3f(Vec3f& vec) {
+inline Vec3f::Vec3f(const Vec3f& vec) {
 	x = vec.x;
 	y = vec.y;
 	z = vec.z;
@@ -93,13 +93,13 @@ inline void Vec3f::operator += (float val) {
 	z += val;
 }
 
-inline void Vec3f::operator -= (Vec3f& vec) {
+inline void Vec3f::operator -= (const Vec3f& vec) {
 	x -= vec.x;
 	y -= vec.y;
 	z -= vec.z;
 }
 
-inline void Vec3f::operator += (Vec3f& vec) {
+inline void Vec3f::operator += (const Vec3f& vec) {
 	x += vec.x;
 	y += vec.y;
 	z += vec.z;
@@ -117,11 +117,12 @@ inline void Vec3f::operator /= (float val) {
 	z /= val;
 }
 
-inline Vec3f Vec3f::Cross(Vec3f& vec) {
+inline Vec3f Vec3f::Cross(const Vec3f& vec) {
 	float x = this->y * vec.z - this->z * vec.y;
 	float y = this->z * vec.x - this->x * vec.z;
 	float z = this->x * vec.y - this->y * vec.x;
-	return Vec3f(x, y, z);
+  Vec3f newvec(x, y, z);
+  return newvec;
 }
 
 
@@ -131,7 +132,7 @@ inline void Vec3f::assign(float x, float y, float z) {
 	this->z = z;
 }
 
-inline void Vec3f::assign(Vec3f& vec) {
+inline void Vec3f::assign(const Vec3f& vec) {
 	x = vec.x;
 	y = vec.y;
 	z = vec.z;
@@ -143,7 +144,7 @@ inline void Vec3f::assign(float vec[3]) {
 	z = vec[2];
 }
 
-inline Vec3f& Vec3f::operator=(Vec3f& vec) {
+inline Vec3f& Vec3f::operator=(const Vec3f& vec) {
 	x = vec.x;
 	y = vec.y;
 	z = vec.z;
@@ -152,40 +153,44 @@ inline Vec3f& Vec3f::operator=(Vec3f& vec) {
 
 // Fundamental create on stack
 
-inline Vec3f Vec3f::operator+(Vec3f& vec) {
-	return Vec3f(x + vec.x, y + vec.y, z + vec.z);
+inline Vec3f Vec3f::operator+(const Vec3f& vec) {
+  Vec3f newvec(x + vec.x, y + vec.y, z + vec.z);
+  return newvec;
 }
 
-inline Vec3f Vec3f::operator-(Vec3f& vec) {
-	return Vec3f(x - vec.x, y - vec.y, z - vec.z);
+inline Vec3f Vec3f::operator-(const Vec3f& vec) {
+  Vec3f newvec(x - vec.x, y - vec.y, z - vec.z);
+  return newvec;
 }
 
 inline Vec3f Vec3f::operator+(float val) {
-	return Vec3f(x + val, y + val, z + val);
+  Vec3f newvec(x + val, y + val, z + val);
+  return newvec;
 }
 
 inline Vec3f Vec3f::operator-(float val) {
-	return Vec3f(x - val, y - val, z - val);
+  Vec3f newvec(x - val, y - val, z - val);
+  return newvec;
 }
 
 inline Vec3f Vec3f::operator*(float val) {
-	return Vec3f(x * val, y * val, z * val);
+  Vec3f newvec(x * val, y * val, z * val);
+  return newvec;
 }
 
 inline Vec3f Vec3f::operator/(float val) {
-	return Vec3f(x / val, y / val, z / val);
+  Vec3f newvec(x / val, y / val, z / val);
+  return newvec;
 }
 
 // Vector Properties
 
-inline float Vec3f::Dot(Vec3f& vec) {
+inline float Vec3f::Dot(const Vec3f& vec) {
 	return (x * vec.x + y * vec.y + z * vec.z);
 }
 
 inline double Vec3f::Length() {
-	float sqred = (float)(x * x + y * y + z * z);
-	//return sqrt(sqred);
-  return sqred;
+  return sqrt((float)(x * x + y * y + z * z));
 }
 
 inline float Vec3f::LengthSqured() {
@@ -193,7 +198,9 @@ inline float Vec3f::LengthSqured() {
 }
 
 inline Vec3f Vec3f::Dir() {
-	return Vec3f(*this / (float)this->Length());
+  Vec3f newrec1 = *this / (float)this->Length();
+  Vec3f newrec(newrec1);
+  return newrec;
 }
 
 inline void Vec3f::Normalize() {

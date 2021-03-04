@@ -44,6 +44,7 @@ def FindFiles(files, abs_path, type, must_include = False, name = ''):
 
 class CProject():
 	def __init__(this):
+		this.flag = 0
 		this.name = ''
 		this.dir = ''
 		this.type = ''
@@ -75,7 +76,7 @@ def ReadCProjectJson(file, Path):
 
 
 def ReadProjects(dir, Cprojects, Path):
-	print("\n -- Initializing Projects: ")
+	print("\n -- Reading Projects From  " + os.path.abspath(dir))
 	files = []
 	FindFiles(files, dir, 'json', True, 'cproject')
 	for file in files:
@@ -83,7 +84,34 @@ def ReadProjects(dir, Cprojects, Path):
 
 def SetBuildOrder(Cprojects):
 	print("\n -- Seting Build Order:")
+    
+	bool_all_checked = False
+	proj_idx = 0
 
+	for proj_idx in range(len(Cprojects)):
+		Cprojects[proj_idx].flag = 0
+
+	while not bool_all_checked:
+	
+		if Cprojects[proj_idx].flag == 0:
+
+			deps = Cprojects[proj_idx].libs.copy()
+			for i in range(len(deps)):
+				deps[i] = deps[i].split('.')[0]
+
+			for dep_proj_idx in range(len(Cprojects)):
+				if Cprojects[dep_proj_idx].name in deps:
+					if dep_proj_idx > proj_idx:
+						Cprojects[proj_idx], Cprojects[dep_proj_idx] = Cprojects[dep_proj_idx], Cprojects[proj_idx]
+
+			Cprojects[proj_idx].flag = 1
+			proj_idx = 0
+		else:
+			if proj_idx + 1 == len(Cprojects):
+				bool_all_checked = True	
+			proj_idx = proj_idx + 1
+
+	
 	str = '		'
 	for proj in Cprojects:
 		str = str + proj.name + " "
@@ -115,34 +143,38 @@ def ResolvePaths(PATH, Cprojects):
 			proj.incldirs[dir_idx] = dir
 
 def CompileProjects(Cprojects, output):
-	print("\n -- Compiling Projects Into ",  output, " : ")
+	print("\n -- Compiling Projects Into ",  os.path.abspath(output))
 	for proj in Cprojects:
+		print("\n", proj.name)
 
-		for file in proj.files:
+		for i in range(len(proj.files)):
+			file = proj.files[i]
+			outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]
 			GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj")
+			proj.files[i] = outfile
 
 		if proj.type[0] == 'E':
 			pass
-		elif proj.type[0] == 'E':
-			pass
-		elif proj.type[0] == 'E':
+		elif proj.type[0] == 'S':
+			PackObjs(proj.files, output + "\\" + proj.name, proj.name)
+		elif proj.type[0] == 'D':
 			pass
 
 def GenObj(file, incl, output):
 	outfile = output + "\\" + file.rsplit('\\', 1)[1] + '.o'
-	print("\n    Generating Object: " + file + ".cpp --> " +  outfile)
+	print("     Gen Obj: " +  file.rsplit('\\', 1)[1] + '.o')
 	if not os.path.isdir(output):
 		os.makedirs(os.path.abspath(output))
 	cmd = "g++ -c " + file + '.cpp '+ to_str(incl, True, ' -I') + ' -o ' + outfile
-	print("	", cmd)
 	os.system(cmd)
 
 def PackObjs(files, outdir, name):
-	print("Packing Objects: " + to_str(files, True, '.o ', False) + " --> " + outdir + '/' + name + '.o ' )
-	os.system("ar rcs " + " " + outdir + '/' + name + '.o ' + to_str(files, '.o '))
+	cmd = "ar rcs " + outdir + '/' + name + '.lib ' + to_str(files, False, ' ', True, '.o ')
+	print("\n     Packing Objects -->", name + '.lib ')
+	os.system(cmd)
 
 def LinkObjs(name, files):
-	print("Linking Objects: " + to_str(files, True) + " --> " + name + '.exe' )
+	print("     Linking: " + to_str(files, True) + " --> " + name + '.exe' )
 	os.system("g++ -o " + name + to_str(files, False, ' ', True, '.o '))
 
 
