@@ -1,20 +1,7 @@
 
 {
   "Type": "StaticLibrary",
-
-  "Files": [
-    "Application.cpp",
-    "Object/private/Property.cpp",
-    "Object/private/Object.cpp",
-    "Operator/private/Operator.cpp",
-    "Data/private/Seance.cpp",
-    "Platform/private/windows/Win32Window.cpp",
-    "Platform/private/SysHandler.cpp",
-    "UI/private/UInterface.cpp",
-    "UI/private/UInputsMap.cpp"
-  ],
-
-  "IncludePaths": ["C.", "R.sourse\\Types"],
+  "IncludePaths": ["{C}", "{R}sourse\\Types"],
   "Libraries": [ "d2d1.lib", "Types.lib" ],
   "LibPaths": []
 }

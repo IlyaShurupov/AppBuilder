@@ -1,6 +1,6 @@
 #pragma once
 
-#include <corecrt_math.h>
+//#include <corecrt_math.h>
 
 class Vec3f
 {
@@ -184,7 +184,8 @@ inline float Vec3f::Dot(Vec3f& vec) {
 
 inline double Vec3f::Length() {
 	float sqred = (float)(x * x + y * y + z * z);
-	return sqrt(sqred);
+	//return sqrt(sqred);
+  return sqred;
 }
 
 inline float Vec3f::LengthSqured() {
