@@ -5,7 +5,7 @@
 #include <thread>
 
 #define GETTIMEMSC()                                                                                         \
-  (TIME_MS)(                                                                                                 \
+  (TIME_MS__)(                                                                                                 \
       std::chrono::duration_cast<std::chrono::milliseconds>(                                                 \
           std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()) \
               .time_since_epoch())                                                                           \
@@ -13,7 +13,7 @@
 
 #define THREAD_SLEEP(time_ms) std::this_thread::sleep_for(std::chrono::milliseconds(time_ms))
 
-void TreadSleep(TIME_MS duration) {
+void TreadSleep(TIME_MS__ duration) {
   THREAD_SLEEP(duration);
 }
 
@@ -24,7 +24,7 @@ Timer::Timer() {
   start = 0;
 }
 
-Timer::Timer(TIME_MS duration) {
+Timer::Timer(TIME_MS__ duration) {
   start = GETTIMEMSC();
   this->duration = duration;
 }
@@ -38,15 +38,15 @@ void Timer::reset() {
   start = GETTIMEMSC();
 }
 
-TIME_MS Timer::past() {
+TIME_MS__ Timer::past() {
   return GETTIMEMSC() - start;
 }
 
-TIME_MS Timer::remain() {
+TIME_MS__ Timer::remain() {
   return duration - (GETTIMEMSC() - start);
 }
 
-float Timer::ease_in(TIME_MS duration) {
+float Timer::ease_in(TIME_MS__ duration) {
 
   if (!duration) {
     duration = this->duration;
@@ -59,7 +59,7 @@ float Timer::ease_in(TIME_MS duration) {
   return out;
 }
 
-float Timer::ease_out(TIME_MS duration) {
+float Timer::ease_out(TIME_MS__ duration) {
   if (!duration) {
     duration = this->duration;
   }

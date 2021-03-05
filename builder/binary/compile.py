@@ -71,6 +71,15 @@ def ReadCProjectJson(file, Path):
 		cproj.libs = data["Libraries"]
 		cproj.libdirs = data["LibPaths"]
 
+		cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + cproj.name)
+		cproj.libdirs.append(Path['OUTPUT'] + "\\" + cproj.name)
+
+		for intlib in data["InternLibs"]:
+			cproj.libs.append(intlib + ".lib")
+			cproj.libdirs.append(Path['OUTPUT'] + "\\" + intlib)		
+			cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + intlib)
+
+
 	print("		", cproj.name, "  ",  cproj.type)
 	return cproj
 
@@ -161,11 +170,17 @@ def CompileProjects(Cprojects, output):
 			proj.files[i] = outfile
 
 		if proj.type[0] == 'E':
-			linkfiles = []
-			linkfiles.append(proj.name + ".o")
-			linkfiles.append(proj.libs)
 
-			#LinkObjs(proj.name, linkfiles)
+			PackObjs(proj.files, output + "\\" + proj.name, proj.name)
+
+			linkfiles = [proj.name + ".lib"] + proj.libs
+
+			for i in range(len(linkfiles)):
+				linkfiles[i] = linkfiles[i].split('.')[0]
+
+			linkfiles[1], linkfiles[2] = linkfiles[2], linkfiles[1]
+			LinkObjs(proj.name, output, linkfiles, proj.libdirs)
+
 		elif proj.type[0] == 'S':
 			PackObjs(proj.files, output + "\\" + proj.name, proj.name)
 		elif proj.type[0] == 'D':
@@ -181,12 +196,15 @@ def GenObj(file, incl, output):
 
 def PackObjs(files, outdir, name):
 	cmd = "ar rcs " + outdir + '/' + name + '.lib ' + to_str(files, False, ' ', True, '.o ')
-	print("\n     Packing Objects -->", name + '.lib ')
+	print("\n     Packing Objects Into ", name + "\\" + name + '.lib ')
 	os.system(cmd)
 
-def LinkObjs(name, files):
-	print("     Linking: " + to_str(files, True) + " --> " + name + '.exe' )
-	cmd = "g++ -o " + name + to_str(files, False, ' ', True, '.o ')
+def LinkObjs(name, output, objs, objpaths):
+	print("     Linking: " + to_str(objs, True) + " --> " + name + '.exe' )
+	outfile = " -o " + output + "\\" + name + "\\" + name
+	libstr = to_str(objs, True, " -l")
+	libpathsstr = to_str(objpaths, True, " -L")
+	cmd = "g++ -static " + libpathsstr + libstr + outfile
 	print(cmd)
 	os.system(cmd)
 

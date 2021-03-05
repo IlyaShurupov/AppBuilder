@@ -1,7 +1,11 @@
 
+
 {
   "Type": "StaticLibrary",
-  "IncludePaths": ["{C}", "{R}sourse\\Types"],
-  "Libraries": [ "d2d1.lib", "Types.lib" ],
-  "LibPaths": []
+  
+  "InternLibs" : [ "Types" ] ,
+
+  "Libraries": [],
+  "LibPaths": [],
+  "IncludePaths": []
 }

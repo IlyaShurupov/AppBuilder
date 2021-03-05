@@ -1,6 +1,6 @@
 
 #include <conio.h>
-#include <d2d1helper.h>
+
 #include <dwrite.h>
 #include <malloc.h>
 #include <math.h>
@@ -63,7 +63,8 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   // use the source image's alpha channel for blending
   BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
 
-  LPRECT wrect_p = &RECT();
+  RECT some_rec();
+  LPRECT wrect_p = (LPRECT)&some_rec;
   GetWindowRect(hwnd, wrect_p);
 
   POINT pos;
@@ -228,7 +229,7 @@ void Win32Window::SetIcon(Str& stricon) {
     DestroyIcon((HICON)hWindowIcon);
   if (hWindowIconBig != NULL)
     DestroyIcon((HICON)hWindowIconBig);
-  if (stricon == "") {
+  if (stricon == Str("")) {
     SendMessage((HWND)m_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)NULL);
     SendMessage((HWND)m_hwnd, WM_SETICON, ICON_BIG, (LPARAM)NULL);
   } else {

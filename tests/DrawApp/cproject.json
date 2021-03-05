@@ -1,7 +1,10 @@
 
 {
   "Type": "Executable",
-  "IncludePaths": [ "{R}sourse\\Types", "{R}sourse\\Application" ],
-  "Libraries": [ "Application.lib", "Types.lib", "d2d1.lib" ],
-  "LibPaths": []
+  
+  "InternLibs" : [ "Application", "Types" ] ,
+
+  "Libraries": [ "d2d1.lib" ],
+  "LibPaths": [ "{R}extern/lib/x64" ],
+  "IncludePaths": []
 }

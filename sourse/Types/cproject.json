@@ -1,7 +1,10 @@
 
 {
   "Type": "StaticLibrary",
+    
+  "InternLibs" : [] ,
+
   "Libraries": [],
-  "IncludePaths": [ "{C}"],
-  "LibPaths": []
+  "LibPaths": [],
+  "IncludePaths": []
 }
