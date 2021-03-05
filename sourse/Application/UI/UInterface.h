@@ -40,11 +40,11 @@ class UIItem {
 
   // User difined callbacks wrapers
   void Resize(Rect<float>& newrect);
-  void ProcEvent(struct Seance* C, vec2<SCR_INT>& loc_cursor);
+  void ProcEvent(struct Seance* C, vec2<SCR_INT> loc_cursor);
   void Draw(UIItem* project_to);
 
   // User defined callbacks
-  virtual void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {}
+  virtual void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT> loc_cursor) {}
   virtual void DrawBody(UIItem* This, UIItem* draw_to) {}
   virtual void ResizeBody(Rect<float>& out, bool dir) {}
   virtual bool Valid(bool dir) { return true; }

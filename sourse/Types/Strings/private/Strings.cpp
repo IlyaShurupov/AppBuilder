@@ -78,7 +78,7 @@ void Str::clear() {
   }
 }
 
-void Str::operator=(Str& string) {
+void Str::operator=(const Str& string) {
 
   alloc(string.length);
 
@@ -128,7 +128,7 @@ bool Str::operator==(char* cstring) {
   return true;
 }
 
-bool Str::operator==(Str& string) {
+bool Str::operator==(const Str& string) {
   if (string.length != length) {
     return false;
   }
@@ -199,7 +199,7 @@ str_idx Str::rfind(const char character, Range range) {
   return -1;
 }
 
-void Str::trim(Range& range) {
+void Str::trim(Range range) {
   str_idx newlen = range.len();
   char* newstr = ALLOC_AR(char, newlen + 1);
   newstr[newlen] = '\0';

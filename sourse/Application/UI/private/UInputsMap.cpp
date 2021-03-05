@@ -58,7 +58,7 @@ InputState* input_state_find(Str* string, void* uinputs) {
   UInputs* usins = (UInputs*)uinputs;
   Input* input = &usins->K0;
 
-  while (!(input->idname == "_UIEND_")) {
+  while (!(input->idname == Str("_UIEND_"))) {
     if (input->idname == *string) {
       return &input->state;
     }
@@ -74,26 +74,26 @@ UIIstate* uii_state_find(Str* string, void* uiroot) {
 }
 
 InputState input_state_from_str(Str* string) {
-  if (*string == "HOLD") {
+  if (*string == Str("HOLD")) {
     return InputState::HOLD;
   } 
-  if (*string == "NONE") {
+  if (*string == Str("NONE")) {
     return InputState::NONE;
   } 
-  if (*string == "PRESSED") {
+  if (*string == Str("PRESSED")) {
     return InputState::PRESSED;
   }
   return InputState::RELEASED;
 }
 
 UIIstate uii_state_from_str(Str* string) {
-  if (*string == "NONE") {
+  if (*string == Str("NONE")) {
     return UIIstate::NONE;
   }
-  if (*string == "INSIDE") {
+  if (*string == Str("INSIDE")) {
     return UIIstate::INSIDE;
   }
-  if (*string == "LEAVED") {
+  if (*string == Str("LEAVED")) {
     return UIIstate::LEAVED;
   }
   return UIIstate::ENTERED;

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-DataBlock* DataBlock::find(char* BlockName) {
+DataBlock* DataBlock::find(const char* BlockName) {
   Str name(BlockName);
 
   FOREACH(&list, DataBlock, block) {

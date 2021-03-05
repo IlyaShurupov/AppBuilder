@@ -6,7 +6,7 @@
 class UIItem;
 class Operator;
 struct Operators;
-struct DataBlock;
+
 
 class Application {
 

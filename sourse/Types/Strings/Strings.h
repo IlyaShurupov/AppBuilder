@@ -34,7 +34,7 @@ struct Str {
 
   void clear();
 
-  void operator=(Str& string);
+  void operator=(const Str& string);
 
   void operator+=(const Str& string);
 
@@ -42,7 +42,7 @@ struct Str {
 
   bool operator==(char* cstring);
 
-  bool operator==(Str& string);
+  bool operator==(const Str& string);
 
   char operator[](str_idx idx);
 
@@ -56,7 +56,7 @@ struct Str {
 
   str_idx rfind(const char character, Range range);
 
-  void trim(Range& range);
+  void trim(Range range);
 };
 
 char* getExecutablePath();

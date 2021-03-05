@@ -120,9 +120,11 @@ def SetBuildOrder(Cprojects):
 
 
 def ResolvePaths(PATH, Cprojects):
-	for proj in Cprojects:
-		for dir_idx in range(len(proj.incldirs)):
-			dir = proj.incldirs[dir_idx]
+
+	def subf(dirs):
+		for dir_idx in range(len(dirs)):
+
+			dir = dirs[dir_idx]
 
 			if dir.find('}') != 2:
 				continue
@@ -136,11 +138,16 @@ def ResolvePaths(PATH, Cprojects):
 				elif dir[1] == 'C':
 					dir = proj.dir
 				elif dir[1] == 'O':
-					dir = PATH['OUT'] 
+					dir = PATH['OUTPUT'] 
 				
 			if bool_add:
 				dir = dir + '\\' + pth
-			proj.incldirs[dir_idx] = dir
+			dirs[dir_idx] = dir
+
+	for proj in Cprojects:
+		subf(proj.incldirs)
+		subf(proj.libdirs)
+
 
 def CompileProjects(Cprojects, output):
 	print("\n -- Compiling Projects Into ",  os.path.abspath(output))
@@ -154,7 +161,11 @@ def CompileProjects(Cprojects, output):
 			proj.files[i] = outfile
 
 		if proj.type[0] == 'E':
-			pass
+			linkfiles = []
+			linkfiles.append(proj.name + ".o")
+			linkfiles.append(proj.libs)
+
+			LinkObjs(proj.name, linkfiles)
 		elif proj.type[0] == 'S':
 			PackObjs(proj.files, output + "\\" + proj.name, proj.name)
 		elif proj.type[0] == 'D':
@@ -175,7 +186,9 @@ def PackObjs(files, outdir, name):
 
 def LinkObjs(name, files):
 	print("     Linking: " + to_str(files, True) + " --> " + name + '.exe' )
-	os.system("g++ -o " + name + to_str(files, False, ' ', True, '.o '))
+	cmd = "g++ -o " + name + to_str(files, False, ' ', True, '.o ')
+	print(cmd)
+	os.system(cmd)
 
 
 Path = {}

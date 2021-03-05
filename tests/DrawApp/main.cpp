@@ -6,9 +6,9 @@
 
 UIItem* resolveUiRef(Str* name, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb) {
   UIItem* newuii = nullptr;
-  if (*name == "Button") {
+  if (*name == Str("Button")) {
     newuii = (UIItem*)NEW(UIIButton)(ops, paramsdb, uiidb);
-  } else if (*name == "Group") {
+  } else if (*name == Str("Group")) {
     newuii = (UIItem*)NEW(UIIGroup)(ops, paramsdb, uiidb);
   }
   return newuii;

@@ -16,7 +16,7 @@ struct Rect {
     this->size = rec.size;
   }
 
-  Rect(vec2<Type>& pos, vec2<Type>& size) {
+  Rect(const vec2<Type>& pos, const vec2<Type>& size) {
     this->pos = pos;
     this->size = size;
   }

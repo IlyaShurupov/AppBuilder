@@ -43,7 +43,7 @@ class OpMoveCanvas : Operator {
   void Invoke(struct Seance* C) { state = OpState::RUNNING_MODAL; }
 
   void Modal(Seance* C, OpArg* arg) {
-    if (arg && arg->idname == "FINISH") {
+    if (arg && arg->idname == Str("FINISH")) {
       state = OpState::FINISHED;
     }
 
@@ -82,7 +82,7 @@ class OpUIIMove : Operator {
 
   void Modal(Seance* C, OpArg* arg) {
 
-    if (arg && arg->idname == "FINISH") {
+    if (arg && arg->idname == Str("FINISH")) {
       state = OpState::FINISHED;
     }
 
@@ -141,7 +141,7 @@ class OpUIIResize : Operator {
   }
 
   void Modal(Seance* C, OpArg* arg) {
-    if (arg && arg->idname == "FINISH") {
+    if (arg && arg->idname == Str("FINISH")) {
       state = OpState::FINISHED;
       return;
     }

@@ -22,7 +22,7 @@ struct DataBlock {
   Str string;
   List<DataBlock> list;
 
-  DataBlock* find(char* BlockName);
+  DataBlock* find(const char* BlockName);
   ~DataBlock();
 };
 

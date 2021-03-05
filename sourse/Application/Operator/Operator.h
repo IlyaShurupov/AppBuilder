@@ -25,7 +25,7 @@ struct OpArg {
 
   OpArg(){};
   OpArg(Str idname) { this->idname = idname; }
-  OpArg(char* idname) { this->idname = idname; }
+  OpArg(const char* idname) { this->idname = idname; }
 };
 
 class Operator {

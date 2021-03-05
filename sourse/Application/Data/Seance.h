@@ -2,15 +2,15 @@
 
 #include "Containers/List.h"
 #include "Operator/Operator.h"
+#include "Types.h"
 
 class Object;
 class UIItem;
-struct Str;
 struct OpThread;
 struct SysHandler;
 struct KeyMap;
 struct UInputs;
-struct DataBlock;
+
 
 struct UserInterface {
 

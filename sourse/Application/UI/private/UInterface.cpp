@@ -28,7 +28,7 @@ UIItem::~UIItem() {
   }
 }
 
-void UIItem::ProcEvent(Seance* C, vec2<SCR_INT>& cursor) {
+void UIItem::ProcEvent(Seance* C, vec2<SCR_INT> cursor) {
 
   IF(hide, return );
 
@@ -298,7 +298,7 @@ UIItem* UICompile(Operators* ops, DataBlock* db, UIItem* (*UIIFromStr)(Str* id, 
   }
 
   FOREACH(&pcuii, PreCompUII, inode) {
-    if (!(*inode->parent == "__NONE__")) {
+    if (!(*inode->parent == Str("__NONE__"))) {
       FOREACH(&pcuii, PreCompUII, jnode) {
         if (*inode->parent == jnode->item->hrchy.id) {
           jnode->item->hrchy.childs.PushBack(inode->item);

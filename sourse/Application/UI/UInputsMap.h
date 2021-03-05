@@ -2,8 +2,8 @@
 #pragma once
 
 #include "Operator/Operator.h"
-#include "Containers/List.h"
-#include "Strings/Strings.h"
+#include "UI/UInterface.h"
+#include "Types.h"
 
 struct UInputs;
 struct UInputs;
@@ -56,7 +56,7 @@ struct Conditions {
   void Compile(DataBlock* db, void* sourse) {
 
     DataBlock* condlistdb = nullptr;
-    any = db->find("Logic")->string == "ANY";
+    any = db->find("Logic")->string == Str("ANY");
     List<DataBlock>* conds_list = &db->find("List")->list;
     FOREACH(conds_list, DataBlock, node) {
       Cond<type>* cond = NEW(Cond<type>)();
@@ -74,8 +74,8 @@ struct Trigger {
   bool runtime = false;
   struct OpArg arg;
 
-  Conditions<enum class UIIstate> scope_conds;
-  Conditions<enum class InputState> key_conds;
+  Conditions<enum UIIstate> scope_conds;
+  Conditions<enum InputState> key_conds;
 
   bool active();
 

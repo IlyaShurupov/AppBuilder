@@ -230,7 +230,7 @@ class UIIButton : UIItem {
     This->rect.pos = save;
   }
 
-  void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT>& loc_cursor) {
+  void ProcBody(UIItem* This, Seance* C, vec2<SCR_INT> loc_cursor) {
     UInputs* uinpts = C->ui.kmap->uinputs;
     List<OpThread>* queue = &C->threads;
 
@@ -269,7 +269,7 @@ class UIIButton : UIItem {
     ownbuff = false;
 
     target = ops->find(&paramsdb->find("Operator")->string);
-    onpress = paramsdb->find("On")->string == "PRESSED";
+    onpress = paramsdb->find("On")->string == Str("PRESSED");
 
     DataBlock* argsdb = paramsdb->find("Args");
     released.idname = argsdb->find("Pressed")->string;

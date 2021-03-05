@@ -38,7 +38,7 @@ class vec2 {
     this->y = (Type)y;
   }
   template <typename TypeIn>
-  void assign(vec2<TypeIn>& vec) {
+  void assign(const vec2<TypeIn>& vec) {
     x = (Type)vec.x;
     y = (Type)vec.y;
   }
@@ -54,15 +54,15 @@ class vec2 {
 
   // Conversion
   template <typename TypeIn>
-  vec2<Type>& operator=(vec2<TypeIn> vec) {
+  vec2<Type>& operator=(const vec2<TypeIn>& vec) {
     x = (Type)vec.x;
     y = (Type)vec.y;
     return *this;
   }
 
   // Fundamental create on stack
-  vec2 operator+(vec2& vec) { return vec2(x + vec.x, y + vec.y); }
-  vec2 operator-(vec2& vec) { return vec2(x - vec.x, y - vec.y); }
+  vec2 operator+(const vec2& vec) { return vec2(x + vec.x, y + vec.y); }
+  vec2 operator-(const vec2& vec) { return vec2(x - vec.x, y - vec.y); }
   vec2 operator+(Type val) { return vec2(x + val, y + val); }
   vec2 operator-(Type val) { return vec2(x - val, y - val); }
   vec2 operator*(Type val) { return vec2(x * val, y * val); }
@@ -77,11 +77,11 @@ class vec2 {
     x += val;
     y += val;
   }
-  void operator-=(vec2& vec) {
+  void operator-=(const vec2& vec) {
     x -= vec.x;
     y -= vec.y;
   }
-  void operator+=(vec2& vec) {
+  void operator+=(const vec2& vec) {
     x += vec.x;
     y += vec.y;
   }
@@ -94,14 +94,14 @@ class vec2 {
     y /= val;
   }
 
-  bool operator>(vec2<Type>& vec) { return (x > vec.x && y > vec.y); }
-  bool operator>=(vec2<Type>& vec) { return (x >= vec.x && y >= vec.y); }
-  bool operator==(vec2<Type>& vec) { return (x == vec.x && y == vec.y); }
+  bool operator>(const vec2<Type>& vec) { return (x > vec.x && y > vec.y); }
+  bool operator>=(const vec2<Type>& vec) { return (x >= vec.x && y >= vec.y); }
+  bool operator==(const vec2<Type>& vec) { return (x == vec.x && y == vec.y); }
 
   Type& operator[](bool axes) { return (&x)[axes]; }
 
   // Vector Properties
-  float Dot(vec2& vec) { 
+  float Dot(const vec2& vec) { 
     return (x * vec.x + y * vec.y); 
   }
   vec2 Dir() { 

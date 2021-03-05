@@ -45,7 +45,7 @@ struct BitMap {
     }
   }
 
-  void Project(BitMap<BMType>* buff, vec2<int>& pos) {
+  void Project(BitMap<BMType>* buff, vec2<int> pos) {
     
     Rect<int> unclamped_fromrect(pos, buff->size);
     Rect<int> fromrect;
