@@ -5,6 +5,31 @@
 #include "UI/UInterface.h"
 #include "Platform/private/windows/Win32Window.h"
 
+char* getExecutablePath() {
+
+  char path[50];
+  for (int i = 0; i < 50; i++) {
+    path[i] = 0;
+  }
+
+  GetModuleFileNameA(nullptr, path, 50);
+
+  int endidx = 1;
+  for (; endidx < 50; endidx++) {
+    if (path[endidx] == 0) {
+      break;
+    }
+  }
+
+  char* trimed_path = new char[endidx];
+
+  for (int i = 0; i < endidx; i++) {
+    trimed_path[i] = path[i];
+  }
+
+  return trimed_path;
+}
+
 void UpdInputSate(Input& key, bool down, bool& IsEvent) {
   if ((int)key.state == (int)down) {
     return;

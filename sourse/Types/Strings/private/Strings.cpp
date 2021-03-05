@@ -2,7 +2,6 @@
 #include "Strings/Strings.h"
 
 #include "Memory/Allocators.h"
-
 #include <cstdlib>
 
 inline str_idx cstrlen(const char* str) {
@@ -12,15 +11,6 @@ inline str_idx cstrlen(const char* str) {
   }
   return len;
 }
-
-char* getExecutablePath() {
-
-  char* exePath;
-  if (_get_pgmptr(&exePath) != 0)
-    exePath = new char[1];
-  return exePath;
-}
-
 
 str_idx Range::len() {
   return end - strt + 1;

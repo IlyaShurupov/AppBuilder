@@ -68,17 +68,18 @@ def ReadCProjectJson(file, Path):
 		data = json.load(json_file)
 		cproj.type = data["Type"]
 		cproj.incldirs = data["IncludePaths"]
-		cproj.libs = data["Libraries"]
+		
 		cproj.libdirs = data["LibPaths"]
 
 		cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + cproj.name)
 		cproj.libdirs.append(Path['OUTPUT'] + "\\" + cproj.name)
+		cproj.libdirs.append(Path['ROOT'] + "\\extern\\lib")
 
 		for intlib in data["InternLibs"]:
 			cproj.libs.append(intlib + ".lib")
 			cproj.libdirs.append(Path['OUTPUT'] + "\\" + intlib)		
 			cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + intlib)
-
+		cproj.libs = cproj.libs + data["Libraries"]
 
 	print("		", cproj.name, "  ",  cproj.type)
 	return cproj
@@ -178,7 +179,6 @@ def CompileProjects(Cprojects, output):
 			for i in range(len(linkfiles)):
 				linkfiles[i] = linkfiles[i].split('.')[0]
 
-			linkfiles[1], linkfiles[2] = linkfiles[2], linkfiles[1]
 			LinkObjs(proj.name, output, linkfiles, proj.libdirs)
 
 		elif proj.type[0] == 'S':
@@ -200,12 +200,11 @@ def PackObjs(files, outdir, name):
 	os.system(cmd)
 
 def LinkObjs(name, output, objs, objpaths):
-	print("     Linking: " + to_str(objs, True) + " --> " + name + '.exe' )
+	print("     Linking Objects [" + to_str(objs, True) + " ] Into " + name + "\\" + name + '.exe' )
 	outfile = " -o " + output + "\\" + name + "\\" + name
 	libstr = to_str(objs, True, " -l")
 	libpathsstr = to_str(objpaths, True, " -L")
 	cmd = "g++ -static " + libpathsstr + libstr + outfile
-	print(cmd)
 	os.system(cmd)
 
 

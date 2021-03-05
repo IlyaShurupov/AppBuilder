@@ -1,4 +1,4 @@
-# C Project Rulles
+# C Project Rulles (Outdated)
 
 File structure:
 

@@ -63,7 +63,7 @@ void drawbmp(HWND hwnd, HBITMAP hbmp) {
   // use the source image's alpha channel for blending
   BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
 
-  RECT some_rec();
+  RECT some_rec = RECT();
   LPRECT wrect_p = (LPRECT)&some_rec;
   GetWindowRect(hwnd, wrect_p);
 
