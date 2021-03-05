@@ -165,7 +165,7 @@ def CompileProjects(Cprojects, output):
 			linkfiles.append(proj.name + ".o")
 			linkfiles.append(proj.libs)
 
-			LinkObjs(proj.name, linkfiles)
+			#LinkObjs(proj.name, linkfiles)
 		elif proj.type[0] == 'S':
 			PackObjs(proj.files, output + "\\" + proj.name, proj.name)
 		elif proj.type[0] == 'D':
