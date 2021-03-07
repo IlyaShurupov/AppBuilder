@@ -1,4 +1,4 @@
 # AppBuilder
  
-The goal is to allow to create a cross-platform application effortlessly, combine and reuse them.
+The goal is to allow effortless creation of a cross-platform application (Not Ready For Production!)
 
