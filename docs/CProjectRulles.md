@@ -7,7 +7,7 @@ File structure:
     -  cproject.json { 
       
              "Type": "ProjectType", 
-             "Files": [], // cpp files
+             "InternLibs" : [ "Types" ] ,
              "Libraries": [], 
              "IncludePaths": [],
              "LibPaths": []

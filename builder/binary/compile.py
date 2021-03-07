@@ -5,6 +5,8 @@ import sys
 import  compiler
 import cparser 
 
+
+
 class CProject():
 	def __init__(this):
 		this.rebuild = True
@@ -19,7 +21,7 @@ class CProject():
 
 class Builder():
 
-	def __init__(this, args):
+	def __init__(this, args = []):
 		this.OutDir = 'build\\binaries'
 		this.debug = False
 		this.rebuild_type = "tree"
@@ -277,13 +279,19 @@ def main():
 
 		elif command.find("dbg") == 0:
 			args = getArgs(command)
-			exe = args[0]
-			files = []
-			cparser.FindFiles(files, bld.path['ROOT_ABS'], 'exe', True, args[0])
-			if not len(files):
-				print(" exe not found in bld root path ")
+			if os.path.isfile(args[0]):
+				os.system("gdb " + args[0])
 			else:
-				os.system("gdb " + files[0])
+				exe = args[0]
+				files = []
+				cparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
+				if not len(files):
+					print(" exe not found in bld root path ")
+				else:
+					if len(files) > 1:
+						bld.Logout(" Ambigues Executable Name - Enter full path", "warning")
+					else:
+						os.system("gdb " + files[0])
 
 		elif command.find("os") == 0:
 			os.system(command.split(':', 1)[1])
@@ -291,8 +299,28 @@ def main():
 		elif command.find("eval") == 0:
 			eval(command.split(':', 1)[1])
 		
-		elif command.find("assign") == 0:
+		elif command.find("args") == 0:
 			bld.ProcArgs(getArgs(command))
+		
+		elif command.find("help") == 0:
+			print("  in progress")
+
+		elif command.find("run") == 0:
+			args = getArgs(command)
+			if os.path.isfile(args[0]):
+				os.system("gdb " + args[0])
+			else:
+				exe = args[0]
+				files = []
+				cparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
+				if not len(files):
+					print(" exe not found in bld root path ")
+				else:
+					if len(files) > 1:
+						bld.Logout(" Ambigues Executable Name - Enter full path", "warning")
+					else:
+						os.system(files[0])
+
 		else:
 			print("  Command Not Found")
 
@@ -302,3 +330,5 @@ def main():
 
 if __name__ == "__main__":
 	main()
+else:
+	bld = Builder()

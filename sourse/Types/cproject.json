@@ -1,10 +1,4 @@
 
 {
-  "Type": "StaticLibrary",
-    
-  "InternLibs" : [] ,
-
-  "Libraries": [],
-  "LibPaths": [],
-  "IncludePaths": []
+  "Type": "StaticLibrary"
 }

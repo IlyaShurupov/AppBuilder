@@ -60,6 +60,7 @@ def ResolvePaths(PATH, Cprojects):
 		subf(proj.libdirs)
 
 def ReadCProjectJson(file, Path):
+
 	import compile
 	cproj = compile.CProject();
 	cproj.name = (file.rsplit('\\', 1)[0]).rsplit('\\', 1)[1]
@@ -73,20 +74,30 @@ def ReadCProjectJson(file, Path):
 
 	with open(file) as json_file:
 		data = json.load(json_file)
+
+
 		cproj.type = data["Type"]
-		cproj.incldirs = data["IncludePaths"]
+
+		if "IncludePaths" in data:
+			cproj.incldirs = data["IncludePaths"]
 		
-		cproj.libdirs = data["LibPaths"]
+		if "LibPaths" in data:
+			cproj.libdirs = data["LibPaths"]
 
 		cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + cproj.name)
 		cproj.libdirs.append(Path['OUTPUT'] + "\\" + cproj.name)
 		cproj.libdirs.append(Path['ROOT'] + "\\extern\\lib")
 
-		for intlib in data["InternLibs"]:
-			cproj.libs.append(intlib + ".lib")
-			cproj.libdirs.append(Path['OUTPUT'] + "\\" + intlib)		
-			cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + intlib)
-		cproj.libs = cproj.libs + data["Libraries"]
+		if "InternLibs" in data:
+			for intlib in data["InternLibs"]:
+				cproj.libs.append(intlib + ".lib")
+				cproj.libdirs.append(Path['OUTPUT'] + "\\" + intlib)		
+				cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + intlib)
+
+		libs = []
+		if "Libraries" in data:
+			libs = data["Libraries"]
+		cproj.libs = cproj.libs + libs
 
 	return cproj
 
