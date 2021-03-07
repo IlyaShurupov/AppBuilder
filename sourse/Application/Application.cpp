@@ -15,6 +15,7 @@ void Application::LoadConfiguration(Str* projpath, UIItem* (*UIIFromStr)(Str* id
   C->OnRead(projpath, UIIFromStr);
 }
 
+
 Application::Application(uint2 p_fps) {
   timer = Timer(1 * int(1000 / p_fps));
   C = NEW(Seance);

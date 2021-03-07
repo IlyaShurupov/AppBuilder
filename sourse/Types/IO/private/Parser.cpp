@@ -218,13 +218,13 @@ bool find_dblock_yml(Str* str, Range in, Range& out) {
   return true;
 }
 
-int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range in) {
+int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range* in) {
 
   Range dbrange;
   bool keep = true;
   int clm;
 
-  while (find_dblock_yml(str, in, dbrange)) {
+  while (find_dblock_yml(str, *in, dbrange)) {
 
     clm = str_tab_size(str, dbrange.strt);
 
@@ -232,7 +232,7 @@ int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range in) {
       return clm;
     }
 
-    in.strt = dbrange.end + 2;
+    in->strt = dbrange.end + 2;
 
     DataBlock* newdb = NEW(DataBlock)();
     DBType dbtype = dblock_type_yml(newdb, str, &dbrange);
@@ -261,6 +261,7 @@ DataBlock* Read_Yaml(Str* filepath) {
 
   DataBlock* dblock = NEW(DataBlock)();
   dblock->BlockName.coppy(filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
-  read_dblock_yml(dblock, &file, -1, Range(0, file.length));
+  Range filerange = Range(0, file.length);
+  read_dblock_yml(dblock, &file, -1, &filerange);
   return dblock;
 }

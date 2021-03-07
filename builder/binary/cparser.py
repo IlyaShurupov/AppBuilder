@@ -88,15 +88,11 @@ def ReadCProjectJson(file, Path):
 			cproj.incldirs.append(Path['ROOT'] + "\\sourse\\" + intlib)
 		cproj.libs = cproj.libs + data["Libraries"]
 
-	print("		", cproj.name, "  ",  cproj.type)
 	return cproj
 
 
 def ReadSolution(dir, Cprojects, Path):
-	print("\n -- Reading Projects From  " + os.path.abspath(dir))
-
-	with open('cache.json') as jsonfile:
-		cache = json.load(jsonfile)
+	print(" -- Reading Projects ")
 
 	files = []
 	FindFiles(files, dir, 'json', True, 'cproject')
@@ -123,6 +119,15 @@ def SaveCache(Builder):
 
 def getCache():
 	data = {}
-	with open(os.path.dirname(__file__) + "\\cache.json") as json_file:
+
+	cahefile = os.path.dirname(__file__) + '\\cache.json'
+
+	if not os.path.isfile(cahefile):
+		with open('cache.json', 'w+') as json_file:
+			data["LastRun"] = 0
+			data["Projects"] = []
+			json.dump(data, json_file)
+
+	with open(cahefile) as json_file:
 		data = json.load(json_file)
 	return data

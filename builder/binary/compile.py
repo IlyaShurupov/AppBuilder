@@ -19,12 +19,62 @@ class CProject():
 
 class Builder():
 
-	def Build(this):
+	def __init__(this, args):
+		this.OutDir = 'build\\binaries'
+		this.debug = False
+		this.rebuild_type = "tree"
+
+		this.path = {}
+		this.projs = []
+		this.changed_files = []
+
+		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
+		this.path['ROOT_ABS'] = RootDir(this.RootDirName)
+
+		this.ProcArgs(args)
+
+	def ProcArgs(this, args):
+			
+			for arg in args:
+
+				if arg == "debug":
+					this.debug = True
+
+				elif arg == "rebld":
+					cahefile = os.path.dirname(__file__) + '\\cache.json'
+					if os.path.isfile(cahefile): os.remove(cahefile)
+
+				elif arg[0] == "-":
+
+					if arg[1] == "o":
+						this.OutDir = arg.split('o', 1)[1]
+
+					elif arg[1] == "r":
+						this.RootDirName = arg.split("r", 1)[1]
+
+					elif arg[1] == "t":
+						this.rebuild_type = arg.split("t", 1)[1]
+
+					else:
+						this.Logout(" Cant resolve argument '" + arg + "'", "warning")
+
+				else:
+					this.Logout(" Cant resolve argument '" + arg + "'", "warning")
+
+			this.path['ROOT_ABS'] = RootDir(this.RootDirName)
+			this.path['ROOT'] = relpath(this.path['ROOT_ABS'], os.path.dirname(os.path.realpath(__file__)))
+			this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.OutDir
+
+	def Build(this, args):
+
+		this.ProcArgs(args)
+
+		this.projs.clear()
 		cparser.ReadSolution(this.path['ROOT'], this.projs, this.path)
 	
 		if not len(this.projs):
 			this.Logout("No Cprojects found in working dir: '" + this.path['ROOT'] + "'", "warning")
-			exit(0)
+			1 / 0
 
 		if os.path.isdir(os.path.abspath(this.path['OUTPUT'])):
 			pass
@@ -32,122 +82,51 @@ class Builder():
 
 		this.FindModified()
 		this.CalcDepTree()
-		this.CompileProjects()
+		this.CompileObjects()
+		this.PackObjects()
+		this.LinkObjects()
 		cparser.SaveCache(this)
 
-	def Logout(this, text = '', type = 'comment'):
+	def FindModified(this):
+		print(" -- Finding Modified Files")
+		this.changed_files.clear()
+		is_build = False
+		cache = cparser.getCache()
+		lastcycletime = cache["LastRun"]
 		
-		color = "\033[0;0m"
-		type_log = ''
-
-		if type == 'error':		
-			color = "\033[1;31m"
-			type_log = '  ERROR: '
-		elif type == 'warning':		
-			type_log = '  WARNING: '
-			color = "\033[1;36m"
-
-		print(type_log + text)
-
-		if type == 'error':
-			print(" ---- Build terminated Because Of Errors ---- ")
-			exit(1)
-
-	def ProcArgs(this, args):
-			
-			out_dir = ''
-			root_abs_dir = ' '
-			this.path['ROOT_ABS'] = os.path.dirname(os.path.realpath(__file__))
-
-			for arg in args:
-				if arg == __file__.rsplit('\\', 1)[1]:
-					continue
-				if arg == "debug":
-					this.debug = True
-				elif arg[0] == "-":
-					if arg[1] == "o":
-						out_dir = arg.split('o', 1)[1]
-					elif arg[1] == "d":
-						root_abs_dir = arg.split("", 1)[1]
-					elif arg[1] == "r":
-						root_abs_dir = RootDir(arg.split("r", 1)[1])
-					elif arg[1] == "t":
-						this.rebuild_type = arg.split("t", 1)[1]
-				else:
-					this.Logout("Cant resolve argument '" + arg + "'", "warning")
-
-			if out_dir == '':
-				out_dir = "build/binaries/"
-				if this.debug:
-					out_dir += "debug"
-				else:
-					out_dir += "release"
-			if root_abs_dir != ' ':
-				this.path['ROOT_ABS'] = root_abs_dir
-
-			this.path['ROOT'] = relpath(this.path['ROOT_ABS'], os.path.dirname(os.path.realpath(__file__)))
-			this.path['OUTPUT'] = this.path['ROOT'] + "\\" + out_dir
-
-	def __init__(this, args):
-
-		this.Logout("\n\n ---------- Build Started ---------- ")
-		this.debug = False
-		this.rebuild_type = "tree"
-		this.path = {}
-		this.projs = []
-		this.changed_files = []
-
-		this.ProcArgs(args)
-
-	def CompileProjects(this):
-		output = this.path['OUTPUT']
-		print("\n -- Compiling Projects Into ",  os.path.abspath(output))
-
-
 
 		for proj in this.projs:
+			proj.rebuild = False
+	
+			files = []
+			cparser.FindFiles(files, proj.dir, 'cpp')
+			cparser.FindFiles(files, proj.dir, 'h')
 
-			reb_files = []
-			if this.rebuild_type == "fl":
-				for ch_fl in this.changed_files:
-					if ch_fl.rsplit('.', 1)[1] == "cpp":
-						cppfile = ch_fl.rsplit('.', 1)[0]
-						if cppfile in proj.files:
-							reb_files.append(cppfile)
-			else:
-				reb_files = reb_files + proj.files
-			
-			if not len(reb_files) or not proj.rebuild:
-				continue
+			for file in files:
+				if os.path.getmtime(file) > lastcycletime:
+					this.changed_files.append(file)
+					proj.rebuild = True
+					is_build = True	
+					break
 
-			print("\n\n ", proj.name)
-			print("     Generating Objects Into " +  proj.name + '\\obj')
+		if is_build:
+			return
 
-			for i in range(len(reb_files)):
-				file = reb_files[i]
-				outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]		
-				print("	" +  file.rsplit('\\', 1)[1] + '.o')
-				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.debug)
+		print("       Not Found. Terminating ")
+		1 / 0
 
-			for i in range(len(proj.files)):
-				proj.files[i] = output + "\\" + proj.name + "\\obj" + '\\' + proj.files[i].rsplit('\\', 1)[1]	
-
-			if proj.type[0] == 'E':
-				print("\n     Packing Objects Into ", proj.name + "\\" + proj.name + '.lib ')				
-				compiler.PackObjs(proj.files, output + "\\" + proj.name, proj.name)
-				linkfiles = [proj.name + ".lib"] + proj.libs
-				for i in range(len(linkfiles)):
-					linkfiles[i] = linkfiles[i].split('.')[0]
-				print("\n     Linking Objects [" + cparser.to_str(linkfiles, True) + " ] Into " + proj.name + "\\" + proj.name + '.exe' )
-				compiler.LinkObjs(proj.name, output, linkfiles, proj.libdirs, this.debug)
-
-			elif proj.type[0] == 'S':
-				print("\n     Packing Objects Into ", proj.name + "\\" + proj.name + '.lib ')
-				compiler.PackObjs(proj.files, output + "\\" + proj.name, proj.name)
-
+	def CheckRebuild(this):
+		print("\n -- Determinding Objects to be Rebuilded:")
+		
+		if this.rebuild_type == "tree":
+			pass
+		elif this.rebuild_type == "fl":
+			pass
+		elif this.rebuild_type == "prj":
+			pass
 
 	def CalcDepTree(this):
-		print("\n -- Defining Dependency Tree:")
+		print(" -- Defining Dependency Tree")
 	    
 		bool_all_checked = False
 		proj_idx = 0
@@ -175,48 +154,77 @@ class Builder():
 					bool_all_checked = True	
 				proj_idx = proj_idx + 1
 
-		
-		str = '		'
+	def CompileObjects(this):
+		output = this.path['OUTPUT']
+		print("\n\n -- Compiling Objects")
+
 		for proj in this.projs:
-			str = str + proj.name + " "
 
-		print(str)
+			reb_files = []
+			if this.rebuild_type == "fl":
+				for ch_fl in this.changed_files:
+					if ch_fl.rsplit('.', 1)[1] == "cpp":
+						cppfile = ch_fl.rsplit('.', 1)[0]
+						if cppfile in proj.files:
+							reb_files.append(cppfile)
+			else:
+				reb_files = reb_files + proj.files
+			
 
-	def FindModified(this):
-		print("\n -- Finding Modified Files")
-		this.changed_files.clear()
-		is_build = False
-		cache = cparser.getCache()
-		lastcycletime = cache["LastRun"]
+			if not len(reb_files) or not proj.rebuild:
+				continue
+
+			print("\n ", proj.name)
+
+			for i in range(len(reb_files)):
+				file = reb_files[i]
+				outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]		
+				print("	" +  file.rsplit('\\', 1)[1] + '.o')
+				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.debug)
+
+			for i in range(len(proj.files)):
+				proj.files[i] = output + "\\" + proj.name + "\\obj" + '\\' + proj.files[i].rsplit('\\', 1)[1]
+
+	def PackObjects(this):
+		output = this.path['OUTPUT']
+		print("\n\n -- Packing Objects")
+
 		for proj in this.projs:
-			proj.rebuild = False
-			files = []
-			cparser.FindFiles(files, proj.dir, 'cpp')
-			cparser.FindFiles(files, proj.dir, 'h')
+			if not proj.rebuild: continue
+			print("     ", proj.name)
+			compiler.PackObjs(proj.files, output + "\\" + proj.name, proj.name)
 
-			for file in files:
-				if os.path.getmtime(file) > lastcycletime:
-					this.changed_files.append(file)
-					proj.rebuild = True
-					is_build = True	
-					break
+	def LinkObjects(this):
+		output = this.path['OUTPUT']
+		print("\n\n -- Linking Objects")
 
-		if is_build:
-			return
+		for proj in this.projs:
+			if not proj.type == "Executable": continue
+			print("     ", proj.name)
+			
+			linkfiles = [proj.name + ".lib"] + proj.libs
+			for i in range(len(linkfiles)):
+				linkfiles[i] = linkfiles[i].split('.')[0]
 
-		print("       Not Found. Terminating ")
-		exit(0)
+			compiler.LinkObjs(proj.name, output, linkfiles, proj.libdirs, this.debug)
 
-	def CheckRebuild(this):
-		print("\n -- Determinding Objects to be Rebuilded:")
+	def Logout(this, text = '', type = 'comment'):
 		
-		if this.rebuild_type == "tree":
-			pass
-		elif this.rebuild_type == "fl":
-			pass
-		elif this.rebuild_type == "prj":
-			pass
+		color = "\033[0;0m"
+		type_log = ''
 
+		if type == 'error':		
+			color = "\033[1;31m"
+			type_log = '  ERROR: '
+		elif type == 'warning':		
+			type_log = '  WARNING: '
+			color = "\033[1;36m"
+
+		print(type_log + text)
+
+		if type == 'error':
+			print(" ---- Build terminated Because Of Errors ---- ")
+			1 / 0
 
 
 def RootDir(reponame):
@@ -230,9 +238,66 @@ def RootDir(reponame):
 			return 0
 
 def main():
-	os.system("cls")
+	#os.system("cls")
+	print(" \n\n ---------------- Builder ------------------------- \n\n ")
 
-	Builder(sys.argv).Build()
+	def getArgs(command):
+		args = []
+		if command.find(':') >= 0:
+			args += command.split(':', 1)[1].split(' ')
+			arglen = len(args)
+			i = 0
+			while i < arglen:
+				if args[i] == '':
+					args.remove(args[i])
+					arglen -= 1
+				i += 1
+		return args
+
+	bld = Builder([])
+
+	while True:
+		print("(bld) < ", end=" ")
+		command = input()
+
+
+		if command == "q":
+			exit(0)
+
+		elif command.find("bld") == 0 or command.find("rebld") == 0:
+			if command.find("rebld") == 0:
+				cahefile = os.path.dirname(__file__) + '\\cache.json'
+				if os.path.isfile(cahefile): 
+					os.remove(cahefile)
+			
+			try:
+				bld.Build(getArgs(command))
+			except ZeroDivisionError:  
+				pass
+
+		elif command.find("dbg") == 0:
+			args = getArgs(command)
+			exe = args[0]
+			files = []
+			cparser.FindFiles(files, bld.path['ROOT_ABS'], 'exe', True, args[0])
+			if not len(files):
+				print(" exe not found in bld root path ")
+			else:
+				os.system("gdb " + files[0])
+
+		elif command.find("os") == 0:
+			os.system(command.split(':', 1)[1])
+
+		elif command.find("eval") == 0:
+			eval(command.split(':', 1)[1])
+		
+		elif command.find("assign") == 0:
+			bld.ProcArgs(getArgs(command))
+		else:
+			print("  Command Not Found")
+
+
+		print("\n")
 
 
 if __name__ == "__main__":
