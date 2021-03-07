@@ -28,6 +28,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define TRANSPARENTCY
 #undef TRANSPARENTCY
 
+
 template <class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease) {
   if (*ppInterfaceToRelease != NULL) {
