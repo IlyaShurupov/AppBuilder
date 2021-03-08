@@ -142,3 +142,17 @@ def getCache():
 	with open(cahefile) as json_file:
 		data = json.load(json_file)
 	return data
+
+def save_to_json(data, name, absout):
+	if not os.path.isdir(absout):
+		os.makedirs(absout)
+	with open(absout + "\\" + name + ".json", 'w+') as outfile:
+	    json.dump(data, outfile)
+
+def load_from_json(absfile):
+	data = {}
+	if os.path.isfile(absfile):
+		if absfile.rsplit('.', 1)[1] == "json":
+			with open(absfile) as json_file:
+				data = json.load(json_file)
+	return data

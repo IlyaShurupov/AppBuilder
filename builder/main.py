@@ -6,9 +6,6 @@ import  compiler
 import cparser 
 import commands
 
-
-
-
 class CProject():
 	def __init__(this):
 		this.rebuild = True
@@ -23,28 +20,35 @@ class CProject():
 
 class Env():
 	def __init__(this):
+		this.name = 'default'
+		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
+		this.type = 'binaries'
+		this.platform = 'windows'
+		this.sysarch = 'x64'
 		this.rebuild = False
 		this.OutDir = 'build\\binaries'
 		this.debug = False
 		this.rebuild_type = "tree"
-		this.projs = []
-		this.changed_files = []
-		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
-		this.path = {}
+
+	def Log(this):
+		names = list(this.__dict__.keys())
+		for i in range(len(names)):
+			print("      " +  names[i] + " - " + str(this.__dict__[names[i]]))
+		print(" ")
 
 
 class Builder():
 
+	envs = [] 
+
 	def __init__(this, env = Env()):
 		this.env = env
 		this.commands = []
+		this.envs.append(env)
 
-	def LogEnv(this):
-		this.Logout("        RootDirName    " + " '" + this.env.RootDirName + "' ")
-		this.Logout("        OutDir         " + this.env.OutDir)
-		this.Logout("        debug          " + str(this.env.debug))
-		this.Logout("        rebuild_type   " + this.env.rebuild_type)
-		this.Logout("        rebuild        " + str(this.env.rebuild))
+		this.changed_files = []
+		this.projs = []
+		this.path = {}
 
 	def Build(this, args):
 
@@ -53,19 +57,19 @@ class Builder():
 			os.remove(os.path.abspath("cache.json"))
 
 
-		this.env.path['ROOT'] = RootDir(this.env.RootDirName)
-		this.env.path['OUTPUT'] = this.env.OutDir
+		this.path['ROOT'] = RootDir(this.env.RootDirName)
+		this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.env.OutDir
 
 		this.Logout(" -- Build started")
 
-		this.env.projs.clear()
-		cparser.ReadSolution(this.env.path['ROOT'], this.env.projs, this.env.path)
+		this.projs.clear()
+		cparser.ReadSolution(this.path['ROOT'], this.projs, this.path)
 	
-		if not len(this.env.projs):
-			this.Logout("No Cprojects found in working dir: '" + this.env.path['ROOT'] + "'", "warning")
+		if not len(this.projs):
+			this.Logout("No Cprojects found in working dir: '" + this.path['ROOT'] + "'", "warning")
 			raise commands.ExeptionTerminated
 
-		if os.path.isdir(os.path.abspath(this.env.path['OUTPUT'])):
+		if os.path.isdir(os.path.abspath(this.path['OUTPUT'])):
 			pass
 			#shutil.rmtree(os.path.abspath(this.path['OUTPUT']))
 
@@ -78,13 +82,13 @@ class Builder():
 
 	def FindModified(this):
 		print(" -- Finding Modified Files")
-		this.env.changed_files.clear()
+		this.changed_files.clear()
 		is_build = False
 		cache = cparser.getCache()
 		lastcycletime = cache["LastRun"]
 		
 
-		for proj in this.env.projs:
+		for proj in this.projs:
 			proj.rebuild = False
 	
 			files = []
@@ -93,7 +97,7 @@ class Builder():
 
 			for file in files:
 				if os.path.getmtime(file) > lastcycletime:
-					this.env.changed_files.append(file)
+					this.changed_files.append(file)
 					proj.rebuild = True
 					is_build = True	
 					break
@@ -120,38 +124,38 @@ class Builder():
 		bool_all_checked = False
 		proj_idx = 0
 
-		for proj_idx in range(len(this.env.projs)):
-			this.env.projs[proj_idx].flag = 0
+		for proj_idx in range(len(this.projs)):
+			this.projs[proj_idx].flag = 0
 
 		while not bool_all_checked:
 		
-			if this.env.projs[proj_idx].flag == 0:
+			if this.projs[proj_idx].flag == 0:
 
-				deps = this.env.projs[proj_idx].libs.copy()
+				deps = this.projs[proj_idx].libs.copy()
 				for i in range(len(deps)):
 					deps[i] = deps[i].split('.')[0]
 
-				for dep_proj_idx in range(len(this.env.projs)):
-					if this.env.projs[dep_proj_idx].name in deps:
+				for dep_proj_idx in range(len(this.projs)):
+					if this.projs[dep_proj_idx].name in deps:
 						if dep_proj_idx > proj_idx:
-							this.env.projs[proj_idx], this.env.projs[dep_proj_idx] = this.env.projs[dep_proj_idx], this.env.projs[proj_idx]
+							this.projs[proj_idx], this.projs[dep_proj_idx] = this.projs[dep_proj_idx], this.projs[proj_idx]
 
-				this.env.projs[proj_idx].flag = 1
+				this.projs[proj_idx].flag = 1
 				proj_idx = 0
 			else:
-				if proj_idx + 1 == len(this.env.projs):
+				if proj_idx + 1 == len(this.projs):
 					bool_all_checked = True	
 				proj_idx = proj_idx + 1
 
 	def CompileObjects(this):
-		output = this.env.path['OUTPUT']
+		output = this.path['OUTPUT']
 		print(" -- Compiling Objects")
 
-		for proj in this.env.projs:
+		for proj in this.projs:
 
 			reb_files = []
 			if this.env.rebuild_type == "fl":
-				for ch_fl in this.env.changed_files:
+				for ch_fl in this.changed_files:
 					if ch_fl.rsplit('.', 1)[1] == "cpp":
 						cppfile = ch_fl.rsplit('.', 1)[0]
 						if cppfile in proj.files:
@@ -168,26 +172,26 @@ class Builder():
 			for i in range(len(reb_files)):
 				file = reb_files[i]
 				outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]		
-				print("	" +  file.rsplit('\\', 1)[1] + '.o')
+				print("      " +  file.rsplit('\\', 1)[1] + '.o')
 				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.env.debug)
 
 			for i in range(len(proj.files)):
 				proj.files[i] = output + "\\" + proj.name + "\\obj" + '\\' + proj.files[i].rsplit('\\', 1)[1]
 
 	def PackObjects(this):
-		output = this.env.path['OUTPUT']
+		output = this.path['OUTPUT']
 		print("\n\n -- Packing Objects")
 
-		for proj in this.env.projs:
+		for proj in this.projs:
 			if not proj.rebuild: continue
 			print("     ", proj.name)
 			compiler.PackObjs(proj.files, output + "\\" + proj.name, proj.name)
 
 	def LinkObjects(this):
-		output = this.env.path['OUTPUT']
+		output = this.path['OUTPUT']
 		print("\n\n -- Linking Objects")
 
-		for proj in this.env.projs:
+		for proj in this.projs:
 			if not proj.type == "Executable": continue
 			print("     ", proj.name)
 			
