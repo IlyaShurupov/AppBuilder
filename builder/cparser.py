@@ -61,10 +61,10 @@ def ResolvePaths(PATH, Cprojects):
 
 def ReadCProjectJson(file, Path):
 
-	import compile
-	cproj = compile.CProject();
+	import main
+	cproj = main.CProject();
 	cproj.name = (file.rsplit('\\', 1)[0]).rsplit('\\', 1)[1]
-	cproj.dir = Path['ROOT'] + '\\' + os.path.relpath(file.rsplit('\\', 1)[0] + '\\', Path['ROOT_ABS'])
+	cproj.dir = Path['ROOT'] + '\\' + os.path.relpath(file.rsplit('\\', 1)[0] + '\\', os.path.abspath(Path['ROOT']))
 
 	cppfiles = []
 	FindFiles(cppfiles, file.rsplit('\\', 1)[0], 'cpp')
