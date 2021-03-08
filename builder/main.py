@@ -4,8 +4,7 @@ import shutil
 import sys
 import  compiler
 import cparser 
-
-
+import commands
 
 class CProject():
 	def __init__(this):
@@ -19,64 +18,56 @@ class CProject():
 		this.libs = []
 		this.libdirs = []
 
-class Builder():
-
-	def __init__(this, args = []):
+class Env():
+	def __init__(this):
+		this.name = 'default'
+		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
+		this.type = 'binaries'
+		this.platform = 'windows'
+		this.sysarch = 'x64'
+		this.rebuild = False
 		this.OutDir = 'build\\binaries'
 		this.debug = False
 		this.rebuild_type = "tree"
 
-		this.path = {}
-		this.projs = []
+	def Log(this):
+		names = list(this.__dict__.keys())
+		for i in range(len(names)):
+			print("      " +  names[i] + " - " + str(this.__dict__[names[i]]))
+		print(" ")
+
+
+class Builder():
+
+	envs = [] 
+
+	def __init__(this, env = Env()):
+		this.env = env
+		this.commands = []
+		this.envs.append(env)
+
 		this.changed_files = []
-
-		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
-		this.path['ROOT_ABS'] = RootDir(this.RootDirName)
-
-		this.ProcArgs(args)
-
-	def ProcArgs(this, args):
-			
-			for arg in args:
-
-				if arg == "debug":
-					this.debug = True
-
-				elif arg == "rebld":
-					cahefile = os.path.dirname(__file__) + '\\cache.json'
-					if os.path.isfile(cahefile): os.remove(cahefile)
-
-				elif arg[0] == "-":
-
-					if arg[1] == "o":
-						this.OutDir = arg.split('o', 1)[1]
-
-					elif arg[1] == "r":
-						this.RootDirName = arg.split("r", 1)[1]
-
-					elif arg[1] == "t":
-						this.rebuild_type = arg.split("t", 1)[1]
-
-					else:
-						this.Logout(" Cant resolve argument '" + arg + "'", "warning")
-
-				else:
-					this.Logout(" Cant resolve argument '" + arg + "'", "warning")
-
-			this.path['ROOT_ABS'] = RootDir(this.RootDirName)
-			this.path['ROOT'] = relpath(this.path['ROOT_ABS'], os.path.dirname(os.path.realpath(__file__)))
-			this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.OutDir
+		this.projs = []
+		this.path = {}
 
 	def Build(this, args):
 
-		this.ProcArgs(args)
+		if this.env.rebuild and os.path.isfile(os.path.abspath("cache.json")):
+			print("remove")
+			os.remove(os.path.abspath("cache.json"))
+
+
+		this.path['ROOT'] = RootDir(this.env.RootDirName)
+		this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.env.OutDir
+
+		this.Logout(" -- Build started")
 
 		this.projs.clear()
 		cparser.ReadSolution(this.path['ROOT'], this.projs, this.path)
 	
 		if not len(this.projs):
 			this.Logout("No Cprojects found in working dir: '" + this.path['ROOT'] + "'", "warning")
-			1 / 0
+			raise commands.ExeptionTerminated
 
 		if os.path.isdir(os.path.abspath(this.path['OUTPUT'])):
 			pass
@@ -115,16 +106,16 @@ class Builder():
 			return
 
 		print("       Not Found. Terminating ")
-		1 / 0
+		raise commands.ExeptionTerminated
 
 	def CheckRebuild(this):
 		print("\n -- Determinding Objects to be Rebuilded:")
 		
-		if this.rebuild_type == "tree":
+		if this.env.rebuild_type == "tree":
 			pass
-		elif this.rebuild_type == "fl":
+		elif this.env.rebuild_type == "fl":
 			pass
-		elif this.rebuild_type == "prj":
+		elif this.env.rebuild_type == "prj":
 			pass
 
 	def CalcDepTree(this):
@@ -158,12 +149,12 @@ class Builder():
 
 	def CompileObjects(this):
 		output = this.path['OUTPUT']
-		print("\n\n -- Compiling Objects")
+		print(" -- Compiling Objects")
 
 		for proj in this.projs:
 
 			reb_files = []
-			if this.rebuild_type == "fl":
+			if this.env.rebuild_type == "fl":
 				for ch_fl in this.changed_files:
 					if ch_fl.rsplit('.', 1)[1] == "cpp":
 						cppfile = ch_fl.rsplit('.', 1)[0]
@@ -181,8 +172,8 @@ class Builder():
 			for i in range(len(reb_files)):
 				file = reb_files[i]
 				outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]		
-				print("	" +  file.rsplit('\\', 1)[1] + '.o')
-				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.debug)
+				print("      " +  file.rsplit('\\', 1)[1] + '.o')
+				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.env.debug)
 
 			for i in range(len(proj.files)):
 				proj.files[i] = output + "\\" + proj.name + "\\obj" + '\\' + proj.files[i].rsplit('\\', 1)[1]
@@ -208,7 +199,7 @@ class Builder():
 			for i in range(len(linkfiles)):
 				linkfiles[i] = linkfiles[i].split('.')[0]
 
-			compiler.LinkObjs(proj.name, output, linkfiles, proj.libdirs, this.debug)
+			compiler.LinkObjs(proj.name, output, linkfiles, proj.libdirs, this.env.debug)
 
 	def Logout(this, text = '', type = 'comment'):
 		
@@ -226,7 +217,7 @@ class Builder():
 
 		if type == 'error':
 			print(" ---- Build terminated Because Of Errors ---- ")
-			1 / 0
+			raise commands.ExeptionBuildError
 
 
 def RootDir(reponame):
@@ -239,96 +230,57 @@ def RootDir(reponame):
 		if not len(current):
 			return 0
 
-def main():
-	#os.system("cls")
-	print(" \n\n ---------------- Builder ------------------------- \n\n ")
+def getArgs(command):
+	args = []
+	if command.find(':') >= 0:
+		args += command.split(':', 1)[1].split(' ')
+		arglen = len(args)
+		i = 0
+		while i < arglen:
+			if args[i] == '':
+				args.remove(args[i])
+				arglen -= 1
+			i += 1
+	return args
 
-	def getArgs(command):
-		args = []
-		if command.find(':') >= 0:
-			args += command.split(':', 1)[1].split(' ')
-			arglen = len(args)
-			i = 0
-			while i < arglen:
-				if args[i] == '':
-					args.remove(args[i])
-					arglen -= 1
-				i += 1
-		return args
-
-	bld = Builder([])
+def ProcCommands(bld):
 
 	while True:
+
 		print("(bld) < ", end=" ")
-		command = input()
-
-
-		if command == "q":
-			exit(0)
-
-		elif command.find("bld") == 0 or command.find("rebld") == 0:
-			if command.find("rebld") == 0:
-				cahefile = os.path.dirname(__file__) + '\\cache.json'
-				if os.path.isfile(cahefile): 
-					os.remove(cahefile)
-			
-			try:
-				bld.Build(getArgs(command))
-			except ZeroDivisionError:  
-				pass
-
-		elif command.find("dbg") == 0:
-			args = getArgs(command)
-			if os.path.isfile(args[0]):
-				os.system("gdb " + args[0])
-			else:
-				exe = args[0]
-				files = []
-				cparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
-				if not len(files):
-					print(" exe not found in bld root path ")
-				else:
-					if len(files) > 1:
-						bld.Logout(" Ambigues Executable Name - Enter full path", "warning")
-					else:
-						os.system("gdb " + files[0])
-
-		elif command.find("os") == 0:
-			os.system(command.split(':', 1)[1])
-
-		elif command.find("eval") == 0:
-			eval(command.split(':', 1)[1])
+		usrinput = input()
 		
-		elif command.find("args") == 0:
-			bld.ProcArgs(getArgs(command))
-		
-		elif command.find("help") == 0:
-			print("  in progress")
+		usrcommand = usrinput
+		args = getArgs(usrinput)
 
-		elif command.find("run") == 0:
-			args = getArgs(command)
-			if os.path.isfile(args[0]):
-				os.system("gdb " + args[0])
-			else:
-				exe = args[0]
-				files = []
-				cparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
-				if not len(files):
-					print(" exe not found in bld root path ")
-				else:
-					if len(files) > 1:
-						bld.Logout(" Ambigues Executable Name - Enter full path", "warning")
-					else:
-						os.system(files[0])
+		if usrinput.find(":") > 0: 
+			usrcommand = usrinput.split(":", 1)[0]
 
-		else:
-			print("  Command Not Found")
+		usrcommand = usrcommand.lstrip()
+		usrcommand = usrcommand.rstrip()
 
+		found = False
+		for command in bld.commands:
+			if command.id == usrcommand:
+				found = True
 
-		print("\n")
+				try:
+					command.Exec(bld, args, usrinput)
+				except (commands.ExeptionBuildError, commands.ExeptionTerminated) as err:
+					command.OnError(args)
+
+		if not found:
+			print(" command '" + usrcommand + "' not found. try 'help' ")
+
+		print("")
 
 
 if __name__ == "__main__":
-	main()
+	print(" \n\n ---------------- Builder ------------------------- \n\n ")
+	bld = Builder()
+	commands.init_comands(bld)
+	ProcCommands(bld)
+
+
 else:
 	bld = Builder()

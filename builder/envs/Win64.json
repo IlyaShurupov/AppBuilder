@@ -1,0 +1,1 @@
+{"name": "Win64", "type": "binaries", "platform": "windows", "sysarch": "x64", "rebuild": false, "OutDir": "build/bin/Win64", "debug": false, "rebuild_type": "tree", "RootDirName": "AppBuilder"}
