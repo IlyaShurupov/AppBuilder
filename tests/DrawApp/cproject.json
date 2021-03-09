@@ -2,10 +2,8 @@
 {
   "Type": "Executable",
   
-  "InternLibs" : [ "Application", "Types" ] ,
+  "InternLibs" : [ "Application" ] ,
 
-  "Libraries": [ "d2d1.lib", 
-  				 "ole32.lib", 
-  				 "gdi32.lib" ]
+  "Libraries": []
 
 }

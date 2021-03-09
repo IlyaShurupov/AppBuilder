@@ -3,13 +3,15 @@ from os.path import relpath
 import shutil
 import sys
 import  compiler
-import cparser 
 import commands
+from cparser import *
 
 class CProject():
 	def __init__(this):
+		this.projdeps = []
 		this.rebuild = True
 		this.flag = 0
+		this.flag2 = 0
 		this.name = ''
 		this.dir = ''
 		this.type = ''
@@ -17,6 +19,7 @@ class CProject():
 		this.incldirs = []
 		this.libs = []
 		this.libdirs = []
+		this.externs = []
 
 class Env():
 	def __init__(this):
@@ -39,18 +42,63 @@ class Env():
 
 class Builder():
 
-	envs = [] 
-
 	def __init__(this, env = Env()):
+		this.envs = [] 
 		this.env = env
 		this.commands = []
 		this.envs.append(env)
-
 		this.changed_files = []
 		this.projs = []
 		this.path = {}
 
+	def RunInteractiveMode(this):
+
+		commands.init_comands(this)
+
+		def getArgs(command):
+			args = []
+			if command.find(':') >= 0:
+				args += command.split(':', 1)[1].split(' ')
+				arglen = len(args)
+				i = 0
+				while i < arglen:
+					if args[i] == '':
+						args.remove(args[i])
+						arglen -= 1
+					i += 1
+			return args
+
+		while True:
+
+			print("(bld) < ", end=" ")
+			usrinput = input()
+			
+			usrcommand = usrinput
+			args = getArgs(usrinput)
+
+			if usrinput.find(":") > 0: 
+				usrcommand = usrinput.split(":", 1)[0]
+
+			usrcommand = usrcommand.lstrip()
+			usrcommand = usrcommand.rstrip()
+
+			found = False
+			for command in this.commands:
+				if command.id == usrcommand:
+					found = True
+
+					try:
+						command.Exec(this, args, usrinput)
+					except (commands.ExeptionBuildError, commands.ExeptionTerminated) as err:
+						command.OnError(args)
+
+			if not found:
+				print(" command '" + usrcommand + "' not found. try 'help' ")
+
+			print("")
+
 	def Build(this, args):
+		this.Logout(" -- Build started")
 
 		if this.env.rebuild and os.path.isfile(os.path.abspath("cache.json")):
 			print("remove")
@@ -59,32 +107,26 @@ class Builder():
 
 		this.path['ROOT'] = RootDir(this.env.RootDirName)
 		this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.env.OutDir
-
-		this.Logout(" -- Build started")
+		this.path['EXTERNS'] = this.path['ROOT'] + "\\extern\\lib" 
 
 		this.projs.clear()
-		cparser.ReadSolution(this.path['ROOT'], this.projs, this.path)
+		ReadSolution(this.path['ROOT'], this.projs, this.path)
 	
 		if not len(this.projs):
 			this.Logout("No Cprojects found in working dir: '" + this.path['ROOT'] + "'", "warning")
 			raise commands.ExeptionTerminated
 
-		if os.path.isdir(os.path.abspath(this.path['OUTPUT'])):
-			pass
-			#shutil.rmtree(os.path.abspath(this.path['OUTPUT']))
-
 		this.FindModified()
-		this.CalcDepTree()
 		this.CompileObjects()
 		this.PackObjects()
 		this.LinkObjects()
-		cparser.SaveCache(this)
+		SaveCache(this)
 
 	def FindModified(this):
 		print(" -- Finding Modified Files")
 		this.changed_files.clear()
 		is_build = False
-		cache = cparser.getCache()
+		cache = getCache()
 		lastcycletime = cache["LastRun"]
 		
 
@@ -92,8 +134,8 @@ class Builder():
 			proj.rebuild = False
 	
 			files = []
-			cparser.FindFiles(files, proj.dir, 'cpp')
-			cparser.FindFiles(files, proj.dir, 'h')
+			FindFiles(files, proj.dir, 'cpp')
+			FindFiles(files, proj.dir, 'h')
 
 			for file in files:
 				if os.path.getmtime(file) > lastcycletime:
@@ -117,35 +159,6 @@ class Builder():
 			pass
 		elif this.env.rebuild_type == "prj":
 			pass
-
-	def CalcDepTree(this):
-		print(" -- Defining Dependency Tree")
-	    
-		bool_all_checked = False
-		proj_idx = 0
-
-		for proj_idx in range(len(this.projs)):
-			this.projs[proj_idx].flag = 0
-
-		while not bool_all_checked:
-		
-			if this.projs[proj_idx].flag == 0:
-
-				deps = this.projs[proj_idx].libs.copy()
-				for i in range(len(deps)):
-					deps[i] = deps[i].split('.')[0]
-
-				for dep_proj_idx in range(len(this.projs)):
-					if this.projs[dep_proj_idx].name in deps:
-						if dep_proj_idx > proj_idx:
-							this.projs[proj_idx], this.projs[dep_proj_idx] = this.projs[dep_proj_idx], this.projs[proj_idx]
-
-				this.projs[proj_idx].flag = 1
-				proj_idx = 0
-			else:
-				if proj_idx + 1 == len(this.projs):
-					bool_all_checked = True	
-				proj_idx = proj_idx + 1
 
 	def CompileObjects(this):
 		output = this.path['OUTPUT']
@@ -195,11 +208,15 @@ class Builder():
 			if not proj.type == "Executable": continue
 			print("     ", proj.name)
 			
-			linkfiles = [proj.name + ".lib"] + proj.libs
-			for i in range(len(linkfiles)):
-				linkfiles[i] = linkfiles[i].split('.')[0]
+			linkprojs = get_build_order(this.projs, proj)
+			linknames = []
+			externals = []
+			for linkproj in linkprojs:
+				linknames.append(linkproj.name)
+				externals += linkproj.externs
 
-			compiler.LinkObjs(proj.name, output, linkfiles, proj.libdirs, this.env.debug)
+			linknames += externals + proj.externs
+			compiler.LinkObjs(proj.name, output, linknames, proj.libdirs, this.env.debug)
 
 	def Logout(this, text = '', type = 'comment'):
 		
@@ -220,67 +237,7 @@ class Builder():
 			raise commands.ExeptionBuildError
 
 
-def RootDir(reponame):
-	current = os.path.dirname(os.path.realpath(__file__))
-	while True:
-		names = current.rsplit("\\", 1) 
-		if names[1] == reponame:
-			return current
-		current = names[0]
-		if not len(current):
-			return 0
-
-def getArgs(command):
-	args = []
-	if command.find(':') >= 0:
-		args += command.split(':', 1)[1].split(' ')
-		arglen = len(args)
-		i = 0
-		while i < arglen:
-			if args[i] == '':
-				args.remove(args[i])
-				arglen -= 1
-			i += 1
-	return args
-
-def ProcCommands(bld):
-
-	while True:
-
-		print("(bld) < ", end=" ")
-		usrinput = input()
-		
-		usrcommand = usrinput
-		args = getArgs(usrinput)
-
-		if usrinput.find(":") > 0: 
-			usrcommand = usrinput.split(":", 1)[0]
-
-		usrcommand = usrcommand.lstrip()
-		usrcommand = usrcommand.rstrip()
-
-		found = False
-		for command in bld.commands:
-			if command.id == usrcommand:
-				found = True
-
-				try:
-					command.Exec(bld, args, usrinput)
-				except (commands.ExeptionBuildError, commands.ExeptionTerminated) as err:
-					command.OnError(args)
-
-		if not found:
-			print(" command '" + usrcommand + "' not found. try 'help' ")
-
-		print("")
-
 
 if __name__ == "__main__":
 	print(" \n\n ---------------- Builder ------------------------- \n\n ")
-	bld = Builder()
-	commands.init_comands(bld)
-	ProcCommands(bld)
-
-
-else:
-	bld = Builder()
+	Builder().RunInteractiveMode()
