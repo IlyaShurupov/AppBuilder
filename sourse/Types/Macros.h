@@ -21,18 +21,18 @@
 #define SWAP(val1, val2, type) type tmp; tmp = val1; val1 = val2; val2 = tmp
 
 // Types
-typedef char								int1;
-typedef unsigned char			 uint1;
-typedef short								int2;
-typedef unsigned short		 uint2;
-typedef int									int4;
-typedef unsigned int			 uint4;
+typedef char					int1;
+typedef unsigned char			uint1;
+typedef short					int2;
+typedef unsigned short			uint2;
+typedef int						int4;
+typedef unsigned int			uint4;
 #ifdef ENVIRONMENT64
-typedef long								int8;
-typedef unsigned long			 uint8;
+typedef long					int8;
+typedef unsigned long			uint8;
 #else
-typedef long long					 uint8;
-typedef unsigned long long uint8;
+typedef long long				int8;
+typedef unsigned long long		uint8;
 #endif
 
 // Coustom types
@@ -44,4 +44,3 @@ typedef int SCR_INT;
 #define MATH_Pi float(3.1415926535897932384626433832795)
 #define MATH_SQRT2 1.4142135623730950488016887242
 #define MATH_E 2.7182818284590452353602874714
-

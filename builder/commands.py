@@ -1,6 +1,6 @@
 import os as os
-import cparser
-
+import cpparser
+from common import *
 
 class ExeptionTerminated(Exception):
 	pass
@@ -32,6 +32,7 @@ class BLD(BuildCommand):
 		this.init("bld", " compiles binaries depending on the env ")
 	
 	def Exec(this, bld, args, original):
+		if len(args): bld.env.rebuild_type = args[0]
 		bld.Build(args)
 
 class CLEAR(BuildCommand):
@@ -39,20 +40,22 @@ class CLEAR(BuildCommand):
 		this.init("clr", " removes output dir recursevly")
 	
 	def Exec(this, bld, args, original):
-		from main import RootDir
-		import shutil
 		outdir = RootDir(bld.env.RootDirName) + "\\" + bld.env.OutDir
 		if os.path.isdir(outdir):
 			shutil.rmtree(os.path.abspath(outdir))
+
+		if os.path.isfile("cache.json"):
+			os.remove(os.path.abspath("cache.json"))
 
 class REBLD(BuildCommand):
 	def __init__(this):
 		this.init("rbld", " recompiles binaries depending on the env ")
 	
 	def Exec(this, bld, args, original):
-		cache = cparser.load_from_json(os.path.dirname(__file__) + "\\cache.json")
+		cache = cpparser.load_from_json(os.path.dirname(__file__) + "\\cache.json")
 		cache['LastRun'] = 0
-		cparser.save_to_json(cache, "cache", os.path.dirname(__file__))
+		cpparser.save_to_json(cache, "cache", os.path.dirname(__file__))
+		bld.rebuild_type = "tree"
 		bld.Build(args)
 
 class ENV(BuildCommand):
@@ -79,19 +82,19 @@ class ENV(BuildCommand):
 
 class SAVE(BuildCommand):
 	def __init__(this):
-		this.init("save", " saves the current env ")
+		this.init("envsave", " saves the current env ")
 	
 	def Exec(this, bld, args, original):
-		cparser.save_to_json(bld.env.__dict__,  args[1], os.path.dirname(__file__) + "\\" + args[0])
+		cpparser.save_to_json(bld.env.__dict__,  args[1], os.path.dirname(__file__) + "\\" + args[0])
 
 class LOAD(BuildCommand):
 	def __init__(this):
-		this.init("load", " loads spicified env and sets it as current ")
+		this.init("envload", " loads spicified env and sets it as current ")
 	
 	def Exec(this, bld, args, original):
-		from main import Env 
+		from build import Env 
 		newenv = Env()
-		newenv.__dict__ = cparser.load_from_json(os.path.dirname(__file__) + "\\" + args[0] + "\\" + args[1] + ".json")
+		newenv.__dict__ = cpparser.load_from_json(os.path.dirname(__file__) + "\\" + args[0] + "\\" + args[1] + ".json")
 		bld.env = newenv
 		bld.envs.append(newenv)
 
@@ -120,7 +123,7 @@ class DBG(BuildCommand):
 		else:
 			exe = args[0]
 			files = []
-			cparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
+			cpparser.FindFiles(files, os.path.abspath(bld.path['OUTPUT']), 'exe', True, args[0])
 			if not len(files):
 				print(" exe not found in bld root path ")
 			else:
