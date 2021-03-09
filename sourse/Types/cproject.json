@@ -1,4 +1,8 @@
 
 {
-  "Type": "StaticLibrary"
+  "Type": "StaticLibrary",
+  
+  "Libraries" : ["d2d1", 
+  				 "ole32", 
+  				 "gdi32"]
 }
