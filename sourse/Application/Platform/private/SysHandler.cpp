@@ -3,7 +3,10 @@
 
 #include "UI/UInputs.h"
 #include "UI/UInterface.h"
-#include "Platform/private/windows/Win32Window.h"
+
+#ifdef WIN32
+#include <libloaderapi.h>
+#endif
 
 char* getExecutablePath() {
 
@@ -12,7 +15,9 @@ char* getExecutablePath() {
     path[i] = 0;
   }
 
+  #ifdef WIN32
   GetModuleFileNameA(nullptr, path, 50);
+  #endif
 
   int endidx = 1;
   for (; endidx < 50; endidx++) {
@@ -47,7 +52,7 @@ void UpdInputSate(Input& key, bool down, bool& IsEvent) {
 }
 
 #ifdef WIN32
-
+#include "Platform/private/windows/Win32Window.h"
 #include <windows.h>
 
 struct SyshWin32 {
@@ -147,7 +152,7 @@ void SysHandler::Output(UIItem* UIroot) {
 
   FOREACH(&dt->win32windows, Win32Window, winnode) {
     if (!winnode->editflag) {
-      dt->win32windows.Detach(winnode.Node());
+      dt->win32windows.Detach(winnode.node());
     }
   }
 

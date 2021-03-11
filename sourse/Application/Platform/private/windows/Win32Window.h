@@ -1,7 +1,9 @@
 #pragma once
 
+#ifdef WIN32
+
 #include "BitMap/BitMap.h"
-#include <Windows.h>
+#include <windows.h>
 #include "Strings/Strings.h"
 
 struct Win32Window {
@@ -29,5 +31,8 @@ struct Win32Window {
   void* m_pDirect2dFactory;
   void* msg;
   Rect<float> prevrec;
-  static __int64 __stdcall win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam);
+
+  static LRESULT CALLBACK win_proc(HWND   hwnd, UINT   message, WPARAM wParam, LPARAM lParam);
 };
+
+#endif

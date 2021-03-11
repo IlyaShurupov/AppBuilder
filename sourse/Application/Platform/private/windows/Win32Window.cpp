@@ -1,4 +1,6 @@
 
+#ifdef WIN32
+
 #include <conio.h>
 
 #include <dwrite.h>
@@ -13,7 +15,7 @@
 #include "d2d1_1.h"
 #include "wingdi.h"
 #include <d2d1.h>
-#include <windows.h>
+
 #include "BitMap/BitMap.h"
 #include "UI/UInputsMap.h"
 #include "UI/UInputs.h"
@@ -248,7 +250,7 @@ Win32Window::~Win32Window() {
   SafeRelease(&f);
 }
 
-__int64 __stdcall Win32Window::win_proc(HWND hwnd, unsigned int message, unsigned __int64 wParam, __int64 lParam) {
+LRESULT CALLBACK Win32Window::win_proc(HWND   hwnd, UINT   message, WPARAM wParam, LPARAM lParam) {
 
   LRESULT result = 0;
 
@@ -343,3 +345,5 @@ Rectangle(hdc, 300, 150, 500, 300);
 SelectObject(hdc, original);
 }
 */
+
+#endif

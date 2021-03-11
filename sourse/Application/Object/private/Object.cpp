@@ -7,6 +7,7 @@ Object::Object() {
   RenderSettingsComponent = nullptr;
 }
 
+
 Object::~Object() {
   if (StaticMeshComponent) {
     DEL(Mesh, StaticMeshComponent);

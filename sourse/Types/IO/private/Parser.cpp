@@ -10,7 +10,7 @@ DataBlock* DataBlock::find(const char* BlockName) {
 
   FOREACH(&list, DataBlock, block) {
     if (block->BlockName == name) {
-      return block.Node()->data;
+      return block.node()->data;
     }
   }
   return nullptr;

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Macros.h"
 #include "Geometry/Rect.h"
 #include "Memory/Allocators.h"
 #include "Color.h"
@@ -28,19 +29,19 @@ struct BitMap {
   template <typename SizeType>
   BitMap(SizeType width, SizeType height) {
     size.assign(width, height);
-    pxlbuff = ALLOC_AR(BMType, (int)height * (__int64)width);
+    pxlbuff = ALLOC_AR(BMType, (int)height * (int8)width);
   }
   ~BitMap() {
     DEALLOC(pxlbuff);
   }
 
-  inline BMType* Get(int x, int y) { return pxlbuff + (__int64)size.x * y + x; }
-  inline void Set(int x, int y, BMType* value) { *(pxlbuff + (__int64)size.x* y + x) = *value; }
+  inline BMType* Get(int x, int y) { return pxlbuff + (int8)size.x * y + x; }
+  inline void Set(int x, int y, BMType* value) { *(pxlbuff + (int8)size.x* y + x) = *value; }
 
   void resize(int width, int height) {
     if (size.x != width || size.y != height) {
       DEALLOC(pxlbuff);
-      pxlbuff = ALLOC_AR(BMType, height * (__int64)width);
+      pxlbuff = ALLOC_AR(BMType, height * (int8)width);
       size.assign(width, height);
     }
   }

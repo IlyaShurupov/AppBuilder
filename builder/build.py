@@ -1,37 +1,23 @@
-import os as os
-from os.path import relpath
-import shutil
-import sys
+
 import  compiler
 import commands
-from cparser import *
-
-class CProject():
-	def __init__(this):
-		this.projdeps = []
-		this.rebuild = True
-		this.flag = 0
-		this.flag2 = 0
-		this.name = ''
-		this.dir = ''
-		this.type = ''
-		this.files = []
-		this.incldirs = []
-		this.libs = []
-		this.libdirs = []
-		this.externs = []
+from cpparser import *
+from common import * 
+from common import __FPFILE__
+from common import SPL
+from cproject import *
 
 class Env():
 	def __init__(this):
 		this.name = 'default'
-		this.RootDirName = os.path.dirname(__file__).rsplit('\\', 1)[1]
+		this.RootDirName = os.path.dirname(__FPFILE__).rsplit(SPL, 1)[1]
 		this.type = 'binaries'
 		this.platform = 'windows'
-		this.sysarch = 'x64'
-		this.rebuild = False
-		this.OutDir = 'build\\binaries'
+		this.sysarch = '64'
+		this.OutDir = 'build'+SPL+'binaries'
 		this.debug = False
 		this.rebuild_type = "tree"
+		this.threading = False
 
 	def Log(this):
 		names = list(this.__dict__.keys())
@@ -99,15 +85,11 @@ class Builder():
 
 	def Build(this, args):
 		this.Logout(" -- Build started")
-
-		if this.env.rebuild and os.path.isfile(os.path.abspath("cache.json")):
-			print("remove")
-			os.remove(os.path.abspath("cache.json"))
-
+		
 
 		this.path['ROOT'] = RootDir(this.env.RootDirName)
-		this.path['OUTPUT'] = this.path['ROOT'] + "\\" + this.env.OutDir
-		this.path['EXTERNS'] = this.path['ROOT'] + "\\extern\\lib" 
+		this.path['OUTPUT'] = this.path['ROOT'] + SPL + this.env.OutDir
+		this.path['EXTERNS'] = this.path['ROOT'] + SPL + "extern" +SPL+ "lib" 
 
 		this.projs.clear()
 		ReadSolution(this.path['ROOT'], this.projs, this.path)
@@ -117,6 +99,7 @@ class Builder():
 			raise commands.ExeptionTerminated
 
 		this.FindModified()
+		this.CheckRebuild()
 		this.CompileObjects()
 		this.PackObjects()
 		this.LinkObjects()
@@ -151,14 +134,22 @@ class Builder():
 		raise commands.ExeptionTerminated
 
 	def CheckRebuild(this):
-		print("\n -- Determinding Objects to be Rebuilded:")
+		print(" -- Determinding Objects to be Rebuilded ")
 		
+		def rebld(proj):
+			for dep in proj.projdeps:
+				
+				if rebld(dep):
+					proj.rebuild = True
+					return True
+
+			return proj.rebuild
+
+
 		if this.env.rebuild_type == "tree":
-			pass
-		elif this.env.rebuild_type == "fl":
-			pass
-		elif this.env.rebuild_type == "prj":
-			pass
+			for root in get_root_objs(this.projs):
+				root.rebuild = rebld(root)
+
 
 	def CompileObjects(this):
 		output = this.path['OUTPUT']
@@ -182,14 +173,37 @@ class Builder():
 
 			print("\n ", proj.name)
 
+
+			threads = []
+			import threading
+
 			for i in range(len(reb_files)):
 				file = reb_files[i]
-				outfile = output + "\\" + proj.name + "\\obj" + '\\' + file.rsplit('\\', 1)[1]		
-				print("      " +  file.rsplit('\\', 1)[1] + '.o')
-				compiler.GenObj(file, proj.incldirs, output + "\\" + proj.name + "\\obj", this.env.debug)
+				outfile = output + SPL + proj.name + SPL + "obj" + SPL + file.rsplit(SPL, 1)[1]		
+				
+				if this.env.threading:
+					thread = threading.Thread(target=compiler.GenObj, 
+											args=(file, proj.incldirs, 
+											output + SPL + proj.name + SPL + "obj", 
+											this.env.debug, 
+											this.env.sysarch,
+											proj.defenitions))
+					threads.append(thread)
+					thread.start()
+				else:
+					compiler.GenObj(file,
+									proj.incldirs, 
+									output + SPL + proj.name + SPL + "obj", 
+									this.env.debug, 
+									this.env.sysarch, 
+									this.env.platform, 
+									proj.defenitions)
+
+			for thread in threads:
+				thread.join()
 
 			for i in range(len(proj.files)):
-				proj.files[i] = output + "\\" + proj.name + "\\obj" + '\\' + proj.files[i].rsplit('\\', 1)[1]
+				proj.files[i] = output + SPL + proj.name + SPL + "obj" + SPL + proj.files[i].rsplit(SPL, 1)[1]
 
 	def PackObjects(this):
 		output = this.path['OUTPUT']
@@ -198,7 +212,7 @@ class Builder():
 		for proj in this.projs:
 			if not proj.rebuild: continue
 			print("     ", proj.name)
-			compiler.PackObjs(proj.files, output + "\\" + proj.name, proj.name)
+			compiler.PackObjs(proj.files, output + SPL + proj.name, proj.name)
 
 	def LinkObjects(this):
 		output = this.path['OUTPUT']
@@ -216,7 +230,7 @@ class Builder():
 				externals += linkproj.externs
 
 			linknames += externals + proj.externs
-			compiler.LinkObjs(proj.name, output, linknames, proj.libdirs, this.env.debug)
+			compiler.LinkObjs(proj.name, output, linknames, proj.libdirs, this.env.debug, this.env.sysarch)
 
 	def Logout(this, text = '', type = 'comment'):
 		
