@@ -16,6 +16,8 @@ class CProject():
 		this.libs = []
 		this.libdirs = []
 
+		this.defenitions = []
+
 		this.flag = 0
 		this.flag2 = 0
 

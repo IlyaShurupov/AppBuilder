@@ -32,7 +32,7 @@ void Ray::Cast(List<Mesh>* objects, float ray_length) {
 		List<Trig>* trigs = &mesh->Trigs;
 		FOREACH(trigs, Trig, trig) {
 
-			WorldTransform(trig.Node()->data, &mesh->Pos, &mesh->TransformMat);
+			WorldTransform(trig.node()->data, &mesh->Pos, &mesh->TransformMat);
 
 			Vec3f HitPos;
 			if (!trig->RayHit(*this, HitPos)) {
@@ -43,8 +43,8 @@ void Ray::Cast(List<Mesh>* objects, float ray_length) {
 			if (dist < ray_length) {
 				
 				HitData.Hit = true;
-        		HitData.Obj = mesh.Node()->data;
-				HitData.trig = trig.Node()->data;
+        		HitData.Obj = mesh.node()->data;
+				HitData.trig = trig.node()->data;
 				HitData.HitPos = HitPos;
 
 				ray_length = dist;

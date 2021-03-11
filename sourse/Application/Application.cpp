@@ -35,7 +35,7 @@ void Application::Launch() {
     C->ui.Input(*C);
 
     // Run Operators from queue
-    for (Iterator<OpThread> thread(&C->threads, 0); thread.Node();) {
+    for (Iterator<OpThread> thread(&C->threads, 0); thread.node();) {
 
       OpEvState* op_event = &thread->op_event;
       Operator* op = thread->op;
@@ -78,7 +78,7 @@ void Application::Launch() {
       }
 
       if (thread.Data()->state == ThreadState::DENIED || thread.Data()->state == ThreadState::CLOSED) {
-        C->threads.Detach(thread.Node());
+        C->threads.Detach(thread.node());
       }
 
       // Go to the next thread

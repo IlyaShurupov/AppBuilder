@@ -118,7 +118,7 @@ class List {
 
     SortP.Sort(buffer, length, compare);
 
-    FOREACH(this, Type, iter) { iter.Node()->data = *(buffer + iter.Idx()); }
+    FOREACH(this, Type, iter) { iter.node()->data = *(buffer + iter.Idx()); }
 
     DEALLOC(buffer);
   }
@@ -127,13 +127,13 @@ class List {
     Iterator<Type> i(this, 0);
     Iterator<Type> j(this, Len() - 1);
     while (i < Len() / 2) {
-      SWAP(i.Node()->data, j.Node()->data, Type*);
+      SWAP(i.node()->data, j.node()->data, Type*);
       ++i;
       --j;
     }
   }
 
-  inline Type& operator[](Iterator<Type>& iter) { return *iter.Node()->data; }
+  inline Type& operator[](Iterator<Type>& iter) { return *iter.node()->data; }
   inline Type& operator[](int idx) { return *Find(idx)->data; }
 
   void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
@@ -191,7 +191,7 @@ class Iterator {
   int Idx() { return idx; }
   Type* operator->() { return iter->data; }
   Type* Data() { return iter->data; }
-  Node<Type>* Node() { return iter; }
+  Node<Type>* node() { return iter; }
 
   Iterator(List<Type>* list, int p_idx) {
     idx = p_idx;

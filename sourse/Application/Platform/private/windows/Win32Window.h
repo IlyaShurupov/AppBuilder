@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef WIN32
+
 #include "BitMap/BitMap.h"
 #include <windows.h>
 #include "Strings/Strings.h"
@@ -32,3 +34,5 @@ struct Win32Window {
 
   static LRESULT CALLBACK win_proc(HWND   hwnd, UINT   message, WPARAM wParam, LPARAM lParam);
 };
+
+#endif

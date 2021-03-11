@@ -1,4 +1,6 @@
 
+#ifdef WIN32
+
 #include <conio.h>
 
 #include <dwrite.h>
@@ -343,3 +345,5 @@ Rectangle(hdc, 300, 150, 500, 300);
 SelectObject(hdc, original);
 }
 */
+
+#endif

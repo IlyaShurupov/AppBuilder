@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <cstdio>
 #include <iostream>
-
+#include <cstring>
 #include "Containers/List.h"
 
 #ifdef MEM_DEBUG_WRAP
