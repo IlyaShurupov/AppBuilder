@@ -4,6 +4,9 @@
 #include "UI/UInputs.h"
 #include "UI/UInterface.h"
 
+#ifdef WIN32
+#include <libloaderapi.h>
+#endif
 
 char* getExecutablePath() {
 
@@ -149,7 +152,7 @@ void SysHandler::Output(UIItem* UIroot) {
 
   FOREACH(&dt->win32windows, Win32Window, winnode) {
     if (!winnode->editflag) {
-      dt->win32windows.Detach(winnode.Node());
+      dt->win32windows.Detach(winnode.node());
     }
   }
 

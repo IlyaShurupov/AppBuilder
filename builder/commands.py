@@ -2,6 +2,7 @@ import os as os
 import cpparser
 from common import *
 from common import __FPFILE__
+from common import SPL
 
 class ExeptionTerminated(Exception):
 	pass
@@ -41,7 +42,7 @@ class CLEAR(BuildCommand):
 		this.init("clr", " removes output dir recursevly")
 	
 	def Exec(this, bld, args, original):
-		outdir = RootDir(bld.env.RootDirName) + "/" + bld.env.OutDir
+		outdir = RootDir(bld.env.RootDirName) + SPL + bld.env.OutDir
 		if os.path.isdir(outdir):
 			shutil.rmtree(os.path.abspath(outdir))
 
@@ -53,11 +54,13 @@ class REBLD(BuildCommand):
 		this.init("rbld", " recompiles binaries depending on the env ")
 	
 	def Exec(this, bld, args, original):
-		cache = cpparser.load_from_json(os.path.dirname(__FPFILE__) + "/cache.json")
+		cache = cpparser.load_from_json(os.path.dirname(__FPFILE__) + SPL + "cache.json")
 		cache['LastRun'] = 0
 		cpparser.save_to_json(cache, "cache", os.path.dirname(__FPFILE__))
-		bld.rebuild_type = "tree"
+		prevbldt = bld.env.rebuild_type
+		bld.env.rebuild_type = "tree"
 		bld.Build(args)
+		bld.env.rebuild_type = prevbldt
 
 class ENV(BuildCommand):
 	def __init__(this):
@@ -86,7 +89,7 @@ class SAVE(BuildCommand):
 		this.init("envsave", " saves the current env ")
 	
 	def Exec(this, bld, args, original):
-		cpparser.save_to_json(bld.env.__dict__,  args[1], os.path.dirname(__FPFILE__) + "/" + args[0])
+		cpparser.save_to_json(bld.env.__dict__,  args[1], os.path.dirname(__FPFILE__) + SPL + args[0])
 
 class LOAD(BuildCommand):
 	def __init__(this):
@@ -95,7 +98,7 @@ class LOAD(BuildCommand):
 	def Exec(this, bld, args, original):
 		from build import Env 
 		newenv = Env()
-		newenv.__dict__ = cpparser.load_from_json(os.path.dirname(__FPFILE__) + "/" + args[0] + "/" + args[1] + ".json")
+		newenv.__dict__ = cpparser.load_from_json(os.path.dirname(__FPFILE__) + SPL + args[0] + SPL + args[1] + ".json")
 		bld.env = newenv
 		bld.envs.append(newenv)
 
@@ -129,7 +132,7 @@ class DBG(BuildCommand):
 				print(" exe not found in bld root path ")
 			else:
 				if len(files) > 1:
-					bld.Logout(" Ambigues Executable Name - Enter full path", "warning")
+					bld.Logout(" Ambiguous Executable Name - Enter full path", "warning")
 				else:
 					os.system("gdb " + files[0])
 

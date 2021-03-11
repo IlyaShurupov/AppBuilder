@@ -1,5 +1,6 @@
 
 from common import *
+from common import SPL
 
 class CProject():
 	def __init__(this):

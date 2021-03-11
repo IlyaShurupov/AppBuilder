@@ -4,16 +4,17 @@ import commands
 from cpparser import *
 from common import * 
 from common import __FPFILE__
+from common import SPL
 from cproject import *
 
 class Env():
 	def __init__(this):
 		this.name = 'default'
-		this.RootDirName = os.path.dirname(__FPFILE__).rsplit('/', 1)[1]
+		this.RootDirName = os.path.dirname(__FPFILE__).rsplit(SPL, 1)[1]
 		this.type = 'binaries'
 		this.platform = 'windows'
 		this.sysarch = '64'
-		this.OutDir = 'build/binaries'
+		this.OutDir = 'build'+SPL+'binaries'
 		this.debug = False
 		this.rebuild_type = "tree"
 		this.threading = False
@@ -87,8 +88,8 @@ class Builder():
 		
 
 		this.path['ROOT'] = RootDir(this.env.RootDirName)
-		this.path['OUTPUT'] = this.path['ROOT'] + "/" + this.env.OutDir
-		this.path['EXTERNS'] = this.path['ROOT'] + "\\extern\\lib" 
+		this.path['OUTPUT'] = this.path['ROOT'] + SPL + this.env.OutDir
+		this.path['EXTERNS'] = this.path['ROOT'] + SPL + "extern" +SPL+ "lib" 
 
 		this.projs.clear()
 		ReadSolution(this.path['ROOT'], this.projs, this.path)
@@ -178,12 +179,12 @@ class Builder():
 
 			for i in range(len(reb_files)):
 				file = reb_files[i]
-				outfile = output + "/" + proj.name + "/obj" + '/' + file.rsplit('/', 1)[1]		
+				outfile = output + SPL + proj.name + SPL + "obj" + SPL + file.rsplit(SPL, 1)[1]		
 				
 				if this.env.threading:
 					thread = threading.Thread(target=compiler.GenObj, 
 											args=(file, proj.incldirs, 
-											output + "/" + proj.name + "/obj", 
+											output + SPL + proj.name + SPL + "obj", 
 											this.env.debug, 
 											this.env.sysarch,
 											proj.defenitions))
@@ -192,7 +193,7 @@ class Builder():
 				else:
 					compiler.GenObj(file,
 									proj.incldirs, 
-									output + "/" + proj.name + "/obj", 
+									output + SPL + proj.name + SPL + "obj", 
 									this.env.debug, 
 									this.env.sysarch, 
 									this.env.platform, 
@@ -202,7 +203,7 @@ class Builder():
 				thread.join()
 
 			for i in range(len(proj.files)):
-				proj.files[i] = output + "/" + proj.name + "/obj" + '/' + proj.files[i].rsplit('/', 1)[1]
+				proj.files[i] = output + SPL + proj.name + SPL + "obj" + SPL + proj.files[i].rsplit(SPL, 1)[1]
 
 	def PackObjects(this):
 		output = this.path['OUTPUT']
@@ -211,7 +212,7 @@ class Builder():
 		for proj in this.projs:
 			if not proj.rebuild: continue
 			print("     ", proj.name)
-			compiler.PackObjs(proj.files, output + "/" + proj.name, proj.name)
+			compiler.PackObjs(proj.files, output + SPL + proj.name, proj.name)
 
 	def LinkObjects(this):
 		output = this.path['OUTPUT']

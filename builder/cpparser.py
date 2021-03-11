@@ -1,3 +1,4 @@
+from common import SPL
 
 class ExeptionFailedParseCP(Exception):
 	pass
@@ -28,7 +29,7 @@ def ResolvePaths(PATH, Cprojects):
 					dir = PATH['OUTPUT'] 
 				
 			if bool_add:
-				dir = dir + '/' + pth
+				dir = dir + SPL + pth
 			dirs[dir_idx] = dir
 
 	for proj in Cprojects:
@@ -38,11 +39,11 @@ def ResolvePaths(PATH, Cprojects):
 def ReadCProjectJson(file, Path):
 
 	cproj = CProject();
-	cproj.name = (file.rsplit('/', 1)[0]).rsplit('/', 1)[1]
-	cproj.dir = Path['ROOT'] + '/' + os.path.relpath(file.rsplit('/', 1)[0] + '/', os.path.abspath(Path['ROOT']))
+	cproj.name = (file.rsplit(SPL, 1)[0]).rsplit(SPL, 1)[1]
+	cproj.dir = Path['ROOT'] + SPL + os.path.relpath(file.rsplit(SPL, 1)[0] + SPL, os.path.abspath(Path['ROOT']))
 
 	cppfiles = []
-	FindFiles(cppfiles, file.rsplit('/', 1)[0], 'cpp')
+	FindFiles(cppfiles, file.rsplit(SPL, 1)[0], 'cpp')
 
 	for cppfile in cppfiles:
 		cproj.files.append(cppfile.rsplit('.', 1)[0])
@@ -62,14 +63,14 @@ def ReadCProjectJson(file, Path):
 		if "Defenitions" in data:
 			cproj.defenitions = data["Defenitions"]
 
-		cproj.incldirs.append(Path['ROOT'] + "/sourse/" + cproj.name)
-		cproj.libdirs.append(Path['OUTPUT'] + "/" + cproj.name)
+		cproj.incldirs.append(Path['ROOT'] + SPL + "sourse" +SPL + cproj.name)
+		cproj.libdirs.append(Path['OUTPUT'] + SPL + cproj.name)
 
 		if "InternLibs" in data:
 			for intlib in data["InternLibs"]:
 				cproj.libs.append(intlib + ".lib")
-				cproj.libdirs.append(Path['OUTPUT'] + "/" + intlib)		
-				cproj.incldirs.append(Path['ROOT'] + "/sourse/" + intlib)
+				cproj.libdirs.append(Path['OUTPUT'] + SPL + intlib)		
+				cproj.incldirs.append(Path['ROOT'] + SPL + "sourse" + SPL + intlib)
 				cproj.projdeps.append(intlib)
 
 		libs = []
@@ -96,7 +97,7 @@ def ReadSolution(dir, Cprojects, Path):
 def save_to_json(data, name, absout):
 	if not os.path.isdir(absout):
 		os.makedirs(absout)
-	with open(absout + "/" + name + ".json", 'w+') as outfile:
+	with open(absout + SPL + name + ".json", 'w+') as outfile:
 	    json.dump(data, outfile)
 
 def load_from_json(absfile):
@@ -109,7 +110,7 @@ def load_from_json(absfile):
 
 
 def getLastCycleTime():
-	timefilepath = os.path.dirname(__FPFILE__) + "/time"
+	timefilepath = os.path.dirname(__FPFILE__) + SPL + "time"
 	time = 0
 	with open(timefilepath, 'w+') as time:
 		time = os.path.getmtime(timefilepath)
@@ -122,16 +123,16 @@ def SaveCache(Builder):
 	projs = []
 	cache["Projects"] = projs
 
-	with open(os.path.dirname(__FPFILE__) + '/cache.json', 'w+') as outfile:
+	with open(os.path.dirname(__FPFILE__) + SPL + 'cache.json', 'w+') as outfile:
 	    json.dump(cache, outfile)
 
 def getCache():
 	data = {}
 
-	cahefile = os.path.dirname(__FPFILE__) + '/cache.json'
+	cahefile = os.path.dirname(__FPFILE__) +SPL + 'cache.json'
 
 	if not os.path.isfile(cahefile):
-		with open(os.path.dirname(__FPFILE__) + '/cache.json', 'w+') as json_file:
+		with open(os.path.dirname(__FPFILE__) + SPL + 'cache.json', 'w+') as json_file:
 			data["LastRun"] = 0
 			data["Projects"] = []
 			json.dump(data, json_file)
