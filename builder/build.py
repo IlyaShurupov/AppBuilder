@@ -156,7 +156,6 @@ class Builder():
 		print(" -- Compiling Objects")
 
 		for proj in this.projs:
-
 			reb_files = []
 			if this.env.rebuild_type == "fl":
 				for ch_fl in this.changed_files:
@@ -166,13 +165,11 @@ class Builder():
 							reb_files.append(cppfile)
 			else:
 				reb_files = reb_files + proj.files
-			
 
 			if not len(reb_files) or not proj.rebuild:
 				continue
 
 			print("\n ", proj.name)
-
 
 			threads = []
 			import threading
@@ -212,7 +209,7 @@ class Builder():
 		for proj in this.projs:
 			if not proj.rebuild: continue
 			print("     ", proj.name)
-			compiler.PackObjs(proj.files, output + SPL + proj.name, proj.name)
+			compiler.PackObjs(proj.files, output + SPL + proj.name, proj.name, this.env.platform)
 
 	def LinkObjects(this):
 		output = this.path['OUTPUT']
@@ -230,7 +227,7 @@ class Builder():
 				externals += linkproj.externs
 
 			linknames += externals + proj.externs
-			compiler.LinkObjs(proj.name, output, linknames, proj.libdirs, this.env.debug, this.env.sysarch)
+			compiler.LinkObjs(proj.name, output, linknames, proj.libdirs, this.env.debug, this.env.sysarch, this.env.platform)
 
 	def Logout(this, text = '', type = 'comment'):
 		

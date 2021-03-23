@@ -25,7 +25,7 @@ int main() {
   DrawApp.AddOperator((Operator*)NEW(OpUIIMove)());
   DrawApp.AddOperator((Operator*)NEW(OpUIIResize)());
   
-  Str path(getExecutablePath());
+  Str path;
   path.trim(Range(0, path.rfind('\\', Range(0, path.length))));
   path += Str("Configuration\\");
   DrawApp.LoadConfiguration(&path, resolveUiRef);
