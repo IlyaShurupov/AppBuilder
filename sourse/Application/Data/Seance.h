@@ -7,7 +7,7 @@
 class Object;
 class UIItem;
 struct OpThread;
-struct SysHandler;
+class DeviceManager;
 struct KeyMap;
 struct UInputs;
 
@@ -21,8 +21,7 @@ struct UserInterface {
   KeyMap* kmap;
 
   // Interlayer
-  SysHandler* sysh;
-
+  DeviceManager* sysh;
 
   void Input(struct Seance& C);
   void Output();

@@ -91,7 +91,7 @@ struct BitMap {
 
   // draw methods
   void DrawRect(Rect<int>& rect, BMType& value) {
-    
+    /*
     Rect<int> myrect(vec2<int>(), size);
     Rect<int> projectrect;
     myrect.intersection(rect, projectrect);
@@ -120,6 +120,7 @@ struct BitMap {
     t2.join();
     t3.join(); 
     t4.join(); 
+    */
   }
 
   void DrawBounds(Rect<int>& rect, BMType& value, short thickness) {

@@ -58,5 +58,3 @@ struct Str {
 
   void trim(Range range);
 };
-
-char* getExecutablePath();

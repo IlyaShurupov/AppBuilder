@@ -14,7 +14,10 @@ UIItem* resolveUiRef(Str* name, Operators* ops, DataBlock* paramsdb, DataBlock* 
   return newuii;
 }
 
+void sdltest();
+
 int main() {
+
 
   Application DrawApp(60);
 
@@ -25,10 +28,9 @@ int main() {
   DrawApp.AddOperator((Operator*)NEW(OpUIIMove)());
   DrawApp.AddOperator((Operator*)NEW(OpUIIResize)());
   
-  Str path(getExecutablePath());
-  path.trim(Range(0, path.rfind('\\', Range(0, path.length))));
-  path += Str("Configuration\\");
+  Str path("/home/ilusha/dev/AppBuilder/modules/DefaultPack/Configuration/");
   DrawApp.LoadConfiguration(&path, resolveUiRef);
 
   DrawApp.Launch();
+  return 0;
 }

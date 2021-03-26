@@ -8,7 +8,6 @@
 #include "Time/Timer.h"
 #include "Strings/Strings.h"
 #include "UI/UInputs.h"
-#include "Platform/SysHandler.h"
 #include "UI/UInterface.h"
 
 void Application::LoadConfiguration(Str* projpath, UIItem* (*UIIFromStr)(Str* id, Operators* ops, DataBlock* paramsdb, DataBlock* uiidb)) {

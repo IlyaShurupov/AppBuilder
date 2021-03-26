@@ -3,7 +3,7 @@
 
 #include "Operator/Operator.h"
 
-#include "Platform/SysHandler.h"
+#include "Device.h"
 
 #include "UI/UInputs.h"
 #include "UI/UInputsMap.h"
@@ -13,7 +13,7 @@
 #include "Object/Object.h"
 
 Seance::Seance() {
-  ui.sysh = NEW(SysHandler)();
+  ui.sysh = NEW(DeviceManager)();
   ui.kmap = NEW(KeyMap)();
   ui.UIroot = nullptr;
 }
@@ -26,12 +26,12 @@ void Seance::OnRead(Str* path, UIItem* (*UIIFromStr)(Str* id, Operators* ops, Da
 
   Str ui_path;
   ui_path = *path;
-  ui_path += Str("UInterface\\Default.yaml");
+  ui_path += Str("UInterface/Default.yaml");
   ui.UIroot = UICompile(&ops, Read_Yaml(&ui_path), UIIFromStr);
 
   Str km_path;
   km_path = *path;
-  km_path += Str("UInputsMap\\Default.yaml");
+  km_path += Str("UInputsMap/Default.yaml");
 
   ui.kmap->Compile(Read_Yaml(&km_path), &ops, ui.UIroot);
 
@@ -39,17 +39,13 @@ void Seance::OnRead(Str* path, UIItem* (*UIIFromStr)(Str* id, Operators* ops, Da
   Str icon_path;
   icon_path = *path;
   icon_path += Str("icon.ico");
-  ui.sysh->SetIcon(icon_path);
+  // ui.sysh->SetIcon(icon_path);
 
 }
 
 void UserInterface::Input(Seance& C) {
 
-  if (!sysh->Active()) {
-    return;
-  }
-
-  sysh->Inputs(*kmap->uinputs);
+  sysh->Inputs(kmap->uinputs);
 
   if (kmap->uinputs->IsEvent) {
     kmap->evaluate(&C.threads);
@@ -61,7 +57,7 @@ void UserInterface::Input(Seance& C) {
 
 UserInterface::~UserInterface() {
   DEL(UIItem, UIroot);
-  DEL(SysHandler, sysh);
+  DEL(DeviceManager, sysh);
   DEL(KeyMap, kmap);
 }
 

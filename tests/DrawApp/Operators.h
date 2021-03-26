@@ -8,7 +8,7 @@
 #include "UI/UInputsMap.h"
 #include "UI/UInterface.h"
 
-#include "Platform/SysHandler.h"
+#include "Device.h"
 
 #include "Types.h"
 
@@ -197,7 +197,7 @@ class OpLogHeap : Operator {
 class OpConsoleToggle : Operator {
 
   void Execute(struct Seance* C) {
-    C->ui.sysh->ConsoleToggle();
+    // C->ui.sysh->ConsoleToggle();
     state = OpState::FINISHED;
   }
 

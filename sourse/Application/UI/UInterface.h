@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BitMap/BitMap.h"
+#include "DevBuffer.h"
 #include "Object/Hierarchy.h"
 
 struct Operators;
@@ -20,7 +21,7 @@ class UIItem {
 
   // Draw info
   Rect<float> rect;
-  BitMap<RGBA_32>* buff = nullptr;
+  DevBuffer* buff = nullptr;
 
   bool ownbuff = true;
   bool recursive_trunsform = false;
