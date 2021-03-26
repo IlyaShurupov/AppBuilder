@@ -16,7 +16,7 @@ UIItem* resolveUiRef(Str* name, Operators* ops, DataBlock* paramsdb, DataBlock* 
 
 void sdltest();
 
-int main__() {
+int main() {
 
 
   Application DrawApp(60);
@@ -28,33 +28,9 @@ int main__() {
   DrawApp.AddOperator((Operator*)NEW(OpUIIMove)());
   DrawApp.AddOperator((Operator*)NEW(OpUIIResize)());
   
-  Str path("/home/ilusha/dev/AppBuilder/build/bin/Linux64/DrawApp/Configuration/");
+  Str path("/home/ilusha/dev/AppBuilder/modules/DefaultPack/Configuration/");
   DrawApp.LoadConfiguration(&path, resolveUiRef);
 
   DrawApp.Launch();
   return 0;
-}
-
-#include "../../sourse/Device/Device.h"
-#include "../../sourse/Device/Texture.h"
-
-int main(int argc, char *argv[]) {
-
-	DeviceManager dev;
-	DevBuffer tex(200, 200);
-	DevBuffer tex2(100, 100);
-
-	tex.DrawRect(Rect<int>(0, 0, 200, 200), Color(1, 1, 0, 1));
-	tex2.DrawRect(Rect<int>(0, 0, 100, 100), Color(0, 1, 0, 1));
-
-	tex.Project(&tex2, vec2<int>(0, 0));
-
-
-	tex.draw_tex_ro_rend(vec2<int>(50, 50));
-	
-
-	SDL_Delay(2000);
-	
-
-	return 0;
 }

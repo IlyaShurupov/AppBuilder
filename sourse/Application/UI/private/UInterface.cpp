@@ -24,7 +24,7 @@ UIItem::UIItem(DataBlock* UIdb) {
 
 UIItem::~UIItem() {
   if (buff) {
-    DEL(BitMap<RGBA_32>, buff);
+    DEL(DevBuffer, buff);
   }
 }
 

@@ -5,6 +5,7 @@
 #include "UI/UInputs.h"
 #include "IO/Parser.h"
 #include "Data/Seance.h"
+#include "BitMap/Color.h"
 
 /*
 struct Wrap {
@@ -225,7 +226,7 @@ class UIIButton : UIItem {
     rect.pos.assign(projectrect.pos.x, projectrect.pos.y);
     rect.size.assign(projectrect.size.x, projectrect.size.y);
 
-    draw_to->buff->DrawRect(rect, color1);
+    draw_to->buff->DrawRect(rect, Color(color1));
 
     This->rect.pos = save;
   }
@@ -306,7 +307,7 @@ class UIIGroup : UIItem {
     fill = paramsdb->find("Fill")->boolean;
 
     if (ownbuff = paramsdb->find("OwnBuff")->boolean) {
-      buff = NEW(BitMap<RGBA_32>)(rect.size.x, rect.size.y);
+      buff = NEW(DevBuffer)(rect.size.x, rect.size.y);
     }
 
     DataBlock* thickness = paramsdb->find("Thickness");
@@ -344,11 +345,11 @@ class UIIGroup : UIItem {
     rect.size.assign(projectrect.size.x, projectrect.size.y);
 
     if (fill) {
-      draw_to->buff->DrawRect(rect, fillcol);
+      draw_to->buff->DrawRect(rect, Color(fillcol));
     }
 
     if (frame) {
-      draw_to->buff->DrawBounds(rect, framecol, thick);
+      draw_to->buff->DrawBounds(rect, Color(framecol), thick);
     }
 
     This->rect.pos = save;

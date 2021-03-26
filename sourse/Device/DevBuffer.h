@@ -1,19 +1,16 @@
 # pragma once 
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_timer.h>
 
 #include "Geometry/Rect.h"
 #include "BitMap/Color.h"
 
-
-void init_device_texture(SDL_Renderer* holder_p);
+void init_device_texture(void* holder_p);
 
 class DevBuffer {
 
-    SDL_Texture* devtx = nullptr;
+    void* devtx = nullptr;
     void Create(int width, int height);
+    void Resize_int(int width, int height);
 
     public:
 
@@ -33,13 +30,15 @@ class DevBuffer {
 
 
         template <typename SizeType>
-        void resize(SizeType width, SizeType height);
+        void resize(SizeType width, SizeType height) {
+            Resize_int((int)width, (int)height);
+        }
 
         void Assign(const Color& col) {
             DrawRect(Rect<int>(0, 0, size.x, size.y), col);
         }
 
-        void DrawBounds(Rect<int>& rect, Color& col, short thickness) {
+        void DrawBounds(Rect<int>& rect, const Color& col, short thickness) {
             
         }
     
