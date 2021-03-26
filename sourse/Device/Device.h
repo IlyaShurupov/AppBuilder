@@ -8,6 +8,3 @@ class DeviceManager {
         void Inputs(class UInputs* uinputs);
         void Output(class UIItem* UIroot);
 };
-
-
-char* getExecutablePath();

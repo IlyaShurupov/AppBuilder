@@ -8,8 +8,8 @@
 #include <SDL2/SDL_timer.h>
 
 DeviceManager::DeviceManager() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != -1) {
-        printf("Error Initializing SDL: %s\n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        printf("error initializing SDL: %s\n", SDL_GetError());
     }
 }
 
@@ -23,8 +23,4 @@ void DeviceManager::Inputs(UInputs* uinputs) {
 
 void DeviceManager::Output(UIItem* UIroot) {
 
-}
-
-char* getExecutablePath() {
-    return nullptr;
 }

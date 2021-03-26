@@ -26,12 +26,12 @@ void Seance::OnRead(Str* path, UIItem* (*UIIFromStr)(Str* id, Operators* ops, Da
 
   Str ui_path;
   ui_path = *path;
-  ui_path += Str("UInterface\\Default.yaml");
+  ui_path += Str("UInterface/Default.yaml");
   ui.UIroot = UICompile(&ops, Read_Yaml(&ui_path), UIIFromStr);
 
   Str km_path;
   km_path = *path;
-  km_path += Str("UInputsMap\\Default.yaml");
+  km_path += Str("UInputsMap/Default.yaml");
 
   ui.kmap->Compile(Read_Yaml(&km_path), &ops, ui.UIroot);
 
