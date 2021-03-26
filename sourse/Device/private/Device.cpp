@@ -40,43 +40,59 @@ void UpdInputSate(Input& key, bool down, bool& IsEvent) {
 
 void UpdCursorPos(UInputs& usin) {
 
-    SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
-    auto Width = DM.w;
-    auto Height = DM.h;
+  SDL_DisplayMode DM;
+  SDL_GetCurrentDisplayMode(0, &DM);
+  auto Width = DM.w;
+  auto Height = DM.h;
+  usin.PrevCursor = usin.Cursor;
+  vec2<int> incrs;
+  Uint32 state = SDL_GetMouseState(&incrs.x, &incrs.y);
+  
+  // incrs.y = Height - incrs.y 
+  usin.Cursor.x = (SCR_INT)incrs.x;
+  usin.Cursor.y = (SCR_INT)incrs.y;
+  usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
+  usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
 
-    usin.PrevCursor = usin.Cursor;
-    vec2<int> incrs;
-    Uint32 state = SDL_GetGlobalMouseState(&incrs.x, &incrs.y);
-    
-    // incrs.y = Height - incrs.y;
-
-    usin.Cursor.x = (SCR_INT)incrs.x;
-    usin.Cursor.y = (SCR_INT)incrs.y;
+  UpdInputSate(usin.LMB, state & SDL_BUTTON(SDL_BUTTON_LEFT), usin.IsEvent);
+  UpdInputSate(usin.RMB, state & SDL_BUTTON(SDL_BUTTON_RIGHT), usin.IsEvent);
+  UpdInputSate(usin.MMB, state & SDL_BUTTON(SDL_BUTTON_MIDDLE), usin.IsEvent);
 }
 
 void DeviceManager::Inputs(UInputs* uinputs) {
     
-    SDL_PumpEvents();
+  SDL_PumpEvents();
+  
+  UInputs& usin = *uinputs;
+  usin.IsEvent = false;
+  const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
-    UInputs& usin = *uinputs;
+  UpdCursorPos(usin);
 
-    usin.IsEvent = false;
-    
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+  UpdInputSate(usin.A, keystate[SDL_SCANCODE_A], usin.IsEvent);
+  UpdInputSate(usin.B, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.C, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.D, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.F, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.G, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
 
-    UpdInputSate(usin.LMB, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
-    UpdInputSate(usin.ALT_L, keystate[SDL_SCANCODE_RIGHT], usin.IsEvent);
+  UpdInputSate(usin.K0, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.K1, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.K2, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.K3, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.K4, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
+  UpdInputSate(usin.K5, keystate[SDL_SCANCODE_LEFT], usin.IsEvent);
 
-    UpdCursorPos(usin);
+  UpdInputSate(usin.SPACE, keystate[SDL_SCANCODE_SPACE], usin.IsEvent);
+  UpdInputSate(usin.ENTER, keystate[SDL_SCANCODE_RETURN], usin.IsEvent);
+  UpdInputSate(usin.SHIFT_L, keystate[SDL_SCANCODE_LSHIFT], usin.IsEvent);
+  UpdInputSate(usin.ALT_L, keystate[SDL_SCANCODE_LALT], usin.IsEvent);
+  UpdInputSate(usin.ESCAPE, keystate[SDL_SCANCODE_ESCAPE], usin.IsEvent);
+  UpdInputSate(usin.EREASE, keystate[SDL_SCANCODE_BACKSPACE], usin.IsEvent);
 
+  usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y || usin.IsEvent;
 
-    usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
-    usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
-
-    usin.IsEvent = usin.Cdelta.x || usin.Cdelta.y || usin.IsEvent;
-
-    SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
+  SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
 }
 
 void DeviceManager::Output(UIItem* UIroot) {

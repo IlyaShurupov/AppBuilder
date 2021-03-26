@@ -65,3 +65,20 @@ void DevBuffer::Resize_int(int width, int height) {
         devtx = (void *)SDL_CreateTexture(holder, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
     }
 }
+
+void DevBuffer::DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness) {
+    SDL_SetRenderTarget(holder, (SDL_Texture *)devtx);
+    SDL_SetRenderDrawColor(holder, col.r * 255, col.g * 255, col.b * 255, col.a * 255);
+    SDL_RenderDrawLine(holder, head.x, head.y, tail.x, tail.y);
+    SDL_SetRenderTarget(holder, nullptr);
+}
+
+void DevBuffer::DrawBounds(Rect<int>& rect, const Color& col, short thick) {
+    rect.pos += 1;
+    rect.size -= 2;
+
+    DrawLine(vec2<SCR_INT>(rect.pos), vec2<SCR_INT>(rect.pos.x + rect.size.x, rect.pos.y), col, thick);
+    DrawLine(vec2<SCR_INT>(rect.pos), vec2<SCR_INT>(rect.pos.x, rect.pos.y + rect.size.y), col, thick);
+    DrawLine(vec2<SCR_INT>(rect.pos.x + rect.size.x, rect.pos.y), vec2<SCR_INT>(rect.size_vec_w()), col, thick);
+    DrawLine(vec2<SCR_INT>(rect.pos.x, rect.pos.y + rect.size.y), vec2<SCR_INT>(rect.size_vec_w()), col, thick);
+}

@@ -38,8 +38,7 @@ class DevBuffer {
             DrawRect(Rect<int>(0, 0, size.x, size.y), col);
         }
 
-        void DrawBounds(Rect<int>& rect, const Color& col, short thickness) {
-            
-        }
+        void DrawBounds(Rect<int>& rect, const Color& col, short thickness);
+        void DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness);
     
 };
