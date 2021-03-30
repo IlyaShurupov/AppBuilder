@@ -1,5 +1,6 @@
 #pragma once
-#include "Object/Property.h"
+
+#include "Strings/Strings.h"
 
 enum class OpEvState {
   EXECUTE,

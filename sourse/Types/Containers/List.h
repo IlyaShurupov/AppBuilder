@@ -4,6 +4,9 @@
 #include "Sort.h"
 #include "Macros.h"
 
+
+#include <cstdarg>
+
 #define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
 
 template <class Type> class Iterator;
@@ -169,9 +172,23 @@ class List {
     ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
   }
 
+  List<Type>& operator = (const List<Type>& in) {
+    return *this;
+  }
+
+  template <typename compare_val>
+  Node<Type>* Find(bool (*found)(Node<Type>* node, compare_val val), compare_val value) {
+    for (Node<Type>* node = First(); node; node = node->next) {
+      if (found(node, value)) {
+        return node;
+      }
+    }
+    return nullptr;
+  }
+
   List() {}
   List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
-
+  
   ~List() {
     if (recursive_free_on_destruction) {
       Delete();

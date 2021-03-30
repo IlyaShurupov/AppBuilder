@@ -2,14 +2,15 @@
 
 #include <limits.h>
 #include <cfloat>
+#include <cassert>
 
-#if _WIN32 || _WIN64
-#if _WIN64
+// #if _WIN32 || _WIN64
+// #if _WIN64
 #define ENVIRONMENT64
-#else
-#define ENVIRONMENT32
-#endif
-#endif
+// #else
+// #define ENVIRONMENT32
+// #endif
+// #endif
 
 #define NAME(v) #v
 #define ABS(val) if (val < 0) {val = -val;}
@@ -30,7 +31,9 @@ typedef unsigned int			uint4;
 #ifdef ENVIRONMENT64
 typedef long					int8;
 typedef unsigned long			uint8;
+typedef int8                    aligned;
 #else
+typedef int4                    aligned;
 typedef long long				int8;
 typedef unsigned long long		uint8;
 #endif

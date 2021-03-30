@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Containers/List.h"
-#include "Operator/Operator.h"
 #include "Types.h"
+#include "Operator/Operator.h"
 
 class Object;
 class UIItem;
@@ -35,7 +34,7 @@ struct Seance {
   ~Seance();
 
   // Mesh Objects, Cameras, Renders...
-  List<Object> objects;
+  // List<Object> objects;
   
   // Functionality of an application
   Operators ops;

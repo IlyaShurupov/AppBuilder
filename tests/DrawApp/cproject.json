@@ -1,9 +1,0 @@
-
-{
-  "Type": "Executable",
-  
-  "InternLibs" : [ "Application" ] ,
-
-  "Libraries": []
-
-}

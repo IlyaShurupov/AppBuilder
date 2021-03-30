@@ -1,13 +1,13 @@
-#include "../Device.h"
+#include "Device/Device.h"
 
-#include "UI/UInputs.h"
-#include "UI/UInterface.h"
+// #include "UI/UInputs.h"
+// #include "UI/UInterface.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
-#include "DevBuffer.h"
+#include "Device/DevBuffer.h"
 
 DeviceManager::DeviceManager() {
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -22,6 +22,7 @@ DeviceManager::~DeviceManager() {
 	SDL_Quit();
 }
 
+/*
 void UpdInputSate(Input& key, bool down, bool& IsEvent) {
   if ((int)key.state == (int)down) {
     return;
@@ -100,3 +101,4 @@ void DeviceManager::Output(UIItem* UIroot) {
   SDL_RenderClear(holder);
   UIroot->hrchy.childs[0].buff->draw_tex_ro_rend(UIroot->hrchy.childs[0].rect.pos);
 }
+*/
