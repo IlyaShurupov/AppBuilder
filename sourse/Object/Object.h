@@ -2,6 +2,8 @@
 
 #include "Types.h"
 
+#include "ObjMacros.h"
+
 struct Obj;
 
 enum ValType {
@@ -10,12 +12,16 @@ enum ValType {
     INT, 
     FLOAT,
     LINK,
+    STRING,
 };
+
+
 
 struct Value {
 
     Str val_idname;
     ValType type;
+
     aligned bytes;
     Str lnk_type;
 
@@ -27,11 +33,11 @@ struct Value {
     Value& operator = (const bool& in);
     Value& operator = (Obj* in);
 
-    bool IsVal() { return type != NONE; };
-    Obj* Link() { return (Obj *)bytes; };
-    aligned Int() { return bytes; };
-    float Float() { return (float)bytes; } ;
-    bool Bool() { return (bool)bytes; };
+    bool IsVal();
+    Obj* Link();
+    aligned Int();
+    float Float();
+    bool Bool();
 };
 
 using Args = Array<Value*>;
@@ -59,7 +65,7 @@ struct Method {
 
 struct Scope {
 
-    List<Obj> objs;
+    // List<Obj> objs;
     List<Obj> defenitions;
     Obj* parent;
 
@@ -92,4 +98,13 @@ struct Obj {
     void Call(Value* out, const Str& idname, const Args& arguments);
 
     Obj& operator = (const Obj& in);
+
+    Obj* AddChild(const Str& idname) {
+        Value* newcld = new Value(LINK, idname);
+        *newcld = new Obj(this, idname);
+        attributes.PushBack(newcld);
+        return newcld->Link();
+    }
+
+    
 };

@@ -1,6 +1,12 @@
 
 #include "Object.h"
 
+bool Value::IsVal() { return type != NONE; };
+Obj* Value::Link() { return (Obj *)bytes; };
+aligned Value::Int() { return bytes; };
+float Value::Float() { return IntToFlt(bytes); } ;
+bool Value::Bool() { return (bool)bytes; };
+
 Value::Value(ValType p_type, const Str& p_val_idname) {
     type = p_type;
     val_idname = p_val_idname;
@@ -20,7 +26,7 @@ Value& Value::operator = (const aligned& in) {
 
 Value& Value::operator = (const float& in) {
     type = FLOAT;
-    bytes = (aligned)in;
+    bytes = FltToInt(in);
     return *this;
 }
 
@@ -48,9 +54,6 @@ Method::Method(Obj* p_prnt, ValType p_out, const Str& p_idname, const ArgTypes& 
 Obj::Obj(Obj* prnt, const Str& p_type_idname) {
     type_idname = p_type_idname;
     scope.parent = prnt;
-    if (prnt) { 
-        prnt->Define(this);
-    }
 }    
 
 Obj& Obj::Define(Obj* obj) {
