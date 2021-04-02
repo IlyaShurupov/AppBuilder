@@ -172,7 +172,26 @@ class List {
     ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
   }
 
+  List<Type>& operator += (const List<Type>& in) {
+    for (Node<Type>* node = in.first; node; node = node->next) {
+      PushBack(node->data);
+    }
+    return *this;
+  }
+
   List<Type>& operator = (const List<Type>& in) {
+
+    if (recursive_free_on_destruction) {
+      Delete();
+    } else {
+      Release();
+    }
+    
+    *this += in;
+
+    alloc = in.alloc;
+    recursive_free_on_destruction = in.recursive_free_on_destruction;
+
     return *this;
   }
 

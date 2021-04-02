@@ -1,66 +1,6 @@
 
 #include "Object.h"
 
-bool Value::IsVal() { return type != NONE; };
-Obj* Value::Link() { return (Obj *)bytes; };
-aligned Value::Int() { return bytes; };
-float Value::Float() { return IntToFlt(bytes); } ;
-bool Value::Bool() { return (bool)bytes; };
-
-Value::Value(ValType p_type, const Str& p_val_idname) {
-    type = p_type;
-    val_idname = p_val_idname;
-}
-
-Value& Value::operator = (const Value& in) {
-    type = in.type;
-    bytes = in.bytes;
-    return *this;
-}
-
-Value& Value::operator = (const aligned& in) {
-    type = INT;
-    bytes = in;
-    return *this;
-}
-
-Value& Value::operator = (const float& in) {
-    type = FLOAT;
-    bytes = FltToInt(in);
-    return *this;
-}
-
-Value& Value::operator = (const bool& in) {
-    type = BOOL;
-    bytes = (aligned)in;
-    return *this;
-}
-
-Value& Value::operator = (Obj* in) {
-    type = LINK;
-    bytes = (aligned)in;
-    return *this;
-}
-
-
-Method::Method(Obj* p_prnt, ValType p_out, const Str& p_idname, const ArgTypes& p_arg_types) {
-    prnt = p_prnt;
-    type_out = p_out;
-    method_idname = p_idname;
-    arg_types = ArgTypes(p_arg_types);
-}
-
-
-Obj::Obj(Obj* prnt, const Str& p_type_idname) {
-    type_idname = p_type_idname;
-    scope.parent = prnt;
-}    
-
-Obj& Obj::Define(Obj* obj) {
-    scope.defenitions.PushBack(obj);
-    return *obj;
-}
-
 Scope* Scope::Root() { 
     if (parent) {
         return parent->scope.Root(); 
@@ -68,98 +8,122 @@ Scope* Scope::Root() {
     return this;
 }
 
-Obj* Scope::FindDefenition(const Str& type_name) { 
-    FOREACH(&defenitions, Obj, i) {
-        if (i->type_idname == type_name) {
-            return i.Data();
-        }
+Obj* Scope::FindDefenition(const Str& type) { 
+    
+    Obj* def = nullptr;
+    if (objs.Get(type, &def)) {
+        return def;
     }
 
     if (parent) {
-        return parent->scope.FindDefenition(type_name);
+        return parent->scope.FindDefenition(type);
     } 
 
     return nullptr;
 }
 
-Obj* Obj::Create(const Str& type_idname, const Str& name) {
-    Obj* def = scope.FindDefenition(type_idname);
+
+Obj::Obj(Obj* prnt, const Str& p_type) {
+    type = p_type;
+    scope.parent = prnt;
+}    
+
+
+Value& Obj::AddVal(const Str& idname) {
+    Value* val = new Value(NONE);
+    attributes.Put(idname, val);
+    return *val;
+}
+
+Value& Obj::AddLink(const Str& obj_type, const Str& idname) {
+    Value* newval = new Value(LINK);
+    newval->data.link_data.link_type = obj_type;
+    attributes.Put(idname, newval);
+    return *newval;
+}
+
+Value& Obj::AddFloat(const Str& idname) {
+    Value* val = new Value(FLOAT);
+    attributes.Put(idname, val);
+    return *val;
+}
+
+Value& Obj::AddInt(const Str& idname) {
+    Value* val = new Value(INT);
+    attributes.Put(idname, val);
+    return *val;
+}
+
+Value& Obj::AddBool(const Str& idname) {
+    Value* val = new Value(BOOL);
+    attributes.Put(idname, val);
+    return *val;
+}
+
+Value& Obj::AddString(const Str& idname) {
+    Value* val = new Value(STRING);
+    attributes.Put(idname, val);
+    return *val;
+}
+
+Method& Obj::AddFunc(ValType ret_type, const Str& idname, const ArgTypes& type_args) {
+    Method* method = new Method(this, ret_type, type_args);
+    methods.Put(idname, method);
+    return *method;
+}
+
+Obj& Obj::Define(Obj* obj) {
+    scope.defenitions.Put(obj->type, obj);
+    return *obj;
+}
+
+Obj* Obj::RTCreate(const Str& p_type, const Str& name) {
+    Obj* def = scope.FindDefenition(type);
 
     if (def) {
-        Obj* newobj = new Obj(this, type_idname); 
+        Obj* newobj = new Obj(this, p_type); 
         *newobj = *def;
-        newobj->obj_idname = name;
+        scope.objs.Put(name, newobj);
         return newobj;
     }
 
     return nullptr;
 }
 
-Value& Obj::Val(const Str& idname) {
-    Value* val = new Value(NONE, idname);
-    attributes.PushBack(val);
-    return *val;
+Obj* Obj::AddChild(const Str& idname) {
+    Value* newcld = new Value(LINK);
+    *newcld = new Obj(this, idname);
+    attributes.Put(idname, newcld);
+    return newcld->AsLink();
 }
 
-Value& Obj::Link(const Str& obj_type, const Str& idname) {
-    Value* newval = new Value(LINK, idname);
-    newval->lnk_type = obj_type;
-    attributes.PushBack(newval);
-    return *newval;
-}
-
-Value& Obj::Float(const Str& idname) {
-    Value* val = new Value(FLOAT, idname);
-    attributes.PushBack(val);
-    return *val;
-}
-
-Value& Obj::Int(const Str& idname) {
-    Value* val = new Value(INT, idname);
-    attributes.PushBack(val);
-    return *val;
-}
-
-Value& Obj::Bool(const Str& idname) {
-    Value* val = new Value(BOOL, idname);
-    attributes.PushBack(val);
-    return *val;
-}
-
-Method& Obj::Func(ValType ret_type, const Str& idname, const ArgTypes& type_args) {
-    Method* method = new Method(this, ret_type, idname, type_args);
-    methods.PushBack(method);
-    return *method;
+Obj* Obj::InstantiateAsChild(const Obj* defenition, const Str& idname) {
+    Value* newcld = new Value(LINK);
+    Obj* newobj = new Obj(this, idname);
+    *newobj = *defenition;
+    *newcld = newobj;
+    attributes.Put(idname, newcld);
+    return newcld->AsLink();
 }
 
 Value& Obj::Get(const Str& idname) {
-    FOREACH(&attributes, Value, i) {
-        if (i->val_idname == idname) {
-            return *i.Data();
-        }
-    } 
+    Value* val = nullptr;
+    if (attributes.Get(idname, &val)) {
+        return *val;
+    }
     assert(0);
 }
 
 void Obj::Call(Value* out, const Str& idname, const Args& arguments) {
     Method* mthd = nullptr;
-    FOREACH(&methods, Method, i) {
-        if (i->method_idname == idname) {
-            mthd = i.Data();
-            break;
-        }
-    } 
-    
-    assert(mthd);
+
+    if (!methods.Get(idname, &mthd)) {
+        assert(mthd);
+    }
 
     mthd->arguments = &arguments;
     mthd->out = out;
 
     // check args, ret type
     mthd->method_call(mthd);
-}
-
-
-Obj& Obj::operator = (const Obj& in) {
-    return *this;
 }

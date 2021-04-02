@@ -2,41 +2,63 @@
 #include "Object.h"
 #include "Types.h"
 
-DEFINE_OBJ(Operator) {
+enum class OpEvState {
+  EXECUTE,
+  INVOKE,
+  MODAL_EVENT,
+};
 
-    CONSTR(Operator) {
+enum class OpState {
+  NONE = 0,
+  RUNNING_MODAL,
+  FINISHED,
+  CANCELED,
+};
 
-        ADD_METHOD(BOOL, Poll, ());
-        ADD_METHOD(BOOL, Invoke, ());
-        ADD_METHOD(BOOL, Modal, ());
-    }
+enum class ThreadState {
+  RUNNING,
+  CLOSED,
+  DENIED,
+};
 
-    
-    DEF_METHOD(Poll) {
-        GET_THIS(Operator);
+DEFINE_OBJ(ModalArg) {
 
-    }
-
-    DEF_METHOD(Invoke) {
-        
-    }
-
-    DEF_METHOD(Modal) {
-        
+    COMPILE(ModalArg) {
+        ADD_STRING(idname);
     }
 
 };
 
+DEFINE_OBJ(Operator) {
+
+    COMPILE(Operator) {
+
+        ADD_LINK(Base, operand);
+
+        ADD_INT(state);
+
+        ADD_CHLD(modal_args);
+
+        VIRTUAL(BOOL, Poll, ());
+        VIRTUAL(NONE, Invoke, ());
+        VIRTUAL(NONE, Modal, ());
+    }
+};
+
 DEFINE_OBJ(Thread) {
 
-    CONSTR(Thread) {
+    COMPILE(Thread) {
         ADD_LINK(Operator, op);
+
+        ADD_INT(thread_state);
+        ADD_INT(op_event_type);
+        ADD_LINK(ModalArg, modal_arg);
     }
 };
 
 DEFINE_OBJ(UI) {
 
-    CONSTR(UI) {
+    COMPILE(UI) {
 
         ADD_METHOD(BOOL, PumpRequests, ());
         ADD_METHOD(BOOL, Output, ());
@@ -56,12 +78,12 @@ DEFINE_OBJ(UI) {
 
 DEFINE_OBJ(Programm) {
 
-    CONSTR(Programm) {
+    COMPILE(Programm) {
 
         ADD_CHLD(Ops);
         ADD_CHLD(Threads);
 
-        DECL_CHILD(UI, UI);
+        INCLUDE_CHLD(UI, UI);
         
         ADD_CHLD(Data);
 
@@ -82,18 +104,20 @@ DEFINE_OBJ(Programm) {
 
         MAINLOOP : { // Main loop: Handle events -> run operators -> show result
 
-            timer.duration = 1000.f / This->Get("Fps").Int();
+            timer.duration = 1000.f / This->Get("Fps").AsInt();
             timer.reset();
 
             // Evaluate User's inputs
-            UI.Link()->Call(nullptr, "PumpRequests", Args());
+            UI.AsLink()->Call(nullptr, "PumpRequests", Args());
 
+            /*
             // Run Operators from queue
-            for (Iterator<Value> thread(&Threads.Link()->attributes, 0); thread.node();) {
+            for (Iterator<Value> thread(&Threads.AsLink()->attributes, 0); thread.node();) {
                     
                 // Go to the next thread
                 ++thread;
             }
+            */
 
             /*
                 OpEvState* op_event = &thread->op_event;
@@ -146,7 +170,7 @@ DEFINE_OBJ(Programm) {
             
             */
 
-            UI.Link()->Call(nullptr, "Output", Args());
+            UI.AsLink()->Call(nullptr, "Output", Args());
 
             if (!timer.timeout()) {
                 TreadSleep(timer.remain());
@@ -157,7 +181,7 @@ DEFINE_OBJ(Programm) {
     }
 
     bool run() {
-        Value ret = Value(NONE, "status");
+        Value ret = Value(NONE);
         Call(&ret, "CoreLoop", Args());
         return 0;
     }
