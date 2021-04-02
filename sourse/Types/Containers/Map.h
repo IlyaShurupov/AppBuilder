@@ -55,8 +55,8 @@ class HashTable {
 
 public:
 
-    HashTable() {}
-    HashTable(const HashTable& in) { operator=(in); }
+    HashTable() : table() {}
+    HashTable(const HashTable& in) : table() { operator=(in); }
 
     void Put(const K &key, const V &val) {
         uint8 idx = hash(key, size);
@@ -104,6 +104,13 @@ public:
         }    
 
         return false;
+    }
+
+    V& Get(const K& key) { 
+        V* val = nullptr;
+        Get(key, val);
+        assert(val);
+        return *val;
     }
 
     void ToList(List<Tuple<K, V>>* list) {

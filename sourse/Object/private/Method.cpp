@@ -7,7 +7,7 @@ Method::Method(Obj* p_prnt) {
     prnt = p_prnt;
 }
 
-bool Method::call_method () {
+bool Method::call() {
 
     if (method_body) {
         // check args, ret type

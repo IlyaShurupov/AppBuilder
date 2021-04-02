@@ -17,7 +17,7 @@ struct Method {
 
     Method(Obj* p_prnt);
 
-    bool call_method();
+    bool call();
 
     Method& operator = (void (*func)(Method* This)) {
         method_body = func;

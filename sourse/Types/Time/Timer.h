@@ -13,7 +13,8 @@ struct Timer {
   void reset();
   TIME_MS__ past();
   TIME_MS__ remain();
-
+  void wait_out();
+  
   float ease_in(TIME_MS__ duration = 0);
   float ease_out(TIME_MS__ duration = 0);
 };

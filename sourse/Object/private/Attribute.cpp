@@ -6,10 +6,13 @@
 #include <string.h>
 
 bool Value::IsVal() { return type != NONE; };
-Obj* Value::AsLink() { return data.link_data.link; };
-aligned Value::AsInt() { return data.integer; };
-float Value::AsFloat() { return data.floating; } ;
-bool Value::AsBool() { return data.boolean; };
+Obj& Value::AsLink() { return *data.link_data.link; };
+Value& Value::AsValLink() { return *data.val_link; };
+aligned& Value::AsInt() { return data.integer; };
+float& Value::AsFloat() { return data.floating; } ;
+bool& Value::AsBool() { return data.boolean; };
+Str& Value::AsString() { return data.string; };
+ValList& Value::AsList() { return data.list; };
 
 Value::Value(ValType p_type) {
     type = p_type;
@@ -72,6 +75,13 @@ Value& Value::operator = (const Value& in) {
         
     }
     
+    return *this;
+}
+
+Value& Value::operator = (Value* val_link) {
+    Free();
+    type = VALLINK;
+    data.val_link = val_link;
     return *this;
 }
 

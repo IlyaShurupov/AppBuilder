@@ -14,6 +14,7 @@ enum ValType {
     INT, 
     FLOAT,
     LINK,
+    VALLINK,
     STRING,
     LIST,
 };
@@ -32,6 +33,7 @@ struct Value {
         bool boolean;
         Str string;
         ValList list;
+        Value* val_link;
         
         struct LinkData {
             Obj* link;
@@ -45,6 +47,7 @@ struct Value {
     void Free();
 
     Value& operator = (const Value& in);
+    Value& operator = (Value* val_link);
     Value& operator = (const aligned& in);
     Value& operator = (const float& in);
     Value& operator = (const bool& in);
@@ -54,11 +57,13 @@ struct Value {
     Value& operator = (const ValList& in);
 
     bool IsVal();
-    Obj* AsLink();
-    aligned AsInt();
-    float AsFloat();
-    bool AsBool();
-    bool AsString();
+    Value& AsValLink();
+    Obj& AsLink();
+    aligned& AsInt();
+    float& AsFloat();
+    bool& AsBool();
+    Str& AsString();
+    ValList& AsList();
 
     ~Value();
 };

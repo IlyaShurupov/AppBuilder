@@ -29,6 +29,12 @@ Value& Obj::AddLink(const Str& obj_type, const Str& idname) {
     return *newval;
 }
 
+Value& Obj::AddValLink(const Str& idname) {
+    Value* newval = new Value(VALLINK);
+    attributes.Put(idname, newval);
+    return *newval;
+}
+
 Value& Obj::AddFloat(const Str& idname) {
     Value* val = new Value(FLOAT);
     attributes.Put(idname, val);
@@ -47,6 +53,12 @@ Value& Obj::AddBool(const Str& idname) {
     return *val;
 }
 
+Value& Obj::AddList(const Str& idname) {
+    Value* val = new Value(LIST);
+    attributes.Put(idname, val);
+    return *val;
+}
+
 Value& Obj::AddString(const Str& idname) {
     Value* val = new Value(STRING);
     attributes.Put(idname, val);
@@ -57,7 +69,7 @@ Obj* Obj::AddChild(const Str& idname) {
     Value* newcld = new Value(LINK);
     *newcld = new Obj(this, idname);
     attributes.Put(idname, newcld);
-    return newcld->AsLink();
+    return &newcld->AsLink();
 }
 
 Value& Obj::Get(const Str& idname) {
@@ -66,6 +78,48 @@ Value& Obj::Get(const Str& idname) {
         return *val;
     }
     assert(0);
+}
+
+aligned& Obj::GetInt(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == INT);
+    return val.AsInt();
+}
+
+float& Obj::GetFloat(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == FLOAT);
+    return val.AsFloat(); 
+}
+
+bool& Obj::GetBool(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == BOOL);
+    return val.AsBool(); 
+}
+
+ValList& Obj::GetList(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == LIST);
+    return val.AsList(); 
+}
+
+Str& Obj::GetString(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == STRING);
+    return val.AsString(); 
+}
+
+Obj& Obj::GetLink(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == LINK);
+    return val.AsLink(); 
+}
+
+Value& Obj::GetValLink(const Str& idname) { 
+    Value& val = Get(idname);
+    assert(val.type == VALLINK);
+    return val.AsValLink(); 
 }
 
 // ---------------------------------------------------- //
@@ -114,10 +168,18 @@ Obj* Obj::InstantiateTemplateAsChild(const Str& type, const Str& idname) {
 // ---------------------------------------------------- //
 
 
-Method& Obj::AddFunc(ValType ret_type, const Str& idname, const ArgTypes& type_args) {
+Method& Obj::AddMethod(const Str& idname) {
     Method* method = new Method(this);
     methods.Put(idname, method);
     return *method;
+}
+
+Method& Obj::GetMethod(const Str& idname) {
+    Method* mthd = nullptr;
+    if (methods.Get(idname, &mthd)) {
+        return *mthd;
+    }
+    assert(0);
 }
 
 void Obj::Call(const Str& idname) {
@@ -127,5 +189,5 @@ void Obj::Call(const Str& idname) {
         assert(mthd);
     }
 
-    mthd->call_method();
+    mthd->call();
 }
