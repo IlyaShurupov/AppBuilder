@@ -8,19 +8,19 @@ using ArgTypes = Array<ValType>;
 
 struct Method {
 
-    ArgTypes arg_types;
-    ValType type_out;
-
-    const Args* arguments;
-    Value* out;
-    void (*method_call)(Method* This) = nullptr;
+    Dict<Value> args;
+    Value out = Value(NONE);
 
     Obj* prnt;
 
-    Method(Obj* p_prnt, ValType p_out, const ArgTypes& type_args);
+    void (*method_body)(Method* This) = nullptr;
+
+    Method(Obj* p_prnt);
+
+    bool call_method();
 
     Method& operator = (void (*func)(Method* This)) {
-        method_call = func;
+        method_body = func;
         return *this;
     }
 };

@@ -3,8 +3,16 @@
 
 #include "Object.h"
 
-Method::Method(Obj* p_prnt, ValType p_out, const ArgTypes& p_arg_types) {
+Method::Method(Obj* p_prnt) {
     prnt = p_prnt;
-    type_out = p_out;
-    arg_types = ArgTypes(p_arg_types);
+}
+
+bool Method::call_method () {
+
+    if (method_body) {
+        // check args, ret type
+        method_body(this);
+    }
+    
+    return false;
 }

@@ -20,11 +20,7 @@
 
 #define DEFINE_OBJ(class_name) struct Obj_##class_name : Obj
 
-#define INCLUDE_CHLD(type_name, var_name) \
-    Obj* chld; \
-    if (!(chld = scope.FindDefenition(type))) { \
-        chld = &Define((Obj *) new Obj_##type_name(scope.Root()->parent)); } \
-    InstantiateAsChild(chld, #var_name)
+
 
 #define CREATE(type_name, var_name) \
 Obj& var_name = *Create(#type_name, #var_name) 

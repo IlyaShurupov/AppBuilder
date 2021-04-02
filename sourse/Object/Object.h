@@ -5,25 +5,18 @@
 
 #include "ObjMacros.h"
 
-struct Scope {
-    Dict<Obj> objs;
-    Dict<Obj> defenitions;
-    Obj* parent;
-
-    Scope* Root();
-    Obj* FindDefenition(const Str& type);
-};
 
 struct Obj {
 
-    Str type;
+    Obj* parent;
     
-    Scope scope;
-
-    Dict<Method> methods;
-    Dict<Value> attributes;
-
     Obj(Obj* prnt, const Str& p_type);   
+    Obj* Root();
+
+
+    // ------------------------ //
+
+    Dict<Value> attributes;
 
     Value& AddVal(const Str& idname);
     Value& AddLink(const Str& obj_type, const Str& idname);
@@ -31,15 +24,24 @@ struct Obj {
     Value& AddFloat(const Str& idname);
     Value& AddBool(const Str& idname);
     Value& AddString(const Str& idname);
+    Obj* AddChild(const Str& idname);
+    Value& Get(const Str& idname);
+
+
+    // ------------------------ //
+
+    Dict<Method> methods;
 
     Method& AddFunc(ValType ret_type, const Str& idname, const ArgTypes& type_args);
+    void Call(const Str& idname);
 
-    Obj& Define(Obj* obj);
-    Obj* AddChild(const Str& idname);
-    Obj* InstantiateAsChild(const Obj* defenition, const Str& idname);
+    // ------------------------ //
 
-    Obj* RTCreate(const Str& type, const Str& name);
+    Str type;
+    Dict<Obj> templates;
 
-    Value& Get(const Str& idname);
-    void Call(Value* out, const Str& idname, const Args& arguments);
+    Obj* FindTemplate(const Str& type);
+    Obj& SaveAsTemplate();
+    Obj* InstantiateTemplateAsChild(const Str& type, const Str& idname);
+
 };

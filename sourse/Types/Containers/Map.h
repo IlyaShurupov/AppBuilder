@@ -2,69 +2,176 @@
 #pragma once
 
 #include "Macros.h"
+#include "List.h"
+#include "Tuple.h"
 
-#include <cstddef>
-
-template <typename K, int size>
+template <typename K>
 struct StrHashPolicy {
 
-    uint8 operator()(const K &key) const {
+    uint8 operator()(const K &key, uint8 size) const {
+        char* string = key.str;
 
         unsigned long hash = 5381;
         int c;
-        while ((c = *key.str++))
-            hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        while ((c = *string++)) {
+            hash = ((hash << 5) + hash) + c;
+        }
         return hash % size;
 
     }
 };
 
 template <typename K, typename V, size_t tableSize, typename F >
-class HashMap;
+class HashTable;
 
 template <typename Type, int Size = 10 >
-using Dict = HashMap<Str, Type*, Size, StrHashPolicy< Str, Size > >;
+using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str > >;
 
 
 template <typename K, typename V>
-class HashNode {
+struct HashNode {
 
     K key;
-    V value;
+    V val;
+
+    HashNode<K, V>* next = nullptr;
     
-    HashNode *next;
+    HashNode(const HashNode& node) {}
+    HashNode& operator=(const HashNode& in) { return *this; }
 
-public:
-
-    HashNode(const HashNode &) {}
-    HashNode & operator=(const HashNode &) { return *this; }
-
-    HashNode(const K &key, const V &value) {
+    HashNode(const K &key, const V &val) {
         this->key = key;
-        this->value = value;
+        this->val = val;
     }
-
 };
 
 
 template <typename K, typename V, size_t tableSize, typename Func >
-class HashMap {
+class HashTable {
 
-    HashNode<K, V> *table[tableSize];
-    Func hashFunc;
+    HashNode<K, V>* table[tableSize];
+    Func hash;
+    uint8 size = tableSize;
 
 public:
 
-    HashMap(const HashMap & other) { }
-    HashMap & operator=(const HashMap & other) { return *this; }
+    HashTable() {}
+    HashTable(const HashTable& in) { operator=(in); }
 
-    HashMap() {}
+    void Put(const K &key, const V &val) {
+        uint8 idx = hash(key, size);
+        
+        if (!table[idx]) {
+            table[idx] = new HashNode<K, V>(key, val);
 
-    void Put(const K &key, const V &value) {}
+        } else if (table[idx]->key == key) {
+            table[idx]->val = val;
 
-    void Remove(const K &key) {}
+        } else {
+            HashNode<K, V>* node = new HashNode<K, V>(key, val);
+            node->next = table[idx]->next;
+            table[idx]->next = node; 
+        }
+    }
 
-    bool Get(const K &key, V *value) { return false; }
+    void Remove(const K &key) {
+        uint8 idx = hash(key, size);
+        HashNode<K, V>* prev = nullptr;
+        for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
+            if (node->key == key) {
 
-    ~HashMap() {}
+                if (prev) {
+                    prev->next = node->next;
+
+                } else {
+                    table[idx] = node->next;
+                }
+                
+                delete node;
+                break;
+            }
+
+            prev = node;
+        }
+    }
+
+    bool Get(const K& key, V* value) { 
+        for (HashNode<K, V>* node = table[hash(key, size)]; node; node = node->next) {
+            if (node->key == key) {
+                *value = node->val;
+                return true;
+            }
+        }    
+
+        return false;
+    }
+
+    void ToList(List<Tuple<K, V>>* list) {
+        
+        list->Clear();
+
+        for (uint8 idx = 0; idx < size; idx++) {
+
+            if (!table[idx]) {
+                continue;
+            }
+
+            for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
+                list->PushBack(new Tuple<K, V>(node->key, node->val));
+            }
+            
+        }
+    }
+
+    void Clear() {
+        for (uint8 idx = 0; idx < size; idx++) {
+
+            if (!table[idx]) {
+                continue;
+            }
+
+            HashNode<K, V>* node = table[idx];
+            HashNode<K, V>* del_node;
+            while (node) {
+                del_node = node;
+                node = node->next;
+                delete del_node;
+            }
+            
+            table[idx] = nullptr;
+        }
+    }
+
+    HashTable & operator=(const HashTable& in) { 
+
+        Clear();
+
+        for (uint8 idx = 0; idx < in.size; idx++) {
+
+            if (!in.table[idx]) {
+                continue;
+            }
+
+            for (HashNode<K, V>* node = in.table[idx]; node; node = node->next) {
+                Put(node->key, node->val);
+            }
+            
+        }
+        return *this; 
+    }
+
+    ~HashTable() {
+        for (uint8 idx = 0; idx < size; idx++) {
+
+            HashNode<K, V>* next = nullptr;
+            HashNode<K, V>* node = table[idx];
+            
+            while (node) {
+                next = node->next;
+                delete node;
+                node = next;
+            }
+        }
+          
+    }
 };

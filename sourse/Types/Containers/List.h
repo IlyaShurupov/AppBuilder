@@ -166,10 +166,14 @@ class List {
 
   void Release() {
     ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+    length = 0;
+    first = last = nullptr;
   }
 
   void Delete() {
     ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
+    length = 0;
+    first = last = nullptr;
   }
 
   List<Type>& operator += (const List<Type>& in) {
@@ -208,12 +212,16 @@ class List {
   List() {}
   List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
   
-  ~List() {
+  void Clear() {
     if (recursive_free_on_destruction) {
       Delete();
     } else {
       Release();
     }
+  }
+
+  ~List() {
+    Clear();
   }
 };
 

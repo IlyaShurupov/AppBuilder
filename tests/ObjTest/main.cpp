@@ -83,7 +83,7 @@ DEFINE_OBJ(Programm) {
         ADD_CHLD(Ops);
         ADD_CHLD(Threads);
 
-        INCLUDE_CHLD(UI, UI);
+        // INCLUDE_CHLD(UI, UI);
         
         ADD_CHLD(Data);
 
@@ -108,7 +108,7 @@ DEFINE_OBJ(Programm) {
             timer.reset();
 
             // Evaluate User's inputs
-            UI.AsLink()->Call(nullptr, "PumpRequests", Args());
+            // UI.AsLink()->Call(nullptr, "PumpRequests", Args());
 
             /*
             // Run Operators from queue
@@ -170,7 +170,7 @@ DEFINE_OBJ(Programm) {
             
             */
 
-            UI.AsLink()->Call(nullptr, "Output", Args());
+            // UI.AsLink()->Call(nullptr, "Output", Args());
 
             if (!timer.timeout()) {
                 TreadSleep(timer.remain());
@@ -182,7 +182,7 @@ DEFINE_OBJ(Programm) {
 
     bool run() {
         Value ret = Value(NONE);
-        Call(&ret, "CoreLoop", Args());
+        // Call(&ret, "CoreLoop", Args());
         return 0;
     }
 };

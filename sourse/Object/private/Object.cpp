@@ -1,33 +1,20 @@
 
 #include "Object.h"
 
-Scope* Scope::Root() { 
+Obj* Obj::Root() { 
     if (parent) {
-        return parent->scope.Root(); 
+        return parent->Root(); 
     }
     return this;
 }
 
-Obj* Scope::FindDefenition(const Str& type) { 
-    
-    Obj* def = nullptr;
-    if (objs.Get(type, &def)) {
-        return def;
-    }
-
-    if (parent) {
-        return parent->scope.FindDefenition(type);
-    } 
-
-    return nullptr;
-}
-
-
 Obj::Obj(Obj* prnt, const Str& p_type) {
     type = p_type;
-    scope.parent = prnt;
+    parent = prnt;
 }    
 
+
+// ---------------------------------------------------- //
 
 Value& Obj::AddVal(const Str& idname) {
     Value* val = new Value(NONE);
@@ -66,42 +53,9 @@ Value& Obj::AddString(const Str& idname) {
     return *val;
 }
 
-Method& Obj::AddFunc(ValType ret_type, const Str& idname, const ArgTypes& type_args) {
-    Method* method = new Method(this, ret_type, type_args);
-    methods.Put(idname, method);
-    return *method;
-}
-
-Obj& Obj::Define(Obj* obj) {
-    scope.defenitions.Put(obj->type, obj);
-    return *obj;
-}
-
-Obj* Obj::RTCreate(const Str& p_type, const Str& name) {
-    Obj* def = scope.FindDefenition(type);
-
-    if (def) {
-        Obj* newobj = new Obj(this, p_type); 
-        *newobj = *def;
-        scope.objs.Put(name, newobj);
-        return newobj;
-    }
-
-    return nullptr;
-}
-
 Obj* Obj::AddChild(const Str& idname) {
     Value* newcld = new Value(LINK);
     *newcld = new Obj(this, idname);
-    attributes.Put(idname, newcld);
-    return newcld->AsLink();
-}
-
-Obj* Obj::InstantiateAsChild(const Obj* defenition, const Str& idname) {
-    Value* newcld = new Value(LINK);
-    Obj* newobj = new Obj(this, idname);
-    *newobj = *defenition;
-    *newcld = newobj;
     attributes.Put(idname, newcld);
     return newcld->AsLink();
 }
@@ -114,16 +68,64 @@ Value& Obj::Get(const Str& idname) {
     assert(0);
 }
 
-void Obj::Call(Value* out, const Str& idname, const Args& arguments) {
+// ---------------------------------------------------- //
+
+
+Obj* Obj::FindTemplate(const Str& type) { 
+    
+    Obj* def = nullptr;
+    if (templates.Get(type, &def)) {
+        return def;
+    }
+
+    if (parent) {
+        return parent->FindTemplate(type);
+    } 
+
+    return nullptr;
+}
+
+Obj& Obj::SaveAsTemplate() {
+    Obj* obj = new Obj(nullptr, type);
+    *obj = *this;
+    obj->parent = nullptr;
+    templates.Put(obj->type, obj);
+    return *obj;
+}
+
+Obj* Obj::InstantiateTemplateAsChild(const Str& type, const Str& idname) {
+    
+    Obj* templt = FindTemplate(type);
+
+    assert(templt);
+
+    Obj* newobj = new Obj(this, idname);
+    *newobj = *templt;
+    newobj->parent = this;
+    
+    Value* newcld = new Value(LINK);
+    *newcld = newobj;
+
+    attributes.Put(idname, newcld);
+
+    return newobj;
+}
+
+// ---------------------------------------------------- //
+
+
+Method& Obj::AddFunc(ValType ret_type, const Str& idname, const ArgTypes& type_args) {
+    Method* method = new Method(this);
+    methods.Put(idname, method);
+    return *method;
+}
+
+void Obj::Call(const Str& idname) {
     Method* mthd = nullptr;
 
     if (!methods.Get(idname, &mthd)) {
         assert(mthd);
     }
 
-    mthd->arguments = &arguments;
-    mthd->out = out;
-
-    // check args, ret type
-    mthd->method_call(mthd);
+    mthd->call_method();
 }
