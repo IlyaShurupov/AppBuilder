@@ -12,3 +12,5 @@
 
 
 #include "Device/Device.h"
+
+#include "Macros.h"

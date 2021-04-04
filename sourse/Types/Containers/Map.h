@@ -5,6 +5,12 @@
 #include "List.h"
 #include "Tuple.h"
 
+template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy >
+class HashTable;
+
+template <typename K, typename V>
+struct HashNode;
+
 template <typename K>
 struct StrHashPolicy {
 
@@ -21,11 +27,22 @@ struct StrHashPolicy {
     }
 };
 
-template <typename K, typename V, size_t tableSize, typename F >
-class HashTable;
+template <typename V>
+struct DelRemovePolicy {
+    void operator()(V* val) {
+        delete val;
+    }
+};
+
+template <typename V>
+struct ReleaseRemovePolicy {
+    void operator()(V* val) {
+        delete val;
+    }
+};
 
 template <typename Type, int Size = 10 >
-using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str > >;
+using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str >, DelRemovePolicy<Type> >;
 
 
 template <typename K, typename V>
@@ -46,11 +63,12 @@ struct HashNode {
 };
 
 
-template <typename K, typename V, size_t tableSize, typename Func >
+template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy = ReleaseRemovePolicy<V> >
 class HashTable {
 
     HashNode<K, V>* table[tableSize];
-    Func hash;
+    HashPolicy hash;
+    RemovePolicy remove_val;
     uint8 size = tableSize;
 
 public:
@@ -87,6 +105,7 @@ public:
                     table[idx] = node->next;
                 }
                 
+                remove_val(node->val);
                 delete node;
                 break;
             }
@@ -106,11 +125,11 @@ public:
         return false;
     }
 
-    V& Get(const K& key) { 
-        V* val = nullptr;
-        Get(key, val);
-        assert(val);
-        return *val;
+    V Get(const K& key) { 
+        V val;
+        bool suc = Get(key, &val);
+        assert(suc);
+        return val;
     }
 
     void ToList(List<Tuple<K, V>>* list) {
@@ -142,6 +161,7 @@ public:
             while (node) {
                 del_node = node;
                 node = node->next;
+                remove_val(node->val);
                 delete del_node;
             }
             
@@ -175,6 +195,7 @@ public:
             
             while (node) {
                 next = node->next;
+                remove_val(node->val);
                 delete node;
                 node = next;
             }

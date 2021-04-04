@@ -32,10 +32,14 @@ typedef unsigned int			uint4;
 typedef long					int8;
 typedef unsigned long			uint8;
 typedef int8                    aligned;
+#define ALIGNED_MAX LONG_MAX
+#define ALIGNED_MIN LONG_MIN
 #else
 typedef int4                    aligned;
 typedef long long				int8;
 typedef unsigned long long		uint8;
+#define ALIGNED_MAX LLONG_MAX
+#define ALIGNED_MIN LLONG_MIN
 #endif
 
 // Coustom types

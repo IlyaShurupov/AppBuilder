@@ -1,5 +1,5 @@
 
 {
     "Type": "StaticLibrary",
-    "InternLibs" : ["Object", "Types"]
+    "InternLibs" : ["Object"]
 }

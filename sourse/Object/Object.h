@@ -1,56 +1,37 @@
-#pragma once 
 
-#include "Attribute.h"
-#include "Method.h"
+#pragma once
 
-#include "ObjMacros.h"
+#include "Types.h"
 
+struct StatD {
+    void* data = nullptr;
+    struct Obj* (*instantiate)(void* ths) = nullptr;
+    void (*destruct)(void* data) = nullptr;
+    void (*copy)(void* ths, void* in) = nullptr;
+};
 
 struct Obj {
 
-    Obj* parent;
-    
-    Obj(Obj* prnt, const Str& p_type);   
-    Obj* Root();
-
-    // ------------------------ //
-
-    Dict<Value> attributes;
-
-    Value& AddVal(const Str& idname);
-    Value& AddLink(const Str& obj_type, const Str& idname);
-    Value& AddValLink(const Str& idname);
-    Value& AddInt(const Str& idname);
-    Value& AddFloat(const Str& idname);
-    Value& AddBool(const Str& idname);
-    Value& AddList(const Str& idname);
-    Value& AddString(const Str& idname);
-    Obj* AddChild(const Str& idname);
-
-    Value& Get(const Str& idname);
-    aligned& GetInt(const Str& idname);
-    float& GetFloat(const Str& idname);
-    bool& GetBool(const Str& idname);
-    ValList& GetList(const Str& idname);
-    Str& GetString(const Str& idname);
-    Obj& GetLink(const Str& idname);
-    Value& GetValLink(const Str& idname);
-
-    // ------------------------ //
-
-    Dict<Method> methods;
-
-    Method& AddMethod(const Str& idname);
-    Method& GetMethod(const Str& idname);
-    void Call(const Str& idname);
-
-    // ------------------------ //
-
     Str type;
-    Dict<Obj> templates;
+    Obj* prnt = nullptr;
+    Dict<Obj> props;
+    StatD* statd = nullptr;
+    
+    Obj(const Str& _type, Obj* _prnt);
 
-    Obj* FindTemplate(const Str& type);
-    Obj& SaveAsTemplate();
-    Obj* InstantiateTemplateAsChild(const Str& type, const Str& idname);
+    Obj& operator = (const Obj& in);
 
+    Obj& Add(const Str& idname);
+    
+    Obj& Get(const Str& idname);
+
+    void Delete(const Str& idname);
+
+    void Release(const Str& idname);
+
+    virtual ~Obj();
+
+    // ---- static --- //
+
+    static Obj& Instantiate(const Obj& in);
 };
