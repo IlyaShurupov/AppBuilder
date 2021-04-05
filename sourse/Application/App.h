@@ -1,39 +1,34 @@
 #pragma once
 
-#include "Types.h"
 #include "Object.h"
+#include "Primitives.h"
 
-/*
-struct Application : Obj {
-    Application() : Obj("Application", nullptr) {
-        
-        ObjList::Add(this, "UI", "UIs");
-        ObjList::Add(this, "Threads", "Thread");
-        ObjList::Add(this, "Operators", "Operator");
-        ObjList::Add(this, "Requests", "Request");
-
-        Add("Data");
-
-        props.Put("fps", (Obj*)new Int(this));
-
-        props.Put("Run", (Obj*)new Func(this, Run));
+struct Application : ObjBasedClass<Application> {
+    
+    Application(Obj* prnt) : ObjBasedClass (prnt) {
+        ObList::Add(this, "UIs").type = "UI";
+        ObList::Add(this, "Requests").type = "Request";
+        ObList::Add(this, "Threads").type = "Thread";
+        Int::Add(&Put(new Obj(this, "Data"), "Data"), "fps").Assign(60, 10, 120);
     }
 
-    static void Run(Obj& call) {
-        Application* app = (Application *)(call.prnt); 
+    Application& operator = (const Application& in) {
+        return *this;
+    }
 
-        List<Obj>& UIs = ObjList::Get(app, "UIs");
-        List<Obj>& Threads = ObjList::Get(app,"Threads");
-        List<Obj>& Requests = ObjList::Get(app,"Requests");
+    void Run() {
+
+        List<Obj>& UIs = ObList::Get(this, "UIs").list;
+        List<Obj>& Threads = ObList::Get(this, "Threads").list;
+        List<Obj>& Requests = ObList::Get(this, "Requests").list;
 
 
         MAINLOOP : {
 
-            Timer timer = Timer(1000.f / (aligned)app->props.Get("fps")->statd);
+            Timer timer = Timer(1000.f / Int::Get(&GetChld("Data"), "fps").val);
 
             // Pump Requests From UIs
             FOREACH(&UIs, Obj, ui) {
-                ui->props.Get("PumpRequests");
             }
 
             // Poll Requests
@@ -52,5 +47,7 @@ struct Application : Obj {
 
         } goto MAINLOOP;
     }
+
+    ~Application() {
+    }
 };
-*/
