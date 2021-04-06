@@ -1,7 +1,7 @@
 #pragma once 
 
 
-class DeviceManager {
+class Device {
 
     friend class DevBuffer;
 
@@ -10,7 +10,8 @@ class DeviceManager {
 	    class SDL_Renderer* holder = nullptr;
 
     public:
-        DeviceManager();
-        ~DeviceManager();
+        Device();
+        int GetKeyState(int ascii_code) {}
+        ~Device();
 
 };

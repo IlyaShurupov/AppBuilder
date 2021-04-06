@@ -4,13 +4,25 @@
 #include "Types.h"
 
 #define STRR const Str&
+#define FOREACH_OBJ(Oblist, iter) FOREACH(Oblist.list, Obj, iter)
+
+struct ObjType {
+
+    ObjType();
+    ObjType(STRR name);
+
+    bool IsPrnt(STRR);
+
+    Str idname;
+    bool locked = true;
+    ObjType* child = nullptr;
+    ObjType* prnt = nullptr;
+};
 
 struct Obj {
     
-    Obj(Obj* _prnt, STRR _type) {
-        type = _type; 
-        prnt = _prnt;
-    }
+    Obj();
+    Obj(Obj* _prnt, const ObjType& _type);
 
     virtual void Copy(Obj* in) {
         props = in->props;
@@ -26,29 +38,38 @@ struct Obj {
 
     virtual ~Obj() {}
 
-    Obj& GetChld(STRR idname) {
-        return *props.Get(idname);
-    }
-
-    Obj& Put(Obj* val, STRR idname) {
-        props.Put(idname, val);
-        return *val;
-    }
-
-    void Pop(STRR idname) {
-        props.Remove(idname);
-    }
+    Obj& GetChld(STRR idname);
+    Obj& Put(Obj* val, STRR idname);
+    void Pop(STRR idname);
 
     Dict<Obj> props;
-    Str type;
+    ObjType type;
     Obj* prnt = nullptr;
 
+    bool modified = false;
 };
 
 template <typename Class, typename PrntClass = Obj>
 struct ObjBasedClass : PrntClass {
 
-    ObjBasedClass(Obj* prnt) : PrntClass(prnt, typeid(Class).name()) {}
+    void InitType() {
+    
+        ObjType* current_type = new ObjType();
+        *current_type = PrntClass::type;
+        current_type->child = &(PrntClass::type);
+        PrntClass::type.prnt = current_type;
+
+        PrntClass::type.idname = typeid(Class).name();
+    }
+
+    ObjBasedClass(Obj* _prnt) {
+        PrntClass::prnt = _prnt;
+        InitType();
+    }
+
+    ObjBasedClass() {
+        InitType();
+    }
 
     virtual void Copy(Obj* in) {
         *(Class*)this = *(Class*)in;
