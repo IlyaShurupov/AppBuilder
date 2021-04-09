@@ -15,13 +15,17 @@ Device::Device() {
 	holder = SDL_CreateRenderer(holder_root, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
   init_device_texture(holder);
 
-  CodeMap['A'] = SDL_SCANCODE_A;
+  CodeMap['a'] = SDL_SCANCODE_A;
 }
 
 Device::~Device() {
     SDL_DestroyRenderer(holder);
 	SDL_DestroyWindow(holder_root);
 	SDL_Quit();
+}
+
+void Device::PumpEvents() {
+  SDL_PumpEvents();
 }
 
 InputState Device::GetKeyState(int ascii_code, InputState current)  { 
@@ -38,10 +42,13 @@ InputState Device::GetKeyState(int ascii_code, InputState current)  {
   } else if (current == InputState::HOLD) {
     return InputState::RELEASED;
   } else {
-    return InputState(down);
+    return InputState::HOLD;
   } 
 }
 
+void Device::ClearEvents() {
+  SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
+}
 /*
 
 void UpdCursorPos(UInputs& usin) {

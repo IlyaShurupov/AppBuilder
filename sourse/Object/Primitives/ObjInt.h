@@ -35,7 +35,7 @@ class Int : public Obj {
         val = _val;
         min = _min;
         max = _max;
-        Modified();
+        Modified(ModType::SET);
         return true;
     }
     
@@ -49,8 +49,13 @@ class Int : public Obj {
         }
         val = _val;
         CLAMP(val, min, max);
-        Modified();
+        Modified(ModType::SET);
         return true;
+    }
+
+    bool Equal(const Obj& obj) {
+        assert(type == obj.type);
+        return val == ((Int&)obj).GetVal();
     }
 
     ~Int() {

@@ -6,8 +6,8 @@
 class Link : public Obj {
     
     Obj* link = nullptr;
-    Str link_type;
-    bool base_class = false;
+    Str link_type = "Obj";
+    bool base_class = true;
 
     Link& operator = (const Link& in);
 
@@ -46,8 +46,13 @@ class Link : public Obj {
         } else {
             return false;
         }
-        Modified();
+        Modified(ModType::SET);
         return true;
+    }
+
+    bool Equal(const Obj& obj) {
+        assert(type == obj.type);
+        return link == ((Link&)obj).GetLink();
     }
 
     Obj* GetLink() {

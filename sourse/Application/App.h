@@ -39,8 +39,6 @@ class QuitProgramm : public Operator {
     }
 };
 
-
-
 class Application : public Obj {
     
     Application& operator = (const Application& in);
@@ -66,22 +64,39 @@ class Application : public Obj {
     void Compose() {
         Device* dev = new Device();
 
+        
+        // Adding Operators
         ObList& OpHolders = GETOBJ(ObList, this, OpHolders);
         Operator* op = new QuitProgramm(nullptr);
         op->Invoke();
         OpHolder* opholder = new OpHolder(nullptr, op);
         OpHolders.AddObj(opholder);
 
+        // Adding UIs
         TUI* tui = new TUI(this, dev);
         GETOBJ(ObList, this, UIs).AddObj(tui);
 
+        // Adding Inputs
         KeyInput* input = new KeyInput(nullptr);
         GETOBJ(String, input, KeyName).Assign("A");
         GETOBJ(Int, input, ASCII Code).Set('A');
         GETOBJ(ObList, tui, Inputs).AddObj(input);
 
+
+        // Adding Shortcuts
         ShortCut* shcut = new ShortCut(nullptr);
         GETOBJ(Link, shcut, Target Op).SetLink(opholder);
+
+        ObList& cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, shcut, Invoke), Conditions);
+        
+        ObjTuple* cond = new ObjTuple(&cond_list);
+        Int* trigger_val = new Int(nullptr);
+        trigger_val->Assign(2, -1, 5);
+        cond->GetHead().SetLink(trigger_val);
+        cond->GetTail().SetLink(&GETOBJ(Int, input, State));
+        cond_list.AddObj(cond);
+        // GETOBJ(ObList, shcut, RunTimeArgs).AddObj();
+
         GETOBJ(ObList, tui, Shortcuts).AddObj(shcut);
     }
 

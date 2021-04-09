@@ -52,7 +52,7 @@ class ObDict : public Obj {
             return false;
         }
         
-        Modified();
+        Modified(ModType::SET);
         return true;
     }
 

@@ -28,8 +28,13 @@ class String : public Obj {
             return false;
         }
         string = _string;
-        Modified();
+        Modified(ModType::SET);
         return true;
+    }
+
+    bool Equal(const Obj& obj) {
+        assert(type == obj.type);
+        return string == ((String&)obj).GetStr();
     }
 
     const Str& GetStr() {

@@ -9,3 +9,4 @@
 #include "Primitives/ObjDict.h"
 #include "Primitives/ObjStr.h"
 #include "Primitives/ObjBool.h"
+#include "Primitives/ObjTuple.h"

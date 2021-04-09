@@ -18,6 +18,8 @@ class Device {
 
     public:
         Device();
+        void PumpEvents();
+        void ClearEvents();
         InputState GetKeyState(int ascii_code, InputState current);
         ~Device();
 

@@ -27,7 +27,10 @@ class Operator : public Obj {
 
     Operator(Obj* prnt) : Obj(prnt) { 
         RegisterType(ObjType("Operator"));
-        ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
+        
+        ObDict& args = ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
+        args.AddObj(new String(&args), "Run Time Arg");
+        
         ADDOBJ(Link, Args, *this, (this)).Init("Obj", true);
     }
 
@@ -132,13 +135,21 @@ class Requester : public Obj {
         }
     }
 
+    void SendArg(String& rtarg) {
+        GETOBJ(ObDict, this, Op Args).AddObj(&rtarg, "Run Time Arg");
+    }
+
+    bool Running() {
+        return instance_count;
+    }
+
     virtual ~Requester() {}
     
     private:
 
     int instance_count = 0;
 
-    static void TargetChanged(Obj* param) {
+    static void TargetChanged(Obj* param, ModType type) {
         Requester * ths = (Requester *)param;
         OpHolder* holder = (OpHolder*)GETOBJ(Link, ths, Target Op).GetLink();
         holder->GetInterface(&GETOBJ(ObDict, ths, Op Args));

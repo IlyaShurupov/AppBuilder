@@ -40,8 +40,13 @@ class Bool : public Obj {
             return false;
         }
         val = _val;
-        Modified();
+        Modified(ModType::SET);
         return true;
+    }
+
+    bool Equal(const Obj& obj) {
+        assert(type == obj.type);
+        return val == ((Bool&)obj).GetVal();
     }
 
     ~Bool() {
