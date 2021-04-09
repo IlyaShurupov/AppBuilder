@@ -161,7 +161,7 @@ public:
             while (node) {
                 del_node = node;
                 node = node->next;
-                remove_val(node->val);
+                remove_val(del_node->val);
                 delete del_node;
             }
             

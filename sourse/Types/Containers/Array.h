@@ -43,7 +43,7 @@ class Array {
     for (uint4 befor = 0; befor < idx; befor++) {
       buff[befor] = current[befor];
     }
-    for (uint4 after = idx; after < length; after++) {
+    for (uint4 after = idx; after < length - 1; after++) {
       buff[after + 1] = current[after];
     }
 

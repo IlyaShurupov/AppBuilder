@@ -1,5 +1,11 @@
 #pragma once 
 
+enum class InputState {
+  NONE = 0,
+  HOLD,
+  PRESSED,
+  RELEASED,
+};
 
 class Device {
 
@@ -8,10 +14,11 @@ class Device {
     private:
         class SDL_Window*	holder_root = nullptr;
 	    class SDL_Renderer* holder = nullptr;
+        int CodeMap[255];
 
     public:
         Device();
-        int GetKeyState(int ascii_code) {}
+        InputState GetKeyState(int ascii_code, InputState current);
         ~Device();
 
 };

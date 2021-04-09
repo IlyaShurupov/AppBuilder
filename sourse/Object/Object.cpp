@@ -32,11 +32,11 @@ Obj& Obj::GetChld(STRR idname) {
     return *props.Get(idname);
 }
 
-Obj& Obj::Put(Obj* val, STRR idname) {
+Obj& Obj::AddChld(Obj* val, STRR idname) {
     props.Put(idname, val);
     return *val;
 }
 
-void Obj::Pop(STRR idname) {
+void Obj::DelChild(STRR idname) {
     props.Remove(idname);
 }

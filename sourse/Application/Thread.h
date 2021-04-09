@@ -3,73 +3,115 @@
 #include "Object.h"
 #include "Primitives.h"
 
-struct Operator : ObjBasedClass<Operator> {
+enum class OpState {
+    NONE,
+    INVOKED,
+    RUNNING,
+    FINISHED,
+};
 
-    Operator() { InitData(); }
-    Operator(Obj* prnt) : ObjBasedClass (prnt) { InitData(); }
-    
-    bool parallel = false; 
+class Operator : public ObjBasedClass<Operator> {
 
-    void InitData() {
-        ObDict::Add(this, "Invoke Args").Assign("Obj", true);
-        ObDict::Add(this, "RunTime Args").Assign("Obj", true);
+    public:
+
+    Operator() { 
+        ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
+        ADDOBJ(Link, Args, *this, (this)).Init("Obj", true);
+    }
+
+    Operator& operator = (const Operator& in) {
+        return *this;
     }
 
     virtual bool Poll() { return false; }
     virtual void Invoke() { }
     virtual void Modal() { }
 
-    virtual ~Operator() {}
-
-    Str GetState() {
-        return state;
+    virtual ~Operator() { 
     }
 
-    private:
-    friend struct Application;
-    Str state = "INVOKE";
+    bool Finished() { return state == OpState::FINISHED; }
+
+    int* instance_count = nullptr;
+    bool parallel = false; 
+    OpState state = OpState::NONE;
+};
+
+struct OpHolder : ObjBasedClass<OpHolder> {
+
+    OpHolder(){}
+    OpHolder(Obj* prnt, Operator* _op) : ObjBasedClass (prnt) { 
+        op = _op;
+        op->prnt = this;
+    }
+
+    Operator* op;
+    List<Operator> threads;
+    
+    Operator* GetInstance(ObDict* args_link, int* _instance_count) {
+        UpdateThreads();
+
+        if (op->parallel || !threads.Len()) {
+            Operator* instance = new Operator();
+            ((Obj*)instance)->Copy((Obj*)op);
+
+            *_instance_count += 1;
+            instance->instance_count = _instance_count;
+            Link::Get(instance, "Args").SetLink(args_link);
+
+            threads.PushBack(instance);
+            return instance;
+        }
+
+        return nullptr;
+    }
+    
+    void GetInterface(ObDict* args) {
+        args->Copy(&ObDict::Get(op, "Interface"));
+    }
+
+    void UpdateThreads() {
+        FOREACH(&threads, Operator, op) {
+            if (op->Finished()) {
+                *op->instance_count -= 1;
+                threads.DelNode(op.node());
+            }
+        }
+    }
 };
 
 struct Requester : ObjBasedClass<Requester> {
     
     Requester() {
-        Link::Add(this, "Target Op").Init("Operator", true);
+        ADDOBJ(ObDict, Op Args, *this, (this)).Assign("Obj", true);
+
+        Link& target_link = ADDOBJ(Link, Target Op, *this, (this));
+        target_link.Init("OpHolder", true);
+        target_link.BindModPoll(this, CanChangeTarget);
+        target_link.AddOnModCallBack(this, TargetChanged);
     }
 
-    void CreateRequest(ObList* requests) {
-        if (Link::Get(this, "Target Op").modified) {
-            UpdateTargetOp();
-        }
-
-        if (!exec_op->parallel || NotRuning()) {
-            requests->AddObj(exec_op);
+    void CreateRequest(ObList* requests) {      
+        OpHolder* holder = (OpHolder*)Link::Get(this, "Target Op").GetLink();
+        Operator* instance = holder->GetInstance(&ObDict::Get(this, "Op Args"), &instance_count);
+        if (instance) {
+            requests->AddObj(instance);
         }
     }
 
     virtual ~Requester() {}
     
     private:
-    Operator* exec_op = nullptr;
 
-    void UpdateTargetOp() {
-        Operator* op = (Operator*)Link::Get(this, "Target Op").GetLink();
+    int instance_count = 0;
 
-        if (op->parallel) {
-
-            if (!exec_op) {
-                exec_op = &(Operator&)op->Instance();
-
-            } else if (exec_op->type.idname != op->type.idname) {
-                delete (Obj*)exec_op;
-                exec_op = &(Operator&)op->Instance();
-            }
-
-        } else {
-            exec_op = op;
-        }
+    static void TargetChanged(Obj* param) {
+        Requester * ths = (Requester *)param;
+        OpHolder* holder = (OpHolder*)Link::Get(ths, "Target Op").GetLink();
+        holder->GetInterface(&ObDict::Get(ths, "Op Args"));
     }
 
-    bool NotRuning() {
-        return exec_op->GetState() != "RUNNING";
+    static bool CanChangeTarget(Obj* param) {
+        return ((Requester *)param)->instance_count == 0;
     }
 };

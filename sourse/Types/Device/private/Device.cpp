@@ -14,6 +14,8 @@ Device::Device() {
 	holder_root = SDL_CreateWindow("holder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 2000, 1200, SDL_WINDOW_SHOWN);
 	holder = SDL_CreateRenderer(holder_root, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
   init_device_texture(holder);
+
+  CodeMap['A'] = SDL_SCANCODE_A;
 }
 
 Device::~Device() {
@@ -22,22 +24,25 @@ Device::~Device() {
 	SDL_Quit();
 }
 
-/*
-void UpdInputSate(Input& key, bool down, bool& IsEvent) {
-  if ((int)key.state == (int)down) {
-    return;
+InputState Device::GetKeyState(int ascii_code, InputState current)  { 
+
+  const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+  bool down = keystate[CodeMap[ascii_code]];
+
+  if ((int)current == (int)down) {
+    return current;
   }
 
-  IsEvent = true;
-
-  if (key.state == InputState::NONE) {
-    key.state = InputState::PRESSED;
-  } else if (key.state == InputState::HOLD) {
-    key.state = InputState::RELEASED;
+  if (current == InputState::NONE) {
+    return InputState::PRESSED;
+  } else if (current == InputState::HOLD) {
+    return InputState::RELEASED;
   } else {
-    key.state = InputState(down);
-  }
+    return InputState(down);
+  } 
 }
+
+/*
 
 void UpdCursorPos(UInputs& usin) {
 

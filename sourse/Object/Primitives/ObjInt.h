@@ -3,19 +3,27 @@
 
 #include "Object.h"
 
-struct Int : ObjBasedClass<Int> {
+class Int : public ObjBasedClass<Int> {
     
+    friend ObjBasedClass;
+    Int(){}
     aligned val = 0;
+    public:
+
     aligned max = ALIGNED_MAX;
     aligned min = ALIGNED_MIN;
-
+    
     Int(Obj* prnt) : ObjBasedClass (prnt) {}
 
-    Int& Assign(aligned _val, aligned _min, aligned _max) {
+    bool Assign(aligned _val, aligned _min, aligned _max) {
+        if (!CanModify()) {
+            return false;
+        }
         val = _val;
         min = _min;
         max = _max;
-        return *this;
+        Modified();
+        return true;
     }
 
     Int& operator = (const Int& in) {
@@ -24,10 +32,19 @@ struct Int : ObjBasedClass<Int> {
         max = in.max;
         return *this;
     }
+    
+    aligned GetVal() {
+        return val;
+    }
 
-    void Set(aligned _val) {
+    bool Set(aligned _val) {
+        if (!CanModify()) {
+            return false;
+        }
         val = _val;
         CLAMP(val, min, max);
+        Modified();
+        return true;
     }
 
     ~Int() {

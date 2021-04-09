@@ -3,15 +3,26 @@
 
 #include "Object.h"
 
-struct String : ObjBasedClass<String> {
+class String : public ObjBasedClass<String> {
     
+    friend ObjBasedClass;
+    String() {}
     Str string;
+    public:
 
     String(Obj* prnt) : ObjBasedClass (prnt) {}
 
-    String& Assign(STRR _string) {
+    bool Assign(STRR _string) {
+        if (!CanModify()) {
+            return false;
+        }
         string = _string;
-        return *this;
+        Modified();
+        return true;
+    }
+
+    const Str& GetStr() {
+        return string;
     }
 
     String& operator = (const String& in) {
@@ -21,4 +32,5 @@ struct String : ObjBasedClass<String> {
 
     ~String() {
     }
+
 };

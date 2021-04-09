@@ -5,6 +5,8 @@
 
 class Link : public ObjBasedClass<Link> {
     
+    friend ObjBasedClass;
+    Link() {}
     Obj* link = nullptr;
     Str link_type;
     bool base_class = false;
@@ -26,18 +28,21 @@ class Link : public ObjBasedClass<Link> {
     }
 
     bool SetLink(Obj* obj) {
+        if (!CanModify()) {
+            return false;
+        }
+
         if (base_class) {
             if (obj->type.IsPrnt(link_type)) {
                 link = obj;
-                return true;
             }
-            return true;
-        } 
-        if (obj->type.idname == link_type) {
+        } else if (obj->type.idname == link_type) {
             link = obj;
-            return true;
+        } else {
+            return false;
         }
-        return false;
+        Modified();
+        return true;
     }
 
     Obj* GetLink() {

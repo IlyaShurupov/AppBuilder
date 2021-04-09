@@ -3,19 +3,27 @@
 
 #include "Object.h"
 
-struct Float : ObjBasedClass<Float> {
+class Float : public ObjBasedClass<Float> {
     
+    friend ObjBasedClass;
+    Float() {}
     float val = 0;
+    public:
+
     float max = FLT_MAX;
     float min = FLT_MIN;
 
     Float(Obj* prnt) : ObjBasedClass (prnt) {}
 
-    Float& Assign(float _val, float _min, float _max) {
+    bool Assign(float _val, float _min, float _max) {
+        if (!CanModify()) {
+            return false;
+        }
         val = _val;
         min = _min;
         max = _max;
-        return *this;
+        Modified();
+        return true;
     }
 
     Float& operator = (const Float& in) {
@@ -24,10 +32,19 @@ struct Float : ObjBasedClass<Float> {
         max = in.max;
         return *this;
     }
+    
+    float GetVal() {
+        return val;
+    }
 
-    void Set(float _val) {
+    bool Set(float _val) {
+        if (!CanModify()) {
+            return false;
+        }
         val = _val;
         CLAMP(val, min, max);
+        Modified();
+        return true;
     }
 
     ~Float() {

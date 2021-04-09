@@ -4,16 +4,6 @@
 
 #include "Thread.h"
 
-#include "Device/DevBuffer.h"
-
-enum struct UIIstate {
-  NONE = 0,
-  ENTERED,
-  INSIDE,
-  LEAVED,
-};
-
-
 struct Guii : ObjBasedClass<Guii, Requester> {
 
     Guii() {}
@@ -23,34 +13,16 @@ struct Guii : ObjBasedClass<Guii, Requester> {
     ObList* childs;
 
     void Init () {
-        childs = &ObList::Add(this, "childs");
-        childs->list_type = "Guii";
+        childs = &ADDOBJ(ObList, childs, *this, (this));
+        childs->Assign("Guii", true);
     }
 
     Guii& operator = (const Guii& in) { return *this; }
 
-    // Draw info
-    Rect<float> rect;
-    DevBuffer* buff = nullptr;
-
-    bool ownbuff = true;
-    bool recursive_trunsform = false;
-    vec2<bool> rigid;
-
-    // Event info
-    UIIstate state;
-    bool hide = false;
-    bool redraw = true;
-
-    // Edit info
-    Rect<float> prev_rect;
-    char flag = 0;
-
-
     void OnUpdate(ObList* requests, ObList* inputs) {
         OnUpdateBody(requests, inputs);
 
-        FOREACH(&childs->list, Obj, guii) {
+        FOREACH_OBJ(&childs->GetList(), guii) {
             ((Guii*)guii.Data())->OnUpdate(requests, inputs);
         }
     }
@@ -58,7 +30,7 @@ struct Guii : ObjBasedClass<Guii, Requester> {
     void OnDestroy(ObList* requests, ObList* inputs) {
         OnDestroyBody(requests, inputs);
 
-        FOREACH(&childs->list, Obj, guii) {
+        FOREACH_OBJ(&childs->GetList(), guii) {
             ((Guii*)guii.Data())->OnDestroy(requests, inputs);
         }
     }
@@ -66,7 +38,7 @@ struct Guii : ObjBasedClass<Guii, Requester> {
     void OnCreate(ObList* requests, ObList* inputs) {
         OnCreateBody(requests, inputs);
 
-        FOREACH(&childs->list, Obj, guii) {
+        FOREACH_OBJ(&childs->GetList(), guii) {
             ((Guii*)guii.Data())->OnCreate(requests, inputs);
         }
     }
@@ -74,7 +46,7 @@ struct Guii : ObjBasedClass<Guii, Requester> {
     void Draw(Obj* root) {
         DrawBody(root);
         
-        FOREACH(&childs->list, Obj, guii) {
+        FOREACH_OBJ(&childs->GetList(), guii) {
             ((Guii*)guii.Data())->Draw(root);
         }
     }
@@ -89,36 +61,12 @@ struct Guii : ObjBasedClass<Guii, Requester> {
     virtual ~Guii() {}
 };
 
-struct DataView : ObjBasedClass<DataView, Guii> {
-
-    DataView(Obj* prnt) : ObjBasedClass (prnt) {}
-
-    DataView& operator = (const DataView& in) { return *this; }
- 
-    void OnCreateBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void OnUpdateBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void OnDestroyBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void DrawBody(Obj* root) {
-
-    }
-
-    ~DataView() {}
-};
-
 struct GUI : ObjBasedClass<GUI, UI> {
 
+    GUI() {}
     GUI(Obj* prnt) : ObjBasedClass (prnt) {
-        Link::Add(this, "Inputs List").Init("ObList", false);
-        Link::Add(this, "Root").Init("Guii", true);
+        ADDOBJ(Link, Inputs List, *this, (this)).Init("ObList", false);
+        ADDOBJ(Link, Root, *this, (this)).Init("Guii", true);
     }
     
     GUI& operator = (const GUI& in) { return *this; }

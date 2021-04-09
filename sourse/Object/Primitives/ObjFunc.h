@@ -3,8 +3,11 @@
 
 #include "Object.h"
 
-struct Func : ObjBasedClass<Func> {
+class Func : public ObjBasedClass<Func> {
     
+    public:
+    
+    Func() {}
     Func(Obj* prnt) : ObjBasedClass (prnt) {}
 
     Func& operator = (const Func& in) {

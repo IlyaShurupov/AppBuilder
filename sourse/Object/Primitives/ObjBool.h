@@ -3,10 +3,13 @@
 
 #include "Object.h"
 
-struct Bool : ObjBasedClass<Bool> {
+class Bool : public ObjBasedClass<Bool> {
     
+    friend ObjBasedClass;
+    Bool() {}
     bool val = 0;
-
+    public:
+    
     Bool(Obj* prnt) : ObjBasedClass (prnt) {}
 
     Bool& Assign(bool _val) {
@@ -19,8 +22,17 @@ struct Bool : ObjBasedClass<Bool> {
         return *this;
     }
 
-    void Set(bool _val) {
+    bool GetVal() {
+        return val;
+    }
+
+    bool Set(bool _val) {
+        if (!CanModify()) {
+            return false;
+        }
         val = _val;
+        Modified();
+        return true;
     }
 
     ~Bool() {

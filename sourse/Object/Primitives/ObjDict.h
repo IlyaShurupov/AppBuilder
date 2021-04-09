@@ -3,15 +3,20 @@
 
 #include "Object.h"
 
-struct ObDict : ObjBasedClass<ObDict> {
+class ObDict : public ObjBasedClass<ObDict> {
     
+    friend ObjBasedClass;
+    ObDict() {}
+
     Dict<Obj> dict;
     Str dict_type;
     bool base_class = false;
-
+    public:
+    
     ObDict(Obj* prnt) : ObjBasedClass (prnt) {}
 
     ObDict& operator = (const ObDict& in) {
+        dict = in.dict;
         dict_type = in.dict_type;
         type = in.type;
         base_class = in.base_class;
@@ -24,19 +29,27 @@ struct ObDict : ObjBasedClass<ObDict> {
         return *this;
     }
 
+    Dict<Obj>& GetDict() {
+        return dict;
+    }
+
     bool AddObj(Obj* obj, STRR name) {
+        if (!CanModify()) {
+            return false;
+        }
+
         if (base_class) {
             if (obj->type.IsPrnt(dict_type)) {
                 dict.Put(name, obj);
-                return true;
             }
-            return true;
-        } 
-        if (obj->type.idname == dict_type) {
+        } else if (obj->type.idname == dict_type) {
             dict.Put(name, obj);
-            return true;
+        } else {
+            return false;
         }
-        return false;
+        
+        Modified();
+        return true;
     }
 
     ~ObDict() {
