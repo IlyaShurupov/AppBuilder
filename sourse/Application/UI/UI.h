@@ -3,14 +3,22 @@
 #include "Object.h"
 #include "Primitives.h"
 
-struct UI : ObjBasedClass<UI> {
+class UI : public Obj {
 
-    UI() {}
-    UI(Obj* prnt) : ObjBasedClass (prnt) {}
-    UI(Obj* prnt, STRR) : ObjBasedClass (prnt) {}
-    
-    UI& operator = (const UI& in) { return *this; }
-    
+    UI& operator = (const UI& in);
+
+    public:
+
+    UI(const UI& in) : Obj(in) {} 
+
+    UI(Obj* prnt) : Obj(prnt) {
+        RegisterType(ObjType("UI"));
+    }
+
+    virtual UI& Instance() {
+        return *new UI(*this);
+    }
+
     virtual void PumpRequests(ObList* requests) {}
     virtual void OutPut(Obj* root) {}
 

@@ -10,39 +10,57 @@ enum class OpState {
     FINISHED,
 };
 
-class Operator : public ObjBasedClass<Operator> {
+class Operator : public Obj {
+
+    Operator& operator = (const Operator& in);
+    Operator(const Operator& in) : Obj(in) {
+        instance_count = in.instance_count;
+        parallel = in.parallel; 
+        state = in.state;
+    } 
 
     public:
-
-    Operator() { 
-        ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
-        ADDOBJ(Link, Args, *this, (this)).Init("Obj", true);
-    }
-
-    Operator& operator = (const Operator& in) {
-        return *this;
-    }
-
-    virtual bool Poll() { return false; }
-    virtual void Invoke() { }
-    virtual void Modal() { }
-
-    virtual ~Operator() { 
-    }
-
-    bool Finished() { return state == OpState::FINISHED; }
 
     int* instance_count = nullptr;
     bool parallel = false; 
     OpState state = OpState::NONE;
+
+    Operator(Obj* prnt) : Obj(prnt) { 
+        RegisterType(ObjType("Operator"));
+        ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
+        ADDOBJ(Link, Args, *this, (this)).Init("Obj", true);
+    }
+
+    virtual Operator& Instance() {
+        return *new Operator(*this);
+    }
+
+    virtual bool Poll() { return false; }
+    virtual void Invoke() {}
+    virtual void Modal() {}
+
+    virtual ~Operator() {}
+
+    bool Finished() { return state == OpState::FINISHED; }
 };
 
-struct OpHolder : ObjBasedClass<OpHolder> {
+class OpHolder : public Obj {
 
-    OpHolder(){}
-    OpHolder(Obj* prnt, Operator* _op) : ObjBasedClass (prnt) { 
+    OpHolder& operator = (const OpHolder& in);
+    OpHolder(const OpHolder& in) : Obj(in) {
+        op = in.op;
+        threads = in.threads;
+    } 
+
+    public:
+
+    OpHolder(Obj* prnt, Operator* _op) : Obj(prnt) {
+        RegisterType(ObjType("OpHolder"));
         op = _op;
-        op->prnt = this;
+    }
+    
+    virtual OpHolder& Instance() {
+        return *new OpHolder(*this);
     }
 
     Operator* op;
@@ -52,12 +70,11 @@ struct OpHolder : ObjBasedClass<OpHolder> {
         UpdateThreads();
 
         if (op->parallel || !threads.Len()) {
-            Operator* instance = new Operator();
-            ((Obj*)instance)->Copy((Obj*)op);
+            Operator* instance = &op->Instance();
 
             *_instance_count += 1;
             instance->instance_count = _instance_count;
-            Link::Get(instance, "Args").SetLink(args_link);
+            GETOBJ(Link, instance, Args).SetLink(args_link);
 
             threads.PushBack(instance);
             return instance;
@@ -67,7 +84,8 @@ struct OpHolder : ObjBasedClass<OpHolder> {
     }
     
     void GetInterface(ObDict* args) {
-        args->Copy(&ObDict::Get(op, "Interface"));
+        delete args;
+        args = &GETOBJ(ObDict, op, Interface).Instance();
     }
 
     void UpdateThreads() {
@@ -80,9 +98,20 @@ struct OpHolder : ObjBasedClass<OpHolder> {
     }
 };
 
-struct Requester : ObjBasedClass<Requester> {
-    
-    Requester() {
+class Requester : public Obj {
+
+    Requester& operator = (const Requester& in);
+
+    public:
+
+    Requester(const Requester& in) : Obj(in) {
+        instance_count = in.instance_count;
+    } 
+
+    Requester(Obj* prnt) : Obj(prnt) { 
+
+        RegisterType(ObjType("Requester"));
+        
         ADDOBJ(ObDict, Op Args, *this, (this)).Assign("Obj", true);
 
         Link& target_link = ADDOBJ(Link, Target Op, *this, (this));
@@ -91,9 +120,13 @@ struct Requester : ObjBasedClass<Requester> {
         target_link.AddOnModCallBack(this, TargetChanged);
     }
 
+    virtual Requester& Instance() {
+        return *new Requester(*this);
+    }
+    
     void CreateRequest(ObList* requests) {      
-        OpHolder* holder = (OpHolder*)Link::Get(this, "Target Op").GetLink();
-        Operator* instance = holder->GetInstance(&ObDict::Get(this, "Op Args"), &instance_count);
+        OpHolder* holder = (OpHolder*)GETOBJ(Link, this, Target Op).GetLink();
+        Operator* instance = holder->GetInstance(&GETOBJ(ObDict, this, Op Args), &instance_count);
         if (instance) {
             requests->AddObj(instance);
         }
@@ -107,8 +140,8 @@ struct Requester : ObjBasedClass<Requester> {
 
     static void TargetChanged(Obj* param) {
         Requester * ths = (Requester *)param;
-        OpHolder* holder = (OpHolder*)Link::Get(ths, "Target Op").GetLink();
-        holder->GetInterface(&ObDict::Get(ths, "Op Args"));
+        OpHolder* holder = (OpHolder*)GETOBJ(Link, ths, Target Op).GetLink();
+        holder->GetInterface(&GETOBJ(ObDict, ths, Op Args));
     }
 
     static bool CanChangeTarget(Obj* param) {

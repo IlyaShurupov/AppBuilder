@@ -74,7 +74,6 @@ class Array {
     Insert(block, length);
   }
 
-
   Array(Type b1) { 
     Reserve(1); buff[0] = b1;
   }

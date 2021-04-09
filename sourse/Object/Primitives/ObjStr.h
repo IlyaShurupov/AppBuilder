@@ -3,14 +3,25 @@
 
 #include "Object.h"
 
-class String : public ObjBasedClass<String> {
+class String : public Obj {
     
-    friend ObjBasedClass;
-    String() {}
     Str string;
+    
+    String& operator=(const String& in);
+
     public:
 
-    String(Obj* prnt) : ObjBasedClass (prnt) {}
+    String(const String& in) : Obj(in) {
+        string = in.string;    
+    }
+
+    String(Obj* prnt) : Obj(prnt) {
+        RegisterType(ObjType("String"));
+    }
+
+    virtual String& Instance() {
+        return *new String(*this);
+    }
 
     bool Assign(STRR _string) {
         if (!CanModify()) {
@@ -25,12 +36,6 @@ class String : public ObjBasedClass<String> {
         return string;
     }
 
-    String& operator = (const String& in) {
-        string = in.string;
-        return *this;
-    }
-
     ~String() {
     }
-
 };

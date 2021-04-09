@@ -3,24 +3,28 @@
 
 #include "Object.h"
 
-class ObDict : public ObjBasedClass<ObDict> {
+class ObDict : public Obj {
     
-    friend ObjBasedClass;
-    ObDict() {}
-
     Dict<Obj> dict;
     Str dict_type;
     bool base_class = false;
-    public:
-    
-    ObDict(Obj* prnt) : ObjBasedClass (prnt) {}
 
-    ObDict& operator = (const ObDict& in) {
-        dict = in.dict;
+    ObDict& operator = (const ObDict& in);
+
+    public:
+
+    ObDict(const ObDict& in) : Obj(in) {
         dict_type = in.dict_type;
-        type = in.type;
-        base_class = in.base_class;
-        return *this;
+        dict = in.dict;  
+        base_class = in.base_class;  
+    }
+
+    ObDict(Obj* prnt) : Obj (prnt)  {        
+        RegisterType(ObjType("ObDict"));
+    }
+
+    virtual ObDict& Instance() {
+        return *new ObDict(*this);
     }
 
     ObDict& Assign(Str _dict_type, bool _base_class) {

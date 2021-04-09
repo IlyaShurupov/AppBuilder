@@ -4,6 +4,7 @@
 
 #include "Thread.h"
 
+/*
 struct Guii : ObjBasedClass<Guii, Requester> {
 
     Guii() {}
@@ -88,3 +89,4 @@ struct GUI : ObjBasedClass<GUI, UI> {
 
     ~GUI() {}
 };
+*/

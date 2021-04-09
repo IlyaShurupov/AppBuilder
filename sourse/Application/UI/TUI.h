@@ -4,47 +4,75 @@
 #include "UI.h"
 #include "Thread.h"
 
-struct ShortCut : public ObjBasedClass<ShortCut, Requester> {
+class ShortCut : public Requester {
 
-    ShortCut() {}
-    ShortCut(Obj* prnt) : ObjBasedClass(prnt) {
-        
+    ShortCut& operator = (const ShortCut& in);
+    ShortCut(const ShortCut& in) : Requester(in) {} 
+
+    public:
+
+    ShortCut(Obj* prnt) : Requester(prnt) {
+        RegisterType(ObjType("ShortCut"));
     }
-    
+
+    virtual ShortCut& Instance() {
+        return *new ShortCut(*this);
+    }
+
     void ProcInputs(ObList* reqs) {
         CreateRequest(reqs);
     }
 };
 
-struct KeyInput : public ObjBasedClass<KeyInput> {
-    KeyInput() {}
-    KeyInput(Obj* prnt) :ObjBasedClass(prnt) {
+class KeyInput : public Obj {
+
+    KeyInput& operator = (const KeyInput& in);
+    KeyInput(const KeyInput& in) : Obj(in) {} 
+
+    public:
+
+    KeyInput(Obj* prnt) : Obj(prnt) {
+        RegisterType(ObjType("KeyInput"));
+
         ADDOBJ(String, KeyName, *this, (this)).Assign("none");
         ADDOBJ(Int, ASCII Code, *this, (this)).Assign(0, 0, 255);
         ADDOBJ(Int, State, *this, (this)).Assign(0, 0, 5);
     }
+    
+    virtual KeyInput& Instance() {
+        return *new KeyInput(*this);
+    }
 
     void Update(Device* Device) {
-        Int& state = Int::Get(this, "State");
-        int val = (int)Device->GetKeyState(Int::Get(this, "ASCII Code").GetVal(), (InputState)state.GetVal());
+        Int& state = GETOBJ(Int, this, State);
+        int val = (int)Device->GetKeyState(GETOBJ(Int, this, ASCII Code).GetVal(), (InputState)state.GetVal());
         state.Set(val);
     }
 };
 
-struct TUI : ObjBasedClass<TUI, UI> {
+class TUI : public UI {
 
-    TUI() {}
-    TUI(Obj* prnt, Device* _dev) : ObjBasedClass (prnt) {
+    TUI& operator = (const TUI& in);
+    TUI(const TUI& in) : UI(in) {
+        dev = in.dev;
+    } 
+
+    public:
+
+    TUI(Obj* prnt, Device* _dev) : UI(prnt) {
         ADDOBJ(ObList, Shortcuts, *this, (this)).Assign("ShortCut", false);
         ADDOBJ(ObList, Inputs, *this, (this)).Assign("KeyInput", false);
         dev = _dev;
     }
     
+    virtual TUI& Instance() {
+        return *new TUI(*this);
+    }
+
     Device* dev = nullptr;
-    TUI& operator = (const TUI& in) { return *this; }
     
     void UpdateInputStates() {
-        FOREACH_OBJ(&ObList::Get(this, "Inputs").GetList(), input_obj) {
+        FOREACH_OBJ(&GETOBJ(ObList, this, Inputs).GetList(), input_obj) {
             KeyInput* input = (KeyInput*)input_obj.Data();
             input->Update(dev);
         }
@@ -53,7 +81,7 @@ struct TUI : ObjBasedClass<TUI, UI> {
     void PumpRequests(ObList* requests) {
         UpdateInputStates();
 
-        FOREACH_OBJ(&ObList::Get(this, "Shortcuts").GetList(), shcut_obj) {
+        FOREACH_OBJ(&GETOBJ(ObList, this, Shortcuts).GetList(), shcut_obj) {
             ShortCut* shcut = (ShortCut*)shcut_obj.Data();
             shcut->ProcInputs(requests);
         }

@@ -3,6 +3,7 @@
 
 #include "Object.h"
 
+/*
 class Func : public ObjBasedClass<Func> {
     
     public:
@@ -18,3 +19,4 @@ class Func : public ObjBasedClass<Func> {
 
     virtual ~Func() {}
 };
+*/

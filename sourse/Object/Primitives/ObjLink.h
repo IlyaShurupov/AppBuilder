@@ -3,23 +3,28 @@
 
 #include "Object.h"
 
-class Link : public ObjBasedClass<Link> {
+class Link : public Obj {
     
-    friend ObjBasedClass;
-    Link() {}
     Obj* link = nullptr;
     Str link_type;
     bool base_class = false;
 
+    Link& operator = (const Link& in);
+
     public:
 
-    Link(Obj* prnt) : ObjBasedClass (prnt) {}
-
-    Link& operator = (const Link& in) {
+    Link(const Link& in) : Obj(in) {
         link_type = in.link_type;
-        link = in.link;
-        base_class = in.base_class;
-        return *this;
+        link = in.link;  
+        base_class = in.base_class;  
+    }
+
+    Link(Obj* prnt) : Obj (prnt) {        
+        RegisterType(ObjType("Link"));
+    }
+
+    virtual Link& Instance() {
+        return *new Link(*this);
     }
 
     void Init(STRR _link_type, bool _base_class) {

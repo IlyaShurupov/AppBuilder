@@ -8,39 +8,21 @@
 
 #include <stdlib.h>
 
-struct DataView : ObjBasedClass<DataView, Guii> {
 
-    DataView() {}
-    DataView(Obj* prnt) : ObjBasedClass (prnt) {}
+class QuitProgramm : public Operator {
 
-    DataView& operator = (const DataView& in) { return *this; }
- 
-    void OnCreateBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void OnUpdateBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void OnDestroyBody(ObList* requests, ObList* inputs) {
-
-    }
-
-    void DrawBody(Obj* root) {
-
-    }
-
-    ~DataView() {}
-};
-
-
-class QuitProgramm : public ObjBasedClass<QuitProgramm, Operator> {
+    QuitProgramm& operator = (const QuitProgramm& in);
+    QuitProgramm(const QuitProgramm& in) : Operator(in.prnt) {} 
 
     public:
-    QuitProgramm() {
-        ObDict& args = ObDict::Get(this, "Interface");
+
+    QuitProgramm(Obj* prnt) : Operator(prnt) { 
+        ObDict& args = GETOBJ(ObDict, this, Interface);
         args.AddObj(new Bool(nullptr), "Save");
+    }
+
+    virtual QuitProgramm& Instance() {
+        return *new QuitProgramm(*this);
     }
     
     bool Poll() { return true; }
@@ -50,7 +32,7 @@ class QuitProgramm : public ObjBasedClass<QuitProgramm, Operator> {
     }
     
     void Modal() { 
-        Dict<Obj>* args = &((ObDict*)Link::Get(this, "Args").GetLink())->GetDict();
+        Dict<Obj>* args = &((ObDict*)GETOBJ(Link, this, Args).GetLink())->GetDict();
         bool save = ((Bool *)args->Get("Save"))->GetVal();
         // exit(0);
         state = OpState::FINISHED; 
@@ -59,55 +41,59 @@ class QuitProgramm : public ObjBasedClass<QuitProgramm, Operator> {
 
 
 
-struct Application : ObjBasedClass<Application> {
+class Application : public Obj {
     
-    Application() {}
-    Application(Obj* prnt) : ObjBasedClass (prnt) {
+    Application& operator = (const Application& in);
+    Application(const Application& in) : Obj(in) {
+
+    } 
+
+    public:
+
+    Application(Obj* prnt) : Obj (prnt) {
         
+        RegisterType(ObjType("Application"));
+
         ADDOBJ(ObList, UIs, *this, (this)).Assign("UI", true);
         ADDOBJ(ObList, Requests, *this, (this)).Assign("Operator", true);
         ADDOBJ(ObList, Threads, *this, (this)).Assign("Operator", true);
         ADDOBJ(ObList, OpHolders, *this, (this)).Assign("OpHolder", false);
 
-        Obj& data = ADDOBJ(Obj, Data, *this, (this, ObjType("Data")));
+        Obj& data = ADDOBJ(Obj, Data, *this, (this));
         ADDOBJ(Int, fps, data, (&data)).Assign(60, 10, 120);
-    }
-
-    Application& operator = (const Application& in) {
-        return *this;
     }
 
     void Compose() {
         Device* dev = new Device();
 
-        ObList& OpHolders = ObList::Get(this, "OpHolders");
-        Operator* op = new QuitProgramm();
+        ObList& OpHolders = GETOBJ(ObList, this, OpHolders);
+        Operator* op = new QuitProgramm(nullptr);
         op->Invoke();
         OpHolder* opholder = new OpHolder(nullptr, op);
         OpHolders.AddObj(opholder);
 
         TUI* tui = new TUI(this, dev);
-        ObList::Get(this, "UIs").AddObj(tui);
+        GETOBJ(ObList, this, UIs).AddObj(tui);
 
         KeyInput* input = new KeyInput(nullptr);
-        String::Get(input, "KeyName").Assign("A");
-        Int::Get(input, "ASCII Code").Set('A');
-        ObList::Get(tui, "Inputs").AddObj(input);
+        GETOBJ(String, input, KeyName).Assign("A");
+        GETOBJ(Int, input, ASCII Code).Set('A');
+        GETOBJ(ObList, tui, Inputs).AddObj(input);
 
         ShortCut* shcut = new ShortCut(nullptr);
-        Link::Get(shcut, "Target Op").SetLink(opholder);
-        ObList::Get(tui, "Shortcuts").AddObj(shcut);
+        GETOBJ(Link, shcut, Target Op).SetLink(opholder);
+        GETOBJ(ObList, tui, Shortcuts).AddObj(shcut);
     }
 
     void Run() {
 
-        ObList& UIs = ObList::Get(this, "UIs");
-        ObList& Threads = ObList::Get(this, "Threads");
-        ObList& Requests = ObList::Get(this, "Requests");
+        ObList& UIs = GETOBJ(ObList, this, UIs);
+        ObList& Threads = GETOBJ(ObList, this, Threads);
+        ObList& Requests = GETOBJ(ObList, this, Requests);
 
         MAINLOOP : {
 
-            Timer timer = Timer(1000.f / Int::Get(&GetChld("Data"), "fps").GetVal());
+            Timer timer = Timer(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal());
 
             // Pump Requests From UIs
             FOREACH_OBJ(&UIs.GetList(), ui) {

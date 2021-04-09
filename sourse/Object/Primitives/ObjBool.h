@@ -3,22 +3,31 @@
 
 #include "Object.h"
 
-class Bool : public ObjBasedClass<Bool> {
+class Bool : public Obj {
     
-    friend ObjBasedClass;
-    Bool() {}
     bool val = 0;
+
+    Bool& operator = (const Bool& in);
+
     public:
-    
-    Bool(Obj* prnt) : ObjBasedClass (prnt) {}
+
+    Bool(const Bool& in) : Obj(in) {
+        val = in.val;
+    }
+
+    float max = FLT_MAX;
+    float min = FLT_MIN;
+
+    Bool(Obj* prnt) : Obj (prnt)  {        
+        RegisterType(ObjType("Bool"));
+    }
+
+    virtual Bool& Instance() {
+        return *new Bool(*this);
+    }
 
     Bool& Assign(bool _val) {
         val = _val;
-        return *this;
-    }
-
-    Bool& operator = (const Bool& in) {
-        val = in.val;
         return *this;
     }
 

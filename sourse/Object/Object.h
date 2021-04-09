@@ -6,6 +6,8 @@
 #define STRR const Str&
 #define FOREACH_OBJ(Oblist, iter) FOREACH(Oblist, Obj, iter)
 #define ADDOBJ(Type, Name, to, Args) ((Type &)(to).AddChld(new Type Args, #Name))
+#define GETOBJ(type, from, name) ((type&)*(from)->props.Get(#name))
+
 
 class Obj;
 
@@ -33,22 +35,15 @@ struct ObjType {
 
 class Obj {
     
+    Obj& operator=(const Obj& in);
+    
     public:
     
-    Obj();
-    Obj(Obj* _prnt, const ObjType& _type);
-
-    virtual void Copy(Obj* in) {
-        props = in->props;
-        type = in->type;
-        // prnt = in->prnt;
-        Modified();
-    }
+    Obj(const Obj& in);
+    Obj(Obj* _prnt);
 
     virtual Obj& Instance() {
-        Obj* instance = new Obj(prnt, type);
-        *instance = *this;
-        return *instance;
+        return *new Obj(*this);
     }
 
     virtual ~Obj() {}
@@ -56,7 +51,7 @@ class Obj {
     Obj& GetChld(STRR idname);
     Obj& AddChld(Obj* chld, STRR idname);
     void DelChild(STRR idname);
-
+    void RegisterType(const ObjType& _type);
     Dict<Obj> props;
     ObjType type;
     Obj* prnt = nullptr;
@@ -92,47 +87,4 @@ class Obj {
             OnModCallBacks[i].callback(OnModCallBacks[i].ths);
         }
     }
-};
-
-template <typename Class, typename PrntClass = Obj>
-class ObjBasedClass : public PrntClass {
-
-    public:
-
-    void InitType() {
-    
-        ObjType* current_type = new ObjType();
-        *current_type = PrntClass::type;
-        current_type->child = &(PrntClass::type);
-        PrntClass::type.prnt = current_type;
-
-        PrntClass::type.idname = (typeid(Class).name() + 1);
-    }
-
-    ObjBasedClass(Obj* _prnt) {
-        PrntClass::prnt = _prnt;
-        InitType();
-    }
-
-    ObjBasedClass() {
-        InitType();
-    }
-
-    virtual void Copy(Obj* in) {
-        *((Class*)this) = *((Class*)in);
-        PrntClass::Copy(in);
-    }
-
-    virtual Obj& Instance() {
-        Obj* instance = new Class();
-        instance->Copy(this);
-        return *instance;
-    }
-
-    virtual ~ObjBasedClass() {}
-
-    static Class& Get(Obj* from, STRR idname) {
-        return (Class&)*from->props.Get(idname);
-    }
-
 };

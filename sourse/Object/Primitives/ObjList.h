@@ -3,21 +3,27 @@
 
 #include "Object.h"
 
-class ObList : public ObjBasedClass<ObList> {
+class ObList : public Obj {
     
-    friend ObjBasedClass;
-    ObList() {}
     List<Obj> list;
     Str list_type;
     bool base_class = false;
+
+    ObList& operator = (const ObList& in);
+    
     public:
 
-    ObList(Obj* prnt) : ObjBasedClass (prnt) {}
-
-    ObList& operator = (const ObList& in) {
+    ObList(const ObList& in) : Obj(in) {
         list_type = in.list_type;
-        type = in.type;
-        return *this;
+        type = in.type;  
+    }
+
+    ObList(Obj* prnt) : Obj(prnt) {
+        RegisterType(ObjType("ObList"));
+    }
+
+    virtual ObList& Instance() {
+        return *new ObList(*this);
     }
 
     ObList& Assign(Str _list_type, bool _base_class) {

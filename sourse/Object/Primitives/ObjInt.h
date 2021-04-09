@@ -3,17 +3,30 @@
 
 #include "Object.h"
 
-class Int : public ObjBasedClass<Int> {
+class Int : public Obj {
     
-    friend ObjBasedClass;
-    Int(){}
     aligned val = 0;
+    
+    Int& operator = (const Int& in);
+
     public:
+
+    Int(const Int& in) : Obj(in) {
+        val = in.val;
+        max = in.max;  
+        min = in.min;  
+    }
 
     aligned max = ALIGNED_MAX;
     aligned min = ALIGNED_MIN;
-    
-    Int(Obj* prnt) : ObjBasedClass (prnt) {}
+
+    Int(Obj* prnt) : Obj (prnt) {        
+        RegisterType(ObjType("Int"));
+    }
+
+    virtual Int& Instance() {
+        return *new Int(*this);
+    }
 
     bool Assign(aligned _val, aligned _min, aligned _max) {
         if (!CanModify()) {
@@ -24,13 +37,6 @@ class Int : public ObjBasedClass<Int> {
         max = _max;
         Modified();
         return true;
-    }
-
-    Int& operator = (const Int& in) {
-        val = in.val;
-        min = in.min;
-        max = in.max;
-        return *this;
     }
     
     aligned GetVal() {

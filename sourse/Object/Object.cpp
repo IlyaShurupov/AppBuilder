@@ -21,11 +21,29 @@ bool ObjType::IsPrnt(STRR prnt_id) {
 }
 
 
-Obj::Obj() {}
+Obj::Obj(const Obj& in) {
+    props = in.props;
 
-Obj::Obj(Obj* _prnt, const ObjType& _type) {
-    type = _type; 
+    type = in.type;
+    prnt = in.prnt;
+
+    req_mod_param = in.req_mod_param;
+    req_mod_poll = in.req_mod_poll;
+    OnModCallBacks = in.OnModCallBacks;
+}
+
+Obj::Obj(Obj* _prnt) {
+    type = ObjType("Obj");
     prnt = _prnt;
+}
+
+void Obj::RegisterType(const ObjType& _type) {
+    ObjType* current_type = new ObjType();
+    *current_type = type;
+    current_type->child = &(type);
+
+    type = _type;
+    type.prnt = current_type;
 }
 
 Obj& Obj::GetChld(STRR idname) {
