@@ -5,7 +5,7 @@
 
 class ObDict : public Obj {
     
-    Dict<Obj> dict;
+    DictObj dict;
     Str dict_type;
     bool base_class = false;
 
@@ -33,7 +33,7 @@ class ObDict : public Obj {
         return *this;
     }
 
-    Dict<Obj>& GetDict() {
+    DictObj& GetDict() {
         return dict;
     }
 

@@ -5,7 +5,7 @@
 #include "List.h"
 #include "Tuple.h"
 
-template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy >
+template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy, typename Copying>
 class HashTable;
 
 template <typename K, typename V>
@@ -28,6 +28,13 @@ struct StrHashPolicy {
 };
 
 template <typename V>
+struct CopyVal {
+    const V& operator()(const V& in) const {
+        return in;
+    }
+};
+
+template <typename V>
 struct DelRemovePolicy {
     void operator()(V* val) {
         delete val;
@@ -41,8 +48,8 @@ struct ReleaseRemovePolicy {
     }
 };
 
-template <typename Type, int Size = 10 >
-using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str >, DelRemovePolicy<Type> >;
+template <typename Type, int Size = 10 , typename Copying = CopyVal<Type*> >
+using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str >, DelRemovePolicy<Type>, Copying >;
 
 
 template <typename K, typename V>
@@ -63,12 +70,13 @@ struct HashNode {
 };
 
 
-template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy = ReleaseRemovePolicy<V> >
+template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy = ReleaseRemovePolicy<V>, typename Copying = CopyVal<V> >
 class HashTable {
 
     HashNode<K, V>* table[tableSize];
     HashPolicy hash;
     RemovePolicy remove_val;
+    Copying copy_val;
     uint8 size = tableSize;
 
 public:
@@ -180,7 +188,8 @@ public:
             }
 
             for (HashNode<K, V>* node = in.table[idx]; node; node = node->next) {
-                Put(node->key, node->val);
+                const V copied_val = copy_val(node->val);
+                Put(node->key, copied_val);
             }
             
         }

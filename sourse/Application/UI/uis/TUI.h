@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "UI.h"
-#include "Thread.h"
+#include "UI/UI.h"
+#include "UI/Requester.h"
 
 class CompareExpr : public Obj {
     CompareExpr& operator = (const CompareExpr& in);

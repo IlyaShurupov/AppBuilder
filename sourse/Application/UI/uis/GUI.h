@@ -1,8 +1,8 @@
 #pragma once
 
-#include "UI.h"
+#include "UI/UI.h"
 
-#include "Thread.h"
+#include "UI/Requester.h"
 
 /*
 struct Guii : ObjBasedClass<Guii, Requester> {

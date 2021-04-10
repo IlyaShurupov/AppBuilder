@@ -8,8 +8,10 @@
 #define ADDOBJ(Type, Name, to, Args) ((Type &)(to).AddChld(new Type Args, #Name))
 #define GETOBJ(type, from, name) ((type&)*(from)->props.Get(#name))
 
-
 class Obj;
+
+struct CopyObj { Obj* operator()(Obj* in); };
+using DictObj = Dict<Obj, 10, CopyObj>;
 
 enum class ModType {
     SET, 
@@ -55,16 +57,25 @@ class Obj {
         return *new Obj(*this);
     }
 
-    virtual ~Obj() {}
+    virtual ~Obj() {
+        if (next) {
+            next->next = prev;
+        }
+        if (prev) {
+            prev->prev = next;
+        }
+    }
 
     Obj& GetChld(STRR idname);
     Obj& AddChld(Obj* chld, STRR idname);
     void DelChild(STRR idname);
     void RegisterType(const ObjType& _type);
 
-    Dict<Obj> props;
+    DictObj props;
     ObjType type;
     Obj* prnt = nullptr;
+    Obj* next = nullptr;
+    Obj* prev = nullptr;
 
     virtual bool Equal(const Obj& obj) { return false; }
 
@@ -98,9 +109,11 @@ class Obj {
         for (int i = 0; i < OnModCallBacks.Len(); i++) {
             OnModCallBacks[i].callback(OnModCallBacks[i].ths, type);
         }
-        
+
         if (prnt) {
             prnt->Modified(ModType::CILD);
         }
     }
 };
+
+Obj* get_objs_entry();

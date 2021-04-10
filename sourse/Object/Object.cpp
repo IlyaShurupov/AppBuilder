@@ -1,6 +1,12 @@
 
 #include "Object.h"
 
+Obj* objs_entry = nullptr;
+
+Obj* CopyObj::operator()(Obj* in) {
+        return &in->Instance();
+}
+
 ObjType::ObjType() {
     idname = "Obj";
 }
@@ -30,11 +36,25 @@ Obj::Obj(const Obj& in) {
     req_mod_param = in.req_mod_param;
     req_mod_poll = in.req_mod_poll;
     OnModCallBacks = in.OnModCallBacks;
+
+    if (objs_entry) {
+        objs_entry->next = this;
+        prev = objs_entry;
+    }
+
+    objs_entry = this;
 }
 
 Obj::Obj(Obj* _prnt) {
     type = ObjType("Obj");
     prnt = _prnt;
+
+    if (objs_entry) {
+        objs_entry->next = this;
+        prev = objs_entry;
+    }
+
+    objs_entry = this;
 }
 
 void Obj::RegisterType(const ObjType& _type) {
@@ -57,4 +77,8 @@ Obj& Obj::AddChld(Obj* val, STRR idname) {
 
 void Obj::DelChild(STRR idname) {
     props.Remove(idname);
+}
+
+Obj* get_objs_entry() {
+    return objs_entry;
 }
