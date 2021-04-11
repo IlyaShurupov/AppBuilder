@@ -138,7 +138,7 @@ class TUI : public UI {
     }
 
     void PumpRequests(ObList* requests) {
-
+        
         dev->PumpEvents();
         UpdateInputStates();
         dev->ClearEvents();

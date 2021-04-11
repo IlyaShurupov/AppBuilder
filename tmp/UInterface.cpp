@@ -32,34 +32,37 @@ void UIItem::ProcEvent(Seance* C, vec2<SCR_INT> cursor) {
 
   IF(hide, return );
 
-  UIIstate newState;
+          UIIstate newState;
 
-  if (rect.inside((float)cursor.x, (float)cursor.y)) {
-    if (state == UIIstate::NONE) {
-      newState = UIIstate::ENTERED;
-    }
-    newState = UIIstate::INSIDE;
-  } else {
-    if (state == UIIstate::INSIDE) {
-      newState = UIIstate::LEAVED;
-    }
-    newState = UIIstate::NONE;
-  }
+        if (rect.inside((float)cursor.x, (float)cursor.y)) {
+            if (state == UIIstate::NONE) {
+            newState = UIIstate::ENTERED;
+            }
+            newState = UIIstate::INSIDE;
+        } else {
+            if (state == UIIstate::INSIDE) {
+            newState = UIIstate::LEAVED;
+            }
+            newState = UIIstate::NONE;
+        }
 
-  if (state != newState) {
-    redraw = true;
-    state = newState;
-  }
+        if (state != newState) {
+            redraw = true;
+            state = newState;
+        }
 
-  if (state == UIIstate::INSIDE) {
-    ProcBody(this, C, cursor);
-    redraw = true;
-  }
+        if (state == UIIstate::INSIDE) {
+            OnUpdateBody(requests, inputs);
+            redraw = true;
+        }
 
-  if (redraw) {
-    vec2<SCR_INT> pos = vec2<SCR_INT>((SCR_INT)rect.pos.x, (SCR_INT)rect.pos.y);
-    FOREACH((&hrchy.childs), UIItem, child_node) { child_node->ProcEvent(C, (cursor - pos)); }
-  }
+        if (redraw) {
+            vec2<SCR_INT> pos = vec2<SCR_INT>(rect.pos.x, rect.pos.y);
+
+            FOREACH((&hrchy.childs), UIItem, child_node) { child_node->ProcEvent(C, ); }
+                ((Guii*)guii.Data())->OnUpdate(requests, inputs, (cursor - pos));
+            }
+        }
 }
 
 void UIItem::Draw(UIItem* project_to) {

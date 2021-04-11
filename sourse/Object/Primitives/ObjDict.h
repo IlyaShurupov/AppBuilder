@@ -56,6 +56,10 @@ class ObDict : public Obj {
         return true;
     }
 
+    Obj& GetObj(STRR name) {
+        return *dict.Get(name);
+    }
+
     ~ObDict() {
     }
 };

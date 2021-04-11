@@ -11,7 +11,8 @@ struct Rect {
 
   Rect() {}
 
-  Rect(Rect<Type>& rec) {
+  template <typename ConversionType>
+  Rect(const Rect<ConversionType>& rec) {
     this->pos = rec.pos;
     this->size = rec.size;
   }
@@ -28,7 +29,7 @@ struct Rect {
 
   // convertion
   template <typename ConversionType>
-  Rect<Type>& operator=(Rect<ConversionType>& rect) {
+  Rect<Type>& operator=(const Rect<ConversionType>& rect) {
     pos = rect.pos;
     size = rect.size;
     return *this;

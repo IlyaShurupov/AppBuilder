@@ -11,7 +11,7 @@ class DevBuffer {
     void* devtx = nullptr;
     void Create(int width, int height);
     void Resize_int(int width, int height);
-
+    
     public:
 
         vec2<int> size;

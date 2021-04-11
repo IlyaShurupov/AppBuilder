@@ -24,10 +24,5 @@ class QuitProgramm : public Operator {
         DictObj* args = &((ObDict*)GETOBJ(Link, this, Args).GetLink())->GetDict();
         bool save = ((Bool *)args->Get("Save"))->GetVal();
         exit(0);
-        state = OpState::RUNNING; 
-    }
-    
-    void Modal() { 
-        state = OpState::FINISHED; 
     }
 };

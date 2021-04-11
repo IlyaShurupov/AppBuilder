@@ -15,7 +15,8 @@ class ObList : public Obj {
 
     ObList(const ObList& in) : Obj(in) {
         list_type = in.list_type;
-        type = in.type;  
+        list = in.list;  
+        base_class = in.base_class;
     }
 
     ObList(Obj* prnt) : Obj(prnt) {
