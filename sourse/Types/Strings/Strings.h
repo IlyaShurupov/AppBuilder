@@ -44,6 +44,10 @@ struct Str {
 
   bool operator==(const Str& string);
 
+  bool operator!=(char* cstring);
+
+  bool operator!=(const Str& string);
+
   char operator[](str_idx idx);
 
   bool match(Range& range, Str& str2, Range& range2);

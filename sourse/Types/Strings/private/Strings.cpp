@@ -130,6 +130,14 @@ bool Str::operator==(const Str& string) {
   return true;
 }
 
+bool Str::operator!=(const Str& string) {
+  return !(operator==(string));
+}
+
+bool Str::operator!=(char* cstring) {
+  return !(operator!=(cstring));
+}
+
 char Str::operator[](str_idx idx) {
   return str[idx];
 }

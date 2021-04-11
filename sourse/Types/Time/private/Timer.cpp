@@ -18,7 +18,6 @@ void TreadSleep(TIME_MS__ duration) {
 }
 
 
-
 Timer::Timer() {
   duration = 0;
   start = 0;
@@ -44,6 +43,12 @@ TIME_MS__ Timer::past() {
 
 TIME_MS__ Timer::remain() {
   return duration - (GETTIMEMSC() - start);
+}
+
+void Timer::wait_out() {
+  if (!timeout()) {
+    TreadSleep(remain());
+  }
 }
 
 float Timer::ease_in(TIME_MS__ duration) {

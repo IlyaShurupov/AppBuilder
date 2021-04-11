@@ -4,6 +4,9 @@
 #include "Sort.h"
 #include "Macros.h"
 
+
+#include <cstdarg>
+
 #define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
 
 template <class Type> class Iterator;
@@ -163,21 +166,62 @@ class List {
 
   void Release() {
     ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+    length = 0;
+    first = last = nullptr;
   }
 
   void Delete() {
     ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
+    length = 0;
+    first = last = nullptr;
   }
 
-  List() {}
-  List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
+  List<Type>& operator += (const List<Type>& in) {
+    for (Node<Type>* node = in.first; node; node = node->next) {
+      PushBack(node->data);
+    }
+    return *this;
+  }
 
-  ~List() {
+  List<Type>& operator = (const List<Type>& in) {
+
     if (recursive_free_on_destruction) {
       Delete();
     } else {
       Release();
     }
+    
+    *this += in;
+
+    alloc = in.alloc;
+    recursive_free_on_destruction = in.recursive_free_on_destruction;
+
+    return *this;
+  }
+
+  template <typename compare_val>
+  Node<Type>* Find(bool (*found)(Node<Type>* node, compare_val val), compare_val value) {
+    for (Node<Type>* node = First(); node; node = node->next) {
+      if (found(node, value)) {
+        return node;
+      }
+    }
+    return nullptr;
+  }
+
+  List() {}
+  List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
+  
+  void Clear() {
+    if (recursive_free_on_destruction) {
+      Delete();
+    } else {
+      Release();
+    }
+  }
+
+  ~List() {
+    Clear();
   }
 };
 

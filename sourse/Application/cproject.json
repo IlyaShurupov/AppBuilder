@@ -1,7 +1,5 @@
 
-
 {
-  "Type": "StaticLibrary",
-  "IncludePaths" : ["{R}sourse/Device"],
-  "InternLibs" : [ "Types", "Device" ]
+    "Type": "StaticLibrary",
+    "InternLibs" : ["Object"]
 }

@@ -2,14 +2,15 @@
 
 #include <limits.h>
 #include <cfloat>
+#include <cassert>
 
-#if _WIN32 || _WIN64
-#if _WIN64
+// #if _WIN32 || _WIN64
+// #if _WIN64
 #define ENVIRONMENT64
-#else
-#define ENVIRONMENT32
-#endif
-#endif
+// #else
+// #define ENVIRONMENT32
+// #endif
+// #endif
 
 #define NAME(v) #v
 #define ABS(val) if (val < 0) {val = -val;}
@@ -30,9 +31,15 @@ typedef unsigned int			uint4;
 #ifdef ENVIRONMENT64
 typedef long					int8;
 typedef unsigned long			uint8;
+typedef int8                    aligned;
+#define ALIGNED_MAX LONG_MAX
+#define ALIGNED_MIN LONG_MIN
 #else
+typedef int4                    aligned;
 typedef long long				int8;
 typedef unsigned long long		uint8;
+#define ALIGNED_MAX LLONG_MAX
+#define ALIGNED_MIN LLONG_MIN
 #endif
 
 // Coustom types
@@ -44,3 +51,15 @@ typedef int SCR_INT;
 #define MATH_Pi float(3.1415926535897932384626433832795)
 #define MATH_SQRT2 1.4142135623730950488016887242
 #define MATH_E 2.7182818284590452353602874714
+
+inline int FltToInt(float f) {
+    union { float f; aligned i; } u;
+    u.f = f;
+    return u.i;
+}
+
+inline float IntToFlt(aligned i) {
+    union { float f; aligned i; } u;
+    u.i = i;
+    return u.f;
+}
