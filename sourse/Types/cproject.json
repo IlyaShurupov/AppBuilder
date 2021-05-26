@@ -1,5 +1,7 @@
 
 {
   "Type": "StaticLibrary",
-  "Libraries" : ["SDL2_image", "SDL2_ttf",  "SDL2_mixer", "SDL2main", "SDL2"]
+  "AdditionalLibraries" : ["SDL2_image", "SDL2main", "SDL2"], 
+  "AdditionalLibraryPaths": ["D:\\Dev\\libs\\SDL2\\lib\\x64"], 
+  "AdditionalIncludePaths": ["D:\\Dev\\libs\\SDL2\\include"]
 }

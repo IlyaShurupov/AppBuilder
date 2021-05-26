@@ -1,1 +1,0 @@
-{"name": "default", "RootDirName": "builder", "type": "binaries", "platform": "windows", "sysarch": "x64", "OutDir": "build\\binaries", "debug": false, "rebuild_type": "tree"}

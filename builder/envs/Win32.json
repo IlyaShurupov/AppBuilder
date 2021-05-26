@@ -1,1 +1,0 @@
-{"name": "Win32", "type": "binaries", "platform": "windows", "sysarch": "32", "rebuild": false, "OutDir": "build/bin/Win32", "debug": false, "rebuild_type": "tree", "RootDirName": "AppBuilder", "threading": false}

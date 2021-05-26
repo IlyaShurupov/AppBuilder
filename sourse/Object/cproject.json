@@ -1,6 +1,5 @@
 
-
 {
   "Type": "StaticLibrary",
-  "InternLibs" : [ "Types" ]
+  "Dependencies" : [ "Types" ]
 }

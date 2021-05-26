@@ -1,6 +1,7 @@
 
 #include "Object.h"
 
+
 Obj* objs_entry = nullptr;
 
 Obj* CopyObj::operator()(Obj* in) {

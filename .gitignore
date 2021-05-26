@@ -12,7 +12,8 @@ _deps
 build
 .vs
 .vscode
-
+.idea
+out
 cache.json
 
 # Byte-compiled / optimized / DLL files

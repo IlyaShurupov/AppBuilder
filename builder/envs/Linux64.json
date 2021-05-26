@@ -1,1 +1,0 @@
-{"name": "Linux64", "type": "binaries", "platform": "linux", "sysarch": "64", "rebuild": false, "OutDir": "build/bin/Linux64", "debug": true, "rebuild_type": "tree", "RootDirName": "AppBuilder", "threading": false}
