@@ -4,6 +4,7 @@ from common import *
 
 class CompilationBlock:
 	def __init__(self, proj, files=False):
+		self.project_name = proj.name
 		self.out = proj.out_path.add_path("obj")
 		self.includes = proj.get_inherited_props("inc_dirs")
 		self.definitions = proj.get_inherited_props("definitions")
@@ -86,13 +87,14 @@ class CompileInstructions:
 			if self.args.dependency == "tree":
 
 				def mark_prnts(proj):
-					if proj.modified:
-						proj.flag1 = 1
-						for prnt in proj.get_prnts(queue):
-							mark_prnts(prnt)
+					for prnt in proj.get_prnts(queue):
+						prnt.flag1 = 1
+						mark_prnts(prnt)
 
 				for proj in queue:
-					mark_prnts(proj)
+					if proj.modified:
+						proj.flag1 = 1
+						mark_prnts(proj)
 
 				for proj in queue:
 					if proj.flag1:

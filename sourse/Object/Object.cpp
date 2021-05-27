@@ -4,6 +4,7 @@
 
 Obj* objs_entry = nullptr;
 
+
 Obj* CopyObj::operator()(Obj* in) {
         return &in->Instance();
 }
