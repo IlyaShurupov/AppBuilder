@@ -15,9 +15,6 @@ class Bool : public Obj {
         val = in.val;
     }
 
-    float max = FLT_MAX;
-    float min = FLT_MIN;
-
     Bool(Obj* prnt) : Obj (prnt)  {        
         RegisterType(ObjType("Bool"));
     }

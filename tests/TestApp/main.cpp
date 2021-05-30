@@ -14,6 +14,7 @@ int main () {
     Application& app = ADDOBJ(Application, "app", *root, (root));
     app.Compose();
     app.Run();
+    return 0;
 }
 
 
