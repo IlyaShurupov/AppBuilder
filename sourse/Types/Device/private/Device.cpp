@@ -13,7 +13,7 @@ Device::Device() {
   SDL_Init(SDL_INIT_EVERYTHING);
   SDL_DisplayMode DM;
   SDL_GetCurrentDisplayMode(0, &DM);
-	holder_root = SDL_CreateWindow("holder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DM.w, DM.h, SDL_WINDOW_SHOWN);
+	holder_root = SDL_CreateWindow("holder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 800, SDL_WINDOW_SHOWN);
 	holder = SDL_CreateRenderer(holder_root, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
   init_device_texture(holder);
 

@@ -20,7 +20,18 @@ class DataView : public Guii {
     }
 
     void ProcBody(ObList* requests) {
-
+      if (state == GuiiState::ACTIVATE) {
+        int i = 0;
+      }
+      else if (state == GuiiState::CLOSE) {
+        int i = 0;
+      }
+      else if (state == GuiiState::ENTERED) {
+        int i = 0;
+      }
+      else if (state == GuiiState::INSIDE) {
+        int i = 0;
+      }
     }
 
     void DrawBody(Obj* root_obj) {

@@ -78,14 +78,14 @@ void Application::Compose() {
     close_trigger_val->Assign(3, -1, 5);
     close_cond->GetHead().SetLink(close_trigger_val);
     close_cond->GetTail().SetLink(&GETOBJ(Int, input2, State));
-    close_cond_list.AddObj(cond);
+    close_cond_list.AddObj(close_cond);
 
     ObjTuple* act_cond = new ObjTuple(&act_cond_list);
     Int* act_trigger_val = new Int(nullptr);
     act_trigger_val->Assign(3, -1, 5);
     act_cond->GetHead().SetLink(act_trigger_val);
     act_cond->GetTail().SetLink(&GETOBJ(Int, input2, State));
-    act_cond_list.AddObj(cond);
+    act_cond_list.AddObj(act_cond);
 
     GETOBJ(ObList, gui, Windows).AddObj(new DataView(nullptr, Rect<float>(100, 100, 500, 500)));
 }
