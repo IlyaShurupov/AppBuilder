@@ -30,9 +30,8 @@ Operator* OpHolder::GetInstance(ObDict* args_link, int* _instance_count) {
     return nullptr;
 }
 
-void OpHolder::GetInterface(ObDict* args) {
-    delete args;
-    args = &GETOBJ(ObDict, op, Interface).Instance();
+Obj* OpHolder::GetInterface() {
+    return &GETOBJ(ObDict, op, Interface).Instance();
 }
 
 void OpHolder::UpdateThreads() {

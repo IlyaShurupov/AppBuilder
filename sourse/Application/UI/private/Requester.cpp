@@ -37,7 +37,8 @@ bool Requester::Running() {
 void Requester::TargetChanged(Obj* param, ModType type) {
     Requester * ths = (Requester *)param;
     OpHolder* holder = (OpHolder*)GETOBJ(Link, ths, Target Op).GetLink();
-    holder->GetInterface(&GETOBJ(ObDict, ths, Op Args));
+    delete &GETOBJ(ObDict, ths, Op Args);
+    ths->props.Put("Op Args", holder->GetInterface());
 }
 
 bool Requester::CanChangeTarget(Obj* param) {

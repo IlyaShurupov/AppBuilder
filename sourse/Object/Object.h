@@ -77,7 +77,7 @@ class Obj {
     Obj* next = nullptr;
     Obj* prev = nullptr;
 
-    virtual bool Equal(const Obj& obj) { return false; }
+    virtual bool Equal(const Obj& obj) { assert(type == obj.type); return false; }
 
     // modification callbacks
 
@@ -114,6 +114,7 @@ class Obj {
             prnt->Modified(ModType::CILD);
         }
     }
+
 };
 
 Obj* get_objs_entry();

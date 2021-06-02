@@ -18,7 +18,7 @@ class OpHolder : public Obj {
     OpHolder(Obj* prnt, Operator* _op);
     
     Operator* GetInstance(ObDict* args_link, int* _instance_count); 
-    void GetInterface(ObDict* args);
+    Obj* GetInterface();
     void UpdateThreads();
 
     virtual OpHolder& Instance() {

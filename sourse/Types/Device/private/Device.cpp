@@ -70,28 +70,3 @@ void Device::GetCrsr(vec2<float>& crs) {
   crs.x = (SCR_INT)incrs.x;
   crs.y = (SCR_INT)incrs.y;
 }
-
-/*
-
-void UpdCursorPos(UInputs& usin) {
-
-  SDL_DisplayMode DM;
-  SDL_GetCurrentDisplayMode(0, &DM);
-  auto Width = DM.w;
-  auto Height = DM.h;
-  usin.PrevCursor = usin.Cursor;
-  vec2<int> incrs;
-  Uint32 state = SDL_GetMouseState(&incrs.x, &incrs.y);
-  
-  // incrs.y = Height - incrs.y 
-  usin.Cursor.x = (SCR_INT)incrs.x;
-  usin.Cursor.y = (SCR_INT)incrs.y;
-  usin.Cdelta.x = usin.Cursor.x - usin.PrevCursor.x;
-  usin.Cdelta.y = usin.Cursor.y - usin.PrevCursor.y;
-
-  UpdInputSate(usin.LMB, state & SDL_BUTTON(SDL_BUTTON_LEFT), usin.IsEvent);
-  UpdInputSate(usin.RMB, state & SDL_BUTTON(SDL_BUTTON_RIGHT), usin.IsEvent);
-  UpdInputSate(usin.MMB, state & SDL_BUTTON(SDL_BUTTON_MIDDLE), usin.IsEvent);
-}
-
-*/
