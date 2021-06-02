@@ -11,6 +11,8 @@
 
 #include "Thread/ThreadManager.h"
 
+#include "Device/Device.h"
+
 Application::Application(Obj* prnt) : Obj (prnt) {
     
     RegisterType(ObjType("Application"));
@@ -44,10 +46,10 @@ void Application::Compose() {
     GETOBJ(Int, input, ASCII Code).Set('A');
     GETOBJ(ObList, tui, Inputs).AddObj(input);
 
-    KeyInput* input2 = new KeyInput(nullptr);
-    GETOBJ(String, input2, KeyName).Assign("A");
-    GETOBJ(Int, input2, ASCII Code).Set('A');
-    GETOBJ(ObList, tui, Inputs).AddObj(input2);
+    KeyInput* key_RMB = new KeyInput(nullptr);
+    GETOBJ(String, key_RMB, KeyName).Assign("RMB");
+    GETOBJ(Int, key_RMB, ASCII Code).Set(KEY_RBUTTON);
+    GETOBJ(ObList, tui, Inputs).AddObj(key_RMB);
 
     // Adding Shortcuts
     ShortCut* shcut = new ShortCut(nullptr);
@@ -77,17 +79,20 @@ void Application::Compose() {
     Int* close_trigger_val = new Int(nullptr);
     close_trigger_val->Assign(3, -1, 5);
     close_cond->GetHead().SetLink(close_trigger_val);
-    close_cond->GetTail().SetLink(&GETOBJ(Int, input2, State));
+    close_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
     close_cond_list.AddObj(close_cond);
 
     ObjTuple* act_cond = new ObjTuple(&act_cond_list);
     Int* act_trigger_val = new Int(nullptr);
     act_trigger_val->Assign(3, -1, 5);
     act_cond->GetHead().SetLink(act_trigger_val);
-    act_cond->GetTail().SetLink(&GETOBJ(Int, input2, State));
+    act_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
     act_cond_list.AddObj(act_cond);
 
-    GETOBJ(ObList, gui, Windows).AddObj(new DataView(nullptr, Rect<float>(100, 100, 500, 500)));
+
+    ContextMenu* ctx_menu = new ContextMenu(nullptr, Rect<float>(50, 50, 300, 500));
+    GETOBJ(Link, ctx_menu, Target).SetLink(this);
+    GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
 }
 
 void Application::Run() {

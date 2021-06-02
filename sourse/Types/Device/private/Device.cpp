@@ -8,7 +8,17 @@
 #define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg_gl.h"
 
+
+#ifdef _WIN
 #include <Windows.h>
+bool keyIsDown(int code) {
+	return GetAsyncKeyState(code) & 0x8000;
+}
+#else 
+bool keyIsDown(int code) {
+	return false;
+}
+#endif
 
 GLFWwindow* window = nullptr;
 NVGcontext* vg = nullptr;
@@ -61,9 +71,9 @@ void Device::PumpEvents() {
 void Device::ClearEvents() {
 }
 
-InputState Device::GetKeyState(int ascii_code, InputState current) {
+InputState Device::GetKeyState(int key_code, InputState current) {
 
-	if (GetAsyncKeyState(ascii_code) & 0x8000) {
+	if (keyIsDown(key_code)) {
 		if (current == InputState::NONE) {
 			return InputState::PRESSED;
 		}

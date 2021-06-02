@@ -7,6 +7,7 @@ class Link : public Obj {
     
     Obj* link = nullptr;
     Str link_type = "Obj";
+    Str current_type = "None";
     bool base_class = true;
 
     Link& operator = (const Link& in);
@@ -17,6 +18,7 @@ class Link : public Obj {
         link_type = in.link_type;
         link = in.link;  
         base_class = in.base_class;  
+        current_type = in.current_type;
     }
 
     Link(Obj* prnt) : Obj (prnt) {        
@@ -40,9 +42,11 @@ class Link : public Obj {
         if (base_class) {
             if (obj->type.IsPrnt(link_type)) {
                 link = obj;
+                current_type = obj->type.idname;
             }
         } else if (obj->type.idname == link_type) {
             link = obj;
+            current_type = obj->type.idname;
         } else {
             return false;
         }
