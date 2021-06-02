@@ -36,9 +36,8 @@ class DataView : public Guii {
 
     void DrawBody(Obj* root_obj) {
         if (state == GuiiState::INSIDE) {
-            buff->DrawRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0, 1, 1, .5));
+          buff->DrawRect(Rect<int>(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y), Color(0, 0, 0, 0));
         } else {
-            buff->DrawRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(1, 0, 1, .5));
         }
     }
 

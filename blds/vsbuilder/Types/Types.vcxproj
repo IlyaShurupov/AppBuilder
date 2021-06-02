@@ -170,7 +170,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -192,7 +192,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

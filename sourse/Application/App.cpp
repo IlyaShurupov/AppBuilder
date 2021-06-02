@@ -40,13 +40,13 @@ void Application::Compose() {
 
     // Adding Inputs
     KeyInput* input = new KeyInput(nullptr);
-    GETOBJ(String, input, KeyName).Assign("a");
-    GETOBJ(Int, input, ASCII Code).Set('a');
+    GETOBJ(String, input, KeyName).Assign("A");
+    GETOBJ(Int, input, ASCII Code).Set('A');
     GETOBJ(ObList, tui, Inputs).AddObj(input);
 
     KeyInput* input2 = new KeyInput(nullptr);
-    GETOBJ(String, input2, KeyName).Assign("b");
-    GETOBJ(Int, input2, ASCII Code).Set('b');
+    GETOBJ(String, input2, KeyName).Assign("A");
+    GETOBJ(Int, input2, ASCII Code).Set('A');
     GETOBJ(ObList, tui, Inputs).AddObj(input2);
 
     // Adding Shortcuts

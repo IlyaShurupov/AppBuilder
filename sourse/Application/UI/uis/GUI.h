@@ -22,7 +22,7 @@ class Guii : public Requester {
 public:
 
 	Guii(const Guii& in) : Requester(in) {
-		childs = &GETOBJ(ObList, this, Childs).GetList();
+		*childs = GETOBJ(ObList, this, Childs).GetList();
 	}
 
 	Guii(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
@@ -40,8 +40,9 @@ public:
 		ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
 		ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
 
-		buff = new DevBuffer(_rect.size.x, _rect.size.y);
 		rect = _rect;
+
+		buff = new DevBuffer(rect);
 	}
 
 	virtual Guii& Instance() {
@@ -50,8 +51,9 @@ public:
 
 	List<Obj>* childs;
 	GuiiState state = GuiiState::NONE;
-	DevBuffer* buff = nullptr;
 	Rect<float> rect;
+	bool redraw = false;
+	DevBuffer* buff;
 
 	virtual void ProcBody(ObList* requests) {}
 	virtual void DrawBody(Obj* root_obj) {}
@@ -59,8 +61,6 @@ public:
 	virtual void Transform() {}
 
 	void Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
-
-		bool update = false;
 
 		if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
 
@@ -80,7 +80,7 @@ public:
 				state = GuiiState::INSIDE;
 			}
 
-			update = true;
+			redraw = true;
 
 		}
 		else {
@@ -91,11 +91,11 @@ public:
 			}
 			else {
 				state = GuiiState::LEAVED;
-				update = true;
+				redraw = true;
 			}
 		}
 
-		if (update) {
+		if (redraw) {
 
 			ProcBody(requests);
 
@@ -114,11 +114,14 @@ public:
 			((Guii*)guii.Data())->Draw(root_obj, false);
 		}
 
-
+		/*
 		if (!root) {
 			Guii* prnt_guii = (Guii*)prnt;
 			prnt_guii->buff->Project(buff, rect.pos);
 		}
+		*/
+
+		redraw = false;
 	}
 
 	static bool SetRectReq(Obj* param) {
@@ -169,16 +172,22 @@ public:
 	}
 
 	void OutPut(Obj* root) {
+		dev->StartDraw();
+
+
 		List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 		FOREACH_OBJ(&windows, guii) {
 			((Guii*)guii.Data())->Draw(root, true);
 		}
 
-		dev->StartDraw();
+		dev->EndDraw();
+
+		/*
 		FOREACH_OBJ(&windows, guii) {
 			Guii* window = ((Guii*)guii.Data());
 			dev->DrawBuff(window->buff, window->rect.pos);
 		}
+		*/
 	}
 
 	~GUI() {}
