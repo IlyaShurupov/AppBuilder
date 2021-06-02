@@ -7,182 +7,188 @@
 #include "Device/DevBuffer.h"
 
 enum struct GuiiState {
-  NONE = 0,
-  ENTERED,
-  INSIDE,
-  LEAVED,
-  ACTIVATE,
-  CLOSE,
+	NONE = 0,
+	ENTERED,
+	INSIDE,
+	LEAVED,
+	ACTIVATE,
+	CLOSE,
 };
 
 class Guii : public Requester {
 
-    Guii& operator = (const Guii& in);
-    
-    public:
+	Guii& operator = (const Guii& in);
 
-    Guii(const Guii& in) : Requester(in) {
-        childs = &GETOBJ(ObList, this, Childs).GetList();
-    } 
+public:
 
-    Guii(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
-        RegisterType(ObjType("Guii"));
+	Guii(const Guii& in) : Requester(in) {
+		*childs = GETOBJ(ObList, this, Childs).GetList();
+	}
 
-        ADDOBJ(ObList, Childs, *this, (this)).Assign("Guii", true);
-        childs = &GETOBJ(ObList, this, Childs).GetList();
+	Guii(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
+		RegisterType(ObjType("Guii"));
 
-        
-        Obj& rect_obj = ADDOBJ(Obj, Rect, *this, (this));
-        rect_obj.BindModPoll(this, SetRectReq);
-        rect_obj.AddOnModCallBack(this, RectMod);
-        ADDOBJ(Float, Pos X, rect_obj, (&rect_obj)).Set(_rect.pos.x);
-        ADDOBJ(Float, Pos Y, rect_obj, (&rect_obj)).Set(_rect.pos.y);
-        ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
-        ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
+		ADDOBJ(ObList, Childs, *this, (this)).Assign("Guii", true);
+		childs = &GETOBJ(ObList, this, Childs).GetList();
 
-        buff = new DevBuffer(_rect.size.x, _rect.size.y);
-        rect = _rect;
-    }
 
-    virtual Guii& Instance() {
-        return *new Guii(*this);
-    }
+		Obj& rect_obj = ADDOBJ(Obj, Rect, *this, (this));
+		rect_obj.BindModPoll(this, SetRectReq);
+		rect_obj.AddOnModCallBack(this, RectMod);
+		ADDOBJ(Float, Pos X, rect_obj, (&rect_obj)).Set(_rect.pos.x);
+		ADDOBJ(Float, Pos Y, rect_obj, (&rect_obj)).Set(_rect.pos.y);
+		ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
+		ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
 
-    List<Obj>* childs;
-    DevBuffer* buff = nullptr;
-    Rect<float> rect;
-    int level = 0;
-    bool redraw = true;
-    GuiiState state = GuiiState::NONE;
-    
-    virtual void ProcBody(ObList* requests) {}
-    virtual void DrawBody(Obj* root_obj) {}
-    virtual bool TransformRequest() { return false; }
-    virtual void Transform() {}
+		rect = _rect;
 
-    void Proc(ObList* requests, Obj* trigers, vec2<float> crs) {  
+		buff = new DevBuffer(rect);
+	}
 
-        if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
+	virtual Guii& Instance() {
+		return *new Guii(*this);
+	}
 
-            bool activate = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
-            bool close = GETOBJ(CompareExpr, trigers, Close).Evaluate();
-            
-            if (activate) {
-                state = GuiiState::ACTIVATE;
-                
-            } else if (close) {
-                state = GuiiState::CLOSE;
-                
-            } else if (state == GuiiState::NONE) {
-                state = GuiiState::ENTERED;
+	List<Obj>* childs;
+	GuiiState state = GuiiState::NONE;
+	Rect<float> rect;
+	bool redraw = false;
+	DevBuffer* buff;
 
-            } else  {
-                state = GuiiState::INSIDE;
-            }
+	virtual void ProcBody(ObList* requests) {}
+	virtual void DrawBody(Obj* root_obj) {}
+	virtual bool TransformRequest() { return false; }
+	virtual void Transform() {}
 
-            redraw = true;
-            
-        } else {
+	void Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 
-            if (state == GuiiState::LEAVED || state == GuiiState::NONE) {
-                state = GuiiState::NONE;
-                return;
+		if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
 
-            } else  {
-                state = GuiiState::LEAVED;
-                redraw = true;
-            }
-        }
-        
-        if (redraw) {
+			bool activate = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
+			bool close = GETOBJ(CompareExpr, trigers, Close).Evaluate();
 
-            ProcBody(requests);
-        
-            FOREACH_OBJ(childs, guii) {
-                ((Guii*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
-            }
-        }
-    }
+			if (activate) {
+				state = GuiiState::ACTIVATE;
+			}
+			else if (close) {
+				state = GuiiState::CLOSE;
+			}
+			else if (state == GuiiState::NONE) {
+				state = GuiiState::ENTERED;
+			}
+			else {
+				state = GuiiState::INSIDE;
+			}
 
-    void Draw(Obj* root_obj, bool root) {
+			redraw = true;
 
-        if (!redraw) {
-            return;
-        }
+		}
+		else {
 
-        DrawBody(root_obj);
-        
-        FOREACH_OBJ(childs, guii) {
-            ((Guii*)guii.Data())->Draw(root_obj, false);
-        }
-        
-        redraw = false;
+			if (state == GuiiState::LEAVED || state == GuiiState::NONE) {
+				state = GuiiState::NONE;
+				return;
+			}
+			else {
+				state = GuiiState::LEAVED;
+				redraw = true;
+			}
+		}
 
-        if (!root) {
-            Guii* prnt_guii = (Guii*)prnt;
-            prnt_guii->buff->Project(buff, rect.pos);
-        }
-    }
+		if (redraw) {
 
-    static bool SetRectReq(Obj* param) {
-        return ((Guii*)param)->TransformRequest();
-    }
+			ProcBody(requests);
 
-    static void RectMod(Obj* param, ModType type) {
-        ((Guii*)param)->Transform();
-    }
+			FOREACH_OBJ(childs, guii) {
+				((Guii*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
+			}
 
-    virtual ~Guii() {
+		}
+	}
 
-    }
+	void Draw(Obj* root_obj, bool root) {
+
+		DrawBody(root_obj);
+
+		FOREACH_OBJ(childs, guii) {
+			((Guii*)guii.Data())->Draw(root_obj, false);
+		}
+
+		/*
+		if (!root) {
+			Guii* prnt_guii = (Guii*)prnt;
+			prnt_guii->buff->Project(buff, rect.pos);
+		}
+		*/
+
+		redraw = false;
+	}
+
+	static bool SetRectReq(Obj* param) {
+		return ((Guii*)param)->TransformRequest();
+	}
+
+	static void RectMod(Obj* param, ModType type) {
+		((Guii*)param)->Transform();
+	}
+
+	virtual ~Guii() {
+
+	}
 };
 
 
 class  GUI : public UI {
 
-    GUI& operator = (const GUI& in);
-    GUI(const GUI& in) : UI(in) {} 
+	GUI& operator = (const GUI& in);
+	GUI(const GUI& in) : UI(in) {}
 
-    public:
+public:
 
-    GUI(Obj* prnt, Device* _dev) : UI (prnt) {
-        ADDOBJ(ObList, Windows, *this, (this)).Assign("Guii", true);
+	GUI(Obj* prnt, Device* _dev) : UI(prnt) {
+		ADDOBJ(ObList, Windows, *this, (this)).Assign("Guii", true);
 
-        Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
-        
-        ADDOBJ(CompareExpr, Activate, Trigers, (&Trigers));
-        ADDOBJ(CompareExpr, Close, Trigers, (&Trigers));
+		Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
 
-        dev = _dev;
-    }
+		ADDOBJ(CompareExpr, Activate, Trigers, (&Trigers));
+		ADDOBJ(CompareExpr, Close, Trigers, (&Trigers));
 
-    Device* dev;
+		dev = _dev;
+	}
 
-    void PumpRequests(ObList* requests) {
-        List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
-        Obj* trigers = &GETOBJ(Obj, this, Trigers);
+	Device* dev;
 
-        vec2<float> crs;
-        dev->GetCrsr(crs);
+	void PumpRequests(ObList* requests) {
+		List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
+		Obj* trigers = &GETOBJ(Obj, this, Trigers);
 
-        FOREACH_OBJ(&windows, guii) {
-            Guii* window = ((Guii*)guii.Data());
-            window->Proc(requests, trigers, crs - window->rect.pos);
-        }
-    }
+		vec2<float> crs;
+		dev->GetCrsr(crs);
 
-    void OutPut(Obj* root) {
-        List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
-        FOREACH_OBJ(&windows, guii) {
-            ((Guii*)guii.Data())->Draw(root, true);
-        }
+		FOREACH_OBJ(&windows, guii) {
+			Guii* window = ((Guii*)guii.Data());
+			window->Proc(requests, trigers, crs - window->rect.pos);
+		}
+	}
 
-        dev->StartDraw();
-        FOREACH_OBJ(&windows, guii) {
-            Guii* window = ((Guii*)guii.Data());
-            dev->DrawBuff(window->buff, window->rect.pos);
-        }
-    }
+	void OutPut(Obj* root) {
+		dev->StartDraw();
 
-    ~GUI() {}
+
+		List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
+		FOREACH_OBJ(&windows, guii) {
+			((Guii*)guii.Data())->Draw(root, true);
+		}
+
+		dev->EndDraw();
+
+		/*
+		FOREACH_OBJ(&windows, guii) {
+			Guii* window = ((Guii*)guii.Data());
+			dev->DrawBuff(window->buff, window->rect.pos);
+		}
+		*/
+	}
+
+	~GUI() {}
 };

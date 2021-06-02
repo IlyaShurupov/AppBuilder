@@ -1,84 +1,65 @@
 
-#include "../DevBuffer.h"
+#include "Device/DevBuffer.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_timer.h>
+#include "nanovg.h"
 
-SDL_Renderer* holder;
+extern NVGcontext* vg;
 
-void init_device_texture(void* holder_p) {
-    holder = (SDL_Renderer *)holder_p;
+#define NVGCOL(col) nvgRGBA(col.r * 255, col.g * 255, col.b * 255, col.a * 255)
+
+DevBuffer::DevBuffer(Rect<float>& rect) {
+	rec = &rect;
 }
 
-void DevBuffer::Create(int width, int height) {
-    size.assign(width, height);
-    devtx = (void *)SDL_CreateTexture(holder, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+void DevBuffer::DrawRect(const Rect<float>& _rect, const Color& col, float radius) {
+
+	Rect<float> wrld_rect(_rect);
+	wrld_rect.pos += rec->pos;
+		
+	nvgBeginPath(vg);
+	
+	if (!radius) {
+		nvgRect(vg, wrld_rect.pos.x, wrld_rect.pos.y, wrld_rect.size.x, wrld_rect.size.y);
+	}
+	else {
+		nvgRoundedRect(vg, wrld_rect.pos.x, wrld_rect.pos.y, wrld_rect.size.x, wrld_rect.size.y, radius);
+	}
+	
+	nvgFillColor(vg, NVGCOL(col));
+	nvgFill(vg);
 }
 
-DevBuffer:: ~DevBuffer() {
-    if (devtx) {
-        SDL_DestroyTexture((SDL_Texture *)devtx);
-    }
+void DevBuffer::DrawText(const char* str, const float x, float y, float font_scale, const Color& col) {
+
+	nvgFontSize(vg, font_scale);
+	nvgFontFace(vg, "sans");
+	nvgFillColor(vg, NVGCOL(col));
+	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+	nvgText(vg, x + rec->pos.x, y + rec->pos.y, str, NULL);
 }
 
-void DevBuffer::DrawRect(const Rect<int>& rect, const Color& col){
-    SDL_Rect dest;
+void DevBuffer::DrawBounds(const Rect<float>& _rect, const Color& col, short thickness) {
 
-    dest.x = rect.pos.x;
-    dest.y = rect.pos.y;
-    dest.w = rect.size.x;
-    dest.h = rect.size.y;
+	nvgBeginPath(vg);
+	nvgRect(vg, 122, 122, 122, 122);
+	nvgCircle(vg, 120, 120, 30);
+	nvgPathWinding(vg, NVG_HOLE);	// Mark circle as a hole.
+	nvgFillColor(vg, nvgRGBA(255, 192, 0, 100));
+	nvgFill(vg);
 
-    SDL_SetRenderTarget(holder, (SDL_Texture *)devtx);
-    SDL_SetRenderDrawColor(holder, col.r * 255, col.g * 255, col.b * 255, col.a * 255);
-    SDL_RenderFillRect(holder, &dest);
-    SDL_SetRenderTarget(holder, nullptr);
-}
-
-void DevBuffer::Project(DevBuffer* srs, const vec2<int>& pos){
-    SDL_Rect dest;
-
-    dest.x = pos.x;
-    dest.y = pos.y;
-    SDL_QueryTexture((SDL_Texture *)srs->devtx, NULL, NULL, &dest.w, &dest.h);
-
-    SDL_SetRenderTarget(holder, (SDL_Texture *)devtx);
-    SDL_RenderCopy(holder, (SDL_Texture *)srs->devtx, NULL, &dest);
-    SDL_SetRenderTarget(holder, nullptr);
-}
-
-void DevBuffer::draw_tex_ro_rend(const vec2<int>& pos) {
-    SDL_Rect dest;
-    dest.x = pos.x;
-    dest.y = pos.y;
-    SDL_QueryTexture((SDL_Texture *)devtx, NULL, NULL, &dest.w, &dest.h);
-
-    SDL_RenderCopy(holder, (SDL_Texture *)devtx, NULL, &dest);
-    SDL_RenderPresent(holder);
-}
-
-void DevBuffer::Resize_int(int width, int height) {
-    if (size.x != width || size.y != height) {
-        size.assign(width, height);
-        SDL_DestroyTexture((SDL_Texture *)devtx);
-        devtx = (void *)SDL_CreateTexture(holder, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
-    }
+	nvgFontSize(vg, 20.0f);
+	nvgFontFace(vg, "sans");
+	nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));;
+	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+	nvgText(vg, 120, 120, "sdasdasdasdasdasdasd", NULL);
 }
 
 void DevBuffer::DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness) {
-    SDL_SetRenderTarget(holder, (SDL_Texture *)devtx);
-    SDL_SetRenderDrawColor(holder, col.r * 255, col.g * 255, col.b * 255, col.a * 255);
-    SDL_RenderDrawLine(holder, head.x, head.y, tail.x, tail.y);
-    SDL_SetRenderTarget(holder, nullptr);
 }
 
-void DevBuffer::DrawBounds(Rect<int>& rect, const Color& col, short thick) {
-    rect.pos += 1;
-    rect.size -= 2;
+void DevBuffer::Clear(const Color& col) {
+	DrawRect(Rect<int>(*rec), col);
+}
 
-    DrawLine(vec2<SCR_INT>(rect.pos), vec2<SCR_INT>(rect.pos.x + rect.size.x, rect.pos.y), col, thick);
-    DrawLine(vec2<SCR_INT>(rect.pos), vec2<SCR_INT>(rect.pos.x, rect.pos.y + rect.size.y), col, thick);
-    DrawLine(vec2<SCR_INT>(rect.pos.x + rect.size.x, rect.pos.y), vec2<SCR_INT>(rect.size_vec_w()), col, thick);
-    DrawLine(vec2<SCR_INT>(rect.pos.x, rect.pos.y + rect.size.y), vec2<SCR_INT>(rect.size_vec_w()), col, thick);
+DevBuffer::~DevBuffer() {
 }

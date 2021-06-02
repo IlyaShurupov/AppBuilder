@@ -66,7 +66,7 @@ struct Rect {
     }
   }
 
-  bool inside(vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }
+  bool inside(const vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }
 
   bool inside(Type x, Type y) { return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y); }
 
@@ -81,26 +81,27 @@ struct Rect {
     pos.y += dy;
   }
 
-  inline bool above(Rect<Type>& rect) { return (pos.y + size.y < rect.pos.y); }
-  inline bool bellow(Rect<Type>& rect) { return (rect.pos.y + rect.size.y < pos.y); }
-  inline bool right(Rect<Type>& rect) { return (pos.x + size.x < rect.pos.x); }
-  inline bool left(Rect<Type>& rect) { return (rect.pos.x + rect.size.x < pos.x); }
+  inline bool above(const Rect<Type>& rect) { return (pos.y + size.y < rect.pos.y); }
+  inline bool bellow(const Rect<Type>& rect) { return (rect.pos.y + rect.size.y < pos.y); }
+  inline bool right(const Rect<Type>& rect) { return (pos.x + size.x < rect.pos.x); }
+  inline bool left(const Rect<Type>& rect) { return (rect.pos.x + rect.size.x < pos.x); }
 
-  inline bool intersect_y(Rect<Type>& rect) { 
+  inline bool intersect_y(const Rect<Type>& rect) {
     IF(INRANGE(rect.pos.x, pos.x, pos.x + size.x), return true)
     IF(INRANGE(pos.x, rect.pos.x, rect.pos.x + rect.size.x), return true)
     return false;
   }
 
-  inline bool intersect_x(Rect<Type>& rect) {
+  inline bool intersect_x(const Rect<Type>& rect) {
     IF(INRANGE(rect.pos.y, pos.y, pos.y + size.y), return true)
     IF(INRANGE(pos.y, rect.pos.y, rect.pos.y + rect.size.y), return true)
     return false;
   }
 
-  bool overlap(Rect<Type>& rect) {
+  bool overlap(const Rect<Type>& rect) {
     return (intersect_x(rect) && intersect_y(rect));
-  } 
+  }
+
 };
 
 template <typename Type>

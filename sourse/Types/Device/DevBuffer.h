@@ -4,41 +4,20 @@
 #include "Geometry/Rect.h"
 #include "BitMap/Color.h"
 
-void init_device_texture(void* holder_p);
-
 class DevBuffer {
 
-    void* devtx = nullptr;
-    void Create(int width, int height);
-    void Resize_int(int width, int height);
-    
-    public:
+	Rect<float>* rec;
 
-        vec2<int> size;
+public:
 
-        template <typename SizeType>
-        DevBuffer(SizeType width, SizeType height) {
-            Create((int)width, (int)height);
-        }
+	DevBuffer(Rect<float>& rect);
 
-        ~DevBuffer();
+	void DrawRect(const Rect<float>& rect, const Color& col, float radius = 0);
+	void DrawBounds(const Rect<float>& rect, const Color& col, short thickness);
+	void DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness);
+	void DrawText(const char* str, const float x, float y, float font_scale, const Color& col);
+	void Clear(const Color& col);
 
-		void DrawRect(const Rect<int>& rect, const Color& col);
-		void Project(DevBuffer* srs, const vec2<int>& pos);
+	~DevBuffer();
 
-		void draw_tex_ro_rend(const vec2<int>& pos);
-
-
-        template <typename SizeType>
-        void resize(SizeType width, SizeType height) {
-            Resize_int((int)width, (int)height);
-        }
-
-        void Assign(const Color& col) {
-            DrawRect(Rect<int>(0, 0, size.x, size.y), col);
-        }
-
-        void DrawBounds(Rect<int>& rect, const Color& col, short thickness);
-        void DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness);
-    
 };

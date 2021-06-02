@@ -1,72 +1,127 @@
 #include "Device/Device.h"
 
-// #include "UI/UInputs.h"
-// #include "UI/UInterface.h"
+#include <GL/glew.h>
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_timer.h>
+#define GLFW_INCLUDE_GLEXT
+#include <GLFW/glfw3.h>
+#include "nanovg.h"
+#define NANOVG_GL3_IMPLEMENTATION
+#include "nanovg_gl.h"
 
-#include "Device/DevBuffer.h"
+
+#ifdef _WIN
+#include <Windows.h>
+bool keyIsDown(int code) {
+	return GetAsyncKeyState(code) & 0x8000;
+}
+#else 
+bool keyIsDown(int code) {
+	return false;
+}
+#endif
+
+GLFWwindow* window = nullptr;
+NVGcontext* vg = nullptr;
 
 Device::Device() {
-  SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_DisplayMode DM;
-  SDL_GetCurrentDisplayMode(0, &DM);
-	holder_root = SDL_CreateWindow("holder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DM.w, DM.h, SDL_WINDOW_SHOWN);
-	holder = SDL_CreateRenderer(holder_root, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-  init_device_texture(holder);
 
-  keystate = SDL_GetKeyboardState(NULL);
-  CodeMap['a'] = SDL_SCANCODE_A;
-  CodeMap['b'] = SDL_SCANCODE_B;
+	if (!glfwInit()) {
+		printf("Failed to init GLFW.");
+	}
+
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+
+	window = glfwCreateWindow(1000, 600, "NanoVG", NULL, NULL);
+	glfwMakeContextCurrent(window);
+
+	if (!window) {
+		glfwTerminate();
+	}
+
+	glewExperimental = GL_TRUE;
+
+	if (glewInit() != GLEW_OK) {
+		printf("Could not init glew.\n");
+	}
+
+	vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+
+	if (vg == NULL) {
+		printf("Could not init nanovg.\n");
+	}
+
+	// GLEW generates GL error because it calls glGetString(GL_EXTENSIONS), we'll consume it here.
+	glGetError();
+
+	glfwSwapInterval(0);
+
+	nvgCreateFont(vg, "sans", "D:\\Dev\\tmp\\nanovg\\x64\\Debug\\Roboto-Regular.ttf");
+
 }
 
 Device::~Device() {
-    SDL_DestroyRenderer(holder);
-	SDL_DestroyWindow(holder_root);
-	SDL_Quit();
+	nvgDeleteGL3(vg);
+	glfwTerminate();
 }
 
 void Device::PumpEvents() {
-  SDL_PumpEvents();
-}
-
-InputState Device::GetKeyState(int ascii_code, InputState current)  { 
-
-  if (keystate[CodeMap[ascii_code]]) {
-    if (current == InputState::NONE) {
-      return InputState::PRESSED;
-    } else  {
-      return InputState::HOLD;
-    } 
-  } else {
-    if (current == InputState::HOLD) {
-      return InputState::RELEASED;
-    } else  {
-      return InputState::NONE;
-    } 
-  }
+	glfwPollEvents();
 }
 
 void Device::ClearEvents() {
-  SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
 }
 
-void Device::StartDraw () {
-  SDL_SetRenderDrawColor(holder, 0, 0, 0, 0);
-  SDL_RenderClear(holder);
+InputState Device::GetKeyState(int key_code, InputState current) {
+
+	if (keyIsDown(key_code)) {
+		if (current == InputState::NONE) {
+			return InputState::PRESSED;
+		}
+		else {
+			return InputState::HOLD;
+		}
+	}
+	else {
+		if (current == InputState::HOLD) {
+			return InputState::RELEASED;
+		}
+		else {
+			return InputState::NONE;
+		}
+	}
 }
 
-void Device::DrawBuff(DevBuffer* buff, vec2<aligned> pos) {
-  buff->draw_tex_ro_rend(pos);
+void Device::StartDraw() {
+	int winWidth, winHeight;
+	int fbWidth, fbHeight;
+	float pxRatio;
+
+	glfwGetWindowSize(window, &winWidth, &winHeight);
+	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+	// Calculate pixel ration for hi-dpi devices.
+	pxRatio = (float)fbWidth / (float)winWidth;
+
+	// Update and render
+	glViewport(0, 0, fbWidth, fbHeight);
+
+	glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	nvgBeginFrame(vg, winWidth, winHeight, pxRatio);
 }
+
+void Device::EndDraw() {
+
+	nvgEndFrame(vg);
+	glfwSwapBuffers(window);
+}
+
 
 void Device::GetCrsr(vec2<float>& crs) {
 
-  vec2<int> incrs;
-  Uint32 state = SDL_GetMouseState(&incrs.x, &incrs.y);
+	vec2<double> incrs;
+	glfwGetCursorPos(window, &incrs.x, &incrs.y);
 
-  crs.x = (SCR_INT)incrs.x;
-  crs.y = (SCR_INT)incrs.y;
+	crs.x = (SCR_INT)incrs.x;
+	crs.y = (SCR_INT)incrs.y;
 }

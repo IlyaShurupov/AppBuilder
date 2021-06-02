@@ -2,31 +2,70 @@
 
 #include "Types.h"
 
+#ifdef _WIN32 or _WIN64
+#define _WIN
+#endif
+
 enum class InputState {
-  NONE = 0,
-  HOLD,
-  PRESSED,
-  RELEASED,
+	NONE = 0,
+	HOLD,
+	PRESSED,
+	RELEASED,
 };
 
 class Device {
 
-    friend class DevBuffer;
-
-    private:
-      class SDL_Window*	holder_root = nullptr;
-	    class SDL_Renderer* holder = nullptr;
-      int CodeMap[255];
-      const uint1 *keystate;
-
-    public:
-        Device();
-        void PumpEvents();
-        void ClearEvents();
-        InputState GetKeyState(int ascii_code, InputState current);
-        void StartDraw();
-        void GetCrsr(vec2<float>& crs);
-        void DrawBuff(class DevBuffer* buff, vec2<aligned> pos);
-        ~Device();
-
+public:
+	Device();
+	
+	void StartDraw();
+	void EndDraw();
+ 
+	InputState GetKeyState(int ascii_code, InputState current);
+	void GetCrsr(vec2<float>& crs);
+	void PumpEvents();
+	void ClearEvents();
+	
+	~Device();
 };
+
+
+#ifdef _WIN
+
+#define KEY_LBUTTON        0x01
+#define KEY_RBUTTON        0x02
+#define KEY_CANCEL         0x03
+#define KEY_MBUTTON        0x04    
+
+#define KEY_BACK           0x08
+#define KEY_TAB            0x09
+
+#define KEY_CLEAR          0x0C
+#define KEY_RETURN         0x0D
+
+#define KEY_SHIFT          0x10
+#define KEY_CONTROL        0x11
+#define KEY_MENU           0x12
+#define KEY_PAUSE          0x13
+#define KEY_CAPITAL        0x14
+
+#define KEY0x1B
+#define KEY_SPACE          0x20
+
+#define KEY_NEXT           0x22
+#define KEY_END            0x23
+#define KEY_HOME           0x24
+
+#define KEY_LEFT           0x25
+#define KEY_UP             0x26
+#define KEY_RIGHT          0x27
+#define KEY_DOWN           0x28
+
+#define KEY_DELETE         0x2E
+
+/*
+	KEY_0 - KEY_9 are the same as ASCII '0' - '9' 
+	KEY_A - KEY_Z are the same as ASCII 'A' - 'Z' 
+*/
+
+#endif
