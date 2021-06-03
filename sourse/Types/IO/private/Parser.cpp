@@ -79,7 +79,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
   Range irange(rng);
   while ((irange.end = str->find(',', irange)) != -1) {
 
-    DataBlock* newdb = NEW(DataBlock)();
+    DataBlock* newdb = new DataBlock();
     db->list.PushBack(newdb);
 
     irange.end--;
@@ -90,7 +90,7 @@ void write_array_yml(DataBlock* db, Str* str, Range rng) {
     irange.end = rng.end;
   }
 
-  DataBlock* newdb = NEW(DataBlock)();
+  DataBlock* newdb = new DataBlock();
   db->list.PushBack(newdb);
   irange.end = rng.end - 1;
   write_to_db_yml(newdb, str, dblock_type_yml(newdb, str, &irange), irange);
@@ -234,7 +234,7 @@ int read_dblock_yml(DataBlock* prnt, Str* str, char coloum, Range* in) {
 
     in->strt = dbrange.end + 2;
 
-    DataBlock* newdb = NEW(DataBlock)();
+    DataBlock* newdb = new DataBlock();
     DBType dbtype = dblock_type_yml(newdb, str, &dbrange);
 
     prnt->list.PushBack(newdb);
@@ -259,7 +259,7 @@ DataBlock* Read_Yaml(Str* filepath) {
     file += Str("\n");
   }
 
-  DataBlock* dblock = NEW(DataBlock)();
+  DataBlock* dblock = new DataBlock();
   dblock->BlockName.coppy(filepath, Range(filepath->rfind('\\', Range(0, filepath->length)) + 1, filepath->length));
   Range filerange = Range(0, file.length);
   read_dblock_yml(dblock, &file, -1, &filerange);

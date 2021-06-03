@@ -1,19 +1,19 @@
 # pragma once
 
-#include "Memory/Allocators.h"
+#include "Memory/Mem.h"
 #include "Macros.h"
 
-template <typename Type, typename Allocator = AllocatorGeneral>
+template <typename Type>
 class Array {
   
   Type* buff;
   uint4 length;
-  Allocator alloc;
 
  public:
 
   Array() { 
     length = 0;
+    buff = nullptr;
   }
 
   Array(uint4 p_length) { 
@@ -27,12 +27,12 @@ class Array {
 
   void Reserve(uint4 p_bufflen) {
     length = p_bufflen;
-    buff = (Type*)alloc.Get(sizeof(Type) * length); 
+    buff = new Type[length]; 
   }
 
   void Free() {
     length = 0;
-    alloc.Deallocate(buff);
+    delete buff;
     buff = nullptr;
   }
 
@@ -49,7 +49,9 @@ class Array {
 
     buff[idx] = p_block;
 
-    alloc.Deallocate(current);
+    if (current) {
+      delete current;
+    }
   }
 
   void Remove(uint4 p_idx) {
@@ -63,7 +65,7 @@ class Array {
       buff[after - 1] = current[after];
     }
 
-    alloc.Deallocate(current);
+    delete current;
   }
 
   Type& operator[](uint4 idx) {

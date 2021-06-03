@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Memory/Allocators.h"
+#include "Memory/Mem.h"
 
 template <typename Type>
 bool compare(Type& val1, Type& val2) {
@@ -17,15 +17,13 @@ struct SortMerge {
 
  private:
 
-   AllocatorSmallObj allocator;
-
   template <typename Type>
   static void merge(Type** pxlbuff, int left, int middle, int right, bool (*grater)(Type& obj1, Type& obj2)) {
     int n1 = middle - left + 1;
     int n2 = right - middle;
 
-    Type** Left = ALLOC_AR(Type*, n1);
-    Type** Right = ALLOC_AR(Type*, n2);
+    Type** Left = new Type*[n1];
+    Type** Right = new Type*[n2];
 
     for (int i = 0; i < n1; i++) {
       Left[i] = pxlbuff[left + i];
@@ -62,8 +60,8 @@ struct SortMerge {
       k++;
     }
 
-    DEALLOC(Left);
-    DEALLOC(Right);
+    delete Left;
+    delete Right;
   }
 
   template <typename Type>
@@ -96,17 +94,21 @@ struct SortInsert {
 };
 
 struct SortQuic {
-  static void Sort(void* pxlbuff, char itemsize, char offset);
+  static void Sort(void* pxlbuff, char itemsize, char offset) {
+  }
 };
 
 struct SortRadix {
-  static void Sort(void* pxlbuff, char itemsize, char offset);
+  static void Sort(void* pxlbuff, char itemsize, char offset) {
+  }
 };
 
 struct SortCount {
-  static void Sort(void* pxlbuff, char itemsize, char offset);
+  static void Sort(void* pxlbuff, char itemsize, char offset) {
+  }
 };
 
 struct SortHeap {
-  static void Sort(void* pxlbuff, char itemsize, char offset);
+  static void Sort(void* pxlbuff, char itemsize, char offset) {
+  }
 };

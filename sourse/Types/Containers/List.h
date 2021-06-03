@@ -10,7 +10,7 @@
 #define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
 
 template <class Type> class Iterator;
-template <class Type, typename AllocatorPolicy = AllocatorFixedSize> class List;
+template <class Type> class List;
 
 template <typename Type>
 class Node {
@@ -23,16 +23,17 @@ class Node {
 
   Type* operator->() { return data; }
 
-  void FreeData() { DEL(Type, data); }
+  void FreeData() { 
+    delete data; 
+  }
 };
 
-template <typename Type, typename AllocatorPolicy>
+template <typename Type>
 class List {
 
   Node<Type>* first = nullptr;
   Node<Type>* last = nullptr;
   int length = 0;
-  AllocatorPolicy alloc;
 
  public:
   bool recursive_free_on_destruction = true;
@@ -67,10 +68,10 @@ class List {
 
   void Detach(Node<Type>* node) {
     if (node->next) {
-      node->next = node->prev;
+      node->next->prev = node->prev;
     }
     if (node->prev) {
-      node->prev = node->next;
+      node->prev->next = node->next;
     }
 
     if (node == last) {
@@ -106,8 +107,11 @@ class List {
   }
 
   void ForEach(void (*functor)(List<Type>* list, Node<Type>* node)) {
-    for (Node<Type>* node = First(); node; node = node->next) {
+    Node<Type>* node = First();
+    while (node) {
+      Node<Type>* next = node->next;
       functor(this, node);
+      node = next;
     }
   }
 
@@ -115,7 +119,7 @@ class List {
   void Sort(bool (*compare)(Type& obj1, Type& obj2)) {
     SortPolicy SortP;
 
-    Type** buffer = ALLOC_AR(Type*, length);
+    Type** buffer = new Type* [length];
 
     FOREACH(this, Type, iter) { *(buffer + iter.Idx()) = iter.Data(); }
 
@@ -123,7 +127,7 @@ class List {
 
     FOREACH(this, Type, iter) { iter.node()->data = *(buffer + iter.Idx()); }
 
-    DEALLOC(buffer);
+    delete[] buffer;
   }
 
   void Invert() {
@@ -143,10 +147,10 @@ class List {
   void PushFront(Node<Type>* new_node) { Attach(new_node, nullptr); }
 
   void PushBack(Type* data) { 
-    PushBack(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data)); 
+    PushBack(new Node<Type>(data)); 
   }
   void PushFront(Type* data) { 
-    PushFront(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data)); 
+    PushFront(new Node<Type>(data));
   }
 
   void Insert(Node<Type>* node, int idx) {
@@ -155,13 +159,13 @@ class List {
   }
 
   void Insert(Type* data, int idx) { 
-    Insert(new (alloc.Get(sizeof(Node<Type>))) Node<Type>(data), idx); 
+    Insert(new Node<Type>(data), idx);
   }
 
   void DelNode(Node<Type>* node) {
     Detach(node);
     node->FreeData();
-    alloc.Deallocate(node);
+    delete node;
   }
 
   void Release() {
@@ -193,7 +197,6 @@ class List {
     
     *this += in;
 
-    alloc = in.alloc;
     recursive_free_on_destruction = in.recursive_free_on_destruction;
 
     return *this;

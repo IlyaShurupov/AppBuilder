@@ -65,9 +65,6 @@
     <ClInclude Include="..\..\..\sourse\Types\IO\Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sourse\Types\Memory\Allocators.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sourse\Types\Memory\Mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -39,7 +39,7 @@ struct CopyVal {
 template <typename V>
 struct DelRemovePolicy {
     void operator()(V* val) {
-        DEL(V, val);
+        delete val;
     }
 };
 
@@ -80,8 +80,6 @@ class HashTable {
     Copying copy_val;
     uint8 size = tableSize;
 
-    typedef HashNode<K, V> HSHNODE;
-
 public:
 
     HashTable() : table() {}
@@ -91,13 +89,13 @@ public:
         uint8 idx = hash(key, size);
         
         if (!table[idx]) {
-            table[idx] = NEW (HSHNODE)(key, val);
+            table[idx] = new HashNode<K, V>(key, val);
 
         } else if (table[idx]->key == key) {
             table[idx]->val = val;
 
         } else {
-            HashNode<K, V>* node = NEW (HSHNODE)(key, val);
+            HashNode<K, V>* node = new HashNode<K, V>(key, val);
             node->next = table[idx]->next;
             table[idx]->next = node; 
         }
@@ -117,7 +115,7 @@ public:
                 }
                 
                 remove_val(node->val);
-                DEALLOC(node);
+                delete node;
                 break;
             }
 
@@ -154,8 +152,7 @@ public:
             }
 
             for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
-                typedef Tuple<K*, V> tpl;
-                list->PushBack(NEW (tpl) (&node->key, node->val));
+                list->PushBack(new Tuple<K*, V>(&node->key, node->val));
             }
             
         }
@@ -174,7 +171,7 @@ public:
                 del_node = node;
                 node = node->next;
                 remove_val(del_node->val);
-                DEALLOC(del_node);
+                delete del_node;
             }
             
             table[idx] = nullptr;
@@ -209,7 +206,7 @@ public:
             while (node) {
                 next = node->next;
                 remove_val(node->val);
-                DEALLOC(node);
+                delete node;
                 node = next;
             }
         }

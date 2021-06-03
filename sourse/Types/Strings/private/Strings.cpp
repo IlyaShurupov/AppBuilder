@@ -55,7 +55,7 @@ str_idx Str::len() {
 void Str::alloc(str_idx len) {
   clear();
 
-  str = ALLOC_AR(char, len + 1);
+  str = new char[len + 1];
 
   str[len] = '\0';
   length = len;
@@ -63,8 +63,7 @@ void Str::alloc(str_idx len) {
 
 void Str::clear() {
   if (str) {
-    DEALLOC(str);
-    // DEL()[] str;
+    delete [] str;
   }
 }
 
@@ -82,7 +81,7 @@ void Str::operator=(const Str& string) {
 void Str::operator+=(const Str& string) {
 
   str_idx newlen = string.length + length;
-  char* newstr = ALLOC_AR(char, newlen + 1);
+  char* newstr = new char [newlen + 1];
   newstr[newlen] = '\0';
 
   for (str_idx i = 0; i < length; i++) {
@@ -199,7 +198,7 @@ str_idx Str::rfind(const char character, Range range) {
 
 void Str::trim(Range range) {
   str_idx newlen = range.len();
-  char* newstr = ALLOC_AR(char, newlen + 1);
+  char* newstr = new char [newlen + 1];
   newstr[newlen] = '\0';
 
   for (str_idx i = 0; i < newlen; i++) {

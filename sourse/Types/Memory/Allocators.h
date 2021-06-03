@@ -12,7 +12,7 @@ struct AllocatorChunck {
   uint1 blockSize;
 
   AllocatorChunck(uint1 p_blockSize, uint1 blocks) { 
-    buff = (uint1*)MemAllocHeap(p_blockSize * blocks, "Chunck", "", 0);
+    buff = (uint1*)malloc(p_blockSize * blocks);
     first = 0;
     freeblocks = blocks;
     blockSize = p_blockSize;
@@ -25,7 +25,7 @@ struct AllocatorChunck {
   }
 
   ~AllocatorChunck() {
-    MemFree(buff); 
+    free(buff); 
   }
 
   void* Get(uint1 size) { 
@@ -38,39 +38,10 @@ struct AllocatorChunck {
     return pResult;
   }
 
-  void Deallocate(void* ptr, alloc_size blockSize) {
+  void Deallocate(void* ptr, int blockSize) {
     uint1* delptr = (uint1*)(ptr);
     *delptr = first;
     first = (uint1)((delptr - buff) / blockSize);
     ++freeblocks; 
   }
-};
-
-struct Chunk {
-  void Init(uint4 blockSize, unsigned char blocks);
-  void* Allocate(uint4 blockSize);
-  void Deallocate(void* p, uint4 blockSize);
-  unsigned char* pData_;
-  unsigned char firstAvailableBlock_, blocksAvailable_;
-}; 
-
-struct AllocatorFixedSize { 
-  static void* Get(alloc_size size) { 
-    return MemAllocHeap(size, " ", " ", 1); 
-  }
-  static void Deallocate(void* ptr) {}
-};
-
-struct AllocatorSmallObj {
-  static void* Get(alloc_size size) { 
-    return MemAllocHeap(size, " ", " ", 1); 
-  }
-  static void Deallocate(void* ptr) {}
-};
-
-struct AllocatorGeneral {
-  static void* Get(alloc_size size) { 
-    return MemAllocHeap(size, " ", " ", 1); 
-  }
-  static void Deallocate(void* ptr) {}
 };
