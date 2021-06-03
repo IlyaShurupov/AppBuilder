@@ -26,7 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Application\App.h" />
-    <ClInclude Include="..\..\..\sourse\Application\Defaults\Guiis.h" />
+    <ClInclude Include="..\..\..\sourse\Application\Defaults\Widgets.h" />
     <ClInclude Include="..\..\..\sourse\Application\Defaults\Operators.h" />
     <ClInclude Include="..\..\..\sourse\Application\Thread\Thread.h" />
     <ClInclude Include="..\..\..\sourse\Application\Thread\ThreadManager.h" />

@@ -3,18 +3,21 @@
 
 #include "UI/uis/GUI.h"
 
-class ContextMenu : public Guii {
+class ContextMenu : public Widget {
 
 	ContextMenu& operator = (const ContextMenu& in);
-	ContextMenu(const ContextMenu& in) : Guii(in) {
+	ContextMenu(const ContextMenu& in) : Widget(in) {
 	}
 
 public:
 
-	ContextMenu(Obj* prnt, Rect<float> _rect) : Guii(prnt, _rect) {
+	ContextMenu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 		RegisterType(ObjType("ContextMenu"));
 
-		ADDOBJ(Link, Target, *this, (this)).Init("Obj", true);
+		Link* target = &ADDOBJ(Link, Target, *this, (this));
+		target->Init("Obj", true);
+		target->OnModCallBacks.PushBack(OnModCallBack(this, TargetChanged));
+
 	}
 
 	virtual ContextMenu& Instance() {
@@ -22,22 +25,10 @@ public:
 	}
 
 	void ProcBody(ObList* requests) {
-		if (state == GuiiState::ACTIVATE) {
-			int i = 0;
-		}
-		else if (state == GuiiState::CLOSE) {
-			int i = 0;
-		}
-		else if (state == GuiiState::ENTERED) {
-			int i = 0;
-		}
-		else if (state == GuiiState::INSIDE) {
-			int i = 0;
-		}
 	}
 
 	void DrawBody(Obj* root_obj) {
-		if (state == GuiiState::INSIDE) {
+		if (state == WidgetState::INSIDE) {
 			buff->DrawRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0.1, 0.1, 0.1, 1), 7);
 		}
 		else {
@@ -55,12 +46,17 @@ public:
 
 			int offset = 50;
 			for (Iterator<Tuple<Str*, Obj*>> child(&list, 0); child < list.Len(); ++child) {
-				
+
 				buff->DrawText(child->t1->str, 10, offset, 16, Color(0.7, 0.7, 0.7, 1));
 
 				offset += 30;
 			}
 		}
+	}
+
+	static void TargetChanged(Obj* ths, ModType type) {
+		//GETOBJ(ObList, ths, Childs).;
+		//GETOBJ(Link, obj_props, Target).SetLink();
 	}
 
 	bool TransformRequest() {

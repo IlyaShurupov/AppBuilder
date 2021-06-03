@@ -1,6 +1,6 @@
 #pragma once
 
-#define MEM_DEBUG
+//#define MEM_DEBUG
 
 #include <corecrt_malloc.h>
 

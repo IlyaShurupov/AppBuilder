@@ -6,29 +6,30 @@
 #include "TUI.h"
 #include "Device/DevBuffer.h"
 
-enum struct GuiiState {
+enum struct WidgetState {
 	NONE = 0,
+	ACTIVE,
+	CONFIRM,
+	DISCARD,
 	ENTERED,
 	INSIDE,
 	LEAVED,
-	ACTIVATE,
-	CLOSE,
 };
 
-class Guii : public Requester {
+class Widget : public Requester {
 
-	Guii& operator = (const Guii& in);
+	Widget& operator = (const Widget& in);
 
 public:
 
-	Guii(const Guii& in) : Requester(in) {
+	Widget(const Widget& in) : Requester(in) {
 		*childs = GETOBJ(ObList, this, Childs).GetList();
 	}
 
-	Guii(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
-		RegisterType(ObjType("Guii"));
+	Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
+		RegisterType(ObjType("Widget"));
 
-		ADDOBJ(ObList, Childs, *this, (this)).Assign("Guii", true);
+		ADDOBJ(ObList, Childs, *this, (this)).Assign("Widget", true);
 		childs = &GETOBJ(ObList, this, Childs).GetList();
 
 
@@ -45,12 +46,12 @@ public:
 		buff = new DevBuffer(rect);
 	}
 
-	virtual Guii& Instance() {
-		return *new Guii(*this);
+	virtual Widget& Instance() {
+		return *new Widget(*this);
 	}
 
 	List<Obj>* childs;
-	GuiiState state = GuiiState::NONE;
+	WidgetState state = WidgetState::NONE;
 	Rect<float> rect;
 	bool redraw = false;
 	DevBuffer* buff;
@@ -64,20 +65,20 @@ public:
 
 		if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
 
-			bool activate = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
-			bool close = GETOBJ(CompareExpr, trigers, Close).Evaluate();
+			bool confirm = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
+			bool discard = GETOBJ(CompareExpr, trigers, Close).Evaluate();
 
-			if (activate) {
-				state = GuiiState::ACTIVATE;
+			if (confirm) {
+				state = WidgetState::CONFIRM;
 			}
-			else if (close) {
-				state = GuiiState::CLOSE;
+			else if (discard) {
+				state = WidgetState::DISCARD;
 			}
-			else if (state == GuiiState::NONE) {
-				state = GuiiState::ENTERED;
+			else if (state == WidgetState::NONE) {
+				state = WidgetState::ENTERED;
 			}
 			else {
-				state = GuiiState::INSIDE;
+				state = WidgetState::INSIDE;
 			}
 
 			redraw = true;
@@ -85,12 +86,12 @@ public:
 		}
 		else {
 
-			if (state == GuiiState::LEAVED || state == GuiiState::NONE) {
-				state = GuiiState::NONE;
+			if (state == WidgetState::LEAVED || state == WidgetState::NONE) {
+				state = WidgetState::NONE;
 				return;
 			}
 			else {
-				state = GuiiState::LEAVED;
+				state = WidgetState::LEAVED;
 				redraw = true;
 			}
 		}
@@ -100,7 +101,7 @@ public:
 			ProcBody(requests);
 
 			FOREACH_OBJ(childs, guii) {
-				((Guii*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
+				((Widget*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
 			}
 
 		}
@@ -111,7 +112,7 @@ public:
 		DrawBody(root_obj);
 
 		FOREACH_OBJ(childs, guii) {
-			((Guii*)guii.Data())->Draw(root_obj, false);
+			((Widget*)guii.Data())->Draw(root_obj, false);
 		}
 
 		/*
@@ -125,15 +126,14 @@ public:
 	}
 
 	static bool SetRectReq(Obj* param) {
-		return ((Guii*)param)->TransformRequest();
+		return ((Widget*)param)->TransformRequest();
 	}
 
 	static void RectMod(Obj* param, ModType type) {
-		((Guii*)param)->Transform();
+		((Widget*)param)->Transform();
 	}
 
-	virtual ~Guii() {
-
+	virtual ~Widget() {
 	}
 };
 
@@ -146,7 +146,7 @@ class  GUI : public UI {
 public:
 
 	GUI(Obj* prnt, Device* _dev) : UI(prnt) {
-		ADDOBJ(ObList, Windows, *this, (this)).Assign("Guii", true);
+		ADDOBJ(ObList, Windows, *this, (this)).Assign("Widget", true);
 
 		Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
 
@@ -166,7 +166,7 @@ public:
 		dev->GetCrsr(crs);
 
 		FOREACH_OBJ(&windows, guii) {
-			Guii* window = ((Guii*)guii.Data());
+			Widget* window = ((Widget*)guii.Data());
 			window->Proc(requests, trigers, crs - window->rect.pos);
 		}
 	}
@@ -177,7 +177,7 @@ public:
 
 		List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 		FOREACH_OBJ(&windows, guii) {
-			((Guii*)guii.Data())->Draw(root, true);
+			((Widget*)guii.Data())->Draw(root, true);
 		}
 
 		dev->EndDraw();

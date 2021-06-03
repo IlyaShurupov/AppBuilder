@@ -46,7 +46,7 @@
     <ClInclude Include="..\..\..\sourse\Application\Thread\ThreadManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sourse\Application\Defaults\Guiis.h">
+    <ClInclude Include="..\..\..\sourse\Application\Defaults\Widgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sourse\Application\Defaults\Operators.h">

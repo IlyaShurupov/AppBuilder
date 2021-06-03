@@ -7,7 +7,7 @@
 #include "Primitives.h"
 
 #include "Defaults/Operators.h"
-#include "Defaults/Guiis.h"
+#include "Defaults/Widgets.h"
 
 #include "Thread/ThreadManager.h"
 
@@ -103,7 +103,7 @@ void Application::Run() {
 
     MAINLOOP : {
 
-        Timer timer = Timer(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal());
+         Timer timer = Timer(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal());
 
         // Pump Requests From UIs
         FOREACH_OBJ(&UIs.GetList(), ui) {
