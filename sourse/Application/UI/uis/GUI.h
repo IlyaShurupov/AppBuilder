@@ -115,13 +115,6 @@ public:
 			((Widget*)guii.Data())->Draw(root_obj, false);
 		}
 
-		/*
-		if (!root) {
-			Guii* prnt_guii = (Guii*)prnt;
-			prnt_guii->buff->Project(buff, rect.pos);
-		}
-		*/
-
 		redraw = false;
 	}
 
@@ -181,13 +174,6 @@ public:
 		}
 
 		dev->EndDraw();
-
-		/*
-		FOREACH_OBJ(&windows, guii) {
-			Guii* window = ((Guii*)guii.Data());
-			dev->DrawBuff(window->buff, window->rect.pos);
-		}
-		*/
 	}
 
 	~GUI() {}

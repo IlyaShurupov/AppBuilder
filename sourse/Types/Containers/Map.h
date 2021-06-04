@@ -197,6 +197,27 @@ public:
         return *this; 
     }
 
+    template<typename RetType>
+    RetType foreach(RetType (*functor)(HashNode<V, K>* node, bool& stop)) {
+
+      for (uint8 idx = 0; idx < size; idx++) {
+
+        if (!table[idx]) {
+          continue;
+        }
+
+        for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
+          bool stop = false;
+          RetType ret = functor(node, stop);
+
+          if (stop) {
+            return ret;
+          }
+        }
+
+      }
+    }
+
     ~HashTable() {
         for (uint8 idx = 0; idx < size; idx++) {
 
