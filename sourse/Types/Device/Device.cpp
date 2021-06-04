@@ -20,8 +20,6 @@ bool keyIsDown(int code) {
 }
 #endif
 
-GLFWwindow* window = nullptr;
-NVGcontext* vg = nullptr;
 
 Device::Device() {
 
@@ -44,23 +42,19 @@ Device::Device() {
 		printf("Could not init glew.\n");
 	}
 
-	vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
-
-	if (vg == NULL) {
-		printf("Could not init nanovg.\n");
-	}
-
+	
 	// GLEW generates GL error because it calls glGetString(GL_EXTENSIONS), we'll consume it here.
 	glGetError();
 
 	glfwSwapInterval(0);
 
-	nvgCreateFont(vg, "sans", "D:\\Dev\\tmp\\nanovg\\x64\\Debug\\Roboto-Regular.ttf");
+	nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 
+	nvgCreateFont(nvg, "sans", "D:\\Dev\\tmp\\nanovg\\x64\\Debug\\Roboto-Regular.ttf");
 }
 
 Device::~Device() {
-	nvgDeleteGL3(vg);
+	nvgDeleteGL3(nvg);
 	glfwTerminate();
 }
 
@@ -107,12 +101,12 @@ void Device::StartDraw() {
 
 	glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	nvgBeginFrame(vg, winWidth, winHeight, pxRatio);
+	nvgBeginFrame(nvg, winWidth, winHeight, pxRatio);
 }
 
 void Device::EndDraw() {
 
-	nvgEndFrame(vg);
+	nvgEndFrame(nvg);
 	glfwSwapBuffers(window);
 }
 
@@ -124,4 +118,8 @@ void Device::GetCrsr(vec2<float>& crs) {
 
 	crs.x = (SCR_INT)incrs.x;
 	crs.y = (SCR_INT)incrs.y;
+}
+
+NVGcontext* Device::getNVGcontext() {
+	return nvg;
 }

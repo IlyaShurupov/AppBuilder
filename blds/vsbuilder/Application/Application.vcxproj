@@ -23,6 +23,7 @@
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\Thread.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\ThreadManager.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp" />
+    <ClCompile Include="..\..\..\sourse\Application\UI\uis\GUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Application\App.h" />
@@ -115,7 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;D:\Dev\lib\nanovg\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -133,7 +134,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;D:\Dev\lib\nanovg\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -151,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;D:\Dev\lib\nanovg\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -173,7 +174,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;D:\Dev\lib\nanovg\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

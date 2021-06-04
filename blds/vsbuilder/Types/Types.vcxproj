@@ -28,7 +28,6 @@
     <ClInclude Include="..\..\..\sourse\Types\Containers\Sort.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Stack.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Tuple.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Device\DevBuffer.h" />
     <ClInclude Include="..\..\..\sourse\Types\Device\Device.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Matrix.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Mesh.h" />
@@ -43,8 +42,7 @@
     <ClInclude Include="..\..\..\sourse\Types\Time\Timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Types\Device\private\DevBuffer.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Device\private\Device.cpp" />
+    <ClCompile Include="..\..\..\sourse\Types\Device\Device.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Mesh.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Ray.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Trig.cpp" />
@@ -133,7 +131,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -151,7 +149,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -169,7 +167,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -191,7 +189,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\SDL2\include;D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

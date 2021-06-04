@@ -27,7 +27,7 @@ struct Rect {
     this->size.assign(sizex, sizey);
   }
 
-  // convertion
+  // conversion
   template <typename ConversionType>
   Rect<Type>& operator=(const Rect<ConversionType>& rect) {
     pos = rect.pos;

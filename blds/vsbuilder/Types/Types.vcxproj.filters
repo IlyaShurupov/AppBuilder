@@ -74,14 +74,8 @@
     <ClInclude Include="..\..\..\sourse\Types\Time\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sourse\Types\Device\DevBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Types\Device\private\Device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,7 +97,7 @@
     <ClCompile Include="..\..\..\sourse\Types\Time\private\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sourse\Types\Device\private\DevBuffer.cpp">
+    <ClCompile Include="..\..\..\sourse\Types\Device\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
