@@ -6,8 +6,6 @@
 #define _WIN
 #endif
 
-//#include "nanovg.h"
-
 enum class InputState {
 	NONE = 0,
 	HOLD,
@@ -15,25 +13,16 @@ enum class InputState {
 	RELEASED,
 };
 
-class Device {
-
-	class GLFWwindow* window = nullptr;
-	class NVGcontext* nvg = nullptr;
+class Keyboard {
 
 public:
-	Device();
-	
-	void StartDraw();
-	void EndDraw();
- 
+	Keyboard();
+	 
 	InputState GetKeyState(int ascii_code, InputState current);
-	void GetCrsr(vec2<float>& crs);
 	void PumpEvents();
 	void ClearEvents();
 	
-	class NVGcontext* getNVGcontext();
-
-	~Device();
+	~Keyboard();
 };
 
 

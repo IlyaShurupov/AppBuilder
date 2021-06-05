@@ -1,8 +1,8 @@
 
 #include "App.h"
 
-#include "UI/uis/GUI.h"
-#include "UI/uis/TUI.h"
+#include "UI/GUI.h"
+#include "UI/TUI.h"
 
 #include "Primitives.h"
 
@@ -11,7 +11,7 @@
 
 #include "Thread/ThreadManager.h"
 
-#include "Device/Device.h"
+#include "Keyboard/Keyboard.h"
 
 Application::Application(Obj* prnt) : Obj (prnt) {
     
@@ -27,8 +27,6 @@ Application::Application(Obj* prnt) : Obj (prnt) {
 }
 
 void Application::Compose() {
-    Device* dev = new Device();
-
     
     // Adding Operators
     ObList& OpHolders = GETOBJ(ObList, this, OpHolders);
@@ -37,7 +35,7 @@ void Application::Compose() {
     OpHolders.AddObj(opholder);
 
     // Adding TUI
-    TUI* tui = new TUI(this, dev);
+    TUI* tui = new TUI(this);
     GETOBJ(ObList, this, UIs).AddObj(tui);
 
     // Adding Inputs
@@ -68,7 +66,7 @@ void Application::Compose() {
 
 
     // Adding GUI
-    GUI* gui = new GUI(this, dev);
+    GUI* gui = new GUI(this);
     GETOBJ(ObList, this, UIs).AddObj(gui);
     
     Obj& Trigers = GETOBJ(Obj, gui, Trigers);

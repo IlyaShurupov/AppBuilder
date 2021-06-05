@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "UI/uis/GUI.h"
+#include "UI/GUI.h"
 
 class ContextMenu : public Widget {
 
@@ -27,7 +27,7 @@ public:
 	void ProcBody(ObList* requests) {
 	}
 
-	void DrawBody(WidgetCanvas& canvas) {
+	void DrawBody(Window& canvas) {
 		if (state == WidgetState::INSIDE) {
 			canvas.DrawRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0.1, 0.1, 0.1, 1), 7);
 		}
@@ -48,7 +48,7 @@ public:
 				MAP_FOREACH_GET(Str, Obj*, obj->props, child) {
 					canvas.DrawText(child->key.str, 10, offset, 16, Color(0.7, 0.7, 0.7, 1));
 					offset += 30;
-				}
+				} 
 			}
 		}
 	}

@@ -28,7 +28,14 @@
     <ClInclude Include="..\..\..\sourse\Types\Containers\Sort.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Stack.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Tuple.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Device\Device.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Device\nanovg_gl.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Device\nanovg_gl_utils.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\fontstash.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg_gl.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg_gl_utils.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\stb_image.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Draw\stb_truetype.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Matrix.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Mesh.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Ray.h" />
@@ -37,19 +44,29 @@
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Vec2.h" />
     <ClInclude Include="..\..\..\sourse\Types\Geometry\Vec3.h" />
     <ClInclude Include="..\..\..\sourse\Types\IO\Parser.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Keyboard\Keyboard.h" />
     <ClInclude Include="..\..\..\sourse\Types\Memory\Mem.h" />
     <ClInclude Include="..\..\..\sourse\Types\Strings\Strings.h" />
     <ClInclude Include="..\..\..\sourse\Types\Time\Timer.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\fontstash.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg_gl.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg_gl_utils.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\stb_image.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\stb_truetype.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Types\Device\Device.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Mesh.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Ray.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Trig.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\IO\private\Parser.cpp" />
+    <ClCompile Include="..\..\..\sourse\Types\Keyboard\Keyboard.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Memory\private\Mem.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Strings\private\Strings.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Time\private\Timer.cpp" />
+    <ClCompile Include="..\..\..\sourse\Types\Window\nanovg.cpp" />
+    <ClCompile Include="..\..\..\sourse\Types\Window\Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -127,11 +144,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,11 +162,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions); _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -163,11 +180,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -185,11 +202,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\nanovg\src;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

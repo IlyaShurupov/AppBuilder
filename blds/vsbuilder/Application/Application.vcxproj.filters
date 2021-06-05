@@ -14,16 +14,16 @@
     <ClCompile Include="..\..\..\sourse\Application\App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\Thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\ThreadManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sourse\Application\UI\uis\GUI.cpp">
+    <ClCompile Include="..\..\..\sourse\Application\UI\private\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,12 +37,6 @@
     <ClInclude Include="..\..\..\sourse\Application\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sourse\Application\UI\uis\GUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sourse\Application\UI\uis\TUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sourse\Application\Thread\Thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -53,6 +47,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sourse\Application\Defaults\Operators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sourse\Application\UI\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

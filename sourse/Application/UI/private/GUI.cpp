@@ -1,68 +1,5 @@
 
-#include "UI/uis/GUI.h"
-
-
-#define NVGCOL(col) nvgRGBA(col.r * 255, col.g * 255, col.b * 255, col.a * 255)
-
-WidgetCanvas::WidgetCanvas(class NVGcontext* _vg) {
-	vg = _vg;
-}
-
-void WidgetCanvas::SetBounds(const Rect<float>& _wrld_rec) {
-	wrld_rec = _wrld_rec;
-}
-
-void WidgetCanvas::DrawRect(const Rect<float>& _rect, const Color& col, float radius) {
-
-	nvgBeginPath(vg);
-
-	if (!radius) {
-		nvgRect(vg, wrld_rec.pos.x, wrld_rec.pos.y, wrld_rec.size.x, wrld_rec.size.y);
-	}
-	else {
-		nvgRoundedRect(vg, wrld_rec.pos.x, wrld_rec.pos.y, wrld_rec.size.x, wrld_rec.size.y, radius);
-	}
-
-	nvgFillColor(vg, NVGCOL(col));
-	nvgFill(vg);
-}
-
-void WidgetCanvas::DrawText(const char* str, const float x, float y, float font_scale, const Color& col) {
-
-	nvgFontSize(vg, font_scale);
-	nvgFontFace(vg, "sans");
-	nvgFillColor(vg, NVGCOL(col));
-	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-	nvgText(vg, x + wrld_rec.pos.x, y + wrld_rec.pos.y, str, NULL);
-}
-
-void WidgetCanvas::DrawBounds(const Rect<float>& _rect, const Color& col, short thickness) {
-
-	nvgBeginPath(vg);
-	nvgRect(vg, 122, 122, 122, 122);
-	nvgCircle(vg, 120, 120, 30);
-	nvgPathWinding(vg, NVG_HOLE);	// Mark circle as a hole.
-	nvgFillColor(vg, nvgRGBA(255, 192, 0, 100));
-	nvgFill(vg);
-
-	nvgFontSize(vg, 20.0f);
-	nvgFontFace(vg, "sans");
-	nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));;
-	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-	nvgText(vg, 120, 120, "sdasdasdasdasdasdasd", NULL);
-}
-
-void WidgetCanvas::DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness) {
-}
-
-void WidgetCanvas::Clear(const Color& col) {
-	DrawRect(wrld_rec, col);
-}
-
-WidgetCanvas::~WidgetCanvas() {
-}
-
-
+#include "UI/GUI.h"
 
 Widget::Widget(const Widget& in) : Requester(in) {
 	*childs = GETOBJ(ObList, this, Childs).GetList();
@@ -132,7 +69,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 	}
 }
 
-void Widget::Draw(WidgetCanvas& canvas, vec2<float> prnt_pos) {
+void Widget::Draw(Window& canvas, vec2<float> prnt_pos) {
 
 	rect.pos += prnt_pos;
 	canvas.SetBounds(rect);
@@ -157,18 +94,13 @@ void Widget::RectMod(Obj* param, ModType type) {
 
 
 
-GUI::GUI(Obj* prnt, Device* _dev) : UI(prnt) {
+GUI::GUI(Obj* prnt) : UI(prnt) {
 	ADDOBJ(ObList, Windows, *this, (this)).Assign("Widget", true);
 
 	Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
 
 	ADDOBJ(CompareExpr, Activate, Trigers, (&Trigers));
 	ADDOBJ(CompareExpr, Close, Trigers, (&Trigers));
-
-	dev = _dev;
-
-
-	canvas = new WidgetCanvas(_dev->getNVGcontext());
 }
 
 void GUI::PumpRequests(ObList* requests) {
@@ -176,7 +108,7 @@ void GUI::PumpRequests(ObList* requests) {
 	Obj* trigers = &GETOBJ(Obj, this, Trigers);
 
 	vec2<float> crs;
-	dev->GetCrsr(crs);
+	canvas.GetCrsr(crs);
 
 	FOREACH_OBJ(&windows, guii) {
 		Widget* window = ((Widget*)guii.Data());
@@ -186,12 +118,12 @@ void GUI::PumpRequests(ObList* requests) {
 
 void GUI::OutPut(Obj* root) {
 
-	dev->StartDraw();
+	canvas.BeginFrame();
 
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 	FOREACH_OBJ(&windows, guii) {
-		((Widget*)guii.Data())->Draw(*canvas, vec2<float>());
+		((Widget*)guii.Data())->Draw(canvas, vec2<float>());
 	}
 
-	dev->EndDraw();
+	canvas.EndFrame();
 }

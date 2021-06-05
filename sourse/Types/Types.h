@@ -11,6 +11,7 @@
 #include "Containers/Map.h"
 
 
-#include "Device/Device.h"
+#include "Keyboard/Keyboard.h"
+#include "Window/Window.h"
 
 #include "Macros.h"
