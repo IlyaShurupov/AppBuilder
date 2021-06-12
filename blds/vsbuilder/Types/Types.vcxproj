@@ -62,6 +62,7 @@
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Trig.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\IO\private\Parser.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="..\..\..\sourse\Types\Macros.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Memory\private\Mem.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Strings\private\Strings.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Time\private\Timer.cpp" />

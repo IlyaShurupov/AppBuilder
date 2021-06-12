@@ -10,8 +10,11 @@
 
 class Obj;
 
-struct CopyObj { Obj* operator()(Obj* in); };
-using DictObj = Dict<Obj, 30, CopyObj>;
+struct CopyObj { 
+	Obj* operator()(Obj* in);
+};
+
+using DictObj = Dict<Obj*, CopyObj>;
 
 enum class ModType {
 	SET,

@@ -3,253 +3,153 @@
 
 #include "Macros.h"
 #include "List.h"
-#include "Tuple.h"
+#include "Strings/Strings.h"
 
 #include "Memory/Mem.h"
 
-template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy, typename Copying>
-class HashTable;
+#define HASHMAP_LOAD_FACTOR 2/3.f
+#define HASHMAP_MIN_SIZE 4
+#define HASHMAP_PERTURB_SHIFT 5
+#define HASHMAP_DELETED_SLOT(table, idx) table[idx] == (HashNode<V, K>*)-1
 
-template <typename K, typename V>
-struct HashNode;
-
-
-#define MAP_FOREACH(map) \
-for (uint8 idx = 0; idx < map.table_size(); idx++)
-
-#define MAP_FOREACH_GET(keytype, valtype, map, node) \
-	if (!map[idx]) continue; \
-  for (HashNode<keytype, valtype>* node = map[idx]; node; node = node->next)
-
-template <typename K>
-struct StrHashPolicy {
-
-	uint8 operator()(const K& key, uint8 size) const {
-		char* string = key.str;
-
-		unsigned long hash = 5381;
-		int c;
-		while ((c = *string++)) {
-			hash = ((hash << 5) + hash) + c;
-		}
-		return hash % size;
-
+template <typename Val>
+struct CopyBytes {
+	inline const Val& operator() (const Val& val) {
+		return val;
 	}
 };
 
-template <typename V>
-struct CopyVal {
-	const V& operator()(const V& in) const {
-		return in;
-	}
-};
-
-template <typename V>
-struct DelRemovePolicy {
-	void operator()(V* val) {
-		delete val;
-	}
-};
-
-template <typename V>
-struct ReleaseRemovePolicy {
-	void operator()(V* val) {
-	}
-};
-
-template <typename Type, int Size = 10, typename Copying = CopyVal<Type*> >
-using Dict = HashTable<Str, Type*, Size, StrHashPolicy< Str >, DelRemovePolicy<Type>, Copying >;
-
-
-template <typename K, typename V>
+template <typename V, typename K>
 struct HashNode {
-
 	K key;
 	V val;
-
-	HashNode<K, V>* next = nullptr;
-
-	HashNode(const HashNode& node) {}
-	HashNode& operator=(const HashNode& in) { return *this; }
-
-	HashNode(const K& key, const V& val) {
-		this->key = key;
-		this->val = val;
-	}
 };
 
-
-template <typename K, typename V, size_t tableSize, typename HashPolicy, typename RemovePolicy = ReleaseRemovePolicy<V>, typename Copying = CopyVal<V> >
-class HashTable {
-
-
-	HashNode<K, V>* table[tableSize];
-	HashPolicy hash;
-	RemovePolicy remove_val;
-	Copying copy_val;
-	uint8 size = tableSize;
+template <typename V, typename K, typename Hashfunc, typename CopyValfunc = CopyBytes<V>, int table_size = HASHMAP_MIN_SIZE>
+class HashMap {
 
 public:
 
-	HashTable() : table() {}
-	HashTable(const HashTable& in) : table() { operator=(in); }
+	HashNode<V, K>** table;
+	int nslots;
+	int nentries = 0;
 
-	void Put(const K& key, const V& val) {
-		uint8 idx = hash(key, size);
+	Hashfunc hash;
+	CopyValfunc copy_val;
 
-		if (!table[idx]) {
-			table[idx] = new HashNode<K, V>(key, val);
+	void rehash() {
+		int nslots_old = nslots;
+		HashNode<V, K>** table_old = table;
 
+		nslots = next_pow_of_2((1.f / (HASHMAP_LOAD_FACTOR)) * nentries + 1);
+		table = new HashNode<V, K>*[nslots]();
+		nentries = 0;
+
+		for (int i = 0; i < nslots_old; i++) {
+			if (!table_old[i] || (int)table_old[i] == -1) {
+				continue;
+			}
+
+			int idx = find_slot(table_old[i]->key, false);
+			table[idx] = table_old[i];
+		}
+		delete table_old;
+	}
+
+	int find_slot(const K& key, bool existing) {
+		int hashed_key = hash(key);
+		int mask = nslots - 1;
+		int idx = hashed_key & mask;
+		int shift = (hashed_key >> HASHMAP_PERTURB_SHIFT) & ~1;
+
+	NEXT:
+
+		if (HASHMAP_DELETED_SLOT(table, idx)) {
+			if (!existing) {
+				return idx;
+			}
+		}
+		else if (!table[idx] && !existing) {
+			return idx;
 		}
 		else if (table[idx]->key == key) {
-			table[idx]->val = val;
+			return idx;
+		}
 
+		idx = ((5 * idx) + 1 + shift) & mask;
+		goto NEXT;
+
+	}
+
+	HashMap() {
+		table = new HashNode<V, K>*[table_size]();
+		nslots = next_pow_of_2(table_size - 1);
+	}
+
+	void Put(const K& key, const V& val) {
+		int idx = find_slot(key, false);
+
+		if (!table[idx] || HASHMAP_DELETED_SLOT(table, idx)) {
+			table[idx] = new HashNode<V, K>;
+			table[idx]->key = key;
+			nentries++;
 		}
-		else {
-			HashNode<K, V>* node = new HashNode<K, V>(key, val);
-			node->next = table[idx]->next;
-			table[idx]->next = node;
+
+		table[idx]->val = val;
+
+		if ((float)nentries / nslots > HASHMAP_LOAD_FACTOR) {
+			rehash();
 		}
+	}
+
+	V& Get(const K& key) {
+		int idx = find_slot(key, true);
+		return table[idx]->val;
 	}
 
 	void Remove(const K& key) {
-		uint8 idx = hash(key, size);
-		HashNode<K, V>* prev = nullptr;
-		for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
-			if (node->key == key) {
+		int idx = find_slot(key, true);
+		delete table[idx];
+		table[idx] = (HashNode<V, K>*)-1;
 
-				if (prev) {
-					prev->next = node->next;
-
-				}
-				else {
-					table[idx] = node->next;
-				}
-
-				remove_val(node->val);
-				delete node;
-				break;
-			}
-
-			prev = node;
+		nentries--;
+		if ((float)nentries / nslots < 1 - HASHMAP_LOAD_FACTOR) {
+			rehash();
 		}
 	}
 
-	bool Get(const K& key, V* value) {
-		for (HashNode<K, V>* node = table[hash(key, size)]; node; node = node->next) {
-			if (node->key == key) {
-				*value = node->val;
-				return true;
+	void operator=(const HashMap<V, K, Hashfunc, CopyValfunc, table_size>& in) {
+		clear();
+
+		nslots = in.nslots;
+		table = new HashNode<V, K>*[nslots]();
+
+		for (int i = 0; i < nslots; i++) {
+			if (in.table[i] && (int)in.table[i] != -1) {
+				Put(in.table[i]->key, copy_val(in.table[i]->val));
 			}
 		}
-
-		return false;
 	}
 
-	V Get(const K& key) {
-		V val;
-		bool suc = Get(key, &val);
-		assert(suc);
-		return val;
-	}
-
-	void ToList(List<Tuple<K*, V>>* list) {
-
-		list->Clear();
-
-		for (uint8 idx = 0; idx < size; idx++) {
-
-			if (!table[idx]) {
-				continue;
-			}
-
-			for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
-				list->PushBack(new Tuple<K*, V>(&node->key, node->val));
-			}
-
-		}
-	}
-
-	void Clear() {
-		for (uint8 idx = 0; idx < size; idx++) {
-
-			if (!table[idx]) {
-				continue;
-			}
-
-			HashNode<K, V>* node = table[idx];
-			HashNode<K, V>* del_node;
-			while (node) {
-				del_node = node;
-				node = node->next;
-				remove_val(del_node->val);
-				delete del_node;
-			}
-
-			table[idx] = nullptr;
-		}
-	}
-
-	HashTable& operator=(const HashTable& in) {
-
-		Clear();
-
-		for (uint8 idx = 0; idx < in.size; idx++) {
-
-			if (!in.table[idx]) {
-				continue;
-			}
-
-			for (HashNode<K, V>* node = in.table[idx]; node; node = node->next) {
-				const V copied_val = copy_val(node->val);
-				Put(node->key, copied_val);
-			}
-
-		}
-		return *this;
-	}
-
-	template<typename RetType>
-	RetType foreach(RetType(*functor)(HashNode<V, K>* node, bool& stop)) {
-
-		for (uint8 idx = 0; idx < size; idx++) {
-
-			if (!table[idx]) {
-				continue;
-			}
-
-			for (HashNode<K, V>* node = table[idx]; node; node = node->next) {
-				bool stop = false;
-				RetType ret = functor(node, stop);
-
-				if (stop) {
-					return ret;
-				}
-			}
-
-		}
-	}
-
-	HashNode<K, V>* operator[] (int idx) {
-		return table[idx];
-	}
-
-	inline int table_size() {
-		return size;
-	}
-
-	~HashTable() {
-		for (uint8 idx = 0; idx < size; idx++) {
-
-			HashNode<K, V>* next = nullptr;
-			HashNode<K, V>* node = table[idx];
-
-			while (node) {
-				next = node->next;
-				remove_val(node->val);
-				delete node;
-				node = next;
+	void clear() {
+		for (int i = 0; i < nslots; i++) {
+			if (table[i] && (int)table[i] != -1) {
+				delete table[i];
 			}
 		}
+		delete table;
+	}
+
+	~HashMap() {
+		clear();
 	}
 };
+
+struct StrHashPolicy {
+	inline int operator()(const Str& str) {
+		return hash_string(str.str);
+	}
+};
+
+template< typename Type, typename CopyValfunc = CopyBytes<Type>, int table_size = HASHMAP_MIN_SIZE >
+using Dict = HashMap<Type, Str, StrHashPolicy, CopyValfunc, table_size>;

@@ -52,14 +52,7 @@ typedef int SCR_INT;
 #define MATH_SQRT2 1.4142135623730950488016887242
 #define MATH_E 2.7182818284590452353602874714
 
-inline int FltToInt(float f) {
-    union { float f; aligned i; } u;
-    u.f = f;
-    return u.i;
-}
-
-inline float IntToFlt(aligned i) {
-    union { float f; aligned i; } u;
-    u.i = i;
-    return u.f;
-}
+int FltToInt(float f);
+float IntToFlt(aligned i);
+uint8 next_pow_of_2(uint8 v);
+int hash_string(const char* bytes);

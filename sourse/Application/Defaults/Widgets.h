@@ -44,12 +44,13 @@ public:
 
 			int offset = 50;
 
-			MAP_FOREACH(obj->props) {
-				MAP_FOREACH_GET(Str, Obj*, obj->props, child) {
-					canvas.DrawText(child->key.str, 10, offset, 16, Color(0.7, 0.7, 0.7, 1));
+			for (int i = 0; i < obj->props.nslots; i++) {
+				if (obj->props.table[i] && (int)obj->props.table[i] != -1) {
+					canvas.DrawText(obj->props.table[i]->key.str, 10, offset, 16, Color(0.7, 0.7, 0.7, 1));
 					offset += 30;
-				} 
+				}
 			}
+
 		}
 	}
 

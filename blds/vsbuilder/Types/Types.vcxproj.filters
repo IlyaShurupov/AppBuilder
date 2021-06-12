@@ -151,5 +151,8 @@
     <ClCompile Include="..\..\..\sourse\Types\Keyboard\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sourse\Types\Macros.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

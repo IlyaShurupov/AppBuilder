@@ -4,62 +4,64 @@
 #include "Object.h"
 
 class ObDict : public Obj {
-    
-    DictObj dict;
-    Str dict_type;
-    bool base_class = false;
 
-    ObDict& operator = (const ObDict& in);
+	DictObj dict;
+	Str dict_type;
+	bool base_class = false;
 
-    public:
+	ObDict& operator = (const ObDict& in);
 
-    ObDict(const ObDict& in) : Obj(in) {
-        dict_type = in.dict_type;
-        dict = in.dict;  
-        base_class = in.base_class;  
-    }
+public:
 
-    ObDict(Obj* prnt) : Obj (prnt)  {        
-        RegisterType(ObjType("ObDict"));
-    }
+	ObDict(const ObDict& in) : Obj(in) {
+		dict_type = in.dict_type;
+		dict = in.dict;
+		base_class = in.base_class;
+	}
 
-    virtual ObDict& Instance() {
-        return *new ObDict(*this);
-    }
+	ObDict(Obj* prnt) : Obj(prnt) {
+		RegisterType(ObjType("ObDict"));
+	}
 
-    ObDict& Assign(Str _dict_type, bool _base_class) {
-        dict_type = _dict_type;
-        base_class = _base_class;
-        return *this;
-    }
+	virtual ObDict& Instance() {
+		return *new ObDict(*this);
+	}
 
-    DictObj& GetDict() {
-        return dict;
-    }
+	ObDict& Assign(Str _dict_type, bool _base_class) {
+		dict_type = _dict_type;
+		base_class = _base_class;
+		return *this;
+	}
 
-    bool AddObj(Obj* obj, STRR name) {
-        if (!CanModify()) {
-            return false;
-        }
+	DictObj& GetDict() {
+		return dict;
+	}
 
-        if (base_class) {
-            if (obj->type.IsPrnt(dict_type)) {
-                dict.Put(name, obj);
-            }
-        } else if (obj->type.idname == dict_type) {
-            dict.Put(name, obj);
-        } else {
-            return false;
-        }
-        
-        Modified(ModType::SET);
-        return true;
-    }
+	bool AddObj(Obj* obj, STRR name) {
+		if (!CanModify()) {
+			return false;
+		}
 
-    Obj& GetObj(STRR name) {
-        return *dict.Get(name);
-    }
+		if (base_class) {
+			if (obj->type.IsPrnt(dict_type)) {
+				dict.Put(name, obj);
+			}
+		}
+		else if (obj->type.idname == dict_type) {
+			dict.Put(name, obj);
+		}
+		else {
+			return false;
+		}
 
-    ~ObDict() {
-    }
+		Modified(ModType::SET);
+		return true;
+	}
+
+	Obj& GetObj(STRR name) {
+		return *dict.Get(name);
+	}
+
+	~ObDict() {
+	}
 };
