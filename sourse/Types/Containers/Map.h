@@ -55,6 +55,7 @@ public:
 
 			int idx = find_slot(table_old[i]->key, false);
 			table[idx] = table_old[i];
+			nentries++;
 		}
 		delete table_old;
 	}
@@ -164,32 +165,34 @@ public:
 
 	HashMap<V, K, HF, CF, SZ>* map;
 	HashNode<V, K>* iter;
-	int idx;
+	int slot_idx;
+	int entry_idx;
 
-	int Idx() { return idx; }
 	HashNode<V, K>* operator->() { return iter; }
 
 	MapIterator(HashMap<V, K, HF, CF, SZ>* _map) {
-		idx = -1;
+		slot_idx = -1;
+		entry_idx = -1;
 		map = _map;
 		this->operator++();
 	}
 
 	void operator++() {
-		idx++;
+		slot_idx++;
 
-		while (HASHMAP_DELETED_SLOT(map->table, idx) || !map->table[idx]) {
-			idx++;
+		while (HASHMAP_DELETED_SLOT(map->table, slot_idx) || !map->table[slot_idx]) {
+			slot_idx++;
 
-			if (idx == map->nslots) {
+			if (slot_idx == map->nslots) {
 				return;
 			}
 		}
 
-		iter = map->table[idx];
+		iter = map->table[slot_idx];
+		entry_idx++;
 	}
 
-	bool operator!=(int p_idx) { return idx != p_idx; }
+	bool operator!=(int p_idx) { return slot_idx != p_idx; }
 
 	const MapIterator& operator*() { return *this; }
 };

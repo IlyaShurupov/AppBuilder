@@ -120,6 +120,7 @@ class TUI : public UI {
 public:
 
 	TUI(Obj* prnt) : UI(prnt) {
+		RegisterType(ObjType("TUI"));
 		ADDOBJ(ObList, Shortcuts, *this, (this)).Assign("ShortCut", false);
 		ADDOBJ(ObList, Inputs, *this, (this)).Assign("KeyInput", false);
 	}

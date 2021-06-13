@@ -56,6 +56,10 @@ class ObList : public Obj {
         return true;
     }
 
+    const Str& ListType() {
+      return list_type;
+    }
+
     ~ObList() {
     }
 };

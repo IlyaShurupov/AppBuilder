@@ -78,7 +78,7 @@ void Str::operator=(const Str& string) {
   length = string.length;
 }
 
-void Str::operator+=(const Str& string) {
+Str& Str::operator+=(const Str& string) {
 
   str_idx newlen = string.length + length;
   char* newstr = new char [newlen + 1];
@@ -96,6 +96,7 @@ void Str::operator+=(const Str& string) {
 
   str = newstr;
   length = newlen;
+  return *this;
 }
 
 void Str::operator=(const char* string) {

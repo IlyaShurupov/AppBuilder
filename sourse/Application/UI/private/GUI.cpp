@@ -60,7 +60,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 
 	if (redraw) {
 
-		ProcBody(requests);
+		ProcBody(requests, crs);
 
 		for (auto guii : *childs) {
 			((Widget*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
@@ -69,16 +69,16 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 	}
 }
 
-void Widget::Draw(Window& canvas, vec2<float> prnt_pos) {
+void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 
 	rect.pos += prnt_pos;
 	canvas.SetBounds(rect);
 	rect.pos -= prnt_pos;
 
-	DrawBody(canvas);
+	DrawBody(canvas, crs);
 
 	for (auto guii : *childs) {
-		((Widget*)guii.Data())->Draw(canvas, prnt_pos + rect.pos);
+		((Widget*)guii.Data())->Draw(canvas, prnt_pos + rect.pos, crs - rect.pos);
 	}
 
 	redraw = false;
@@ -95,6 +95,8 @@ void Widget::RectMod(Obj* param, ModType type) {
 
 
 GUI::GUI(Obj* prnt) : UI(prnt) {
+	RegisterType(ObjType("GUI"));
+
 	ADDOBJ(ObList, Windows, *this, (this)).Assign("Widget", true);
 
 	Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
@@ -120,9 +122,13 @@ void GUI::OutPut(Obj* root) {
 
 	canvas.BeginFrame();
 
+	vec2<float> crs;
+	canvas.GetCrsr(crs);
+
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 	for (auto guii : windows) {
-		((Widget*)guii.Data())->Draw(canvas, vec2<float>());
+		Widget* window = ((Widget*)guii.Data());
+		window->Draw(canvas, vec2<float>(), crs - window->rect.pos);
 	}
 
 	canvas.EndFrame();

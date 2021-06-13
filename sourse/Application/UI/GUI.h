@@ -35,14 +35,14 @@ public:
 	Rect<float> rect;
 	bool redraw = false;
 
-	virtual void ProcBody(ObList* requests) {}
-	virtual void DrawBody(Window& canvas) {}
+	virtual void ProcBody(ObList* requests, vec2<float> crs) {}
+	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
 	virtual bool TransformRequest() { return false; }
 	virtual void Transform() {}
 
 	void Proc(ObList* requests, Obj* trigers, vec2<float> crs);
 
-	void Draw(Window& canvas, vec2<float> prnt_pos);
+	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs);
 
 	static bool SetRectReq(Obj* param);
 

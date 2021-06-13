@@ -61,17 +61,17 @@ void Window::DrawRect(const Rect<float>& _rect, const Color& col, float radius) 
 	nvgBeginPath(nvg);
 
 	if (!radius) {
-		nvgRect(nvg, wrld_rec.pos.x, wrld_rec.pos.y, wrld_rec.size.x, wrld_rec.size.y);
+		nvgRect(nvg, _rect.pos.x + wrld_rec.pos.x, _rect.pos.y + wrld_rec.pos.y, _rect.size.x, _rect.size.y);
 	}
 	else {
-		nvgRoundedRect(nvg, wrld_rec.pos.x, wrld_rec.pos.y, wrld_rec.size.x, wrld_rec.size.y, radius);
+		nvgRoundedRect(nvg, _rect.pos.x + wrld_rec.pos.x, _rect.pos.y + wrld_rec.pos.y, _rect.size.x, _rect.size.y, radius);
 	}
 
 	nvgFillColor(nvg, NVGCOL(col));
 	nvgFill(nvg);
 }
 
-void Window::DrawText(const char* str, const float x, float y, float font_scale, const Color& col) {
+void Window::Text(const char* str, const float x, float y, float font_scale, const Color& col) {
 
 	nvgFontSize(nvg, font_scale);
 	nvgFontFace(nvg, "sans");

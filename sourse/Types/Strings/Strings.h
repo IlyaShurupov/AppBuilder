@@ -33,7 +33,7 @@ struct Str {
   void operator=(const Str& string);
   void operator=(const char* string);
 
-  void operator+=(const Str& string);
+  Str& operator+=(const Str& string);
 
   bool operator==(char* cstring);
   bool operator==(const Str& string);

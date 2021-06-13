@@ -30,7 +30,7 @@ void Application::Compose() {
     
     // Adding Operators
     ObList& OpHolders = GETOBJ(ObList, this, OpHolders);
-    Operator* op = new QuitProgramm(nullptr);
+    Operator* op = new QuitProgram(nullptr);
     OpHolder* opholder = new OpHolder(nullptr, op);
     OpHolders.AddObj(opholder);
 
@@ -44,10 +44,10 @@ void Application::Compose() {
     GETOBJ(Int, input, ASCII Code).Set('A');
     GETOBJ(ObList, tui, Inputs).AddObj(input);
 
-    KeyInput* key_RMB = new KeyInput(nullptr);
-    GETOBJ(String, key_RMB, KeyName).Assign("RMB");
-    GETOBJ(Int, key_RMB, ASCII Code).Set(KEY_RBUTTON);
-    GETOBJ(ObList, tui, Inputs).AddObj(key_RMB);
+    KeyInput* key_LMB = new KeyInput(nullptr);
+    GETOBJ(String, key_LMB, KeyName).Assign("LMB");
+    GETOBJ(Int, key_LMB, ASCII Code).Set(KEY_LBUTTON);
+    GETOBJ(ObList, tui, Inputs).AddObj(key_LMB);
 
     // Adding Shortcuts
     ShortCut* shcut = new ShortCut(nullptr);
@@ -77,18 +77,18 @@ void Application::Compose() {
     Int* close_trigger_val = new Int(nullptr);
     close_trigger_val->Assign(3, -1, 5);
     close_cond->GetHead().SetLink(close_trigger_val);
-    close_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
+    close_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
     close_cond_list.AddObj(close_cond);
 
     ObjTuple* act_cond = new ObjTuple(&act_cond_list);
     Int* act_trigger_val = new Int(nullptr);
     act_trigger_val->Assign(3, -1, 5);
     act_cond->GetHead().SetLink(act_trigger_val);
-    act_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
+    act_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
     act_cond_list.AddObj(act_cond);
 
 
-    ContextMenu* ctx_menu = new ContextMenu(nullptr, Rect<float>(50, 50, 300, 500));
+    ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500));
     GETOBJ(Link, ctx_menu, Target).SetLink(this);
     GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
 }
