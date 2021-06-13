@@ -31,26 +31,26 @@ void Application::Compose() {
     // Adding Operators
     ObList& OpHolders = GETOBJ(ObList, this, OpHolders);
     Operator* op = new QuitProgram(nullptr);
-    OpHolder* opholder = new OpHolder(nullptr, op);
+    OpHolder* opholder = new OpHolder(&OpHolders, op);
     OpHolders.AddObj(opholder);
 
     // Adding TUI
-    TUI* tui = new TUI(this);
+    TUI* tui = new TUI(&GETOBJ(ObList, this, UIs));
     GETOBJ(ObList, this, UIs).AddObj(tui);
 
     // Adding Inputs
-    KeyInput* input = new KeyInput(nullptr);
+    KeyInput* input = new KeyInput(&GETOBJ(ObList, tui, Inputs));
     GETOBJ(String, input, KeyName).Assign("A");
     GETOBJ(Int, input, ASCII Code).Set('A');
     GETOBJ(ObList, tui, Inputs).AddObj(input);
 
-    KeyInput* key_LMB = new KeyInput(nullptr);
+    KeyInput* key_LMB = new KeyInput(&GETOBJ(ObList, tui, Inputs));
     GETOBJ(String, key_LMB, KeyName).Assign("LMB");
     GETOBJ(Int, key_LMB, ASCII Code).Set(KEY_LBUTTON);
     GETOBJ(ObList, tui, Inputs).AddObj(key_LMB);
 
     // Adding Shortcuts
-    ShortCut* shcut = new ShortCut(nullptr);
+    ShortCut* shcut = new ShortCut(&GETOBJ(ObList, tui, Shortcuts));
     GETOBJ(Link, shcut, Target Op).SetLink(opholder);
 
     ObList& cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, shcut, Invoke), Conditions);
@@ -66,7 +66,7 @@ void Application::Compose() {
 
 
     // Adding GUI
-    GUI* gui = new GUI(this);
+    GUI* gui = new GUI(&GETOBJ(ObList, this, UIs));
     GETOBJ(ObList, this, UIs).AddObj(gui);
     
     Obj& Trigers = GETOBJ(Obj, gui, Trigers);

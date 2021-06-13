@@ -56,7 +56,7 @@ void Window::SetBounds(const Rect<float>& _wrld_rec) {
 	wrld_rec = _wrld_rec;
 }
 
-void Window::DrawRect(const Rect<float>& _rect, const Color& col, float radius) {
+void Window::RRect(const Rect<float>& _rect, const Color& col, float radius) {
 
 	nvgBeginPath(nvg);
 
@@ -100,7 +100,7 @@ void Window::DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, cons
 }
 
 void Window::Clear(const Color& col) {
-	DrawRect(wrld_rec, col);
+	RRect(wrld_rec, col);
 }
 
 void Window::GetCrsr(vec2<float>& crs) {

@@ -21,6 +21,8 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 	ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
 
 	rect = _rect;
+
+	ADDOBJ(Bool, Hiden, *this, (this)).Set(false);
 }
 
 void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
@@ -48,9 +50,12 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 	}
 	else {
 
-		if (state == WidgetState::LEAVED || state == WidgetState::NONE) {
-			state = WidgetState::NONE;
+		if (state == WidgetState::NONE) {
 			return;
+		}
+		else if (state == WidgetState::LEAVED) {
+			state = WidgetState::NONE;
+			redraw = true;
 		}
 		else {
 			state = WidgetState::LEAVED;
@@ -63,7 +68,10 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 		ProcBody(requests, crs);
 
 		for (auto guii : *childs) {
-			((Widget*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
+			Widget* child = (Widget*)guii.Data();
+			if (!GETOBJ(Bool, child, Hiden).GetVal()) {
+				child->Proc(requests, trigers, crs - child->rect.pos);
+			}
 		}
 
 	}
@@ -78,7 +86,10 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 	DrawBody(canvas, crs);
 
 	for (auto guii : *childs) {
-		((Widget*)guii.Data())->Draw(canvas, prnt_pos + rect.pos, crs - rect.pos);
+		Widget* child = (Widget*)guii.Data();
+		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
+			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos);
+		}
 	}
 
 	redraw = false;
