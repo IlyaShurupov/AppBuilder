@@ -22,7 +22,7 @@ public:
 
 		List<Obj>& conditions = GETOBJ(ObList, this, Conditions).GetList();
 
-		FOREACH(&conditions, Obj, tpl_obj) {
+		for (auto tpl_obj : conditions) {
 			ObjTuple* tpl = (ObjTuple*)tpl_obj.Data();
 			if (tpl->GetHead().GetLink()->Equal(*tpl->GetTail().GetLink())) {
 				if (any) {
@@ -66,7 +66,7 @@ public:
 		CompareExpr& invoke = GETOBJ(CompareExpr, this, Invoke);
 
 		if (Running()) {
-			FOREACH_OBJ(&rtargs.GetList(), rtarg_obj) {
+			for(auto rtarg_obj : rtargs.GetList()) {
 				ObjTuple* tpl = (ObjTuple*)rtarg_obj.Data();
 				CompareExpr* cmpr = (CompareExpr*)tpl->GetTail().GetLink();
 
@@ -131,7 +131,7 @@ public:
 	Keyboard kb;
 
 	void UpdateInputStates() {
-		FOREACH_OBJ(&GETOBJ(ObList, this, Inputs).GetList(), input_obj) {
+		for (auto input_obj : GETOBJ(ObList, this, Inputs).GetList()) {
 			KeyInput* input = (KeyInput*)input_obj.Data();
 			input->Update(&kb);
 		}
@@ -143,7 +143,7 @@ public:
 		UpdateInputStates();
 		kb.ClearEvents();
 
-		FOREACH_OBJ(&GETOBJ(ObList, this, Shortcuts).GetList(), shcut_obj) {
+		for (auto shcut_obj : GETOBJ(ObList, this, Shortcuts).GetList()) {
 			ShortCut* shcut = (ShortCut*)shcut_obj.Data();
 			shcut->ProcInputs(requests);
 		}

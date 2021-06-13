@@ -7,9 +7,7 @@
 
 #include <cstdarg>
 
-#define FOREACH(List, Type, i) for (Iterator<Type> i(List, 0); i < (List)->Len(); ++i)
-
-template <class Type> class Iterator;
+template <class Type> class ListIterator;
 template <class Type> class List;
 
 template <typename Type>
@@ -121,18 +119,22 @@ class List {
 
     Type** buffer = new Type* [length];
 
-    FOREACH(this, Type, iter) { *(buffer + iter.Idx()) = iter.Data(); }
+    for (auto iter : *this) {
+      *(buffer + iter.Idx()) = iter.Data(); 
+    }
 
     SortP.Sort(buffer, length, compare);
 
-    FOREACH(this, Type, iter) { iter.node()->data = *(buffer + iter.Idx()); }
+    for (auto iter : *this) {
+      iter.node()->data = *(buffer + iter.Idx()); 
+    }
 
     delete[] buffer;
   }
 
   void Invert() {
-    Iterator<Type> i(this, 0);
-    Iterator<Type> j(this, Len() - 1);
+    ListIterator<Type> i(this, 0);
+    ListIterator<Type> j(this, Len() - 1);
     while (i < Len() / 2) {
       SWAP(i.node()->data, j.node()->data, Type*);
       ++i;
@@ -140,7 +142,7 @@ class List {
     }
   }
 
-  inline Type& operator[](Iterator<Type>& iter) { return *iter.node()->data; }
+  inline Type& operator[](ListIterator<Type>& iter) { return *iter.node()->data; }
   inline Type& operator[](int idx) { return *Find(idx)->data; }
 
   void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
@@ -223,13 +225,21 @@ class List {
     }
   }
 
+  ListIterator<Type> begin() {
+    return ListIterator<Type>(this, 0);
+  }
+
+  int end() {
+    return Len();
+  }
+
   ~List() {
     Clear();
   }
 };
 
 template <typename Type>
-class Iterator {
+class ListIterator {
 
   Node<Type>* iter;
   int idx;
@@ -240,7 +250,7 @@ class Iterator {
   Type* Data() { return iter->data; }
   Node<Type>* node() { return iter; }
 
-  Iterator(List<Type>* list, int p_idx) {
+  ListIterator(List<Type>* list, int p_idx) {
     idx = p_idx;
     iter = list->Find(idx);
   }
@@ -250,18 +260,15 @@ class Iterator {
     idx++;
   }
 
-  inline void operator--() {
-    iter = iter->prev;
-    idx--;
-  }
-
-  bool operator==(Iterator<Type> IterNode) { return IterNode.iter == iter; }
+  bool operator==(const ListIterator<Type>& IterNode) { return IterNode.iter == iter; }
 
   bool operator==(int p_idx) { return idx == p_idx; }
   bool operator!=(int p_idx) { return idx != p_idx; }
+  bool operator!=(const ListIterator<Type>& in) { return iter != in.iter; }
   bool operator>(int p_idx) { return idx > p_idx; }
   bool operator<(int p_idx) { return idx < p_idx; }
   bool operator>=(int p_idx) { return idx >= p_idx; }
   bool operator<=(int p_idx) { return idx <= p_idx; }
 
+  const ListIterator& operator*() { return *this; }
 };

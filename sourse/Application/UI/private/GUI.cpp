@@ -62,7 +62,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 
 		ProcBody(requests);
 
-		FOREACH_OBJ(childs, guii) {
+		for (auto guii : *childs) {
 			((Widget*)guii.Data())->Proc(requests, trigers, crs - rect.pos);
 		}
 
@@ -77,7 +77,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos) {
 
 	DrawBody(canvas);
 
-	FOREACH_OBJ(childs, guii) {
+	for (auto guii : *childs) {
 		((Widget*)guii.Data())->Draw(canvas, prnt_pos + rect.pos);
 	}
 
@@ -110,7 +110,7 @@ void GUI::PumpRequests(ObList* requests) {
 	vec2<float> crs;
 	canvas.GetCrsr(crs);
 
-	FOREACH_OBJ(&windows, guii) {
+	for (auto guii : windows) {
 		Widget* window = ((Widget*)guii.Data());
 		window->Proc(requests, trigers, crs - window->rect.pos);
 	}
@@ -121,7 +121,7 @@ void GUI::OutPut(Obj* root) {
 	canvas.BeginFrame();
 
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
-	FOREACH_OBJ(&windows, guii) {
+	for (auto guii : windows) {
 		((Widget*)guii.Data())->Draw(canvas, vec2<float>());
 	}
 

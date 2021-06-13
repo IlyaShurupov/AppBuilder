@@ -104,12 +104,12 @@ void Application::Run() {
          Timer timer = Timer(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal());
 
         // Pump Requests From UIs
-        FOREACH_OBJ(&UIs.GetList(), ui) {
+        for (auto ui : UIs.GetList()) {
             ((UI*)ui.Data())->PumpRequests(&Requests);
         }
 
         // Poll Requests
-        FOREACH_OBJ(&Requests.GetList(), request) {
+        for (auto request : Requests.GetList()) {
             Operator* op = (Operator*)request.Data();
             if (op->Poll()) {
                 Requests.GetList().Detach(request.node());
@@ -120,7 +120,7 @@ void Application::Run() {
         }
 
         // Run Threads
-        FOREACH_OBJ(&Threads.GetList(), thread) {
+        for (auto thread : Threads.GetList()) {
             Operator* op = (Operator*)thread.Data();
 
             op->Modal();
@@ -131,7 +131,7 @@ void Application::Run() {
         }   
 
         // Output to user
-        FOREACH_OBJ(&UIs.GetList(), ui) {
+        for (auto ui : UIs.GetList()) {
             ((UI*)ui.Data())->OutPut(prnt);
         }
 

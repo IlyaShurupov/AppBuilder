@@ -27,10 +27,8 @@ void WorldTransform(Trig* trig, Vec3f* pos, Mat3f* mat) {
 void Ray::Cast(List<Mesh>* objects, float ray_length) {
 	HitData.Hit = false;
 
-	FOREACH(objects, Mesh, mesh) {
-
-		List<Trig>* trigs = &mesh->Trigs;
-		FOREACH(trigs, Trig, trig) {
+	for (auto mesh : *objects) {
+		for (auto trig : mesh->Trigs) {
 
 			WorldTransform(trig.node()->data, &mesh->Pos, &mesh->TransformMat);
 

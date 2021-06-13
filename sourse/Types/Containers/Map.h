@@ -10,7 +10,10 @@
 #define HASHMAP_LOAD_FACTOR 2/3.f
 #define HASHMAP_MIN_SIZE 4
 #define HASHMAP_PERTURB_SHIFT 5
-#define HASHMAP_DELETED_SLOT(table, idx) table[idx] == (HashNode<V, K>*)-1
+#define HASHMAP_DELETED_SLOT(table, idx) ((table)[idx] == (HashNode<V, K>*)-1)
+
+template <typename K, typename V, typename HF, typename CF, int SZ>
+class MapIterator;
 
 template <typename Val>
 struct CopyBytes {
@@ -46,7 +49,7 @@ public:
 		nentries = 0;
 
 		for (int i = 0; i < nslots_old; i++) {
-			if (!table_old[i] || (int)table_old[i] == -1) {
+			if (!table_old[i] || HASHMAP_DELETED_SLOT(table_old, i)) {
 				continue;
 			}
 
@@ -125,7 +128,7 @@ public:
 		table = new HashNode<V, K>*[nslots]();
 
 		for (int i = 0; i < nslots; i++) {
-			if (in.table[i] && (int)in.table[i] != -1) {
+			if (in.table[i] && !HASHMAP_DELETED_SLOT(in.table, i)) {
 				Put(in.table[i]->key, copy_val(in.table[i]->val));
 			}
 		}
@@ -133,16 +136,62 @@ public:
 
 	void clear() {
 		for (int i = 0; i < nslots; i++) {
-			if (table[i] && (int)table[i] != -1) {
+			if (table[i] && !HASHMAP_DELETED_SLOT(table, i)) {
 				delete table[i];
 			}
 		}
 		delete table;
 	}
 
+	MapIterator<K, V, Hashfunc, CopyValfunc, table_size> begin() {
+		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(this);  
+	}
+
+	int end() {
+		return nslots;
+	}
+
 	~HashMap() {
 		clear();
 	}
+};
+
+
+template <typename K, typename V, typename HF, typename CF, int SZ>
+class MapIterator {
+
+public:
+
+	HashMap<V, K, HF, CF, SZ>* map;
+	HashNode<V, K>* iter;
+	int idx;
+
+	int Idx() { return idx; }
+	HashNode<V, K>* operator->() { return iter; }
+
+	MapIterator(HashMap<V, K, HF, CF, SZ>* _map) {
+		idx = -1;
+		map = _map;
+		this->operator++();
+	}
+
+	void operator++() {
+		idx++;
+
+		while (HASHMAP_DELETED_SLOT(map->table, idx) || !map->table[idx]) {
+			idx++;
+
+			if (idx == map->nslots) {
+				return;
+			}
+		}
+
+		iter = map->table[idx];
+	}
+
+	bool operator!=(int p_idx) { return idx != p_idx; }
+
+	const MapIterator& operator*() { return *this; }
 };
 
 struct StrHashPolicy {

@@ -8,7 +8,7 @@
 DataBlock* DataBlock::find(const char* BlockName) {
   Str name(BlockName);
 
-  FOREACH(&list, DataBlock, block) {
+  for (auto block : list) {
     if (block->BlockName == name) {
       return block.node()->data;
     }

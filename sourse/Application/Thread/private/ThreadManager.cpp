@@ -35,7 +35,7 @@ Obj* OpHolder::GetInterface() {
 }
 
 void OpHolder::UpdateThreads() {
-    FOREACH(&threads, Operator, op) {
+    for (auto op : threads) {
         if (op->Finished()) {
             *op->instance_count -= 1;
             threads.DelNode(op.node());

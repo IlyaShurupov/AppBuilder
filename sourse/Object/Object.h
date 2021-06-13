@@ -4,7 +4,6 @@
 #include "Types.h"
 
 #define STRR const Str&
-#define FOREACH_OBJ(Oblist, iter) FOREACH(Oblist, Obj, iter)
 #define ADDOBJ(Type, Name, to, Args) ((Type &)(to).AddChld(new Type Args, #Name))
 #define GETOBJ(type, from, name) ((type&)*(from)->props.Get(#name))
 
