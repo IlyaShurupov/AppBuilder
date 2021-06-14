@@ -58,6 +58,18 @@ class Float : public Obj {
         return val == ((Float&)obj).GetVal();
     }
 
+    void as_string(Str* str) {
+      *str = Str(val);
+    }
+
+    bool from_string(Str* str) {
+      float input_val = 0;
+      if (str->to_val(input_val) && Set(input_val)) {
+        return true;
+      }
+      return false;
+    }
+
     ~Float() {
     }
 };

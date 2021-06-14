@@ -13,21 +13,23 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 
 
 	Obj& rect_obj = ADDOBJ(Obj, Rect, *this, (this));
-	rect_obj.BindModPoll(this, SetRectReq);
-	rect_obj.AddOnModCallBack(this, RectMod);
 	ADDOBJ(Float, Pos X, rect_obj, (&rect_obj)).Set(_rect.pos.x);
 	ADDOBJ(Float, Pos Y, rect_obj, (&rect_obj)).Set(_rect.pos.y);
 	ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
 	ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
 
+	rect_obj.BindModPoll(this, SetRectReq);
+	rect_obj.AddOnModCallBack(this, RectMod);
+
 	rect = _rect;
 
 	ADDOBJ(Bool, Hiden, *this, (this)).Set(false);
+	ADDOBJ(Bool, Forse Active, *this, (this)).Set(false);
 }
 
-void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
-
-	if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
+void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
+	
+	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active) {
 
 		bool confirm = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
 		bool discard = GETOBJ(CompareExpr, trigers, Close).Evaluate();
@@ -45,7 +47,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 			state = WidgetState::INSIDE;
 		}
 
-		redraw = true;
+		active = true;
 
 	}
 	else {
@@ -55,22 +57,22 @@ void Widget::Proc(ObList* requests, Obj* trigers, vec2<float> crs) {
 		}
 		else if (state == WidgetState::LEAVED) {
 			state = WidgetState::NONE;
-			redraw = true;
+			active = true;
 		}
 		else {
 			state = WidgetState::LEAVED;
-			redraw = true;
+			active = true;
 		}
 	}
 
-	if (redraw) {
+	if (active) {
 
-		ProcBody(requests, crs);
+		ProcBody(requests, tui, crs);
 
 		for (auto guii : *childs) {
 			Widget* child = (Widget*)guii.Data();
 			if (!GETOBJ(Bool, child, Hiden).GetVal()) {
-				child->Proc(requests, trigers, crs - child->rect.pos);
+				child->Proc(requests, trigers, tui, crs - child->rect.pos);
 			}
 		}
 
@@ -92,7 +94,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 		}
 	}
 
-	redraw = false;
+	active = false;
 }
 
 bool Widget::SetRectReq(Obj* param) {
@@ -104,8 +106,7 @@ void Widget::RectMod(Obj* param, ModType type) {
 }
 
 
-
-GUI::GUI(Obj* prnt) : UI(prnt) {
+GUI::GUI(Obj* prnt, TUI* _tui) : UI(prnt) {
 	RegisterType(ObjType("GUI"));
 
 	ADDOBJ(ObList, Windows, *this, (this)).Assign("Widget", true);
@@ -114,6 +115,18 @@ GUI::GUI(Obj* prnt) : UI(prnt) {
 
 	ADDOBJ(CompareExpr, Activate, Trigers, (&Trigers));
 	ADDOBJ(CompareExpr, Close, Trigers, (&Trigers));
+
+	tui = _tui;
+}
+
+void gui_find_forsed_active(List<Obj>* forsed_active, Widget* widget) {
+	for (auto child_iter : GETOBJ(ObList, widget, Childs).GetList()) {
+		Widget* child = ((Widget*)child_iter.Data());
+		if (GETOBJ(Bool, child, Forse Active).GetVal()) {
+			forsed_active->PushBack(child);
+		}
+		gui_find_forsed_active(forsed_active, child);
+	}
 }
 
 void GUI::PumpRequests(ObList* requests) {
@@ -123,9 +136,29 @@ void GUI::PumpRequests(ObList* requests) {
 	vec2<float> crs;
 	canvas.GetCrsr(crs);
 
+	List<Obj> forsed_active(false);
 	for (auto guii : windows) {
 		Widget* window = ((Widget*)guii.Data());
-		window->Proc(requests, trigers, crs - window->rect.pos);
+		gui_find_forsed_active(&forsed_active, window);
+	}
+	
+
+	for (auto guii : forsed_active) {
+		Widget* widget = ((Widget*)guii.Data());
+		while (widget) {
+			widget->active = true;
+			
+			if (!widget->prnt->type.IsPrnt("Widget")) {
+				break;
+			}
+
+			widget = (Widget*)widget->prnt;
+		}
+	}
+
+	for (auto guii : windows) {
+		Widget* window = ((Widget*)guii.Data());
+		window->Proc(requests, trigers, tui, crs - window->rect.pos);
 	}
 }
 

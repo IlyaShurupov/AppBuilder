@@ -33,6 +33,8 @@ public:
 #define KEY_CANCEL         0x03
 #define KEY_MBUTTON        0x04    
 
+#define KEY_PERIOD         0xBE
+
 #define KEY_BACK           0x08
 #define KEY_TAB            0x09
 

@@ -46,6 +46,23 @@ class Bool : public Obj {
         return val == ((Bool&)obj).GetVal();
     }
 
+    void as_string(Str* str) {
+      if (val) {
+        *str = "True";
+      }
+      else {
+        *str = "False";
+      } 
+    }
+
+    bool from_string(Str* str) {
+      bool input_val = 0;
+      if (str->to_val(input_val) && Set(input_val)) {
+        return true;
+      }
+      return false;
+    }
+
     ~Bool() {
     }
 };

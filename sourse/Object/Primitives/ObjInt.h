@@ -58,6 +58,18 @@ class Int : public Obj {
         return val == ((Int&)obj).GetVal();
     }
 
+    void as_string(Str* str) {
+      *str = Str((int)val);
+    }
+
+    bool from_string(Str* str) {
+      int input_val = 0;
+      if (str->to_val(input_val) && Set(input_val)) {
+        return true;
+      }
+      return false;
+    }
+
     ~Int() {
     }
 };

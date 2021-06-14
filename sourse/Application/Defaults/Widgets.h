@@ -3,6 +3,86 @@
 
 #include "UI/GUI.h"
 
+class InputField : public Widget {
+
+	InputField& operator = (const InputField& in);
+	InputField(const InputField& in) : Widget(in) {
+	}
+
+public:
+
+	InputField(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("InputField"));
+
+		ADDOBJ(String, Input, *this, (this));
+		ADDOBJ(Link, Target, *this, (this)).Init("Obj", true);
+	}
+
+	virtual InputField& Instance() {
+		return *new InputField(*this);
+	}
+
+	bool input = false;
+
+	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+		if (state == WidgetState::CONFIRM) {
+			if (input) {
+				if (!valid_input || (valid_input && valid_input(&GETOBJ(String, this, Input).GetStr()))) {
+					GETOBJ(Link, this, Target).GetLink()->from_string(&GETOBJ(String, this, Input).GetStr());
+				}
+
+				GETOBJ(Bool, this, Forse Active).Set(false);
+				input = false;
+			}
+			else {
+				GETOBJ(String, this, Input).Assign("");
+				GETOBJ(Bool, this, Forse Active).Set(true);
+				input = true;
+			}
+		}
+
+		if (input) {
+			String* input = &GETOBJ(String, this, Input);
+			const Str& tui_input = *tui->get_text_input();
+			input->GetStr() += tui_input;
+		}
+	}
+
+	void DrawBody(Window& cnv, vec2<float> crs) {
+		if (state != WidgetState::NONE) {
+			if (input) {
+				cnv.RRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0.17, 0.17, 0.17, .9), 7);
+			}
+			else {
+				cnv.RRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0.13, 0.13, 0.13, .9), 7);
+			}
+		}
+		else {
+			cnv.RRect(Rect<int>(0, 0, rect.size.x, rect.size.y), Color(0.1, 0.1, 0.1, .9), 7);
+		}
+
+		if (input) {
+			cnv.Text((Str("Value : ") += GETOBJ(String, this, Input).GetStr()).str, 10, 10, 16, Color(0.7, 0.7, 0.7, 1));
+		}
+		else {
+			Obj* obj = GETOBJ(Link, this, Target).GetLink();
+			if (!obj) {
+				cnv.Text(" No Target Specified", 10, 10, 16, Color(0.7, 0.7, 0.7, 1));
+				return;
+			}
+
+			Str obj_str;
+			obj->as_string(&obj_str);
+
+			cnv.Text((Str("Value : ") += obj_str).str, 10, 10, 16, Color(0.7, 0.7, 0.7, 1));
+		}
+	}
+
+	bool (*valid_input)(const Str* str) = nullptr;
+
+	virtual ~InputField() {}
+};
+
 
 class ListMenu : public Widget {
 
@@ -29,7 +109,7 @@ public:
 	int items_start = 40;
 	int item_size = 25;
 
-	void ProcBody(ObList* requests, vec2<float> crs) {
+	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
 		ObList* list = (ObList*)GETOBJ(Link, this, Target).GetLink();
 		if (!list) {
 			return;
@@ -78,8 +158,6 @@ public:
 		}
 	}
 
-	void Transform() {}
-
 	virtual ~ListMenu() {}
 };
 
@@ -101,6 +179,10 @@ public:
 		list_menu = new ListMenu(this, Rect<float>(10, 300, 280, 190));
 		GETOBJ(Bool, list_menu, Hiden).Set(true);
 		GETOBJ(ObList, this, Childs).AddObj(list_menu);
+
+		input_field = new InputField(this, Rect<float>(10, 100, 280, 30));
+		GETOBJ(Bool, input_field, Hiden).Set(true);
+		GETOBJ(ObList, this, Childs).AddObj(input_field);
 	}
 
 	virtual ContextMenu& Instance() {
@@ -108,10 +190,11 @@ public:
 	}
 
 	ListMenu* list_menu;
+	InputField* input_field;
 	int childs_start = 50;
 	int child_height = 30;
 
-	void ProcBody(ObList* requests, vec2<float> crs) {
+	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
 		Link* target = &GETOBJ(Link, this, Target);
 		Obj* obj = target->GetLink();
 
@@ -194,20 +277,18 @@ public:
 		Obj* obj = GETOBJ(Link, contex_menu, Target).GetLink();
 
 		GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(true);
+		GETOBJ(Bool, contex_menu->input_field, Hiden).Set(true);
+		contex_menu->input_field->valid_input = nullptr;
 
 		if (obj->type.IsPrnt("ObList")) {
 			GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(false);
 			GETOBJ(Link, contex_menu->list_menu, Target).SetLink(obj);
 		}
-		else if (obj->type.IsPrnt("Int")) {
+		else if (obj->type.IsPrnt("Int") || obj->type.IsPrnt("Float") || obj->type.IsPrnt("Bool") || obj->type.IsPrnt("String")) {
+			GETOBJ(Bool, contex_menu->input_field, Hiden).Set(false);
+			GETOBJ(Link, contex_menu->input_field, Target).SetLink(obj);
 		}
 	}
-
-	bool TransformRequest() {
-		return false;
-	}
-
-	void Transform() {}
 
 	virtual ~ContextMenu() {}
 };

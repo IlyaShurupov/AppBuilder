@@ -129,6 +129,11 @@ public:
 		}
 	}
 
+	virtual void as_string(Str* str) { 
+		*str = "Object Base Class";
+	}
+
+	virtual bool from_string(Str* str) { return false; }
 };
 
 Obj* get_objs_entry();

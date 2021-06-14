@@ -26,6 +26,9 @@
     <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sourse\Application\UI\TUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Application\App.h">

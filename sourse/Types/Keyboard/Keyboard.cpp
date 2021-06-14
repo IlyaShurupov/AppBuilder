@@ -41,6 +41,7 @@ void Keyboard::PumpEvents() {
 }
 
 void Keyboard::ClearEvents() {
+
 }
 
 InputState Keyboard::GetKeyState(int key_code, InputState current) {

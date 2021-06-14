@@ -26,6 +26,18 @@ Application::Application(Obj* prnt) : Obj (prnt) {
     ADDOBJ(Int, fps, data, (&data)).Assign(60, 10, 120);
 }
 
+KeyInput* AddKeyInput(TUI* tui, const Str& keyname, const Str& shifted, int key_code, bool text_input) {
+  KeyInput* input = new KeyInput(&GETOBJ(ObList, tui, Inputs));
+
+  GETOBJ(Int, input, Key Code).Set(key_code);
+  GETOBJ(Bool, input, Is Text Input).Set(text_input);
+  GETOBJ(String, input, Char Val).Assign(keyname);
+  GETOBJ(String, input, Shifted Char Val).Assign(shifted);
+
+  GETOBJ(ObList, tui, Inputs).AddObj(input);
+  return input;
+}
+
 void Application::Compose() {
     
     // Adding Operators
@@ -39,15 +51,33 @@ void Application::Compose() {
     GETOBJ(ObList, this, UIs).AddObj(tui);
 
     // Adding Inputs
-    KeyInput* input = new KeyInput(&GETOBJ(ObList, tui, Inputs));
-    GETOBJ(String, input, KeyName).Assign("A");
-    GETOBJ(Int, input, ASCII Code).Set('A');
-    GETOBJ(ObList, tui, Inputs).AddObj(input);
+    {
+      AddKeyInput(tui, "a", "A", 'A', 1);
+      AddKeyInput(tui, "b", "B", 'B', 1);
+      AddKeyInput(tui, "c", "C", 'C', 1);
+      AddKeyInput(tui, "d", "D", 'D', 1);
+      // ...
 
-    KeyInput* key_LMB = new KeyInput(&GETOBJ(ObList, tui, Inputs));
-    GETOBJ(String, key_LMB, KeyName).Assign("LMB");
-    GETOBJ(Int, key_LMB, ASCII Code).Set(KEY_LBUTTON);
-    GETOBJ(ObList, tui, Inputs).AddObj(key_LMB);
+      AddKeyInput(tui, "1", "!", '1', 1);
+      AddKeyInput(tui, "2", "@", '2', 1);
+      AddKeyInput(tui, "3", "#", '3', 1);
+      AddKeyInput(tui, "4", "$", '4', 1);
+      AddKeyInput(tui, "5", "%", '5', 1);
+      AddKeyInput(tui, "6", "^", '6', 1);
+      AddKeyInput(tui, "7", "&", '7', 1);
+      AddKeyInput(tui, "8", "*", '8', 1);
+      AddKeyInput(tui, "9", "(", '9', 1);
+      AddKeyInput(tui, "0", ")", '0', 1);
+
+      AddKeyInput(tui, ".", ">", KEY_PERIOD, 1);
+
+      AddKeyInput(tui, " ", " ", KEY_SPACE, 1);
+
+      KeyInput* key_shift = AddKeyInput(tui, "Shift", "", KEY_SHIFT, 0);
+      GETOBJ(Link, tui, Shift Key).SetLink(key_shift);
+    }
+    KeyInput* key_LMB = AddKeyInput(tui, "LMB", "", KEY_LBUTTON, 0);
+    KeyInput* key_del = AddKeyInput(tui, "DELETE", "", KEY_DELETE, 0);
 
     // Adding Shortcuts
     ShortCut* shcut = new ShortCut(&GETOBJ(ObList, tui, Shortcuts));
@@ -59,14 +89,14 @@ void Application::Compose() {
     Int* trigger_val = new Int(nullptr);
     trigger_val->Assign(3, -1, 5);
     cond->GetHead().SetLink(trigger_val);
-    cond->GetTail().SetLink(&GETOBJ(Int, input, State));
+    cond->GetTail().SetLink(&GETOBJ(Int, key_del, State));
     cond_list.AddObj(cond);
     
     GETOBJ(ObList, tui, Shortcuts).AddObj(shcut);
 
 
     // Adding GUI
-    GUI* gui = new GUI(&GETOBJ(ObList, this, UIs));
+    GUI* gui = new GUI(&GETOBJ(ObList, this, UIs), tui);
     GETOBJ(ObList, this, UIs).AddObj(gui);
     
     Obj& Trigers = GETOBJ(Obj, gui, Trigers);

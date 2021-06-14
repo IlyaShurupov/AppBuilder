@@ -4,6 +4,9 @@
 #include "Memory/Allocators.h"
 #include <cstdlib>
 
+#include <string> // val to string conversion
+#include <cstdio> // scanf
+
 inline str_idx cstrlen(const char* str) {
   str_idx len = 0;
   while (str[len]) {
@@ -81,6 +84,11 @@ void Str::operator=(const Str& string) {
 Str& Str::operator+=(const Str& string) {
 
   str_idx newlen = string.length + length;
+  
+  if (!newlen) {
+    return *this;
+  }
+
   char* newstr = new char [newlen + 1];
   newstr[newlen] = '\0';
 
@@ -209,4 +217,44 @@ void Str::trim(Range range) {
   clear();
   str = newstr;
   length = newlen;
+}
+
+
+void to_string(Str* str, int val) {
+  *str = std::to_string(val).c_str();
+}
+
+void to_string(Str* str, int8 val) {
+  *str = std::to_string(val).c_str();
+}
+
+void to_string(Str* str, float val) {
+  *str = std::to_string(val).c_str();
+}
+
+void to_string(Str* str, bool val) {
+  *str = std::to_string(val).c_str();
+}
+
+
+bool str_from_string(Str* str, int& val) {
+  return sscanf(str->str, "%d", &val) == 1;
+}
+
+bool str_from_string(Str* str, float& val) {
+  return sscanf(str->str, "%f", &val) == 1;
+}
+
+bool str_from_string(Str* str, bool& val) {
+  if (str->length == 0) {
+    return false;
+  }
+
+  if (*str == "False" || *str == "false" || *str == "0") {
+    val = 0;
+    return true;
+  }
+  val = 1;
+
+  return true;
 }

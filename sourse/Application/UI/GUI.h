@@ -33,14 +33,21 @@ public:
 	List<Obj>* childs;
 	WidgetState state = WidgetState::NONE;
 	Rect<float> rect;
-	bool redraw = false;
+	bool active = false;
 
-	virtual void ProcBody(ObList* requests, vec2<float> crs) {}
+	virtual void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
-	virtual bool TransformRequest() { return false; }
-	virtual void Transform() {}
+	virtual bool TransformRequest() { return true; }
 
-	void Proc(ObList* requests, Obj* trigers, vec2<float> crs);
+	virtual void Transform() {
+		Obj* rect_obj = &GETOBJ(Obj, this, Rect);
+		rect.pos.x = GETOBJ(Float, rect_obj, Pos X).GetVal();
+		rect.pos.y = GETOBJ(Float, rect_obj, Pos Y).GetVal();
+		rect.size.x = GETOBJ(Float, rect_obj, Size X).GetVal();
+		rect.size.y = GETOBJ(Float, rect_obj, Size Y).GetVal();
+	}
+
+	void Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs);
 
 	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs);
 
@@ -59,10 +66,11 @@ class  GUI : public UI {
 	GUI(const GUI& in) : UI(in) {}
 
 	Window canvas;
+	TUI* tui;
 
 public:
 
-	GUI(Obj* prnt);
+	GUI(Obj* prnt, TUI* tui);
 
 	void PumpRequests(ObList* requests);
 	void OutPut(Obj* root);

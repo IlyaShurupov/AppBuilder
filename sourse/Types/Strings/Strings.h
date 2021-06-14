@@ -1,5 +1,24 @@
 #pragma once
 
+#include "Macros.h"
+
+struct Str;
+
+void to_string(Str* str, int val);
+void to_string(Str* str, float val);
+void to_string(Str* str, bool val);
+
+template <typename Type>
+inline void to_string(Str* str, Type val) {
+  to_string(str, val);
+}
+
+
+bool str_from_string(Str* str, int& val);
+bool str_from_string(Str* str, float& val);
+bool str_from_string(Str* str, bool& val);
+
+
 typedef long int str_idx;
 
 struct Range {
@@ -22,6 +41,11 @@ struct Str {
 
   Str(const char* str);
   Str();
+
+  template <typename Type>
+  Str(Type val) {
+    to_string(this, val);
+  }
 
   char* str = nullptr;
   str_idx length = 0;
@@ -52,5 +76,12 @@ struct Str {
 
   void trim(Range range);
 
+  template <typename Type>
+  bool to_val(Type& val) {
+    return str_from_string(this, val);
+  }
+
   ~Str();
 };
+
+

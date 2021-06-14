@@ -95,9 +95,11 @@ public:
 	KeyInput(Obj* prnt) : Obj(prnt) {
 		RegisterType(ObjType("KeyInput"));
 
-		ADDOBJ(String, KeyName, *this, (this)).Assign("none");
-		ADDOBJ(Int, ASCII Code, *this, (this)).Assign(0, 0, 255);
+		ADDOBJ(Int, Key Code, *this, (this)).Assign(0, 0, 255);
 		ADDOBJ(Int, State, *this, (this)).Assign(0, 0, 5);
+		ADDOBJ(Bool, Is Text Input, *this, (this)).Assign(true);
+		ADDOBJ(String, Char Val, *this, (this)).Assign("none");
+		ADDOBJ(String, Shifted Char Val, *this, (this)).Assign("none");
 	}
 
 	virtual KeyInput& Instance() {
@@ -106,7 +108,7 @@ public:
 
 	void Update(Keyboard* Device) {
 		Int& state = GETOBJ(Int, this, State);
-		int val = (int)Device->GetKeyState(GETOBJ(Int, this, ASCII Code).GetVal(), (InputState)state.GetVal());
+		int val = (int)Device->GetKeyState(GETOBJ(Int, this, Key Code).GetVal(), (InputState)state.GetVal());
 		state.Set(val);
 	}
 };
@@ -117,12 +119,16 @@ class TUI : public UI {
 	TUI(const TUI& in) : UI(in) {
 	}
 
+	Str text_input = "";
+
 public:
 
 	TUI(Obj* prnt) : UI(prnt) {
 		RegisterType(ObjType("TUI"));
 		ADDOBJ(ObList, Shortcuts, *this, (this)).Assign("ShortCut", false);
 		ADDOBJ(ObList, Inputs, *this, (this)).Assign("KeyInput", false);
+
+		ADDOBJ(Link, Shift Key, *this, (this)).Init("KeyInput", true);
 	}
 
 	virtual TUI& Instance() {
@@ -136,6 +142,27 @@ public:
 			KeyInput* input = (KeyInput*)input_obj.Data();
 			input->Update(&kb);
 		}
+
+
+		text_input = "";
+
+		KeyInput* shifted_key = (KeyInput*)GETOBJ(Link, this, Shift Key).GetLink();
+		bool shifted = ((bool)shifted_key && (bool)GETOBJ(Int, shifted_key, State).GetVal());
+
+		for (auto input_obj : GETOBJ(ObList, this, Inputs).GetList()) {
+			KeyInput* input = (KeyInput*)input_obj.Data();
+
+			if (GETOBJ(Bool, input, Is Text Input).GetVal()) {
+				if (GETOBJ(Int, input, State).GetVal() == (int)InputState::PRESSED) {
+					if (shifted) {
+						text_input += GETOBJ(String, input, Shifted Char Val).GetStr();
+					} 
+					else {
+						text_input += GETOBJ(String, input, Char Val).GetStr();
+					} 
+				}
+			}
+		}
 	}
 
 	void PumpRequests(ObList* requests) {
@@ -148,6 +175,10 @@ public:
 			ShortCut* shcut = (ShortCut*)shcut_obj.Data();
 			shcut->ProcInputs(requests);
 		}
+	}
+
+	const Str* get_text_input() {
+		return &text_input;
 	}
 
 	~TUI() {}

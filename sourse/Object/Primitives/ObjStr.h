@@ -4,43 +4,51 @@
 #include "Object.h"
 
 class String : public Obj {
-    
-    Str string;
-    
-    String& operator=(const String& in);
 
-    public:
+	Str string;
 
-    String(const String& in) : Obj(in) {
-        string = in.string;    
-    }
+	String& operator=(const String& in);
 
-    String(Obj* prnt) : Obj(prnt) {
-        RegisterType(ObjType("String"));
-    }
+public:
 
-    virtual String& Instance() {
-        return *new String(*this);
-    }
+	String(const String& in) : Obj(in) {
+		string = in.string;
+	}
 
-    bool Assign(STRR _string) {
-        if (!CanModify()) {
-            return false;
-        }
-        string = _string;
-        Modified(ModType::SET);
-        return true;
-    }
+	String(Obj* prnt) : Obj(prnt) {
+		RegisterType(ObjType("String"));
+	}
 
-    bool Equal(const Obj& obj) {
-        assert(type == obj.type);
-        return string == ((String&)obj).GetStr();
-    }
+	virtual String& Instance() {
+		return *new String(*this);
+	}
 
-    const Str& GetStr() {
-        return string;
-    }
+	bool Assign(STRR _string) {
+		if (!CanModify()) {
+			return false;
+		}
+		string = _string;
+		Modified(ModType::SET);
+		return true;
+	}
 
-    ~String() {
-    }
+	bool Equal(const Obj& obj) {
+		assert(type == obj.type);
+		return string == ((String&)obj).GetStr();
+	}
+
+	Str& GetStr() {
+		return string;
+	}
+
+	void as_string(Str* str) {
+		*str = string;
+	}
+
+	bool from_string(Str* str) {
+		return Assign(*str);
+	}
+
+	~String() {
+	}
 };
