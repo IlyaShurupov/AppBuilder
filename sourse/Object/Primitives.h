@@ -209,3 +209,25 @@ public:
 	bool Evaluate();
 	bool Equal(const Obj& obj);
 };
+
+
+class ColorObj : public Obj {
+
+	bool val = 0;
+
+	ColorObj& operator = (const ColorObj& in);
+
+public:
+
+	ColorObj(Obj* prnt);
+
+	virtual ColorObj& Instance() {
+		return *new ColorObj(*this);
+	}
+
+	void Get(Color* col);
+	bool Set(const Color& col);
+	bool Equal(const Obj& obj);
+	
+	~ColorObj() {}
+};

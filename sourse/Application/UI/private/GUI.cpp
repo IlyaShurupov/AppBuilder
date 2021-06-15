@@ -72,6 +72,11 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 		for (auto guii : *childs) {
 			Widget* child = (Widget*)guii.Data();
 			if (!GETOBJ(Bool, child, Hiden).GetVal()) {
+
+				if (child->skip_iteration) {
+					continue;
+				}
+
 				child->Proc(requests, trigers, tui, crs - child->rect.pos);
 			}
 		}
@@ -90,6 +95,12 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 	for (auto guii : *childs) {
 		Widget* child = (Widget*)guii.Data();
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
+			
+			if (child->skip_iteration) {
+				child->skip_iteration = false;
+				continue;
+			}
+
 			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos);
 		}
 	}

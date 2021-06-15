@@ -59,9 +59,9 @@ struct Str {
 
   Str& operator+=(const Str& string);
 
-  bool operator==(char* cstring);
+  bool operator==(const char* cstring);
   bool operator==(const Str& string);
-  bool operator!=(char* cstring);
+  bool operator!=(const char* cstring);
   bool operator!=(const Str& string);
 
   char operator[](str_idx idx);

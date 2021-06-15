@@ -418,3 +418,44 @@ bool CompareExpr::Equal(const Obj& obj) {
 	assert(type == obj.type);
 	return Evaluate() == ((CompareExpr&)obj).Evaluate();
 }
+
+
+ColorObj::ColorObj(Obj* prnt) : Obj(prnt) {
+	RegisterType(ObjType("Color"));
+
+	ADDOBJ(Float, R, *this, (this)).Assign(0, 0, 1);
+	ADDOBJ(Float, G, *this, (this)).Assign(0, 0, 1);
+	ADDOBJ(Float, B, *this, (this)).Assign(0, 0, 1);
+	ADDOBJ(Float, A, *this, (this)).Assign(1, 0, 1);
+}
+
+void ColorObj::Get(Color* col) {
+	col->r = GETOBJ(Float, this, R).GetVal();
+	col->g = GETOBJ(Float, this, G).GetVal();
+	col->b = GETOBJ(Float, this, B).GetVal();
+	col->a = GETOBJ(Float, this, A).GetVal();
+}
+
+bool ColorObj::Set(const Color& col) {
+
+	if (!CanModify()) {
+		return false;
+	}
+
+	GETOBJ(Float, this, R).Set(col.r);
+	GETOBJ(Float, this, G).Set(col.g);
+	GETOBJ(Float, this, B).Set(col.b);
+	GETOBJ(Float, this, A).Set(col.a);
+
+	return true;
+}
+
+bool ColorObj::Equal(const Obj& obj) {
+	assert((Str("Color") == obj.type.idname));
+
+	return (
+		GETOBJ(Float, this, R).GetVal() == GETOBJ(Float, this, R).GetVal() &&
+		GETOBJ(Float, this, G).GetVal() == GETOBJ(Float, this, G).GetVal() &&
+		GETOBJ(Float, this, B).GetVal() == GETOBJ(Float, this, B).GetVal() &&
+		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
+}

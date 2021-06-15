@@ -114,7 +114,7 @@ void Str::operator=(const char* string) {
   }
 }
 
-bool Str::operator==(char* cstring) {
+bool Str::operator==(const char* cstring) {
   if (cstrlen(cstring) != length) {
     return false;
   }
@@ -142,7 +142,7 @@ bool Str::operator!=(const Str& string) {
   return !(operator==(string));
 }
 
-bool Str::operator!=(char* cstring) {
+bool Str::operator!=(const char* cstring) {
   return !(operator==(cstring));
 }
 

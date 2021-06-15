@@ -34,6 +34,7 @@ public:
 	WidgetState state = WidgetState::NONE;
 	Rect<float> rect;
 	bool active = false;
+	bool skip_iteration = false;
 
 	virtual void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
