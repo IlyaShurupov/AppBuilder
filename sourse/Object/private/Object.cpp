@@ -84,3 +84,33 @@ void Obj::DelChild(STRR idname) {
 Obj* get_objs_entry() {
 	return objs_entry;
 }
+
+void Obj::BindModPoll(Obj* ths, bool (*call)(Obj* ths)) {
+	req_mod_poll = call;
+	req_mod_param = ths;
+}
+
+bool Obj::CanModify() {
+	if (type.locked) {
+		return false;
+	}
+	if (req_mod_poll) {
+		return req_mod_poll(req_mod_param);
+	}
+	return true;
+}
+
+
+void Obj::AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType)) {
+	OnModCallBacks.PushBack(OnModCallBack(ths, call));
+}
+
+void Obj::Modified(ModType type) {
+	for (uint4 i = 0; i < OnModCallBacks.Len(); i++) {
+		OnModCallBacks[i](type);
+	}
+
+	if (prnt) {
+		prnt->Modified(ModType::CILD);
+	}
+}

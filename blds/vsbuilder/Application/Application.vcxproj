@@ -20,11 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sourse\Application\App.cpp" />
+    <ClCompile Include="..\..\..\sourse\Application\Defaults\private\Widgets.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\Thread.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\Thread\private\ThreadManager.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\UI\private\GUI.cpp" />
     <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\UI\TUI.cpp" />
+    <ClCompile Include="..\..\..\sourse\Application\UI\private\TUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Application\App.h" />

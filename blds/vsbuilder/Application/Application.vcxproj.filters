@@ -26,7 +26,10 @@
     <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sourse\Application\UI\TUI.cpp">
+    <ClCompile Include="..\..\..\sourse\Application\Defaults\private\Widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sourse\Application\UI\private\TUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

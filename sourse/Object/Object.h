@@ -71,15 +71,6 @@ public:
 		return *new Obj(*this);
 	}
 
-	virtual ~Obj() {
-		if (next) {
-			next->next = prev;
-		}
-		if (prev) {
-			prev->prev = next;
-		}
-	}
-
 	Obj& GetChld(STRR idname);
 	Obj& AddChld(Obj* chld, STRR idname);
 	void DelChild(STRR idname);
@@ -99,41 +90,23 @@ public:
 	bool (*req_mod_poll)(Obj* req_mod_param) = nullptr;
 	Array<OnModCallBack> OnModCallBacks;
 
-	void BindModPoll(Obj* ths, bool (*call)(Obj* ths)) {
-		req_mod_poll = call;
-		req_mod_param = ths;
-	}
+	void BindModPoll(Obj* ths, bool (*call)(Obj* ths));
+	bool CanModify();
 
-	bool CanModify() {
-		if (type.locked) {
-			return false;
-		}
-		if (req_mod_poll) {
-			return req_mod_poll(req_mod_param);
-		}
-		return true;
-	}
+	void AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType));
+	void Modified(ModType type);
 
-
-	void AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType)) {
-		OnModCallBacks.PushBack(OnModCallBack(ths, call));
-	}
-
-	void Modified(ModType type) {
-		for (int i = 0; i < OnModCallBacks.Len(); i++) {
-			OnModCallBacks[i](type);
-		}
-
-		if (prnt) {
-			prnt->Modified(ModType::CILD);
-		}
-	}
-
-	virtual void as_string(Str* str) { 
-		*str = "Object Base Class";
-	}
-
+	virtual void as_string(Str* str) { *str = "Object Base Class"; }
 	virtual bool from_string(Str* str) { return false; }
+
+	virtual ~Obj() {
+		if (next) {
+			next->next = prev;
+		}
+		if (prev) {
+			prev->prev = next;
+		}
+	}
 };
 
 Obj* get_objs_entry();

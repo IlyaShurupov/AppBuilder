@@ -9,7 +9,7 @@
 #define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg_gl.h"
 
-#define NVGCOL(col) nvgRGBA(col.r * 255, col.g * 255, col.b * 255, col.a * 255)
+#define NVGCOL(col) nvgRGBA((uint1)(col.r * 255), (uint1)(col.g * 255), (uint1)(col.b * 255), (uint1)(col.a * 255))
 
 Window::Window() {
 	window = glfwCreateWindow(1000, 600, "NanoVG", NULL, NULL);
@@ -44,7 +44,7 @@ void Window::BeginFrame() {
 
 	glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	nvgBeginFrame(nvg, winWidth, winHeight, pxRatio);
+	nvgBeginFrame(nvg, (float)winWidth, (float)winHeight, pxRatio);
 }
 
 void Window::EndFrame() {
@@ -71,7 +71,7 @@ void Window::RRect(const Rect<float>& _rect, const Color& col, float radius) {
 	nvgFill(nvg);
 }
 
-void Window::Text(const char* str, const float x, float y, float font_scale, const Color& col) {
+void Window::Text(const char* str, float x, float y, float font_scale, const Color& col) {
 
 	nvgFontSize(nvg, font_scale);
 	nvgFontFace(nvg, "sans");
@@ -108,8 +108,8 @@ void Window::GetCrsr(vec2<float>& crs) {
 	vec2<double> incrs;
 	glfwGetCursorPos(window, &incrs.x, &incrs.y);
 
-	crs.x = (SCR_INT)incrs.x;
-	crs.y = (SCR_INT)incrs.y;
+	crs.x = (float)incrs.x;
+	crs.y = (float)incrs.y;
 }
 
 

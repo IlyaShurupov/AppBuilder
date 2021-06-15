@@ -143,7 +143,7 @@ bool Str::operator!=(const Str& string) {
 }
 
 bool Str::operator!=(char* cstring) {
-  return !(operator!=(cstring));
+  return !(operator==(cstring));
 }
 
 char Str::operator[](str_idx idx) {

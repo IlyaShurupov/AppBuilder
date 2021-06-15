@@ -2,7 +2,11 @@
 
 #include "Types.h"
 
-#ifdef _WIN32 or _WIN64
+#ifdef _WIN32 
+#define _WIN
+#endif
+
+#ifdef _WIN64
 #define _WIN
 #endif
 

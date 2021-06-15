@@ -44,7 +44,7 @@ public:
 		int nslots_old = nslots;
 		HashNode<V, K>** table_old = table;
 
-		nslots = next_pow_of_2((1.f / (HASHMAP_LOAD_FACTOR)) * nentries + 1);
+		nslots = next_pow_of_2((uint8)((1.f / (HASHMAP_LOAD_FACTOR)) * nentries + 1));
 		table = new HashNode<V, K>*[nslots]();
 		nentries = 0;
 

@@ -19,20 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Object\Object.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Object\Object.h" />
     <ClInclude Include="..\..\..\sourse\Object\Primitives.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjBool.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjDict.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjFloat.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjFunc.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjInt.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjLink.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjList.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjStr.h" />
-    <ClInclude Include="..\..\..\sourse\Object\Primitives\ObjTuple.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\sourse\Object\private\Object.cpp" />
+    <ClCompile Include="..\..\..\sourse\Object\private\Primitives.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

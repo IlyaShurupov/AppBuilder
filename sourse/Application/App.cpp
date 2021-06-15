@@ -131,7 +131,7 @@ void Application::Run() {
 
     MAINLOOP : {
 
-         Timer timer = Timer(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal());
+         Timer timer = Timer((uint8)(1000.f / GETOBJ(Int, &GetChld("Data"), fps).GetVal()));
 
         // Pump Requests From UIs
         for (auto ui : UIs.GetList()) {
