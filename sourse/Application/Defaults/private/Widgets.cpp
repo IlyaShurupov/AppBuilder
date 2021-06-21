@@ -161,7 +161,6 @@ void ListMenu::DrawBody(Window& cnv, vec2<float> crs) {
 }
 
 
-
 ContextMenu::ContextMenu(const ContextMenu& in) : Widget(in) {
 }
 
@@ -172,13 +171,22 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 	target->Init("Obj", true);
 	target->OnModCallBacks.PushBack(OnModCallBack(this, TargetChanged));
 
-	list_menu = new ListMenu(this, Rect<float>(10, 300, 280, 190));
+	list_menu = new ListMenu(this, Rect<float>(5, 300, rect.size.x - 10, 190));
 	GETOBJ(Bool, list_menu, Hiden).Set(true);
 	GETOBJ(ObList, this, Childs).AddObj(list_menu);
 
-	input_field = new InputField(this, Rect<float>(10, 100, 280, 30));
+	input_field = new InputField(this, Rect<float>(5, 120, rect.size.x - 10, 30));
 	GETOBJ(Bool, input_field, Hiden).Set(true);
 	GETOBJ(ObList, this, Childs).AddObj(input_field);
+
+	Scroller* scroller = new Scroller(this);
+	GETOBJ(Link, scroller, Target).SetLink(this);
+	GETOBJ(ObList, this, Childs).AddObj(scroller);
+
+	Scroller* scroller_x = new Scroller(this);
+	GETOBJ(Link, scroller_x, Target).SetLink(this);
+	GETOBJ(Bool, scroller_x, Vertical).Set(false);
+	GETOBJ(ObList, this, Childs).AddObj(scroller_x);
 
 	ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
 	ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));

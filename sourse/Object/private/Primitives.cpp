@@ -401,6 +401,11 @@ bool CompareExpr::Evaluate() {
 
 	for (auto tpl_obj : conditions) {
 		ObjTuple* tpl = (ObjTuple*)tpl_obj.Data();
+
+		if (!tpl->GetHead().GetLink() || !tpl->GetTail().GetLink()) {
+			continue;
+		}
+
 		if (tpl->GetHead().GetLink()->Equal(*tpl->GetTail().GetLink())) {
 			if (any) {
 				return true;

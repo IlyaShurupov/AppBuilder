@@ -61,7 +61,7 @@ class vec2 {
   }
 
   // Fundamental create on stack
-  vec2 operator+(const vec2& vec) { return vec2(x + vec.x, y + vec.y); }
+  vec2 operator+(const vec2& vec) const { return vec2(x + vec.x, y + vec.y); }
   vec2 operator-(const vec2& vec) { return vec2(x - vec.x, y - vec.y); }
   vec2 operator+(Type val) { return vec2(x + val, y + val); }
   vec2 operator-(Type val) { return vec2(x - val, y - val); }
@@ -123,6 +123,11 @@ class vec2 {
     Type tmp = x;
     x = x * cosa - y * sina;
     y = tmp * sina + y * cosa;
+  }
+
+  void clamp(const vec2<Type>& min, const vec2<Type>& max) {
+    CLAMP(x, min.x, max.x);
+    CLAMP(y, min.y, max.y);
   }
 
   ~vec2() {}

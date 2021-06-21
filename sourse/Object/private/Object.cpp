@@ -105,6 +105,14 @@ void Obj::AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType)) {
 	OnModCallBacks.PushBack(OnModCallBack(ths, call));
 }
 
+void Obj::RemoveOnModCallBack(void (*call)(Obj* ths, ModType)) {
+	for (int i = 0; i < OnModCallBacks.Len(); i ++) {
+		if (OnModCallBacks[i].callback == call) {
+			OnModCallBacks.Remove(i);
+		}
+	}
+}
+
 void Obj::Modified(ModType type) {
 	for (uint4 i = 0; i < OnModCallBacks.Len(); i++) {
 		OnModCallBacks[i](type);

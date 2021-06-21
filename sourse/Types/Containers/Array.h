@@ -68,6 +68,14 @@ class Array {
     delete current;
   }
 
+  void Remove(Type val) {
+    for (int i = 0; i < Len(); i++) {
+      if (buff[i] == val) {
+        Remove(i);
+      }
+    }
+  }
+
   Type& operator[](uint4 idx) {
     return buff[idx];
   }

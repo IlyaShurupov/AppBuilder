@@ -94,6 +94,7 @@ public:
 	bool CanModify();
 
 	void AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType));
+	void RemoveOnModCallBack(void (*call)(Obj* ths, ModType));
 	void Modified(ModType type);
 
 	virtual void as_string(Str* str) { *str = "Object Base Class"; }

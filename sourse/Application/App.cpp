@@ -77,6 +77,7 @@ void Application::Compose() {
       GETOBJ(Link, tui, Shift Key).SetLink(key_shift);
     }
     KeyInput* key_LMB = AddKeyInput(tui, "LMB", "", KEY_LBUTTON, 0);
+    KeyInput* key_RMB = AddKeyInput(tui, "RMB", "", KEY_RBUTTON, 0);
     KeyInput* key_del = AddKeyInput(tui, "DELETE", "", KEY_DELETE, 0);
 
     // Adding Shortcuts
@@ -101,22 +102,29 @@ void Application::Compose() {
     
     Obj& Trigers = GETOBJ(Obj, gui, Trigers);
     ObList& act_cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, &Trigers, Activate), Conditions);
-    ObList& close_cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, &Trigers, Close), Conditions);
+    ObList& discard_cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, &Trigers, Discard), Conditions);
+    ObList& comfirm_cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, &Trigers, Comfirm), Conditions);
 
-    ObjTuple* close_cond = new ObjTuple(&close_cond_list);
+    ObjTuple* close_cond = new ObjTuple(&discard_cond_list);
     Int* close_trigger_val = new Int(nullptr);
-    close_trigger_val->Assign(3, -1, 5);
+    close_trigger_val->Assign((int)InputState::RELEASED, -1, 5);
     close_cond->GetHead().SetLink(close_trigger_val);
-    close_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
-    close_cond_list.AddObj(close_cond);
+    close_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
+    discard_cond_list.AddObj(close_cond);
 
-    ObjTuple* act_cond = new ObjTuple(&act_cond_list);
+    ObjTuple* comfirm_cond = new ObjTuple(&comfirm_cond_list);
+    Int* comfirm_trigger_val = new Int(nullptr);
+    comfirm_trigger_val->Assign((int)InputState::RELEASED, -1, 5);
+    comfirm_cond->GetHead().SetLink(comfirm_trigger_val);
+    comfirm_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
+    comfirm_cond_list.AddObj(comfirm_cond);
+
+    ObjTuple* activate_cond = new ObjTuple(&comfirm_cond_list);
     Int* act_trigger_val = new Int(nullptr);
-    act_trigger_val->Assign(3, -1, 5);
-    act_cond->GetHead().SetLink(act_trigger_val);
-    act_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
-    act_cond_list.AddObj(act_cond);
-
+    act_trigger_val->Assign((int)InputState::PRESSED, -1, 5);
+    activate_cond->GetHead().SetLink(act_trigger_val);
+    activate_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
+    act_cond_list.AddObj(activate_cond);
 
     ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500));
     GETOBJ(Link, ctx_menu, Target).SetLink(this);

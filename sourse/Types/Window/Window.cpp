@@ -9,6 +9,8 @@
 #define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg_gl.h"
 
+#include "Strings/Strings.h"
+
 #define NVGCOL(col) nvgRGBA((uint1)(col.r * 255), (uint1)(col.g * 255), (uint1)(col.b * 255), (uint1)(col.a * 255))
 
 Window::Window() {
@@ -52,32 +54,72 @@ void Window::EndFrame() {
 	glfwSwapBuffers(window);
 }
 
-void Window::SetBounds(const Rect<float>& _wrld_rec) {
-	wrld_rec = _wrld_rec;
+void Window::SetBounds(const Rect<float>& _bounds) {
+	bounds = _bounds;
 }
 
-void Window::RRect(const Rect<float>& _rect, const Color& col, float radius) {
+void Window::SetCanvasRect(const Rect<float>& rect) {
+	wrld_rec = rect;
+}
+
+void Window::RRect(Rect<float> _rect, const Color& col, float radius) {
+
+	_rect.pos += wrld_rec.pos;
+	_rect.clamp(bounds);
 
 	nvgBeginPath(nvg);
 
 	if (!radius) {
-		nvgRect(nvg, _rect.pos.x + wrld_rec.pos.x, _rect.pos.y + wrld_rec.pos.y, _rect.size.x, _rect.size.y);
+		nvgRect(nvg, _rect.pos.x, _rect.pos.y, _rect.size.x, _rect.size.y);
 	}
 	else {
-		nvgRoundedRect(nvg, _rect.pos.x + wrld_rec.pos.x, _rect.pos.y + wrld_rec.pos.y, _rect.size.x, _rect.size.y, radius);
+		nvgRoundedRect(nvg, _rect.pos.x, _rect.pos.y, _rect.size.x, _rect.size.y, radius);
 	}
 
 	nvgFillColor(nvg, NVGCOL(col));
 	nvgFill(nvg);
 }
 
-void Window::Text(const char* str, float x, float y, float font_scale, const Color& col) {
+void Window::Text(const char* c_str, float x, float y, float font_scale, const Color& col) {
+
+	float char_width = font_scale * 0.55;
+	Str str(c_str);
+	Rect<float> text_rect(x, y, char_width * str.len(), font_scale);
+
+	text_rect.pos += wrld_rec.pos;
+
+	// clamp y
+	if (text_rect.pos.y < bounds.pos.y || text_rect.pos.y + text_rect.size.y > bounds.pos.y + bounds.size.y) {
+		return;
+	}
+
+	// clamp x
+	float left_remainder = bounds.pos.x - text_rect.pos.x;
+	float right_remainder = text_rect.pos.x + text_rect.size.x - (bounds.pos.x + bounds.size.x);
+	int trim_left = 0;
+	int trim_right = 0;
+
+	if (left_remainder > 0) {
+		trim_left = (int)((float)left_remainder / char_width) + 1;
+	}
+	if (right_remainder > 0) {
+		trim_right = (int)((float)right_remainder / char_width) + 2;
+	}
+
+	if (trim_left + trim_right > str.len()) {
+		return;
+	}
+
+	str.trim(Range(trim_left, str.len() - trim_right));
+
+	// draw
+	text_rect.clamp(bounds);
 
 	nvgFontSize(nvg, font_scale);
 	nvgFontFace(nvg, "sans");
 	nvgFillColor(nvg, NVGCOL(col));
 	nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-	nvgText(nvg, x + wrld_rec.pos.x, y + wrld_rec.pos.y, str, NULL);
+	nvgText(nvg, text_rect.pos.x, text_rect.pos.y, str.str, NULL);
 }
 
 void Window::DrawBounds(const Rect<float>& _rect, const Color& col, short thickness) {

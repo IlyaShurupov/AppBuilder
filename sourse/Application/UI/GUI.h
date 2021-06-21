@@ -8,6 +8,7 @@
 
 enum struct WidgetState {
 	NONE = 0,
+	ACTIVATE,
 	ACTIVE,
 	CONFIRM,
 	DISCARD,

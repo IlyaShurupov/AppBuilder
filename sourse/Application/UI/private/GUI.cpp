@@ -31,17 +31,26 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 	
 	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active) {
 
-		bool confirm = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
-		bool discard = GETOBJ(CompareExpr, trigers, Close).Evaluate();
+		bool activate_action = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
+		bool comfirm_action = GETOBJ(CompareExpr, trigers, Comfirm).Evaluate();
+		bool discard_action = GETOBJ(CompareExpr, trigers, Discard).Evaluate();
 
-		if (confirm) {
+		if (activate_action) {
+			state = WidgetState::ACTIVATE;
+		}
+		else if (comfirm_action) {
 			state = WidgetState::CONFIRM;
 		}
-		else if (discard) {
+		else if (discard_action) {
 			state = WidgetState::DISCARD;
 		}
 		else if (state == WidgetState::NONE) {
 			state = WidgetState::ENTERED;
+		}
+		else if (state == WidgetState::ACTIVATE) {
+			state = WidgetState::ACTIVE;
+		}
+		else if (state == WidgetState::ACTIVE) {
 		}
 		else {
 			state = WidgetState::INSIDE;
@@ -74,6 +83,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 			if (!GETOBJ(Bool, child, Hiden).GetVal()) {
 
 				if (child->skip_iteration) {
+					child->skip_iteration = false;
 					continue;
 				}
 
@@ -87,7 +97,23 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 
 	rect.pos += prnt_pos;
-	canvas.SetBounds(rect);
+	canvas.SetCanvasRect(rect);
+
+	Rect<float> clamped_bounds(rect);
+
+	if (prnt && prnt->type.IsPrnt("Widget")) {
+		Rect<float> prnt_rect(prnt_pos, ((Widget*)prnt)->rect.size);
+
+		if (!prnt_rect.overlap(rect)) {
+			rect.pos -= prnt_pos;
+			active = false;
+			return;
+		}
+
+		clamped_bounds.clamp(prnt_rect);
+	}
+
+	canvas.SetBounds(clamped_bounds);
 	rect.pos -= prnt_pos;
 
 	DrawBody(canvas, crs);
@@ -95,12 +121,6 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 	for (auto guii : *childs) {
 		Widget* child = (Widget*)guii.Data();
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
-			
-			if (child->skip_iteration) {
-				child->skip_iteration = false;
-				continue;
-			}
-
 			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos);
 		}
 	}
@@ -125,7 +145,8 @@ GUI::GUI(Obj* prnt, TUI* _tui) : UI(prnt) {
 	Obj& Trigers = ADDOBJ(Obj, Trigers, *this, (this));
 
 	ADDOBJ(CompareExpr, Activate, Trigers, (&Trigers));
-	ADDOBJ(CompareExpr, Close, Trigers, (&Trigers));
+	ADDOBJ(CompareExpr, Comfirm, Trigers, (&Trigers));
+	ADDOBJ(CompareExpr, Discard, Trigers, (&Trigers));
 
 	tui = _tui;
 }

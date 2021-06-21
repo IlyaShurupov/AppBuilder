@@ -66,7 +66,10 @@ struct Rect {
     }
   }
 
-  bool inside(const vec2<Type>& p) { return (p.operator>(pos) && (pos + size).operator>(p)); }
+  // argument inside
+  bool inside(const vec2<Type>& p) { 
+    return (p.operator>(pos) && (pos + size).operator>(p)); 
+  }
 
   bool inside(Type x, Type y) { return (pos.x < x && pos.y < y && pos.x + size.x > x && pos.y + size.y > y); }
 
@@ -102,6 +105,15 @@ struct Rect {
     return (intersect_x(rect) && intersect_y(rect));
   }
 
+  void clamp(const Rect<Type>& bounds) {
+    vec2<Type> p3(pos + size);
+    vec2<Type> max(bounds.pos + bounds.size);
+
+    pos.clamp(bounds.pos, max);
+    p3.clamp(bounds.pos, max);
+
+    size = p3 - pos;
+  }
 };
 
 template <typename Type>

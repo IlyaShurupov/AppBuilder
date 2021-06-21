@@ -6,6 +6,7 @@
 class Window {
 
 	Rect<float> wrld_rec;
+	Rect<float> bounds;
 	struct NVGcontext* nvg = nullptr;
 	struct GLFWwindow* window = nullptr;
 
@@ -18,8 +19,9 @@ public:
 	void EndFrame();
 
 	void SetBounds(const Rect<float>& wrld_rec);
+	void SetCanvasRect(const Rect<float>& rect);
 
-	void RRect(const Rect<float>& rect, const Color& col, float radius = 0);
+	void RRect(Rect<float> rect, const Color& col, float radius = 0);
 	void DrawBounds(const Rect<float>& rect, const Color& col, short thickness);
 	void DrawLine(const vec2<SCR_INT>& head, const vec2<SCR_INT>& tail, const Color& col, short thickness);
 	void Text(const char* str, float x, float y, float font_scale, const Color& col);
