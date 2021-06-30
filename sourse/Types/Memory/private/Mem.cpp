@@ -3,11 +3,11 @@
 
 #ifdef MEM_DEBUG
 
-#include <stdlib.h>
-//#include <cstdio>
-//#include <iostream>
-//#include <cstring>
+#include "Time/Timer.h"
+#include "Strings/Strings.h"
 
+#include <corecrt_malloc.h>
+#include <stdlib.h>
 
 #ifdef MEM_DEBUG_WRAP
 #include <cassert>
@@ -17,15 +17,17 @@ typedef char int1;
 #endif
 
 struct MemHead {
-  int size = 0;
-  MemHead* next = nullptr;
-  MemHead* prev = nullptr;
-  void* type = nullptr;
-  void* file = nullptr;
-  long long line;
+  MemHead* next;
+  MemHead* prev;
+  uint8 size;
+  const char* type;
+  const char* file;
+  uint8 line;
+  uint8 time;
 };
 
 MemHead* mem_debug_entry_ptr;
+uint8 num = 0;
 
 #undef new
 
@@ -58,6 +60,13 @@ void* operator new(size_t size, const char* file, int line) {
     mhptr->prev = mem_debug_entry_ptr;
     mem_debug_entry_ptr = mhptr;
 
+    num++;
+
+    mhptr->line = line;
+    //mhptr->file = file;
+    mhptr->size = (uint8)size;
+    mhptr->type = nullptr;
+    mhptr->time = (uint8)get_time();
 
 #ifdef MEM_DEBUG_WRAP
     return (void*)((int1*)((MemHead*)mhptr + 1) + WRAP_LEN);
@@ -107,7 +116,22 @@ void operator delete (void* ptr) {
     }
   }
 
+  //delete mhptr->file;
+  //delete mhptr->type;
+
+  num--;
   free(mhptr);
 }
 
+void operator delete(void* p, const char* file, int line)
+{
+  delete p;
+}
+
+
 #endif
+
+
+bool init_mem_debug() {
+  return true;
+}

@@ -114,7 +114,11 @@ class List {
   }
 
   template <typename SortPolicy = SortMerge>
-  void Sort(bool (*compare)(Type& obj1, Type& obj2)) {
+  void Sort(bool (*compare)(const Type& obj1, const Type& obj2)) {
+    if (length < 2) {
+      return;
+    }
+
     SortPolicy SortP;
 
     Type** buffer = new Type* [length];

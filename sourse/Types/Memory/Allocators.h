@@ -4,6 +4,7 @@
 #include "Mem.h"
 #include "Macros.h"
 
+/*
 struct AllocatorChunck {
 
   uint1* buff;
@@ -45,3 +46,4 @@ struct AllocatorChunck {
     ++freeblocks; 
   }
 };
+*/

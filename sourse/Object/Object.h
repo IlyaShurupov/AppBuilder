@@ -17,7 +17,7 @@ using DictObj = Dict<Obj*, CopyObj>;
 
 enum class ModType {
 	SET,
-	CILD,
+	CHILD,
 	DELETE,
 };
 

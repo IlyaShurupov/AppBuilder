@@ -4,21 +4,21 @@
 #include "Memory/Mem.h"
 
 template <typename Type>
-bool compare(Type& val1, Type& val2) {
+bool compare(const Type& val1, const Type& val2) {
   return val1 > val2;
 }
 
 struct SortMerge {
 
   template <typename Type>
-  static void Sort(Type** pxlbuff, int length, bool (*grater)(Type& obj1, Type& obj2) = &compare) {
+  static void Sort(Type** pxlbuff, int length, bool (*grater)(const Type& obj1, const Type& obj2) = &compare) {
     mergeSort(pxlbuff, 0, length - 1, grater);
   }
 
  private:
 
   template <typename Type>
-  static void merge(Type** pxlbuff, int left, int middle, int right, bool (*grater)(Type& obj1, Type& obj2)) {
+  static void merge(Type** pxlbuff, int left, int middle, int right, bool (*grater)(const Type& obj1, const Type& obj2)) {
     int n1 = middle - left + 1;
     int n2 = right - middle;
 
@@ -65,7 +65,7 @@ struct SortMerge {
   }
 
   template <typename Type>
-  static void mergeSort(Type** pxlbuff, int left, int right, bool (*grater)(Type& obj1, Type& obj2)) {
+  static void mergeSort(Type** pxlbuff, int left, int right, bool (*grater)(const Type& obj1, const Type& obj2)) {
 
     if (left >= right) {
       return;
@@ -82,7 +82,7 @@ struct SortMerge {
 
 struct SortInsert {
   template <typename Type>
-  static void Sort(Type** pxlbuff, int length, bool (*grater)(Type& obj1, Type& obj2) = &compare) {
+  static void Sort(Type** pxlbuff, int length, bool (*grater)(const Type& obj1, const Type& obj2) = &compare) {
     for (int i = 0; i < length; i++) {
       for (int j = i + 1; j < length; j++) {
         if (grater(*pxlbuff[i], *pxlbuff[j])) {

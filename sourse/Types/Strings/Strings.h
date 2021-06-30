@@ -7,6 +7,7 @@ struct Str;
 void to_string(Str* str, int val);
 void to_string(Str* str, float val);
 void to_string(Str* str, bool val);
+void to_string(Str* str, char val);
 
 template <typename Type>
 inline void to_string(Str* str, Type val) {

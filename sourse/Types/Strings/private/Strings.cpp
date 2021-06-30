@@ -1,11 +1,9 @@
 
 #include "Strings/Strings.h"
 
-#include "Memory/Allocators.h"
-#include <cstdlib>
-
-#include <string> // val to string conversion
 #include <cstdio> // scanf
+
+#include "Macros.h"
 
 inline str_idx cstrlen(const char* str) {
   str_idx len = 0;
@@ -221,21 +219,65 @@ void Str::trim(Range range) {
 
 
 void to_string(Str* str, int val) {
-  *str = std::to_string(val).c_str();
+  to_string(str, (int8)val);
 }
 
 void to_string(Str* str, int8 val) {
-  *str = std::to_string(val).c_str();
+  int iter = val;
+  int len = 0;
+  while (iter /= 10) {
+    len++;
+  }
+
+  bool neg = val < 0;
+
+  len += 1 + int(neg);
+
+  str->alloc(len);
+
+  val = ABS(val);
+
+  for (int i = len - 1; i >= int(neg); i--) {
+    str->str[i] = (char)(val % 10 + 48);
+    val /= 10;
+  }
+
+  if (neg) {
+    str->str[0] = '-';
+  }
 }
 
 void to_string(Str* str, float val) {
-  *str = std::to_string(val).c_str();
+  int left_side = (int)val;
+  int mantissa = (val - left_side) * 100000;
+
+  int len = 3;
+
+  while (left_side /= 10) {
+    len++;
+  }
+
+  while (mantissa /= 10) {
+    len++;
+  }
+
+  str->alloc(len);
+  int ret = snprintf(str->str, len * sizeof(char) + 1, "%f", val);
 }
 
 void to_string(Str* str, bool val) {
-  *str = std::to_string(val).c_str();
+  if (val) {
+    *str = "True";
+    return;
+  }
+
+  *str = "False";
 }
 
+void to_string(Str* str, char val) {
+  str->alloc(1);
+  str->str[0] = val;
+}
 
 bool str_from_string(Str* str, int& val) {
   return sscanf(str->str, "%d", &val) == 1;

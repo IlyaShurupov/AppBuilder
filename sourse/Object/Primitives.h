@@ -114,7 +114,7 @@ public:
 	Float(const Float& in);
 
 	float max = FLT_MAX;
-	float min = FLT_MIN;
+	float min = -FLT_MAX;
 
 	Float(Obj* prnt);
 	virtual Float& Instance() {

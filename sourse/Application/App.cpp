@@ -52,12 +52,12 @@ void Application::Compose() {
 
     // Adding Inputs
     {
-      AddKeyInput(tui, "a", "A", 'A', 1);
-      AddKeyInput(tui, "b", "B", 'B', 1);
-      AddKeyInput(tui, "c", "C", 'C', 1);
-      AddKeyInput(tui, "d", "D", 'D', 1);
-      // ...
+      int shift = 15;
 
+      for (int i = 65; i < 90; i++) {
+        AddKeyInput(tui, (char)(i + 32), (char)i, i, 1);
+      }
+      
       AddKeyInput(tui, "1", "!", '1', 1);
       AddKeyInput(tui, "2", "@", '2', 1);
       AddKeyInput(tui, "3", "#", '3', 1);
@@ -70,12 +70,15 @@ void Application::Compose() {
       AddKeyInput(tui, "0", ")", '0', 1);
 
       AddKeyInput(tui, ".", ">", KEY_PERIOD, 1);
+      AddKeyInput(tui, "-", "_", KEY_MINUS, 1);
+      AddKeyInput(tui, "+", "+", KEY_PLUS, 1);
 
       AddKeyInput(tui, " ", " ", KEY_SPACE, 1);
 
       KeyInput* key_shift = AddKeyInput(tui, "Shift", "", KEY_SHIFT, 0);
       GETOBJ(Link, tui, Shift Key).SetLink(key_shift);
     }
+
     KeyInput* key_LMB = AddKeyInput(tui, "LMB", "", KEY_LBUTTON, 0);
     KeyInput* key_RMB = AddKeyInput(tui, "RMB", "", KEY_RBUTTON, 0);
     KeyInput* key_del = AddKeyInput(tui, "DELETE", "", KEY_DELETE, 0);
@@ -129,6 +132,11 @@ void Application::Compose() {
     ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500));
     GETOBJ(Link, ctx_menu, Target).SetLink(this);
     GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
+
+    ListMenu* menu = new ListMenu(gui, Rect<float>(450, 50, 300, 500));
+    GETOBJ(Link, menu, Target).SetLink(&GETOBJ(ObList, tui, Inputs));
+    //GETOBJ(ObList, menu->body, Childs).AddObj(new Button(menu->body, Rect<float>(0, 0, 500, 500)));
+    GETOBJ(ObList, gui, Windows).AddObj(menu);
 }
 
 void Application::Run() {
@@ -176,4 +184,17 @@ void Application::Run() {
         timer.wait_out();
 
     } goto MAINLOOP;
+}
+
+int app_entry(Application* app);
+
+int main() {
+  init_mem_debug();
+
+  Obj* root = new Obj(nullptr);
+  root->RegisterType(ObjType("Root"));
+
+  Application* app = &ADDOBJ(Application, Test App, *root, (root));
+
+  app_entry(app);
 }

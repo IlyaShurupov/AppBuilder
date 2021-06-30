@@ -3,6 +3,89 @@
 
 #include "UI/GUI.h"
 
+class Label : public Widget {
+
+	Label& operator = (const Label& in);
+	Label(const Label& in) : Widget(in) {
+	}
+
+public:
+
+	virtual Label& Instance() {
+		return *new Label(*this);
+	}
+
+	String* text;
+
+	Label(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("Label"));
+
+		text = &ADDOBJ(String, Text, *this, (this));
+		text->Assign("Label");
+
+		ADDOBJ(ColorObj, Col, *this, (this)).Set(Color(0.7f, 0.7f, 0.7f, 1.f));
+	}
+
+	void DrawBody(Window& cnv, vec2<float> crs) {
+		Color text_col;
+		GETOBJ(ColorObj, this, Col).Get(&text_col);
+
+		cnv.Text(GETOBJ(String, this, Text).GetStr().str, 5, 5, 16, text_col);
+	}
+
+	virtual ~Label() {}
+};
+
+class Button : public Widget {
+
+	Button& operator = (const Button& in);
+	Button(const Button& in) : Widget(in) {
+	}
+
+public:
+
+	virtual Button& Instance() {
+		return *new Button(*this);
+	}
+
+	Button(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("Button"));
+
+		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.2f, 0.2f, 0.2f, .9f));
+		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.23f, 0.23f, 0.23f, .9f));
+		ADDOBJ(ColorObj, Activate Col, *this, (this)).Set(Color(0.4f, 0.4f, 0.4f, 0.4f));
+
+		GETOBJ(ObList, this, Childs).AddObj(new Label(this, Rect<float>(2, 2, rect.size.x - 2, rect.size.y - 2)));
+	}
+
+	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+		if (state == WidgetState::CONFIRM) {
+			CreateRequest(requests);
+		}
+	}
+
+	void DrawBody(Window& cnv, vec2<float> crs) {
+		if (state == WidgetState::ACTIVE) {
+			Color activate_col;
+			GETOBJ(ColorObj, this, Activate Col).Get(&activate_col);
+			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), activate_col, 7);
+		}
+		else if (state != WidgetState::NONE) {
+			Color active_col;
+			GETOBJ(ColorObj, this, Active Col).Get(&active_col);
+			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), active_col, 7);
+		}
+		else {
+			Color inactive_col;
+			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive_col);
+			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), inactive_col, 7);
+		}
+	}
+
+	virtual ~Button() {}
+};
+
+
 class Scroller : public Widget {
 
 	Scroller& operator = (const Scroller& in);
@@ -10,7 +93,7 @@ class Scroller : public Widget {
 	}
 
 public:
-	
+
 	virtual Scroller& Instance() {
 		return *new Scroller(*this);
 	}
@@ -24,10 +107,11 @@ public:
 
 		ADDOBJ(Bool, Vertical, *this, (this)).Set(true);
 
-		Link* target = &ADDOBJ(Link, Target, *this, (this));
-		target->Init("Widget", true);
-		target->BindModPoll(this, TargetRemoveCallback);
-		target->AddOnModCallBack(this, TargetAddCallback);
+		ADDOBJ(Link, Target, *this, (this)).Init("Widget", true);
+
+		GETOBJ(Bool, this, Forse Active).Set(true);
+
+		GETOBJ(Int, this, DrawOrder).Set(INT_MAX);
 	}
 
 	vec2<float> prev_crs;
@@ -35,11 +119,13 @@ public:
 	float content_offset = 0;
 
 	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
-		
+
 		Widget* target = (Widget*)GETOBJ(Link, this, Target).GetLink();
-		if (!target){
+		if (!target) {
 			return;
 		}
+
+		Update();
 
 		bool y_axis = GETOBJ(Bool, this, Vertical).GetVal();
 
@@ -49,7 +135,8 @@ public:
 		}
 		else if (state == WidgetState::ACTIVE) {
 
-			if (scale_factor < 1) {
+			if (scale_factor <= 1) {
+				GETOBJ(Bool, this, Forse Active).Set(false);
 				return;
 			}
 
@@ -61,25 +148,28 @@ public:
 				if (widget->type.idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
 					continue;
 				}
+
 				(&widget->rect.pos.x)[y_axis] += content_offset_delta;
+				widget->ApplyRect();
+
 				widget->skip_iteration = true;
 			}
 
 			prev_crs = crs;
-		} 
+		}
 		else {
 			GETOBJ(Bool, this, Forse Active).Set(false);
 		}
 	}
 
 	void DrawBody(Window& cnv, vec2<float> crs) {
-		
+
 		Widget* target = (Widget*)GETOBJ(Link, this, Target).GetLink();
 		if (!target) {
 			return;
 		}
 
-		if (scale_factor < 1) {
+		if (scale_factor <= 1) {
 			return;
 		}
 
@@ -103,43 +193,20 @@ public:
 		}
 	}
 
-	static bool TargetRemoveCallback(Obj* scroller) {
-		Scroller* ths = (Scroller*)scroller;
-		Widget* target = (Widget*)GETOBJ(Link, ths, Target).GetLink();
-		if (!target) {
-			return true;
-		}
+	void Update() {
 
-		target->RemoveOnModCallBack(Update);
-
-		return true;
-	}
-
-	static void TargetAddCallback(Obj* scroller, ModType type) {
-		Scroller* ths = (Scroller*)scroller;
-		Widget* target = (Widget*)GETOBJ(Link, ths, Target).GetLink();
+		Widget* target = (Widget*)GETOBJ(Link, this, Target).GetLink();
 		if (!target) {
 			return;
 		}
 
-		target->AddOnModCallBack(ths, Update);
-	}
-
-	static void Update(Obj* scroller, ModType type) {
-		Scroller* ths = (Scroller*)scroller;
-
-		Widget* target = (Widget*)GETOBJ(Link, ths, Target).GetLink();
-		if (!target) {
-			return;
-		}
-
-		bool y_axis = GETOBJ(Bool, ths, Vertical).GetVal();
+		bool y_axis = GETOBJ(Bool, this, Vertical).GetVal();
 
 		// updating rectangle
-		ths->rect.pos.x = (target->rect.size.x - 20) * y_axis + 5;
-		ths->rect.pos.y = (target->rect.size.y - 20) * (!y_axis) + 5;
-		ths->rect.size.x = 20 * (y_axis)+target->rect.size.x * !y_axis - 10;
-		ths->rect.size.y = 20 * (!y_axis) + target->rect.size.y * y_axis - 10;
+		rect.pos.x = (target->rect.size.x - 20) * y_axis + 5;
+		rect.pos.y = (target->rect.size.y - 20) * (!y_axis) + 5;
+		rect.size.x = 20 * (y_axis)+target->rect.size.x * !y_axis - 10;
+		rect.size.y = 20 * (!y_axis) + target->rect.size.y * y_axis - 10;
 
 		// finding content dimensions
 		float min_val = FLT_MAX;
@@ -165,11 +232,111 @@ public:
 		float content_size = max_val - min_val;
 		float holder_size = target->rect.size.y;
 		ABS(min_val);
-		ths->content_offset = min_val;
-		ths->scale_factor = content_size / (&target->rect.size.x)[y_axis];
+		content_offset = min_val;
+		scale_factor = content_size / (&target->rect.size.x)[y_axis];
 	}
 
 	virtual ~Scroller() {}
+};
+
+
+class Group : public Widget {
+
+	Group& operator = (const Group& in);
+	Group(const Group& in) : Widget(in) {
+	}
+
+public:
+
+	virtual Group& Instance() {
+		return *new Group(*this);
+	}
+
+	Group(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("Group"));
+
+		Scroller* scroller = new Scroller(this);
+		GETOBJ(Link, scroller, Target).SetLink(this);
+		GETOBJ(ObList, this, Childs).AddObj(scroller);
+
+		Scroller* scroller_x = new Scroller(this);
+		GETOBJ(Link, scroller_x, Target).SetLink(this);
+		GETOBJ(Bool, scroller_x, Vertical).Set(false);
+		GETOBJ(ObList, this, Childs).AddObj(scroller_x);
+	}
+
+	virtual ~Group() {}
+};
+
+class Menu : public Widget {
+
+	Menu& operator = (const Menu& in);
+
+public:
+
+	Menu(const Menu& in) : Widget(in) {
+	}
+
+	virtual Menu& Instance() {
+		return *new Menu(*this);
+	}
+
+	Group* topbar;
+	Group* body;
+	Button* collapse_btn;
+
+	Menu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("Menu"));
+
+		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
+		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));
+
+		ADDOBJ(Int, Roundness, *this, (this)).Set(7);
+		
+		topbar = new Group(this, Rect<float>(40, 5, rect.size.x - 5, 30));
+		GETOBJ(ObList, this, Childs).AddObj(topbar);
+
+		body = new Group(this, Rect<float>(5, 40, rect.size.x - 10, rect.size.y - 10 - 35));
+		GETOBJ(ObList, this, Childs).AddObj(body);
+
+		ADDOBJ(Bool, Collapsed, *this, (this)).Set(false);
+
+		collapse_btn = new Button(this, Rect<float>(5, 5, 30, 30));
+		GETOBJ(ObList, this, Childs).AddObj(collapse_btn);
+
+		GETOBJ(ObList, topbar, Childs).AddObj(new Label(this, Rect<float>(0, 5, 60, 30)));
+	}
+
+	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+		if (collapse_btn->state == WidgetState::CONFIRM) {
+			GETOBJ(Bool, this, Collapsed).Set(!GETOBJ(Bool, this, Collapsed).GetVal());
+		}
+
+		if (GETOBJ(Bool, this, Collapsed).GetVal()) {
+			rect.size.y = topbar->rect.size.y + topbar->rect.pos.y + 5;
+			GETOBJ(Bool, body, Hiden).Set(true);
+		}
+		else {
+			rect.size.y = body->rect.size.y + body->rect.pos.y + 5;
+			GETOBJ(Bool, body, Hiden).Set(false);
+		}
+	}
+
+	void DrawBody(Window& cnv, vec2<float> crs) {
+
+		if (state != WidgetState::NONE) {
+			Color active;
+			GETOBJ(ColorObj, this, Active Col).Get(&active);
+			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), active, GETOBJ(Int, this, Roundness).GetVal());
+		}
+		else {
+			Color inactive;
+			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive);
+			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), inactive, GETOBJ(Int, this, Roundness).GetVal());
+		}
+	}
+
+	virtual ~Menu() {}
 };
 
 
@@ -196,7 +363,7 @@ public:
 };
 
 
-class ListMenu : public Widget {
+class ListMenu : public Menu {
 
 	ListMenu& operator = (const ListMenu& in);
 	ListMenu(const ListMenu& in);
@@ -213,7 +380,18 @@ public:
 	float item_size = 25;
 
 	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs);
-	void DrawBody(Window& cnv, vec2<float> crs);
+
+	static Widget* LabelAppendItem(const Obj& obj, Obj* parent, const Rect<float>& rect) {
+		return new Label(parent, rect);
+	}
+
+	static void LabelUpdateItem(Widget* widget, const Obj& obj) {
+		((Label*)widget)->text->Assign(obj.type.idname);
+	}
+
+	void (*update_item)(Widget* widget, const Obj& obj) = LabelUpdateItem;
+	Widget* (*append_item)(const Obj& obj, Obj* parent, const Rect<float>& rect) = LabelAppendItem;
+	Str widget_type = "Label";
 
 	virtual ~ListMenu() {}
 };
@@ -233,6 +411,9 @@ public:
 
 	ListMenu* list_menu;
 	InputField* input_field;
+	Label* label;
+	Button* back_button;
+
 	float childs_start = 50;
 	float child_height = 30;
 

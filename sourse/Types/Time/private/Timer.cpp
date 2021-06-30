@@ -13,6 +13,12 @@
 
 #define THREAD_SLEEP(time_ms) std::this_thread::sleep_for(std::chrono::milliseconds(time_ms))
 
+
+TIME_MS__ get_time() {
+  return GETTIMEMSC();
+}
+
+
 void TreadSleep(TIME_MS__ duration) {
   THREAD_SLEEP(duration);
 }

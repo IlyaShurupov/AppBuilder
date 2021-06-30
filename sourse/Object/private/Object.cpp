@@ -117,8 +117,4 @@ void Obj::Modified(ModType type) {
 	for (uint4 i = 0; i < OnModCallBacks.Len(); i++) {
 		OnModCallBacks[i](type);
 	}
-
-	if (prnt) {
-		prnt->Modified(ModType::CILD);
-	}
 }

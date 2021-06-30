@@ -4,6 +4,8 @@
 #include <cfloat>
 #include <cassert>
 
+#include "Memory/Mem.h"
+
 // #if _WIN32 || _WIN64
 // #if _WIN64
 #define ENVIRONMENT64
@@ -13,7 +15,7 @@
 // #endif
 
 #define NAME(v) #v
-#define ABS(val) if (val < 0) {val = -val;}
+#define ABS(val) val > 0 ? val : -val
 #define CLAMP(val, min, max) if (val > max) { val = max; } else if (val < min) {val = min;}
 #define OFFSET(first, offset) (*((&first) + offset))
 #define INRANGE(val, bd1, bd2) ((val) >= (bd1) && (val) <= (bd2))

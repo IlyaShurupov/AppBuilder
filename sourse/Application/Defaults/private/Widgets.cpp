@@ -83,10 +83,10 @@ void InputField::DrawBody(Window& cnv, vec2<float> crs) {
 }
 
 
-ListMenu::ListMenu(const ListMenu& in) : Widget(in) {
+ListMenu::ListMenu(const ListMenu& in) : Menu(in) {
 }
 
-ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 	RegisterType(ObjType("ListMenu"));
 
 	Int* active = &ADDOBJ(Int, Active, *this, (this));
@@ -94,69 +94,81 @@ ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
 	target->Init("ObList", true);
-
-	ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
-	ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));
-	ADDOBJ(ColorObj, Active Item Col, *this, (this)).Set(Color(0.4f, 0.4f, 0.4f, 0.3f));
-	ADDOBJ(ColorObj, Text Col, *this, (this)).Set(Color(0.7f, 0.7f, 0.7f, 1.f));
 }
 
 void ListMenu::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
-	ObList* list = (ObList*)GETOBJ(Link, this, Target).GetLink();
-	if (!list) {
+
+	Menu::ProcBody(requests, tui, crs);
+
+	ObList* target = (ObList*)GETOBJ(Link, this, Target).GetLink();
+	if (!target) {
 		return;
 	}
 
-	if (state == WidgetState::CONFIRM) {
-		int idx = (int)((crs.y - items_start) / item_size);
+	List<Obj>* target_list = &target->GetList();
+	List<Obj>* widget_list = &GETOBJ(ObList, body, Childs).GetList();
 
-		if (idx > -1 && idx < list->GetList().Len()) {
-			GETOBJ(Int, this, Active).Set(idx);
+	int widget_items_len = 0;
+	
+	for (auto child : *widget_list) {
+		if (child->type.IsPrnt(widget_type)) { 
+			widget_items_len++; 
 		}
-		else {
-			GETOBJ(Int, this, Active).Set(-1);
+	}
+
+	int diff = target_list->Len() - widget_items_len;
+	int len = (diff > 0 ? widget_items_len : target_list->Len());
+
+	Node<Obj>* target_node = target_list->First();
+	Node<Obj>* widget_node = widget_list->First();
+
+	while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+		widget_node = widget_node->next;
+	}
+
+	for (int idx = 0; idx < len; idx ++) {
+
+		update_item((Widget*)widget_node->data, *target_node->data);
+
+		target_node = target_node->next;
+		widget_node = widget_node->next;
+
+		while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+			widget_node = widget_node->next;
 		}
 	}
-	else {
-		GETOBJ(Int, this, Active).Set(-1);
+
+	if (diff < 0) {
+		while (diff) {
+			widget_list->DelNode(widget_list->Last());
+			diff++;
+		}
 	}
-}
+	else if (diff > 0) {
 
-void ListMenu::DrawBody(Window& cnv, vec2<float> crs) {
-	if (state != WidgetState::NONE) {
-		Color active;
-		GETOBJ(ColorObj, this, Active Col).Get(&active);
-		cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), active, 7);
-	}
-	else {
-		Color inactive;
-		GETOBJ(ColorObj, this, Inactive Col).Get(&inactive);
-		cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), inactive, 7);
-	}
+		float pos = widget_list ->Len() ? -FLT_MAX : 0;
 
-	Color active_item;
-	GETOBJ(ColorObj, this, Active Item Col).Get(&active_item);
-	Color text_col;
-	GETOBJ(ColorObj, this, Text Col).Get(&text_col);
+		for (auto item : *widget_list) {
+			float item_pos = ((Widget*)item.Data())->rect.size_vec_w().y;
+			if (item_pos > pos) {
+				pos = item_pos;
+			}
+		}
 
+		pos += 5;
 
-	ObList* list = (ObList*)GETOBJ(Link, this, Target).GetLink();
-	if (!list) {
-		cnv.Text(" List Object is not specified ", 10, items_start, 16, text_col);
-		return;
-	}
+		Node<Obj>* new_target_node = target_list->Find(target_list->Len() - diff);
 
-	cnv.Text((Str("List Type : ") += list->ListType()).str, 10, 10, 16, text_col);
+		while (diff) {
 
-	int idx_p = (int)((crs.y - items_start) / item_size);
-	if (crs.x > 5 && crs.x < rect.size.x && crs.y > items_start && idx_p > -1 && idx_p < list->GetList().Len()) {
-		cnv.RRect(Rect<float>(5, items_start + item_size * idx_p, rect.size.x - 10, item_size), active_item, 5);
-	}
+			Widget* new_item = append_item(new_target_node->data, body, Rect<float>(0, pos, body->rect.size.x, 30));
+			GETOBJ(ObList, body, Childs).AddObj(new_item);
+			diff--;
 
-	float offset = items_start;
-	for (auto item : list->GetList()) {
-		cnv.Text(item->type.idname.str, 15, offset + 6, 14, text_col);
-		offset += item_size;
+			new_target_node = new_target_node->next;
+
+			pos += 35;
+		}
 	}
 }
 
@@ -178,6 +190,12 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 	input_field = new InputField(this, Rect<float>(5, 120, rect.size.x - 10, 30));
 	GETOBJ(Bool, input_field, Hiden).Set(true);
 	GETOBJ(ObList, this, Childs).AddObj(input_field);
+
+	label = new Label(this, Rect<float>(5, 5, rect.size.x - 10, 50));
+	GETOBJ(ObList, this, Childs).AddObj(label);
+
+	back_button = new Button(this, Rect<float>(230, 5, 60, 25));
+	GETOBJ(ObList, this, Childs).AddObj(back_button);
 
 	Scroller* scroller = new Scroller(this);
 	GETOBJ(Link, scroller, Target).SetLink(this);
@@ -202,17 +220,19 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
 		return;
 	}
 
+	if (back_button->state == WidgetState::CONFIRM) {
+		if (obj->prnt) {
+			target->SetLink(obj->prnt);
+		}
+	}
+
 	if (state == WidgetState::CONFIRM) {
 
 		float offset = childs_start;
 
 		int idx = (int)((crs.y - childs_start) / child_height);
-		if (idx == obj->props.nentries && obj->prnt) {
-			if (obj->prnt) {
-				target->SetLink(obj->prnt);
-			}
-		}
-		else if (idx >= 0) {
+
+		if (idx >= 0) {
 			for (auto child : obj->props) {
 				if (child.entry_idx == idx) {
 					target->SetLink(child->val);
@@ -246,7 +266,6 @@ void ContextMenu::DrawBody(Window& canvas, vec2<float> crs) {
 	Color text_col;
 	GETOBJ(ColorObj, this, Text Col).Get(&text_col);
 
-	canvas.Text("Context Menu : ", 10, 10, 20, text_col);
 
 	Obj* obj = GETOBJ(Link, this, Target).GetLink();
 
@@ -254,13 +273,11 @@ void ContextMenu::DrawBody(Window& canvas, vec2<float> crs) {
 		return;
 	}
 
-	canvas.Text(obj->type.idname.str, 150, 10, 20, text_col);
-
 	float offset = childs_start;
 
 	if (state == WidgetState::INSIDE) {
 		int idx = (int)((crs.y - childs_start) / child_height);
-		if (idx <= obj->props.nentries && idx >= 0) {
+		if (idx < obj->props.nentries && idx >= 0) {
 			if (idx < obj->props.nentries || obj->prnt) {
 
 				Color acive_item;
@@ -276,29 +293,26 @@ void ContextMenu::DrawBody(Window& canvas, vec2<float> crs) {
 		canvas.Text(chld->key.str, 20, offset + 7, 16, text_col);
 		offset += child_height;
 	}
-
-	if (obj->prnt) {
-		canvas.Text("Back", 20, offset + 7, 16, text_col);
-		offset += child_height;
-	}
 }
 
 void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 	ContextMenu* contex_menu = (ContextMenu*)ths;
-	Obj* obj = GETOBJ(Link, contex_menu, Target).GetLink();
+	Obj* new_target = GETOBJ(Link, contex_menu, Target).GetLink();
 
 	GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(true);
 	GETOBJ(Bool, contex_menu->input_field, Hiden).Set(true);
 	contex_menu->input_field->valid_input = nullptr;
 
-	if (obj->type.IsPrnt("ObList")) {
+	if (new_target->type.IsPrnt("ObList")) {
 		GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(false);
-		GETOBJ(Link, contex_menu->list_menu, Target).SetLink(obj);
+		GETOBJ(Link, contex_menu->list_menu, Target).SetLink(new_target);
 		contex_menu->list_menu->skip_iteration = true;
 	}
-	else if (obj->type.IsPrnt("Int") || obj->type.IsPrnt("Float") || obj->type.IsPrnt("Bool") || obj->type.IsPrnt("String")) {
+	else if (new_target->type.IsPrnt("Int") || new_target->type.IsPrnt("Float") || new_target->type.IsPrnt("Bool") || new_target->type.IsPrnt("String")) {
 		GETOBJ(Bool, contex_menu->input_field, Hiden).Set(false);
-		GETOBJ(Link, contex_menu->input_field, Target).SetLink(obj);
+		GETOBJ(Link, contex_menu->input_field, Target).SetLink(new_target);
 		contex_menu->input_field->skip_iteration = true;
 	}
+
+	GETOBJ(String, contex_menu->label, Text).Assign(Str("Context Menu : ") += new_target->type.idname);
 }

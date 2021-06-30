@@ -36,7 +36,7 @@ public:
 	Rect<float> rect;
 	bool active = false;
 	bool skip_iteration = false;
-
+	
 	virtual void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
 	virtual bool TransformRequest() { return true; }
@@ -49,9 +49,25 @@ public:
 		rect.size.y = GETOBJ(Float, rect_obj, Size Y).GetVal();
 	}
 
+	void ApplyRect() {
+		Obj* rect_obj = &GETOBJ(Obj, this, Rect);
+		GETOBJ(Float, rect_obj, Pos X).Set(rect.pos.x);
+		GETOBJ(Float, rect_obj, Pos Y).Set(rect.pos.y);
+		GETOBJ(Float, rect_obj, Size X).Set(rect.size.x);
+		GETOBJ(Float, rect_obj, Size Y).Set(rect.size.y);
+	}
+
+	void UpdateRect() {
+		Obj* rect_obj = &GETOBJ(Obj, this, Rect);
+		rect.pos.x = GETOBJ(Float, rect_obj, Pos X).GetVal();
+		rect.pos.y = GETOBJ(Float, rect_obj, Pos Y).GetVal();
+		rect.size.x = GETOBJ(Float, rect_obj, Size X).GetVal();
+		rect.size.y = GETOBJ(Float, rect_obj, Size Y).GetVal();
+	}
+
 	void Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs);
 
-	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs);
+	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds);
 
 	static bool SetRectReq(Obj* param);
 

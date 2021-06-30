@@ -65,6 +65,8 @@ public:
 
 #define KEY_DELETE         0x2E
 
+#define KEY_MINUS					 0xBD
+#define KEY_PLUS					 0xBB
 /*
 	KEY_0 - KEY_9 are the same as ASCII '0' - '9' 
 	KEY_A - KEY_Z are the same as ASCII 'A' - 'Z' 

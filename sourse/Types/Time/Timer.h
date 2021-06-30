@@ -1,6 +1,6 @@
 #pragma once
 
-typedef long long int TIME_MS__;
+typedef unsigned long long int TIME_MS__;
 
 struct Timer {
 
@@ -20,3 +20,5 @@ struct Timer {
 };
 
 void TreadSleep(TIME_MS__ duration);
+
+TIME_MS__ get_time();

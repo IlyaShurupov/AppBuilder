@@ -18,17 +18,21 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 	ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
 	ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
 
-	rect_obj.BindModPoll(this, SetRectReq);
-	rect_obj.AddOnModCallBack(this, RectMod);
+	//rect_obj.BindModPoll(this, SetRectReq);
+	//rect_obj.AddOnModCallBack(this, RectMod);
 
 	rect = _rect;
 
 	ADDOBJ(Bool, Hiden, *this, (this)).Set(false);
 	ADDOBJ(Bool, Forse Active, *this, (this)).Set(false);
+
+	ADDOBJ(Int, DrawOrder, *this, (this));
 }
 
 void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 	
+	UpdateRect();
+
 	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active) {
 
 		bool activate_action = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
@@ -92,14 +96,18 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 		}
 
 	}
+
+	ApplyRect();
 }
 
-void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
+void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds) {
+
+	UpdateRect();
 
 	rect.pos += prnt_pos;
 	canvas.SetCanvasRect(rect);
 
-	Rect<float> clamped_bounds(rect);
+	Rect<float> clamped_bounds(draw_bounds);
 
 	if (prnt && prnt->type.IsPrnt("Widget")) {
 		Rect<float> prnt_rect(prnt_pos, ((Widget*)prnt)->rect.size);
@@ -118,10 +126,14 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs) {
 
 	DrawBody(canvas, crs);
 
+	childs->Sort([](const Obj& ob1, const Obj& ob2) {
+		return GETOBJ(Int, ((Widget*)&ob1), DrawOrder).GetVal() > GETOBJ(Int, ((Widget*)&ob2), DrawOrder).GetVal();
+	});
+
 	for (auto guii : *childs) {
 		Widget* child = (Widget*)guii.Data();
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
-			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos);
+			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos, clamped_bounds);
 		}
 	}
 
@@ -204,7 +216,7 @@ void GUI::OutPut(Obj* root) {
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 	for (auto guii : windows) {
 		Widget* window = ((Widget*)guii.Data());
-		window->Draw(canvas, vec2<float>(), crs - window->rect.pos);
+		window->Draw(canvas, vec2<float>(), crs - window->rect.pos, window->rect);
 	}
 
 	canvas.EndFrame();
