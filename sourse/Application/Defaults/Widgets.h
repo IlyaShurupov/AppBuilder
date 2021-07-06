@@ -55,8 +55,11 @@ public:
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.23f, 0.23f, 0.23f, .9f));
 		ADDOBJ(ColorObj, Activate Col, *this, (this)).Set(Color(0.4f, 0.4f, 0.4f, 0.4f));
 
-		GETOBJ(ObList, this, Childs).AddObj(new Label(this, Rect<float>(2, 2, rect.size.x - 2, rect.size.y - 2)));
+		label = new Label(this, Rect<float>(2, 2, rect.size.x - 2, rect.size.y - 2));
+		GETOBJ(ObList, this, Childs).AddObj(label);
 	}
+
+	Label* label;
 
 	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
 		if (state == WidgetState::CONFIRM) {
@@ -109,8 +112,6 @@ public:
 
 		ADDOBJ(Link, Target, *this, (this)).Init("Widget", true);
 
-		GETOBJ(Bool, this, Forse Active).Set(true);
-
 		GETOBJ(Int, this, DrawOrder).Set(INT_MAX);
 	}
 
@@ -136,7 +137,6 @@ public:
 		else if (state == WidgetState::ACTIVE) {
 
 			if (scale_factor <= 1) {
-				GETOBJ(Bool, this, Forse Active).Set(false);
 				return;
 			}
 
@@ -154,6 +154,8 @@ public:
 
 				widget->skip_iteration = true;
 			}
+
+			//align();
 
 			prev_crs = crs;
 		}
@@ -284,6 +286,7 @@ public:
 	Group* topbar;
 	Group* body;
 	Button* collapse_btn;
+	Label* title;
 
 	Menu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 		RegisterType(ObjType("Menu"));
@@ -304,7 +307,8 @@ public:
 		collapse_btn = new Button(this, Rect<float>(5, 5, 30, 30));
 		GETOBJ(ObList, this, Childs).AddObj(collapse_btn);
 
-		GETOBJ(ObList, topbar, Childs).AddObj(new Label(this, Rect<float>(0, 5, 60, 30)));
+		title = new Label(this, Rect<float>(0, 5, 60, 30));
+		GETOBJ(ObList, topbar, Childs).AddObj(title);
 	}
 
 	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
@@ -368,6 +372,94 @@ class ListMenu : public Menu {
 	ListMenu& operator = (const ListMenu& in);
 	ListMenu(const ListMenu& in);
 
+	template <typename ContainerType, typename ContainerIterType>
+	void proc_by_type() {
+		ContainerType* target = (ContainerType*)GETOBJ(Link, this, Target).GetLink();
+
+		ContainerIterType target_list = target->Iterator();
+		List<Obj>* widget_list = &GETOBJ(ObList, body, Childs).GetList();
+
+		int widget_items_len = 0;
+
+		for (auto child : *widget_list) {
+			if (child->type.IsPrnt(widget_type)) {
+				widget_items_len++;
+			}
+		}
+
+		int diff = target_list.Len() - widget_items_len;
+		int len = (diff > 0 ? widget_items_len : target_list.Len());
+
+		Node<Obj>* widget_node = widget_list->First();
+
+		while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+			widget_node = widget_node->next;
+		}
+
+		for (int idx = 0; idx < len; idx++) {
+
+			update_item((Widget*)widget_node->data, target_list.data(), target_list.name());
+
+			++target_list;
+			widget_node = widget_node->next;
+
+			while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+				widget_node = widget_node->next;
+			}
+		}
+
+		if (diff < 0) {
+			Node<Obj>* widget_node = widget_list->Last();
+			while (diff) {
+				if (widget_node->data->type.IsPrnt(widget_type)) {
+					Node<Obj>* del_node = widget_node;
+					widget_node = widget_node->prev;
+					widget_list->DelNode(del_node);
+					diff++;
+				}
+				else {
+					widget_node = widget_node->prev;
+				}
+			}
+		}
+		else if (diff > 0) {
+
+			float pos = -FLT_MAX;
+			if (widget_items_len) {
+				for (auto item : *widget_list) {
+					if (!item->type.IsPrnt(widget_type)) {
+						continue;
+					}
+					float item_pos = ((Widget*)item.Data())->rect.size_vec_w().y;
+					if (item_pos > pos) {
+						pos = item_pos;
+					}
+				}
+			}
+			else {
+				pos = 0;
+			}
+
+			pos += 5;
+
+			target_list = target->Iterator(target_list.Len() - diff);
+
+			while (diff) {
+
+				Widget* new_item = append_item(body, Rect<float>(0, pos, body->rect.size.x, 30));
+				
+				update_item(new_item, target_list.data(), target_list.name());
+
+				GETOBJ(ObList, body, Childs).AddObj(new_item);
+				diff--;
+
+				++target_list;
+
+				pos += 35;
+			}
+		}
+	}
+
 public:
 
 	virtual ListMenu& Instance() {
@@ -381,22 +473,31 @@ public:
 
 	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs);
 
-	static Widget* LabelAppendItem(const Obj& obj, Obj* parent, const Rect<float>& rect) {
+	static Widget* LabelAppendItem(Obj* parent, const Rect<float>& rect) {
 		return new Label(parent, rect);
 	}
 
-	static void LabelUpdateItem(Widget* widget, const Obj& obj) {
-		((Label*)widget)->text->Assign(obj.type.idname);
+	static void LabelUpdateItem(Widget* widget, Obj* obj, Str* suggested) {
+		((Label*)widget)->text->Assign(suggested ? *suggested : obj->type.idname);
 	}
 
-	void (*update_item)(Widget* widget, const Obj& obj) = LabelUpdateItem;
-	Widget* (*append_item)(const Obj& obj, Obj* parent, const Rect<float>& rect) = LabelAppendItem;
+	static Widget* ButtonAppendItem(Obj* parent, const Rect<float>& rect) {
+		return new Button(parent, rect);
+	}
+
+	static void ButtonUpdateItem(Widget* widget, Obj* obj, Str* suggested) {
+		((Button*)widget)->label->text->Assign(suggested ? *suggested : obj->type.idname);
+	}
+
+
+	void (*update_item)(Widget* widget, Obj* obj, Str* suggested) = LabelUpdateItem;
+	Widget* (*append_item)(Obj* parent, const Rect<float>& rect) = LabelAppendItem;
 	Str widget_type = "Label";
 
 	virtual ~ListMenu() {}
 };
 
-class ContextMenu : public Widget {
+class ContextMenu : public Menu {
 
 	ContextMenu& operator = (const ContextMenu& in);
 	ContextMenu(const ContextMenu& in);
@@ -409,9 +510,11 @@ public:
 
 	ContextMenu(Obj* prnt, Rect<float> _rect);
 
+	ObDict* dictlist;
+	ListMenu* dict_menu;
+
 	ListMenu* list_menu;
 	InputField* input_field;
-	Label* label;
 	Button* back_button;
 
 	float childs_start = 50;

@@ -34,8 +34,9 @@ public:
 	List<Obj>* childs;
 	WidgetState state = WidgetState::NONE;
 	Rect<float> rect;
-	bool active = false;
+	bool active = true;
 	bool skip_iteration = false;
+	bool add_iteration = true;
 	
 	virtual void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}

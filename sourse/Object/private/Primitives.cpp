@@ -40,6 +40,46 @@ String::~String() {
 }
 
 
+ObListIter::ObListIter(const Str* itertype, class ObList* oblist, int start_idx) {
+	this->oblist = oblist;
+
+	if (itertype) {
+		this->itertype = itertype;
+		type = true;
+	}
+	else {
+		type = false;
+	}
+
+	idx = start_idx;
+	
+	iter = oblist->list.Find(start_idx);
+	while (iter && type && !iter->data->type.IsPrnt(itertype)) {
+		iter = iter->next;
+	}
+}
+
+void ObListIter::operator ++() {
+	iter = iter->next;
+	while (iter && type && !iter->data->type.IsPrnt(itertype)) {
+		iter = iter->next;
+	}
+	idx++;
+}
+
+int ObListIter::Len(const Str& type) {
+	int len = 0;
+	for (auto item : oblist->list) {
+		if (item->type.IsPrnt(type)) {
+			len++;
+		}
+	}
+	return len;
+}
+
+int ObListIter::Len() {
+	return oblist->list.Len();
+}
 
 ObList::ObList(const ObList& in) : Obj(in) {
 	list_type = in.list_type;
@@ -312,6 +352,67 @@ Bool::~Bool() {
 }
 
 
+ObDictIter::ObDictIter(const Str* itertype, class ObDict* oblist, int start_idx) {
+	this->obdict = oblist;
+
+	if (itertype) {
+		this->itertype = itertype;
+		type = true;
+	}
+	else {
+		type = false;
+	}
+
+	idx = start_idx;
+
+	for (slot_idx = start_idx; slot_idx < obdict->dict->nslots; slot_idx++) {
+		if (!obdict->dict->table[slot_idx]) {
+			continue;
+		}
+
+		if (type && !obdict->dict->table[slot_idx]->val->type.IsPrnt(itertype)) {
+			continue;
+		}
+
+		break;
+	}
+
+}
+
+void ObDictIter::operator ++() {
+
+	do {
+		slot_idx++;
+		if (slot_idx == obdict->dict->nslots) {
+			break;
+		}
+
+	} while (!obdict->dict->table[slot_idx] || (type && !obdict->dict->table[slot_idx]->val->type.IsPrnt(itertype)));
+
+	idx++;
+}
+
+int ObDictIter::Len(const Str& type) {
+	int len = 0;
+	for (auto item : *obdict->dict) {
+		if (item->val->type.IsPrnt(type)) {
+			len++;
+		}
+	}
+	return len;
+}
+
+int ObDictIter::Len() {
+	return obdict->dict->nentries;
+}
+
+Obj* ObDictIter::data(){
+	return obdict->dict->table[slot_idx]->val;
+}
+
+Str* ObDictIter::name() {
+	return &obdict->dict->table[slot_idx]->key;
+}
 
 ObDict::ObDict(const ObDict& in) : Obj(in) {
 	dict_type = in.dict_type;
@@ -321,6 +422,7 @@ ObDict::ObDict(const ObDict& in) : Obj(in) {
 
 ObDict::ObDict(Obj* prnt) : Obj(prnt) {
 	RegisterType(ObjType("ObDict"));
+	dict = new DictObj;
 }
 
 ObDict& ObDict::Assign(Str _dict_type, bool _base_class) {
@@ -330,7 +432,7 @@ ObDict& ObDict::Assign(Str _dict_type, bool _base_class) {
 }
 
 DictObj& ObDict::GetDict() {
-	return dict;
+	return *dict;
 }
 
 bool ObDict::AddObj(Obj* obj, STRR name) {
@@ -340,11 +442,11 @@ bool ObDict::AddObj(Obj* obj, STRR name) {
 
 	if (base_class) {
 		if (obj->type.IsPrnt(dict_type)) {
-			dict.Put(name, obj);
+			dict->Put(name, obj);
 		}
 	}
 	else if (obj->type.idname == dict_type) {
-		dict.Put(name, obj);
+		dict->Put(name, obj);
 	}
 	else {
 		return false;
@@ -355,7 +457,7 @@ bool ObDict::AddObj(Obj* obj, STRR name) {
 }
 
 Obj& ObDict::GetObj(STRR name) {
-	return *dict.Get(name);
+	return *dict->Get(name);
 }
 
 ObDict::~ObDict() {

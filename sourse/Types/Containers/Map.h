@@ -152,6 +152,22 @@ public:
 		return nslots;
 	}
 
+	int SlotIdx(int entry_idx_in) {
+		int entry_idx = -1;
+		for (int slot_idx = 0; slot_idx < nslots; slot_idx++) {
+			if (table[slot_idx]) {
+				entry_idx++;
+			}
+			if (entry_idx == entry_idx_in) {
+				return slot_idx;
+			}
+		}
+	}
+
+	HashNode<V, K>* GetEntry(int idx) { 
+		return table[SlotIdx(idx)];
+	}
+
 	~HashMap() {
 		clear();
 	}
@@ -192,7 +208,9 @@ public:
 		entry_idx++;
 	}
 
-	bool operator!=(int p_idx) { return slot_idx != p_idx; }
+	bool operator!=(int p_idx) { 
+		return slot_idx != p_idx; 
+	}
 
 	const MapIterator& operator*() { return *this; }
 };

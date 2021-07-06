@@ -95,7 +95,9 @@ class vec2 {
   }
 
   bool operator>(const vec2<Type>& vec) { return (x > vec.x && y > vec.y); }
+  bool operator<(const vec2<Type>& vec) { return (x < vec.x && y < vec.y); }
   bool operator>=(const vec2<Type>& vec) { return (x >= vec.x && y >= vec.y); }
+  bool operator<=(const vec2<Type>& vec) { return (x <= vec.x && y <= vec.y); }
   bool operator==(const vec2<Type>& vec) { return (x == vec.x && y == vec.y); }
 
   Type& operator[](bool axes) { return (&x)[axes]; }

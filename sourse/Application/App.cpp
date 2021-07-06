@@ -133,10 +133,11 @@ void Application::Compose() {
     GETOBJ(Link, ctx_menu, Target).SetLink(this);
     GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
 
-    ListMenu* menu = new ListMenu(gui, Rect<float>(450, 50, 300, 500));
-    GETOBJ(Link, menu, Target).SetLink(&GETOBJ(ObList, tui, Inputs));
-    //GETOBJ(ObList, menu->body, Childs).AddObj(new Button(menu->body, Rect<float>(0, 0, 500, 500)));
-    GETOBJ(ObList, gui, Windows).AddObj(menu);
+    {
+      ListMenu* menu = new ListMenu(gui, Rect<float>(450, 50, 300, 500));
+      GETOBJ(Link, menu, Target).SetLink(&GETOBJ(ObList, tui, Inputs));
+      GETOBJ(ObList, gui, Windows).AddObj(menu);
+    }
 }
 
 void Application::Run() {

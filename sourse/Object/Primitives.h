@@ -26,6 +26,33 @@ public:
 	~String();
 };
 
+class ObListIter {
+public:
+
+	Str itertype;
+	bool type = false;
+	int idx = 0;
+	class ObList* oblist;
+	Node<Obj>* iter;
+
+	ObListIter(const Str* itertype, class ObList* oblist, int start_idx);
+
+	void operator ++();
+
+	Obj* data() {
+		return iter->data;
+	}
+
+	Str* name() {
+		return nullptr;
+	}
+
+	int Len(const Str& type);
+	int Len();
+
+	~ObListIter() {
+	}
+};
 
 class ObList : public Obj {
 
@@ -36,6 +63,8 @@ class ObList : public Obj {
 	ObList& operator = (const ObList& in);
 
 public:
+
+	friend ObListIter;
 
 	ObList(const ObList& in);
 	ObList(Obj* prnt);
@@ -48,6 +77,14 @@ public:
 	bool AddObj(Obj* obj);
 	const Str& ListType();
 	~ObList();
+
+	ObListIter Iterator(const Str& itertype, int start = 0) {
+		return ObListIter(&itertype, this, start);
+	}
+
+	ObListIter Iterator(int start = 0) {
+		return ObListIter(nullptr, this, start);
+	}
 };
 
 class Link : public Obj {
@@ -155,15 +192,41 @@ public:
 };
 
 
+class ObDictIter {
+public:
+
+	Str itertype;
+	bool type = false;
+	int slot_idx = 0;
+	int idx = 0;
+	class ObDict* obdict;
+
+	ObDictIter(const Str* itertype, class ObDict* oblist, int start_idx);
+
+	void operator ++();
+
+	int Len(const Str& type);
+	int Len();
+
+	Obj* data();
+
+	Str* name();
+
+	~ObDictIter() {
+	}
+};
+
 class ObDict : public Obj {
 
-	DictObj dict;
+	DictObj* dict;
 	Str dict_type;
 	bool base_class = false;
 
 	ObDict& operator = (const ObDict& in);
 
 public:
+
+	friend ObDictIter;
 
 	ObDict(const ObDict& in);
 	ObDict(Obj* prnt);
@@ -175,6 +238,23 @@ public:
 	DictObj& GetDict();
 	bool AddObj(Obj* obj, STRR name);
 	Obj& GetObj(STRR name);
+
+	ObDictIter Iterator(const Str& itertype, int start = 0) {
+		return ObDictIter(&itertype, this, start);
+	}
+
+	ObDictIter Iterator(int start = 0) {
+		return ObDictIter(nullptr, this, start);
+	}
+
+	bool SetRef(DictObj* new_dict, bool del_prev = true) {
+		if (del_prev) {
+			delete dict;
+		}
+		dict = new_dict;
+		return true;
+	}
+
 	~ObDict();
 };
 

@@ -13,6 +13,12 @@
 
 #define NVGCOL(col) nvgRGBA((uint1)(col.r * 255), (uint1)(col.g * 255), (uint1)(col.b * 255), (uint1)(col.a * 255))
 
+void get_font_dir(const char* file, Str* str) {
+	*str = file;
+	str->trim(Range(0, str->rfind('\\', Range(0, str->len()))));
+	*str += "RobotoRegular.ttf";
+}
+
 Window::Window() {
 	window = glfwCreateWindow(1000, 600, "NanoVG", NULL, NULL);
 	glfwMakeContextCurrent(window);
@@ -27,7 +33,9 @@ Window::Window() {
 
 	nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 
-	nvgCreateFont(nvg, "sans", "D:\\Dev\\tmp\\nanovg\\x64\\Debug\\Roboto-Regular.ttf");
+	Str font;
+	get_font_dir(__FILE__, &font);
+	nvgCreateFont(nvg, "sans", font.str);
 }
 
 void Window::BeginFrame() {
@@ -66,6 +74,10 @@ void Window::RRect(Rect<float> _rect, const Color& col, float radius) {
 
 	_rect.pos += wrld_rec.pos;
 	_rect.clamp(bounds);
+
+	if (_rect.size.x < 2 || _rect.size.y < 2) {
+		return;
+	}
 
 	nvgBeginPath(nvg);
 

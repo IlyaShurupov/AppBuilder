@@ -33,7 +33,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 	
 	UpdateRect();
 
-	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active) {
+	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active || add_iteration) {
 
 		bool activate_action = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
 		bool comfirm_action = GETOBJ(CompareExpr, trigers, Comfirm).Evaluate();
@@ -66,7 +66,7 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 	else {
 
 		if (state == WidgetState::NONE) {
-			return;
+			active = false;
 		}
 		else if (state == WidgetState::LEAVED) {
 			state = WidgetState::NONE;
@@ -78,13 +78,13 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 		}
 	}
 
-	if (active) {
+	if (active || add_iteration) {
 
 		ProcBody(requests, tui, crs);
 
 		for (auto guii : *childs) {
 			Widget* child = (Widget*)guii.Data();
-			if (!GETOBJ(Bool, child, Hiden).GetVal()) {
+			if (!GETOBJ(Bool, child, Hiden).GetVal() || child->add_iteration) {
 
 				if (child->skip_iteration) {
 					child->skip_iteration = false;
@@ -92,12 +92,14 @@ void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
 				}
 
 				child->Proc(requests, trigers, tui, crs - child->rect.pos);
+
 			}
 		}
-
 	}
 
 	ApplyRect();
+
+	add_iteration = false;
 }
 
 void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds) {
@@ -135,6 +137,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const R
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
 			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos, clamped_bounds);
 		}
+		//child->add_iteration = false;
 	}
 
 	active = false;
@@ -166,7 +169,7 @@ GUI::GUI(Obj* prnt, TUI* _tui) : UI(prnt) {
 void gui_find_forsed_active(List<Obj>* forsed_active, Widget* widget) {
 	for (auto child_iter : GETOBJ(ObList, widget, Childs).GetList()) {
 		Widget* child = ((Widget*)child_iter.Data());
-		if (GETOBJ(Bool, child, Forse Active).GetVal()) {
+		if (GETOBJ(Bool, child, Forse Active).GetVal() || child->add_iteration) {
 			forsed_active->PushBack(child);
 		}
 		gui_find_forsed_active(forsed_active, child);
@@ -190,9 +193,9 @@ void GUI::PumpRequests(ObList* requests) {
 	for (auto guii : forsed_active) {
 		Widget* widget = ((Widget*)guii.Data());
 		while (widget) {
-			widget->active = true;
+			widget->add_iteration = true;
 			
-			if (!widget->prnt->type.IsPrnt("Widget")) {
+			if (widget->prnt && !widget->prnt->type.IsPrnt("Widget")) {
 				break;
 			}
 
