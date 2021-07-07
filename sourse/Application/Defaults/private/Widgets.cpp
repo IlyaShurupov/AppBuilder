@@ -19,7 +19,7 @@ InputField::InputField(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 	ADDOBJ(ColorObj, Text Col, *this, (this)).Set(Color(0.7f, 0.7f, 0.7f, 1.f));
 }
 
-void InputField::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+void InputField::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 	if (state == WidgetState::CONFIRM) {
 		if (input) {
 			if (!valid_input || (valid_input && valid_input(&GETOBJ(String, this, Input).GetStr()))) {
@@ -93,9 +93,9 @@ ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 	target->Init("Obj", true);
 }
 
-void ListMenu::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
-	Menu::ProcBody(requests, tui, crs);
+	Menu::ProcBody(requests, tui);
 
 	Obj* container_obj = GETOBJ(Link, this, Target).GetLink();
 	
@@ -156,9 +156,9 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 	GETOBJ(ObList, body, Childs).AddObj(input_field);
 }
 
-void ContextMenu::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
-	Menu::ProcBody(requests, tui, crs);
+	Menu::ProcBody(requests, tui);
 
 	Link* target = &GETOBJ(Link, this, Target);
 	Obj* obj = target->GetLink();
@@ -168,28 +168,30 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
 	}
 
 	if (!GETOBJ(Bool, list_menu, Hiden).GetVal()) {
+		int non_type = 0;
 		for (auto item : GETOBJ(ObList, list_menu->body, Childs).GetList()) {
 			if (!item->type.IsPrnt("Button")) {
+				non_type++;
 				continue;
 			}
 			if (((Widget*)item.Data())->state == WidgetState::CONFIRM) {
-				Obj* new_target = &((ObList*)GETOBJ(Link, list_menu, Target).GetLink())->GetList()[item.Idx()];
+				Obj* new_target = &((ObList*)GETOBJ(Link, list_menu, Target).GetLink())->GetList()[item.Idx() - non_type];
 				target->SetLink(new_target);
-				((Widget*)item.Data())->add_iteration = true;
 				return;
 			}
 		}
 	} 
 	
 	if (!GETOBJ(Bool, dict_menu, Hiden).GetVal()) {
+		int non_type = 0;
 		for (auto item : GETOBJ(ObList, dict_menu->body, Childs).GetList()) {
 			if (!item->type.IsPrnt("Button")) {
+				non_type++;
 				continue;
 			}
 			if (((Widget*)item.Data())->state == WidgetState::CONFIRM) {
-				Obj* new_target = obj->props.GetEntry(item.Idx())->val;
+				Obj* new_target = obj->props.GetEntry(item.Idx() - non_type)->val;
 				target->SetLink(new_target);
-				((Widget*)item.Data())->add_iteration = true;
 				return;
 			}
 		}

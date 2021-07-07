@@ -12,267 +12,271 @@ template <class Type> class List;
 
 template <typename Type>
 class Node {
- public:
-  Type* data;
-  Node<Type>* next = nullptr;
-  Node<Type>* prev = nullptr;
+public:
+	Type* data;
+	Node<Type>* next = nullptr;
+	Node<Type>* prev = nullptr;
 
-  Node(Type* p_data) { data = p_data; }
+	Node(Type* p_data) { data = p_data; }
 
-  Type* operator->() { return data; }
+	Type* operator->() { return data; }
 
-  void FreeData() { 
-    delete data; 
-  }
+	void FreeData() {
+		delete data;
+	}
 };
 
 template <typename Type>
 class List {
 
-  Node<Type>* first = nullptr;
-  Node<Type>* last = nullptr;
-  int length = 0;
+	Node<Type>* first = nullptr;
+	Node<Type>* last = nullptr;
+	int length = 0;
 
- public:
-  bool recursive_free_on_destruction = true;
+public:
+	bool recursive_free_on_destruction = true;
 
- public:
-  inline Node<Type>* First() { return first; }
-  inline Node<Type>* Last() { return last; }
-  inline int Len() { return length; }
+public:
+	List() {}
+	List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
 
-  void Attach(Node<Type>* node, Node<Type>* node_to) {
-    if (node_to) {
-      if (node_to->next) {
-        node->next = node_to->next;
-        node->next->prev = node;
-      }
-      node_to->next = node;
-      node->prev = node_to;
-      if (node_to == last) {
-        last = node;
-      }
-    } else {
-      if (first) {
-        first->prev = node;
-        node->next = first;
-        first = node;
-      } else {
-        first = last = node;
-      }
-    }
-    length++;
-  }
+	inline Node<Type>* First() { return first; }
+	inline Node<Type>* Last() { return last; }
+	inline int Len() { return length; }
 
-  void Detach(Node<Type>* node) {
-    if (node->next) {
-      node->next->prev = node->prev;
-    }
-    if (node->prev) {
-      node->prev->next = node->next;
-    }
+	void Attach(Node<Type>* node, Node<Type>* node_to) {
+		if (node_to) {
+			if (node_to->next) {
+				node->next = node_to->next;
+				node->next->prev = node;
+			}
+			node_to->next = node;
+			node->prev = node_to;
+			if (node_to == last) {
+				last = node;
+			}
+		}
+		else {
+			if (first) {
+				first->prev = node;
+				node->next = first;
+				first = node;
+			}
+			else {
+				first = last = node;
+			}
+		}
+		length++;
+	}
 
-    if (node == last) {
-      last = last->prev;
-    }
-    if (node == first) {
-      first = first->next;
-    }
+	void Detach(Node<Type>* node) {
+		if (node->next) {
+			node->next->prev = node->prev;
+		}
+		if (node->prev) {
+			node->prev->next = node->next;
+		}
 
-    length--;
-  }
+		if (node == last) {
+			last = last->prev;
+		}
+		if (node == first) {
+			first = first->next;
+		}
 
-  Node<Type>* Find(int idx) {
-    if (!First() || idx < 0 || idx > Len() - 1) {
-      return nullptr;
-    }
-    Node<Type>* found = First();
-    for (int i = 0; i != idx; i++) {
-      found = found->next;
-    }
-    return found;
-  }
+		length--;
+	}
 
-  Node<Type>* Find(Type* data) {
-    Node<Type>* found = First();
-    for (int i = 0; data != found->data; i++) {
-      if (!found->next) {
-        return nullptr;
-      }
-      found = found->next;
-    }
-    return found;
-  }
+	Node<Type>* Find(int idx) {
+		if (!First() || idx < 0 || idx > Len() - 1) {
+			return nullptr;
+		}
+		Node<Type>* found = First();
+		for (int i = 0; i != idx; i++) {
+			found = found->next;
+		}
+		return found;
+	}
 
-  void ForEach(void (*functor)(List<Type>* list, Node<Type>* node)) {
-    Node<Type>* node = First();
-    while (node) {
-      Node<Type>* next = node->next;
-      functor(this, node);
-      node = next;
-    }
-  }
+	Node<Type>* Find(Type* data) {
+		Node<Type>* found = First();
+		for (int i = 0; data != found->data; i++) {
+			if (!found->next) {
+				return nullptr;
+			}
+			found = found->next;
+		}
+		return found;
+	}
 
-  template <typename SortPolicy = SortMerge>
-  void Sort(bool (*compare)(const Type& obj1, const Type& obj2)) {
-    if (length < 2) {
-      return;
-    }
+	void ForEach(void (*functor)(List<Type>* list, Node<Type>* node)) {
+		Node<Type>* node = First();
+		while (node) {
+			Node<Type>* next = node->next;
+			functor(this, node);
+			node = next;
+		}
+	}
 
-    SortPolicy SortP;
+	template <typename SortPolicy = SortMerge>
+	void Sort(bool (*compare)(const Type& obj1, const Type& obj2)) {
+		if (length < 2) {
+			return;
+		}
 
-    Type** buffer = new Type* [length];
+		SortPolicy SortP;
 
-    for (auto iter : *this) {
-      *(buffer + iter.Idx()) = iter.Data(); 
-    }
+		Type** buffer = new Type * [length];
 
-    SortP.Sort(buffer, length, compare);
+		for (auto iter : *this) {
+			*(buffer + iter.Idx()) = iter.Data();
+		}
 
-    for (auto iter : *this) {
-      iter.node()->data = *(buffer + iter.Idx()); 
-    }
+		SortP.Sort(buffer, length, compare);
 
-    delete[] buffer;
-  }
+		for (auto iter : *this) {
+			iter.node()->data = *(buffer + iter.Idx());
+		}
 
-  void Invert() {
-    ListIterator<Type> i(this, 0);
-    ListIterator<Type> j(this, Len() - 1);
-    while (i < Len() / 2) {
-      SWAP(i.node()->data, j.node()->data, Type*);
-      ++i;
-      --j;
-    }
-  }
+		delete[] buffer;
+	}
 
-  inline Type& operator[](ListIterator<Type>& iter) { return *iter.node()->data; }
-  inline Type& operator[](int idx) { return *Find(idx)->data; }
+	void Invert() {
+		ListIterator<Type> i(this, 0);
+		ListIterator<Type> j(this, Len() - 1);
+		while (i < Len() / 2) {
+			SWAP(i.node()->data, j.node()->data, Type*);
+			++i;
+			--j;
+		}
+	}
 
-  void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
-  void PushFront(Node<Type>* new_node) { Attach(new_node, nullptr); }
+	inline Type& operator[](ListIterator<Type>& iter) { return *iter.node()->data; }
+	inline Type& operator[](int idx) { return *Find(idx)->data; }
 
-  void PushBack(Type* data) { 
-    PushBack(new Node<Type>(data)); 
-  }
-  void PushFront(Type* data) { 
-    PushFront(new Node<Type>(data));
-  }
+	void PushBack(Node<Type>* new_node) { Attach(new_node, Last()); }
+	void PushFront(Node<Type>* new_node) { Attach(new_node, nullptr); }
 
-  void Insert(Node<Type>* node, int idx) {
-    Node<Type>* place_to = Find(idx);
-    Attach(node, place_to->prev);
-  }
+	void PushBack(Type* data) {
+		PushBack(new Node<Type>(data));
+	}
+	void PushFront(Type* data) {
+		PushFront(new Node<Type>(data));
+	}
 
-  void Insert(Type* data, int idx) { 
-    Insert(new Node<Type>(data), idx);
-  }
+	void Insert(Node<Type>* node, int idx) {
+		Node<Type>* place_to = Find(idx);
+		Attach(node, place_to->prev);
+	}
 
-  void DelNode(Node<Type>* node) {
-    Detach(node);
-    node->FreeData();
-    delete node;
-  }
+	void Insert(Type* data, int idx) {
+		Insert(new Node<Type>(data), idx);
+	}
 
-  void Release() {
-    ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
-    length = 0;
-    first = last = nullptr;
-  }
+	void DelNode(Node<Type>* node) {
+		Detach(node);
+		node->FreeData();
+		delete node;
+	}
 
-  void Delete() {
-    ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
-    length = 0;
-    first = last = nullptr;
-  }
+	void Release() {
+		ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+		length = 0;
+		first = last = nullptr;
+	}
 
-  List<Type>& operator += (const List<Type>& in) {
-    for (Node<Type>* node = in.first; node; node = node->next) {
-      PushBack(node->data);
-    }
-    return *this;
-  }
+	void Delete() {
+		ForEach([](List<Type>* list, Node<Type>* node) { list->DelNode(node); });
+		length = 0;
+		first = last = nullptr;
+	}
 
-  List<Type>& operator = (const List<Type>& in) {
+	List<Type>& operator += (const List<Type>& in) {
+		for (Node<Type>* node = in.first; node; node = node->next) {
+			PushBack(node->data);
+		}
+		return *this;
+	}
 
-    if (recursive_free_on_destruction) {
-      Delete();
-    } else {
-      Release();
-    }
-    
-    *this += in;
+	List<Type>& operator = (const List<Type>& in) {
 
-    recursive_free_on_destruction = in.recursive_free_on_destruction;
+		if (recursive_free_on_destruction) {
+			Delete();
+		}
+		else {
+			Release();
+		}
 
-    return *this;
-  }
+		*this += in;
 
-  template <typename compare_val>
-  Node<Type>* Find(bool (*found)(Node<Type>* node, compare_val val), compare_val value) {
-    for (Node<Type>* node = First(); node; node = node->next) {
-      if (found(node, value)) {
-        return node;
-      }
-    }
-    return nullptr;
-  }
+		recursive_free_on_destruction = in.recursive_free_on_destruction;
 
-  List() {}
-  List(bool recursive_free_on_destruction) : recursive_free_on_destruction(recursive_free_on_destruction) {}
-  
-  void Clear() {
-    if (recursive_free_on_destruction) {
-      Delete();
-    } else {
-      Release();
-    }
-  }
+		return *this;
+	}
 
-  ListIterator<Type> begin() {
-    return ListIterator<Type>(this, 0);
-  }
+	template <typename compare_val>
+	Node<Type>* Find(bool (*found)(Node<Type>* node, compare_val val), compare_val value) {
+		for (Node<Type>* node = First(); node; node = node->next) {
+			if (found(node, value)) {
+				return node;
+			}
+		}
+		return nullptr;
+	}
 
-  int end() {
-    return Len();
-  }
+	void Clear() {
+		if (recursive_free_on_destruction) {
+			Delete();
+		}
+		else {
+			Release();
+		}
+	}
 
-  ~List() {
-    Clear();
-  }
+	ListIterator<Type> begin() {
+		return ListIterator<Type>(this, 0);
+	}
+
+	int end() {
+		return Len();
+	}
+
+	~List() {
+		Clear();
+	}
 };
 
 template <typename Type>
 class ListIterator {
 
-  Node<Type>* iter;
-  int idx;
+	Node<Type>* iter;
+	int idx;
 
- public:
-  int Idx() { return idx; }
-  Type* operator->() { return iter->data; }
-  Type* Data() { return iter->data; }
-  Node<Type>* node() { return iter; }
+public:
+	int Idx() { return idx; }
+	Type* operator->() { return iter->data; }
+	Type* Data() { return iter->data; }
+	Node<Type>* node() { return iter; }
 
-  ListIterator(List<Type>* list, int p_idx) {
-    idx = p_idx;
-    iter = list->Find(idx);
-  }
+	ListIterator(List<Type>* list, int p_idx) {
+		idx = p_idx;
+		iter = list->Find(idx);
+	}
 
-  inline void operator++() {
-    iter = iter->next;
-    idx++;
-  }
+	inline void operator++() {
+		iter = iter->next;
+		idx++;
+	}
 
-  bool operator==(const ListIterator<Type>& IterNode) { return IterNode.iter == iter; }
+	bool operator==(const ListIterator<Type>& IterNode) { return IterNode.iter == iter; }
 
-  bool operator==(int p_idx) { return idx == p_idx; }
-  bool operator!=(int p_idx) { return idx != p_idx; }
-  bool operator!=(const ListIterator<Type>& in) { return iter != in.iter; }
-  bool operator>(int p_idx) { return idx > p_idx; }
-  bool operator<(int p_idx) { return idx < p_idx; }
-  bool operator>=(int p_idx) { return idx >= p_idx; }
-  bool operator<=(int p_idx) { return idx <= p_idx; }
+	bool operator==(int p_idx) { return idx == p_idx; }
+	bool operator!=(int p_idx) { return idx != p_idx; }
+	bool operator!=(const ListIterator<Type>& in) { return iter != in.iter; }
+	bool operator>(int p_idx) { return idx > p_idx; }
+	bool operator<(int p_idx) { return idx < p_idx; }
+	bool operator>=(int p_idx) { return idx >= p_idx; }
+	bool operator<=(int p_idx) { return idx <= p_idx; }
 
-  const ListIterator& operator*() { return *this; }
+	const ListIterator& operator*() { return *this; }
 };

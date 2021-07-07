@@ -61,7 +61,7 @@ public:
 
 	Label* label;
 
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 		if (state == WidgetState::CONFIRM) {
 			CreateRequest(requests);
 		}
@@ -113,13 +113,14 @@ public:
 		ADDOBJ(Link, Target, *this, (this)).Init("Widget", true);
 
 		GETOBJ(Int, this, DrawOrder).Set(INT_MAX);
+		GETOBJ(Int, this, ProcOrder).Set(INT_MAX);
 	}
 
 	vec2<float> prev_crs;
 	float scale_factor = 1;
 	float content_offset = 0;
 
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
 		Widget* target = (Widget*)GETOBJ(Link, this, Target).GetLink();
 		if (!target) {
@@ -131,8 +132,9 @@ public:
 		bool y_axis = GETOBJ(Bool, this, Vertical).GetVal();
 
 		if (state == WidgetState::ACTIVATE) {
-			prev_crs = crs;
+			prev_crs = local_crs;
 			GETOBJ(Bool, this, Forse Active).Set(true);
+			triggers->handled = true;
 		}
 		else if (state == WidgetState::ACTIVE) {
 
@@ -140,7 +142,7 @@ public:
 				return;
 			}
 
-			vec2<float> delta = crs - prev_crs;
+			vec2<float> delta = local_crs - prev_crs;
 			float content_offset_delta = (&delta.x)[y_axis] * scale_factor;
 
 			for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
@@ -151,16 +153,15 @@ public:
 
 				(&widget->rect.pos.x)[y_axis] += content_offset_delta;
 				widget->ApplyRect();
-
-				widget->skip_iteration = true;
 			}
 
-			//align();
+			triggers->handled = true;
 
-			prev_crs = crs;
+			prev_crs = local_crs;
 		}
-		else {
+		else if (state == WidgetState::CONFIRM || state == WidgetState::DISCARD) {
 			GETOBJ(Bool, this, Forse Active).Set(false);
+			triggers->handled = true;
 		}
 	}
 
@@ -254,14 +255,17 @@ public:
 		return *new Group(*this);
 	}
 
+	Scroller* scroller;
+	Scroller* scroller_x;
+
 	Group(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
 		RegisterType(ObjType("Group"));
 
-		Scroller* scroller = new Scroller(this);
+		scroller = new Scroller(this);
 		GETOBJ(Link, scroller, Target).SetLink(this);
 		GETOBJ(ObList, this, Childs).AddObj(scroller);
 
-		Scroller* scroller_x = new Scroller(this);
+		scroller_x = new Scroller(this);
 		GETOBJ(Link, scroller_x, Target).SetLink(this);
 		GETOBJ(Bool, scroller_x, Vertical).Set(false);
 		GETOBJ(ObList, this, Childs).AddObj(scroller_x);
@@ -311,7 +315,7 @@ public:
 		GETOBJ(ObList, topbar, Childs).AddObj(title);
 	}
 
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {
+	void ProcBody(ObList* requests, TUI* tui) {
 		if (collapse_btn->state == WidgetState::CONFIRM) {
 			GETOBJ(Bool, this, Collapsed).Set(!GETOBJ(Bool, this, Collapsed).GetVal());
 		}
@@ -360,7 +364,7 @@ public:
 	bool input = false;
 	bool (*valid_input)(const Str* str) = nullptr;
 
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs);
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 	void DrawBody(Window& cnv, vec2<float> crs);
 
 	virtual ~InputField() {}
@@ -471,7 +475,7 @@ public:
 	float items_start = 40;
 	float item_size = 25;
 
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs);
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 
 	static Widget* LabelAppendItem(Obj* parent, const Rect<float>& rect) {
 		return new Label(parent, rect);
@@ -517,10 +521,7 @@ public:
 	InputField* input_field;
 	Button* back_button;
 
-	float childs_start = 50;
-	float child_height = 30;
-
-	void ProcBody(ObList* requests, TUI* tui, vec2<float> crs);
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 	void DrawBody(Window& canvas, vec2<float> crs);
 
 	static void TargetChanged(Obj* ths, ModType type);

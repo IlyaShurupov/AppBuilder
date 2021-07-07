@@ -8,14 +8,33 @@
 
 enum struct WidgetState {
 	NONE = 0,
+	ENTERED,
+	INSIDE,
+	FORSED_ACTIVE,
 	ACTIVATE,
 	ACTIVE,
 	CONFIRM,
 	DISCARD,
-	ENTERED,
-	INSIDE,
 	LEAVED,
 };
+
+struct WidgetTriggers {
+
+	bool activate = false;
+	bool comfirm = false;
+	bool discard = false;
+
+	bool handled = false;
+
+	void Update(Obj* trigers) {
+		activate = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
+		comfirm = GETOBJ(CompareExpr, trigers, Comfirm).Evaluate();
+		discard = GETOBJ(CompareExpr, trigers, Discard).Evaluate();
+		handled = false;
+	}
+
+};
+
 
 class Widget : public Requester {
 
@@ -32,14 +51,19 @@ public:
 	}
 
 	List<Obj>* childs;
-	WidgetState state = WidgetState::NONE;
 	Rect<float> rect;
+
+	vec2<float> local_crs;
+	WidgetState state = WidgetState::NONE;
 	bool active = true;
-	bool skip_iteration = false;
-	bool add_iteration = true;
-	
-	virtual void ProcBody(ObList* requests, TUI* tui, vec2<float> crs) {}
+
+	bool IsActive(vec2<float> crs);
+	void Proc(ObList* requests, WidgetTriggers* triggers, TUI* tui);
+	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds);
+
+	virtual void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
+	
 	virtual bool TransformRequest() { return true; }
 
 	virtual void Transform() {
@@ -66,12 +90,7 @@ public:
 		rect.size.y = GETOBJ(Float, rect_obj, Size Y).GetVal();
 	}
 
-	void Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs);
-
-	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds);
-
 	static bool SetRectReq(Obj* param);
-
 	static void RectMod(Obj* param, ModType type);
 
 	virtual ~Widget() {
@@ -84,6 +103,7 @@ class  GUI : public UI {
 	GUI& operator = (const GUI& in);
 	GUI(const GUI& in) : UI(in) {}
 
+	WidgetTriggers triggers;
 	Window canvas;
 	TUI* tui;
 

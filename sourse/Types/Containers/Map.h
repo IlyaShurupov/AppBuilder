@@ -162,6 +162,7 @@ public:
 				return slot_idx;
 			}
 		}
+		return -1;
 	}
 
 	HashNode<V, K>* GetEntry(int idx) { 

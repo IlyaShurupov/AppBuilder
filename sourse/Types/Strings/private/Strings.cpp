@@ -300,3 +300,8 @@ bool str_from_string(Str* str, bool& val) {
 
   return true;
 }
+
+
+void cnsl(const Str& str) {
+  printf(str.str);
+}

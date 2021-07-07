@@ -85,4 +85,9 @@ struct Str {
   ~Str();
 };
 
+#ifdef _DEBUG
+#define CDL(text) cnsl(text)
+#endif 
+#define CDL(text) 
 
+void cnsl(const Str& str);

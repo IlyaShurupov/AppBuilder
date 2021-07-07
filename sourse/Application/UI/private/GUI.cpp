@@ -11,15 +11,11 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 	ADDOBJ(ObList, Childs, *this, (this)).Assign("Widget", true);
 	childs = &GETOBJ(ObList, this, Childs).GetList();
 
-
 	Obj& rect_obj = ADDOBJ(Obj, Rect, *this, (this));
 	ADDOBJ(Float, Pos X, rect_obj, (&rect_obj)).Set(_rect.pos.x);
 	ADDOBJ(Float, Pos Y, rect_obj, (&rect_obj)).Set(_rect.pos.y);
 	ADDOBJ(Float, Size X, rect_obj, (&rect_obj)).Assign(_rect.size.x, 5, 2000);
 	ADDOBJ(Float, Size Y, rect_obj, (&rect_obj)).Assign(_rect.size.y, 5, 2000);
-
-	//rect_obj.BindModPoll(this, SetRectReq);
-	//rect_obj.AddOnModCallBack(this, RectMod);
 
 	rect = _rect;
 
@@ -27,104 +23,119 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 	ADDOBJ(Bool, Forse Active, *this, (this)).Set(false);
 
 	ADDOBJ(Int, DrawOrder, *this, (this));
+	ADDOBJ(Int, ProcOrder, *this, (this));
 }
 
-void Widget::Proc(ObList* requests, Obj* trigers, TUI* tui, vec2<float> crs) {
-	
+bool Widget::IsActive(vec2<float> crs) {
 	UpdateRect();
 
-	if (crs.x > 0 && crs.y > 0 && rect.size > crs || active || add_iteration) {
+	if (GETOBJ(Bool, this, Hiden).GetVal()) {
+		return false;
+	}
 
-		bool activate_action = GETOBJ(CompareExpr, trigers, Activate).Evaluate();
-		bool comfirm_action = GETOBJ(CompareExpr, trigers, Comfirm).Evaluate();
-		bool discard_action = GETOBJ(CompareExpr, trigers, Discard).Evaluate();
+	bool active = false;
 
-		if (activate_action) {
-			state = WidgetState::ACTIVATE;
-		}
-		else if (comfirm_action) {
-			state = WidgetState::CONFIRM;
-		}
-		else if (discard_action) {
-			state = WidgetState::DISCARD;
-		}
-		else if (state == WidgetState::NONE) {
-			state = WidgetState::ENTERED;
-		}
-		else if (state == WidgetState::ACTIVATE) {
-			state = WidgetState::ACTIVE;
-		}
-		else if (state == WidgetState::ACTIVE) {
-		}
-		else {
-			state = WidgetState::INSIDE;
-		}
-
+	if (crs.x > 0 && crs.y > 0 && rect.size > crs) {
 		active = true;
-
 	}
-	else {
-
-		if (state == WidgetState::NONE) {
-			active = false;
-		}
-		else if (state == WidgetState::LEAVED) {
-			state = WidgetState::NONE;
-			active = true;
-		}
-		else {
-			state = WidgetState::LEAVED;
-			active = true;
-		}
+	else if (state != WidgetState::NONE) {
+		active = true;
 	}
 
-	if (active || add_iteration) {
+	local_crs = crs;
+	return active;
+}
 
-		ProcBody(requests, tui, crs);
-
-		for (auto guii : *childs) {
-			Widget* child = (Widget*)guii.Data();
-			if (!GETOBJ(Bool, child, Hiden).GetVal() || child->add_iteration) {
-
-				if (child->skip_iteration) {
-					child->skip_iteration = false;
-					continue;
-				}
-
-				child->Proc(requests, trigers, tui, crs - child->rect.pos);
-
+void Widget::Proc(ObList* requests, WidgetTriggers* triggers, TUI* tui) {
+	
+	bool inside = local_crs.x > 0 && local_crs.y > 0 && rect.size > local_crs;
+	
+	switch (state) {
+		case WidgetState::NONE:
+			if (inside) {
+				state = WidgetState::ENTERED;
 			}
-		}
+			else if (GETOBJ(Bool, this, Forse Active).GetVal()) {
+				state = WidgetState::FORSED_ACTIVE;
+			}
+			break;
+
+		case WidgetState::ENTERED:
+			state = WidgetState::INSIDE;
+			break;
+
+		case WidgetState::INSIDE:
+			if (inside) {
+				if (!triggers->handled && triggers->activate) {
+					state = WidgetState::ACTIVATE;
+				}
+			}
+			else {
+				state = WidgetState::LEAVED;
+			}
+			break;
+
+		case WidgetState::LEAVED:
+			state = WidgetState::NONE;
+			break;
+
+		case WidgetState::ACTIVATE:
+			state = WidgetState::ACTIVE;
+			break;
+
+		case WidgetState::ACTIVE:
+			if (!triggers->handled && triggers->comfirm) {
+				state = WidgetState::CONFIRM;
+			}
+			else if (!triggers->handled && triggers->discard) {
+				state = WidgetState::DISCARD;
+			}
+			break;
+
+		case WidgetState::DISCARD:
+		case WidgetState::CONFIRM:
+			if (inside) {
+				state = WidgetState::INSIDE;
+			}
+			else {
+				state = WidgetState::LEAVED;
+			}
+			break;
+
+		case WidgetState::FORSED_ACTIVE:
+			if (!GETOBJ(Bool, this, Forse Active).GetVal()) {
+				state = WidgetState::NONE;
+			}
+			else {
+				if (!triggers->handled && triggers->activate) {
+					state = WidgetState::ACTIVATE;
+				}
+			}
+			break;
 	}
+
+
+	ProcBody(requests, tui, triggers);
 
 	ApplyRect();
-
-	add_iteration = false;
 }
 
 void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds) {
 
-	UpdateRect();
-
 	rect.pos += prnt_pos;
 	canvas.SetCanvasRect(rect);
-
 	Rect<float> clamped_bounds(draw_bounds);
-
 	if (prnt && prnt->type.IsPrnt("Widget")) {
 		Rect<float> prnt_rect(prnt_pos, ((Widget*)prnt)->rect.size);
-
 		if (!prnt_rect.overlap(rect)) {
 			rect.pos -= prnt_pos;
-			active = false;
 			return;
 		}
-
 		clamped_bounds.clamp(prnt_rect);
 	}
-
 	canvas.SetBounds(clamped_bounds);
 	rect.pos -= prnt_pos;
+
 
 	DrawBody(canvas, crs);
 
@@ -137,10 +148,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const R
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
 			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos, clamped_bounds);
 		}
-		//child->add_iteration = false;
 	}
-
-	active = false;
 }
 
 bool Widget::SetRectReq(Obj* param) {
@@ -166,46 +174,85 @@ GUI::GUI(Obj* prnt, TUI* _tui) : UI(prnt) {
 	tui = _tui;
 }
 
-void gui_find_forsed_active(List<Obj>* forsed_active, Widget* widget) {
+
+void gui_clear_active(Widget* widget) {
+
+	widget->active = false;
+
 	for (auto child_iter : GETOBJ(ObList, widget, Childs).GetList()) {
-		Widget* child = ((Widget*)child_iter.Data());
-		if (GETOBJ(Bool, child, Forse Active).GetVal() || child->add_iteration) {
-			forsed_active->PushBack(child);
+		gui_clear_active((Widget*)child_iter.Data());
+	}
+}
+
+void gui_mark_active(Widget* widget, vec2<float> crs) {
+
+	if (widget->IsActive(crs)) {
+		widget->active = true;
+
+		for (auto child_iter : GETOBJ(ObList, widget, Childs).GetList()) {
+			Widget* child = ((Widget*)child_iter.Data());
+			gui_mark_active(child, crs - child->rect.pos);
 		}
-		gui_find_forsed_active(forsed_active, child);
+	}
+}
+
+bool gui_mark_forsed_active(Widget* widget) {
+
+	if (GETOBJ(Bool, widget, Forse Active).GetVal()) {
+		widget->active = true;
+	}
+
+	for (auto child_iter : *widget->childs) {
+		Widget* child = ((Widget*)child_iter.Data());
+		widget->active = widget->active || gui_mark_forsed_active(child);
+	}
+
+	return widget->active;
+}
+
+void gui_append_active(List<Widget>* active_widgets, Widget* widget) {
+
+	if (widget->active) {
+
+		widget->childs->Sort([](const Obj& ob1, const Obj& ob2) {
+			return GETOBJ(Int, ((Widget*)&ob1), ProcOrder).GetVal() < GETOBJ(Int, ((Widget*)&ob2), ProcOrder).GetVal();
+		});
+
+		for (auto child_iter : *widget->childs) {
+			Widget* child = ((Widget*)child_iter.Data());
+			gui_append_active(active_widgets, child);
+		}
+
+		active_widgets->PushBack(widget);
 	}
 }
 
 void GUI::PumpRequests(ObList* requests) {
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
-	Obj* trigers = &GETOBJ(Obj, this, Trigers);
-
+	
 	vec2<float> crs;
 	canvas.GetCrsr(crs);
+	triggers.Update(&GETOBJ(Obj, this, Trigers));
 
-	List<Obj> forsed_active(false);
+	List<Widget> active_widgets(false);
 	for (auto guii : windows) {
 		Widget* window = ((Widget*)guii.Data());
-		gui_find_forsed_active(&forsed_active, window);
-	}
-	
 
-	for (auto guii : forsed_active) {
-		Widget* widget = ((Widget*)guii.Data());
-		while (widget) {
-			widget->add_iteration = true;
-			
-			if (widget->prnt && !widget->prnt->type.IsPrnt("Widget")) {
-				break;
-			}
+		// mark all active widgets
+		gui_mark_forsed_active(window);
+		gui_mark_active(window, crs - window->rect.pos);
+		
+		// Construct prioritized list
+		gui_append_active(&active_widgets, window);
 
-			widget = (Widget*)widget->prnt;
-		}
+		// clear active flags
+		gui_clear_active(window);
 	}
 
-	for (auto guii : windows) {
-		Widget* window = ((Widget*)guii.Data());
-		window->Proc(requests, trigers, tui, crs - window->rect.pos);
+	// process all
+	for (auto widget_iter : active_widgets) {
+		Widget* widget = ((Widget*)widget_iter.Data());
+		widget->Proc(requests, &triggers, tui);
 	}
 }
 
