@@ -48,6 +48,10 @@ struct Str {
     to_string(this, val);
   }
 
+  Str(const Str& val) {
+    *this = val;
+  }
+
   char* str = nullptr;
   str_idx length = 0;
 
@@ -59,6 +63,7 @@ struct Str {
   void operator=(const char* string);
 
   Str& operator+=(const Str& string);
+  Str operator+(const Str& string);
 
   bool operator==(const char* cstring);
   bool operator==(const Str& string);

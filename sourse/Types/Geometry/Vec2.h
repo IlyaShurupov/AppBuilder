@@ -50,6 +50,7 @@ class vec2 {
   template <typename TypeIn>
   vec2<Type>& operator=(TypeIn val) {
     x = y = (Type)val;
+    return *this;
   }
 
   // Conversion

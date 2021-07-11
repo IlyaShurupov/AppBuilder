@@ -13,9 +13,9 @@ enum class OpState {
 class Operator : public Obj {
 
     Operator& operator = (const Operator& in);
-    Operator(const Operator& in);
-
     public:
+
+    Operator(const Operator& in);
 
     int* instance_count = nullptr;
     bool parallel = false; 

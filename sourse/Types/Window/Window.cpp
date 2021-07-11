@@ -5,6 +5,8 @@
 
 #define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
+//#include "GLFW/glfw3native.h"
+
 #include "nanovg.h"
 #define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg_gl.h"
@@ -13,6 +15,8 @@
 
 #define NVGCOL(col) nvgRGBA((uint1)(col.r * 255), (uint1)(col.g * 255), (uint1)(col.b * 255), (uint1)(col.a * 255))
 
+#include <Windows.h>
+
 void get_font_dir(const char* file, Str* str) {
 	*str = file;
 	str->trim(Range(0, str->rfind('\\', Range(0, str->len()))));
@@ -20,8 +24,13 @@ void get_font_dir(const char* file, Str* str) {
 }
 
 Window::Window() {
+	
+	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+
 	window = glfwCreateWindow(1000, 600, "NanoVG", NULL, NULL);
 	glfwMakeContextCurrent(window);
+
+	glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
 	if (!window) {
 		glfwTerminate();
@@ -52,7 +61,7 @@ void Window::BeginFrame() {
 	// Update and render
 	glViewport(0, 0, fbWidth, fbHeight);
 
-	glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.32f, 0.99f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	nvgBeginFrame(nvg, (float)winWidth, (float)winHeight, pxRatio);
 }

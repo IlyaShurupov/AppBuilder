@@ -105,6 +105,10 @@ Str& Str::operator+=(const Str& string) {
   return *this;
 }
 
+Str Str::operator+(const Str& string) {
+  return Str(*this) += string;
+}
+
 void Str::operator=(const char* string) {
   alloc(cstrlen(string));
   for (str_idx i = 0; i < length; i++) {

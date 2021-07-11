@@ -2,6 +2,7 @@
 #pragma once
 
 #include "UI/GUI.h"
+#include "Thread/ThreadManager.h"
 
 class Label : public Widget {
 
@@ -131,16 +132,16 @@ public:
 
 		bool y_axis = GETOBJ(Bool, this, Vertical).GetVal();
 
+		if (scale_factor <= 1) {
+			return;
+		}
+
 		if (state == WidgetState::ACTIVATE) {
 			prev_crs = local_crs;
 			GETOBJ(Bool, this, Forse Active).Set(true);
 			triggers->handled = true;
 		}
 		else if (state == WidgetState::ACTIVE) {
-
-			if (scale_factor <= 1) {
-				return;
-			}
 
 			vec2<float> delta = local_crs - prev_crs;
 			float content_offset_delta = (&delta.x)[y_axis] * scale_factor;
@@ -205,15 +206,9 @@ public:
 
 		bool y_axis = GETOBJ(Bool, this, Vertical).GetVal();
 
-		// updating rectangle
-		rect.pos.x = (target->rect.size.x - 20) * y_axis + 5;
-		rect.pos.y = (target->rect.size.y - 20) * (!y_axis) + 5;
-		rect.size.x = 20 * (y_axis)+target->rect.size.x * !y_axis - 10;
-		rect.size.y = 20 * (!y_axis) + target->rect.size.y * y_axis - 10;
-
 		// finding content dimensions
 		float min_val = FLT_MAX;
-		float max_val = FLT_MIN;
+		float max_val = -FLT_MAX;
 		for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
 			Widget* widget = (Widget*)child.Data();
 
@@ -233,10 +228,32 @@ public:
 		}
 
 		float content_size = max_val - min_val;
-		float holder_size = target->rect.size.y;
+		float holder_size = (&target->rect.size.x)[y_axis];
 		ABS(min_val);
 		content_offset = min_val;
 		scale_factor = content_size / (&target->rect.size.x)[y_axis];
+
+		// updating rectangle
+		if (scale_factor <= 1) {
+			rect.pos = 0;
+			rect.size = 0;
+
+			for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
+				Widget* widget = (Widget*)child.Data();
+				if (widget->type.idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
+					continue;
+				}
+
+				(&widget->rect.pos.x)[y_axis] -= content_offset;
+				widget->ApplyRect();
+			}
+		}
+		else {
+			rect.pos.x = (target->rect.size.x - 20) * y_axis + 5;
+			rect.pos.y = (target->rect.size.y - 20) * (!y_axis) + 5;
+			rect.size.x = 20 * (y_axis)+target->rect.size.x * !y_axis - 10;
+			rect.size.y = 20 * (!y_axis) + target->rect.size.y * y_axis - 10;
+		}
 	}
 
 	virtual ~Scroller() {}
@@ -258,7 +275,7 @@ public:
 	Scroller* scroller;
 	Scroller* scroller_x;
 
-	Group(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+	Group(Obj* prnt, Rect<float> _rect, const Str& descrip) : Widget(prnt, _rect, descrip) {
 		RegisterType(ObjType("Group"));
 
 		scroller = new Scroller(this);
@@ -297,19 +314,21 @@ public:
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));
+		ADDOBJ(ColorObj, Text Col, *this, (this)).Set(Color(0.9f, 0.9f, 0.9f, .9f));
 
 		ADDOBJ(Int, Roundness, *this, (this)).Set(7);
 		
-		topbar = new Group(this, Rect<float>(40, 5, rect.size.x - 5, 30));
+		topbar = new Group(this, Rect<float>(40, 5, rect.size.x - 5, 30), "Topbar");
 		GETOBJ(ObList, this, Childs).AddObj(topbar);
 
-		body = new Group(this, Rect<float>(5, 40, rect.size.x - 10, rect.size.y - 10 - 35));
+		body = new Group(this, Rect<float>(5, 40, rect.size.x - 10, rect.size.y - 10 - 35), "Body");
 		GETOBJ(ObList, this, Childs).AddObj(body);
 
 		ADDOBJ(Bool, Collapsed, *this, (this)).Set(false);
 
 		collapse_btn = new Button(this, Rect<float>(5, 5, 30, 30));
 		GETOBJ(ObList, this, Childs).AddObj(collapse_btn);
+
 
 		title = new Label(this, Rect<float>(0, 5, 60, 30));
 		GETOBJ(ObList, topbar, Childs).AddObj(title);
@@ -347,6 +366,41 @@ public:
 	virtual ~Menu() {}
 };
 
+class LinkMenu : public Menu {
+
+	LinkMenu& operator = (const LinkMenu& in);
+	LinkMenu(const LinkMenu& in) : Menu(in) {}
+
+public:
+
+	virtual LinkMenu& Instance() {
+		return *new LinkMenu(*this);
+	}
+
+	Button* select;
+
+	LinkMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
+		RegisterType(ObjType("LinkMenu"));
+
+		ADDOBJ(Link, Target, *this, (this)).Init("Link", true);
+
+		select = new Button(body, Rect<float>(0, 0, body->rect.size.x, 30));
+
+		select->label->text->Assign("Go to Obj");
+
+		body->childs->PushBack(select);
+	}
+
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
+
+	}
+	
+	void DrawBody(Window& cnv, vec2<float> crs) {
+		Menu::DrawBody(cnv, crs);
+	}
+
+	virtual ~LinkMenu() {}
+};
 
 class InputField : public Widget {
 
@@ -375,6 +429,8 @@ class ListMenu : public Menu {
 
 	ListMenu& operator = (const ListMenu& in);
 	ListMenu(const ListMenu& in);
+	
+	bool target_is_self = false;
 
 	template <typename ContainerType, typename ContainerIterType>
 	void proc_by_type() {
@@ -402,7 +458,8 @@ class ListMenu : public Menu {
 
 		for (int idx = 0; idx < len; idx++) {
 
-			update_item((Widget*)widget_node->data, target_list.data(), target_list.name());
+			Str name = target_list.name();
+			update_item((Widget*)widget_node->data, target_list.data(), &name);
 
 			++target_list;
 			widget_node = widget_node->next;
@@ -452,7 +509,8 @@ class ListMenu : public Menu {
 
 				Widget* new_item = append_item(body, Rect<float>(0, pos, body->rect.size.x, 30));
 				
-				update_item(new_item, target_list.data(), target_list.name());
+				Str name = target_list.name();
+				update_item(new_item, target_list.data(), &name);
 
 				GETOBJ(ObList, body, Childs).AddObj(new_item);
 				diff--;
@@ -476,6 +534,16 @@ public:
 	float item_size = 25;
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
+	void DrawBody(Window& canvas, vec2<float> crs) {
+
+		Menu::DrawBody(canvas, crs);
+
+		if (target_is_self) {
+			if (!GETOBJ(Bool, body, Hiden).GetVal()) {
+				canvas.Text("Target is Self", 5, 45, 16, Color(.9, .9, .9, .9));
+			}
+		}
+	}
 
 	static Widget* LabelAppendItem(Obj* parent, const Rect<float>& rect) {
 		return new Label(parent, rect);
@@ -512,19 +580,21 @@ public:
 		return *new ContextMenu(*this);
 	}
 
-	ContextMenu(Obj* prnt, Rect<float> _rect);
+	ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest);
 
 	ObDict* dictlist;
 	ListMenu* dict_menu;
-
+	LinkMenu* link_menu;
 	ListMenu* list_menu;
 	InputField* input_field;
+
 	Button* back_button;
+	Button* copy_button;
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 	void DrawBody(Window& canvas, vec2<float> crs);
 
 	static void TargetChanged(Obj* ths, ModType type);
-
+	void update_content();
 	virtual ~ContextMenu() {}
 };

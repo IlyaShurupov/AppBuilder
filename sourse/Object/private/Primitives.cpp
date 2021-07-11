@@ -28,8 +28,8 @@ Str& String::GetStr() {
 	return string;
 }
 
-void String::as_string(Str* str) {
-	*str = string;
+Str String::as_string() {
+	return string;
 }
 
 bool String::from_string(Str* str) {
@@ -227,8 +227,8 @@ bool Int::Equal(const Obj& obj) {
 	return val == ((Int&)obj).GetVal();
 }
 
-void Int::as_string(Str* str) {
-	*str = Str((int)val);
+Str Int::as_string() {
+	return (int)val;
 }
 
 bool Int::from_string(Str* str) {
@@ -283,8 +283,8 @@ bool Float::Equal(const Obj& obj) {
 	return val == ((Float&)obj).GetVal();
 }
 
-void Float::as_string(Str* str) {
-	*str = Str(val);
+Str Float::as_string() {
+	return val;
 }
 
 bool Float::from_string(Str* str) {
@@ -331,12 +331,12 @@ bool Bool::Equal(const Obj& obj) {
 	return val == ((Bool&)obj).GetVal();
 }
 
-void Bool::as_string(Str* str) {
+Str Bool::as_string() {
 	if (val) {
-		*str = "True";
+		return "True";
 	}
 	else {
-		*str = "False";
+		return "False";
 	}
 }
 
@@ -410,13 +410,14 @@ Obj* ObDictIter::data(){
 	return obdict->dict->table[slot_idx]->val;
 }
 
-Str* ObDictIter::name() {
-	return &obdict->dict->table[slot_idx]->key;
+Str ObDictIter::name() {
+	return obdict->dict->table[slot_idx]->key;
 }
 
 ObDict::ObDict(const ObDict& in) : Obj(in) {
 	dict_type = in.dict_type;
-	dict = in.dict;
+	dict = new DictObj;
+	*dict = *in.dict;
 	base_class = in.base_class;
 }
 

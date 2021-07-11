@@ -44,7 +44,7 @@ public:
 
 	Widget(const Widget& in);
 
-	Widget(Obj* prnt, Rect<float> _rect);
+	Widget(Obj* prnt, Rect<float> _rect, const Str& descrip = " ");
 
 	virtual Widget& Instance() {
 		return *new Widget(*this);
@@ -57,9 +57,9 @@ public:
 	WidgetState state = WidgetState::NONE;
 	bool active = true;
 
-	bool IsActive(vec2<float> crs);
+	virtual bool IsActive(vec2<float> crs);
 	void Proc(ObList* requests, WidgetTriggers* triggers, TUI* tui);
-	void Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds);
+	void Draw(Window& canvas, vec2<float> prnt_pos, const Rect<float>& draw_bounds);
 
 	virtual void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {}
 	virtual void DrawBody(Window& canvas, vec2<float> crs) {}
@@ -94,6 +94,10 @@ public:
 	static void RectMod(Obj* param, ModType type);
 
 	virtual ~Widget() {
+	}
+
+	virtual Str as_string() {
+		return (type.idname + " ") += GETOBJ(String, this, Description).GetStr();
 	}
 };
 

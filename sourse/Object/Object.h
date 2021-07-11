@@ -97,7 +97,10 @@ public:
 	void RemoveOnModCallBack(void (*call)(Obj* ths, ModType));
 	void Modified(ModType type);
 
-	virtual void as_string(Str* str) { *str = "Object Base Class"; }
+	virtual Str as_string() { 
+		return type.idname; 
+	}
+
 	virtual bool from_string(Str* str) { return false; }
 
 	virtual ~Obj() {

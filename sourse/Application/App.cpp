@@ -24,6 +24,16 @@ Application::Application(Obj* prnt) : Obj (prnt) {
 
     Obj& data = ADDOBJ(Obj, Data, *this, (this));
     ADDOBJ(Int, fps, data, (&data)).Assign(60, 10, 120);
+
+    Obj& templates = ADDOBJ(Obj, Templates, data, (&data));
+
+    ADDOBJ(Obj, Object Base Class, templates, (&templates));
+    ADDOBJ(Int, Int, templates, (&templates));
+    ADDOBJ(Float, Float, templates, (&templates));
+    ADDOBJ(Bool, Bool, templates, (&templates));
+    ADDOBJ(String, String, templates, (&templates));
+
+    ADDOBJ(Obj, Temp, data, (&data));
 }
 
 KeyInput* AddKeyInput(TUI* tui, const Str& keyname, const Str& shifted, int key_code, bool text_input) {
@@ -45,6 +55,11 @@ void Application::Compose() {
     Operator* op = new QuitProgram(nullptr);
     OpHolder* opholder = new OpHolder(&OpHolders, op);
     OpHolders.AddObj(opholder);
+
+    Operator* op_copy = new CopyObject(nullptr);
+    OpHolder* opholder_copy = new OpHolder(&OpHolders, op_copy);
+    OpHolders.AddObj(opholder_copy);
+
 
     // Adding TUI
     TUI* tui = new TUI(&GETOBJ(ObList, this, UIs));
@@ -90,7 +105,7 @@ void Application::Compose() {
     ObList& cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, shcut, Invoke), Conditions);
 
     ObjTuple* cond = new ObjTuple(&cond_list);
-    Int* trigger_val = new Int(nullptr);
+    Int* trigger_val = new Int(cond);
     trigger_val->Assign(3, -1, 5);
     cond->GetHead().SetLink(trigger_val);
     cond->GetTail().SetLink(&GETOBJ(Int, key_del, State));
@@ -109,35 +124,36 @@ void Application::Compose() {
     ObList& comfirm_cond_list = GETOBJ(ObList, &GETOBJ(CompareExpr, &Trigers, Comfirm), Conditions);
 
     ObjTuple* close_cond = new ObjTuple(&discard_cond_list);
-    Int* close_trigger_val = new Int(nullptr);
+    Int* close_trigger_val = new Int(close_cond);
     close_trigger_val->Assign((int)InputState::RELEASED, -1, 5);
     close_cond->GetHead().SetLink(close_trigger_val);
     close_cond->GetTail().SetLink(&GETOBJ(Int, key_RMB, State));
     discard_cond_list.AddObj(close_cond);
 
     ObjTuple* comfirm_cond = new ObjTuple(&comfirm_cond_list);
-    Int* comfirm_trigger_val = new Int(nullptr);
+    Int* comfirm_trigger_val = new Int(comfirm_cond);
     comfirm_trigger_val->Assign((int)InputState::RELEASED, -1, 5);
     comfirm_cond->GetHead().SetLink(comfirm_trigger_val);
     comfirm_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
     comfirm_cond_list.AddObj(comfirm_cond);
 
     ObjTuple* activate_cond = new ObjTuple(&comfirm_cond_list);
-    Int* act_trigger_val = new Int(nullptr);
+    Int* act_trigger_val = new Int(activate_cond);
     act_trigger_val->Assign((int)InputState::PRESSED, -1, 5);
     activate_cond->GetHead().SetLink(act_trigger_val);
     activate_cond->GetTail().SetLink(&GETOBJ(Int, key_LMB, State));
     act_cond_list.AddObj(activate_cond);
 
-    ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500));
-    GETOBJ(Link, ctx_menu, Target).SetLink(this);
+    Obj* temp = &GETOBJ(Obj, &GETOBJ(Obj, this, Data), Temp);
+    ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500), opholder_copy, temp);
+    GETOBJ(Link, ctx_menu, Target).SetLink(this->prnt);
     GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
 
-    {
+    /*{
       ListMenu* menu = new ListMenu(gui, Rect<float>(450, 50, 300, 500));
       GETOBJ(Link, menu, Target).SetLink(&GETOBJ(ObList, tui, Inputs));
       GETOBJ(ObList, gui, Windows).AddObj(menu);
-    }
+    }*/
 }
 
 void Application::Run() {

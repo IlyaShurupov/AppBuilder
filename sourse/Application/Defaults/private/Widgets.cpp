@@ -75,10 +75,7 @@ void InputField::DrawBody(Window& cnv, vec2<float> crs) {
 			return;
 		}
 
-		Str obj_str;
-		obj->as_string(&obj_str);
-
-		cnv.Text((Str("Value : ") += obj_str).str, 10, 10, 16, text_col);
+		cnv.Text((Str("Value : ") += obj->as_string()).str, 10, 10, 16, text_col);
 	}
 }
 
@@ -104,9 +101,29 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 	}
 
 	if (container_obj->type.IsPrnt("ObDict")) {
+		target_is_self = false;
 		proc_by_type<ObDict, ObDictIter>();
 	}
 	else if (container_obj->type.IsPrnt("ObList")) {
+		if (container_obj == &GETOBJ(ObList, this->body, Childs)) {
+			target_is_self = true;
+
+			Node<Obj>* widget_node = body->childs->Last();
+
+			while (widget_node) {
+
+				if (widget_node->data->type.IsPrnt(widget_type)) {
+					Node<Obj>* del_node = widget_node;
+					widget_node = widget_node->prev;
+					body->childs->DelNode(del_node);
+				}
+				else {
+					widget_node = widget_node->prev;
+				}
+			}
+			return;
+		}
+		target_is_self = false;
 		proc_by_type<ObList, ObListIter>();
 	}
 }
@@ -115,7 +132,7 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 ContextMenu::ContextMenu(const ContextMenu& in) : Menu(in) {
 }
 
-ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
+ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest) : Menu(prnt, _rect) {
 	RegisterType(ObjType("ContextMenu"));
 
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
@@ -123,16 +140,14 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 	target->OnModCallBacks.PushBack(OnModCallBack(this, TargetChanged));
 
 	{
-		list_menu = new ListMenu(body, Rect<float>(0, 250, body->rect.size.x, 200));
+		list_menu = new ListMenu(body, Rect<float>(0, 210, body->rect.size.x, 200));
 	
 		list_menu->append_item = ListMenu::ButtonAppendItem;
 		list_menu->update_item = ListMenu::ButtonUpdateItem;
 		list_menu->widget_type = "Button";
 	
-		GETOBJ(Bool, list_menu, Hiden).Set(true);
 		GETOBJ(ObList, body, Childs).AddObj(list_menu);
 	}
-
 
 	{
 		dictlist = new ObDict(nullptr);
@@ -146,14 +161,36 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 
 		GETOBJ(Link, dict_menu, Target).SetLink(dictlist);
 		GETOBJ(ObList, body, Childs).AddObj(dict_menu);
-
-		back_button = new Button(dict_menu->topbar, Rect<float>(100, 0, 60, 25));
-		GETOBJ(ObList, dict_menu->topbar, Childs).AddObj(back_button);
 	}
 
-	input_field = new InputField(body, Rect<float>(0, 210, body->rect.size.x, 30));
-	GETOBJ(Bool, input_field, Hiden).Set(true);
-	GETOBJ(ObList, body, Childs).AddObj(input_field);
+	{
+		input_field = new InputField(body, Rect<float>(0, 210, body->rect.size.x, 30));
+		GETOBJ(ObList, body, Childs).AddObj(input_field);
+	}
+
+	{
+		link_menu = new LinkMenu(body, Rect<float>(0, 210, body->rect.size.x, 200));
+		GETOBJ(ObList, body, Childs).AddObj(link_menu);
+	}
+
+	back_button = new Button(dict_menu->topbar, Rect<float>(100, 0, 60, 25));
+	GETOBJ(ObList, dict_menu->topbar, Childs).AddObj(back_button);
+
+	copy_button = new Button(body, Rect<float>(0, 210, body->rect.size.x, 30));
+	GETOBJ(Link, copy_button, Target Op).SetLink(copy_op);
+	
+	ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
+	((Link&)op_args.GetObj("Destination")).SetLink(copy_dest);
+
+	GETOBJ(ObList, body, Childs).AddObj(copy_button);
+}
+
+void ContextMenu::update_content() {
+	GETOBJ(Bool, dict_menu, Need Update).Set(true);
+	GETOBJ(Bool, list_menu, Need Update).Set(true);
+
+	GETOBJ(Bool, dict_menu->body->scroller, Need Update).Set(true);
+	GETOBJ(Bool, list_menu->body->scroller, Need Update).Set(true);
 }
 
 void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
@@ -169,22 +206,34 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 
 	if (!GETOBJ(Bool, list_menu, Hiden).GetVal()) {
 		int non_type = 0;
-		for (auto item : GETOBJ(ObList, list_menu->body, Childs).GetList()) {
+		for (auto item : *list_menu->body->childs) {
 			if (!item->type.IsPrnt("Button")) {
 				non_type++;
 				continue;
 			}
 			if (((Widget*)item.Data())->state == WidgetState::CONFIRM) {
-				Obj* new_target = &((ObList*)GETOBJ(Link, list_menu, Target).GetLink())->GetList()[item.Idx() - non_type];
-				target->SetLink(new_target);
-				return;
+				Obj* new_target = nullptr;
+				Obj* target_list = GETOBJ(Link, list_menu, Target).GetLink();
+
+				if (target_list->type.IsPrnt("ObDict")) {
+					new_target = ((ObDict*)target_list)->GetDict().GetEntry(item.Idx() - non_type)->val;
+				}
+				else if (target_list->type.IsPrnt("ObList")) {
+					new_target = &((ObList*)target_list)->GetList()[item.Idx() - non_type];
+				}
+
+				if (new_target) {
+					target->SetLink(new_target);
+					((Widget*)item.Data())->state = WidgetState::NONE;
+					return;
+				}
 			}
 		}
 	} 
 	
 	if (!GETOBJ(Bool, dict_menu, Hiden).GetVal()) {
 		int non_type = 0;
-		for (auto item : GETOBJ(ObList, dict_menu->body, Childs).GetList()) {
+		for (auto item : *dict_menu->body->childs) {
 			if (!item->type.IsPrnt("Button")) {
 				non_type++;
 				continue;
@@ -192,6 +241,7 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 			if (((Widget*)item.Data())->state == WidgetState::CONFIRM) {
 				Obj* new_target = obj->props.GetEntry(item.Idx() - non_type)->val;
 				target->SetLink(new_target);
+				((Widget*)item.Data())->state = WidgetState::NONE;
 				return;
 			}
 		}
@@ -200,6 +250,14 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 	if (back_button->state == WidgetState::CONFIRM) {
 		if (obj->prnt) {
 			target->SetLink(obj->prnt);
+			return;
+		}
+	}
+
+	if (!GETOBJ(Bool, link_menu, Hiden).GetVal()) {
+		if (link_menu->select->state == WidgetState::CONFIRM) {
+			target->SetLink(((Link*)GETOBJ(Link, link_menu, Target).GetLink())->GetLink());
+			link_menu->select->state = WidgetState::NONE;
 			return;
 		}
 	}
@@ -216,9 +274,14 @@ void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 
 	GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(true);
 	GETOBJ(Bool, contex_menu->input_field, Hiden).Set(true);
+	GETOBJ(Bool, contex_menu->link_menu, Hiden).Set(true);
+
 	contex_menu->input_field->valid_input = nullptr;
 
-	if (new_target->type.IsPrnt("ObList")) {
+	ObDict& op_args = GETOBJ(ObDict, contex_menu->copy_button, Op Args);
+	((Link&)op_args.GetObj("Target")).SetLink(new_target);
+
+	if (new_target->type.IsPrnt("ObList") || new_target->type.IsPrnt("ObDict")) {
 		GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(false);
 		GETOBJ(Link, contex_menu->list_menu, Target).SetLink(new_target);
 	}
@@ -226,8 +289,15 @@ void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 		GETOBJ(Bool, contex_menu->input_field, Hiden).Set(false);
 		GETOBJ(Link, contex_menu->input_field, Target).SetLink(new_target);
 	}
+	else if (new_target->type.IsPrnt("Link")) {
+		GETOBJ(Bool, contex_menu->link_menu, Hiden).Set(false);
+		GETOBJ(Link, contex_menu->link_menu, Target).SetLink(new_target);
+	}
 
 	contex_menu->title->text->Assign(Str("Context Menu : ") += new_target->type.idname);
 
 	contex_menu->dictlist->SetRef(&new_target->props, false);
+	
+	contex_menu->update_content();
+	//contex_menu->update_content();
 }

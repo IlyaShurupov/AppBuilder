@@ -5,7 +5,7 @@ Widget::Widget(const Widget& in) : Requester(in) {
 	*childs = GETOBJ(ObList, this, Childs).GetList();
 }
 
-Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
+Widget::Widget(Obj* prnt, Rect<float> _rect, const Str& descrip) : Requester(prnt) {
 	RegisterType(ObjType("Widget"));
 
 	ADDOBJ(ObList, Childs, *this, (this)).Assign("Widget", true);
@@ -21,9 +21,13 @@ Widget::Widget(Obj* prnt, Rect<float> _rect) : Requester(prnt) {
 
 	ADDOBJ(Bool, Hiden, *this, (this)).Set(false);
 	ADDOBJ(Bool, Forse Active, *this, (this)).Set(false);
+	ADDOBJ(Bool, Need Update, *this, (this)).Set(false);
 
 	ADDOBJ(Int, DrawOrder, *this, (this));
 	ADDOBJ(Int, ProcOrder, *this, (this));
+
+
+	ADDOBJ(String, Description, *this, (this)).Assign(descrip);
 }
 
 bool Widget::IsActive(vec2<float> crs) {
@@ -42,12 +46,13 @@ bool Widget::IsActive(vec2<float> crs) {
 		active = true;
 	}
 
-	local_crs = crs;
 	return active;
 }
 
 void Widget::Proc(ObList* requests, WidgetTriggers* triggers, TUI* tui) {
 	
+	UpdateRect();
+
 	bool inside = local_crs.x > 0 && local_crs.y > 0 && rect.size > local_crs;
 	
 	switch (state) {
@@ -120,7 +125,7 @@ void Widget::Proc(ObList* requests, WidgetTriggers* triggers, TUI* tui) {
 	ApplyRect();
 }
 
-void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const Rect<float>& draw_bounds) {
+void Widget::Draw(Window& canvas, vec2<float> prnt_pos, const Rect<float>& draw_bounds) {
 
 	rect.pos += prnt_pos;
 	canvas.SetCanvasRect(rect);
@@ -137,7 +142,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const R
 	rect.pos -= prnt_pos;
 
 
-	DrawBody(canvas, crs);
+	DrawBody(canvas, local_crs);
 
 	childs->Sort([](const Obj& ob1, const Obj& ob2) {
 		return GETOBJ(Int, ((Widget*)&ob1), DrawOrder).GetVal() > GETOBJ(Int, ((Widget*)&ob2), DrawOrder).GetVal();
@@ -146,7 +151,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, vec2<float> crs, const R
 	for (auto guii : *childs) {
 		Widget* child = (Widget*)guii.Data();
 		if (!GETOBJ(Bool, child, Hiden).GetVal()) {
-			child->Draw(canvas, prnt_pos + rect.pos, crs - child->rect.pos, clamped_bounds);
+			child->Draw(canvas, prnt_pos + rect.pos, clamped_bounds);
 		}
 	}
 }
@@ -180,7 +185,8 @@ void gui_clear_active(Widget* widget) {
 	widget->active = false;
 
 	for (auto child_iter : GETOBJ(ObList, widget, Childs).GetList()) {
-		gui_clear_active((Widget*)child_iter.Data());
+		Widget* child = ((Widget*)child_iter.Data());
+		gui_clear_active(child);
 	}
 }
 
@@ -198,8 +204,11 @@ void gui_mark_active(Widget* widget, vec2<float> crs) {
 
 bool gui_mark_forsed_active(Widget* widget) {
 
-	if (GETOBJ(Bool, widget, Forse Active).GetVal()) {
+	Bool& need_update = GETOBJ(Bool, widget, Need Update);
+
+	if (GETOBJ(Bool, widget, Forse Active).GetVal() || need_update.GetVal()) {
 		widget->active = true;
+		need_update.Set(false);
 	}
 
 	for (auto child_iter : *widget->childs) {
@@ -210,9 +219,11 @@ bool gui_mark_forsed_active(Widget* widget) {
 	return widget->active;
 }
 
-void gui_append_active(List<Widget>* active_widgets, Widget* widget) {
+void gui_append_active(List<Widget>* active_widgets, Widget* widget, vec2<float> crs) {
 
 	if (widget->active) {
+
+		widget->local_crs = crs;
 
 		widget->childs->Sort([](const Obj& ob1, const Obj& ob2) {
 			return GETOBJ(Int, ((Widget*)&ob1), ProcOrder).GetVal() < GETOBJ(Int, ((Widget*)&ob2), ProcOrder).GetVal();
@@ -220,7 +231,7 @@ void gui_append_active(List<Widget>* active_widgets, Widget* widget) {
 
 		for (auto child_iter : *widget->childs) {
 			Widget* child = ((Widget*)child_iter.Data());
-			gui_append_active(active_widgets, child);
+			gui_append_active(active_widgets, child, crs - child->rect.pos);
 		}
 
 		active_widgets->PushBack(widget);
@@ -243,7 +254,7 @@ void GUI::PumpRequests(ObList* requests) {
 		gui_mark_active(window, crs - window->rect.pos);
 		
 		// Construct prioritized list
-		gui_append_active(&active_widgets, window);
+		gui_append_active(&active_widgets, window, crs - window->rect.pos);
 
 		// clear active flags
 		gui_clear_active(window);
@@ -266,7 +277,7 @@ void GUI::OutPut(Obj* root) {
 	List<Obj>& windows = GETOBJ(ObList, this, Windows).GetList();
 	for (auto guii : windows) {
 		Widget* window = ((Widget*)guii.Data());
-		window->Draw(canvas, vec2<float>(), crs - window->rect.pos, window->rect);
+		window->Draw(canvas, vec2<float>(), window->rect);
 	}
 
 	canvas.EndFrame();

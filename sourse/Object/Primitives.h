@@ -21,7 +21,7 @@ public:
 	bool Assign(STRR _string);
 	bool Equal(const Obj& obj);
 	Str& GetStr();
-	void as_string(Str* str);
+	Str as_string();
 	bool from_string(Str* str);
 	~String();
 };
@@ -43,8 +43,8 @@ public:
 		return iter->data;
 	}
 
-	Str* name() {
-		return nullptr;
+	Str name() {
+		return iter->data->as_string();
 	}
 
 	int Len(const Str& type);
@@ -134,7 +134,7 @@ public:
 	aligned GetVal();
 	bool Set(aligned _val);
 	bool Equal(const Obj& obj);
-	void as_string(Str* str);
+	Str as_string();
 	bool from_string(Str* str);
 
 	~Int();
@@ -162,7 +162,7 @@ public:
 	float GetVal();
 	bool Set(float _val);
 	bool Equal(const Obj& obj);
-	void as_string(Str* str);
+	Str as_string();
 	bool from_string(Str* str);
 	~Float();
 };
@@ -186,7 +186,7 @@ public:
 	bool GetVal();
 	bool Set(bool _val);
 	bool Equal(const Obj& obj);
-	void as_string(Str* str); 
+	Str as_string(); 
 	bool from_string(Str* str);
 	~Bool();
 };
@@ -210,7 +210,7 @@ public:
 
 	Obj* data();
 
-	Str* name();
+	Str name();
 
 	~ObDictIter() {
 	}
