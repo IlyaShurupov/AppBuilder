@@ -36,6 +36,7 @@ public:
 	HashNode<V, K>** table;
 	int nslots;
 	int nentries = 0;
+	bool del_values = true;
 
 	Hashfunc hash;
 	CopyValfunc copy_val;
@@ -98,6 +99,9 @@ public:
 			table[idx]->key = key;
 			nentries++;
 		}
+		else if (table[idx] && del_values) {
+			delete table[idx]->val;
+		}
 
 		table[idx]->val = val;
 
@@ -111,8 +115,18 @@ public:
 		return table[idx]->val;
 	}
 
+	HashNode<V, K>* GetEntry(const K& key) {
+		int idx = find_slot(key, true);
+		return table[idx];
+	}
+
 	void Remove(const K& key) {
 		int idx = find_slot(key, true);
+
+		if (del_values) {
+			delete table[idx]->val;
+		}
+		
 		delete table[idx];
 		table[idx] = (HashNode<V, K>*)-1;
 
@@ -138,6 +152,9 @@ public:
 	void clear() {
 		for (int i = 0; i < nslots; i++) {
 			if (table[i] && !HASHMAP_DELETED_SLOT(table, i)) {
+				if (del_values) {
+					delete table[i]->val;
+				}
 				delete table[i];
 			}
 		}

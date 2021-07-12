@@ -92,7 +92,7 @@ ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 
 void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
-	Menu::ProcBody(requests, tui);
+	Menu::ProcBody(requests, tui, triggers);
 
 	Obj* container_obj = GETOBJ(Link, this, Target).GetLink();
 	
@@ -140,7 +140,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 	target->OnModCallBacks.PushBack(OnModCallBack(this, TargetChanged));
 
 	{
-		list_menu = new ListMenu(body, Rect<float>(0, 210, body->rect.size.x, 200));
+		list_menu = new ListMenu(body, Rect<float>(0, 315, body->rect.size.x, 200));
 	
 		list_menu->append_item = ListMenu::ButtonAppendItem;
 		list_menu->update_item = ListMenu::ButtonUpdateItem;
@@ -164,25 +164,40 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 	}
 
 	{
-		input_field = new InputField(body, Rect<float>(0, 210, body->rect.size.x, 30));
+		input_field = new InputField(body, Rect<float>(0, 315, body->rect.size.x, 30));
 		GETOBJ(ObList, body, Childs).AddObj(input_field);
 	}
 
 	{
-		link_menu = new LinkMenu(body, Rect<float>(0, 210, body->rect.size.x, 200));
+		link_menu = new LinkMenu(body, Rect<float>(0, 315, body->rect.size.x, 200));
 		GETOBJ(ObList, body, Childs).AddObj(link_menu);
 	}
 
 	back_button = new Button(dict_menu->topbar, Rect<float>(100, 0, 60, 25));
 	GETOBJ(ObList, dict_menu->topbar, Childs).AddObj(back_button);
 
-	copy_button = new Button(body, Rect<float>(0, 210, body->rect.size.x, 30));
-	GETOBJ(Link, copy_button, Target Op).SetLink(copy_op);
+	{
+		copy_button = new Button(body, Rect<float>(0, 210, body->rect.size.x, 30));
+		GETOBJ(Link, copy_button, Target Op).SetLink(copy_op);
 	
-	ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
-	((Link&)op_args.GetObj("Destination")).SetLink(copy_dest);
+		ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
+		((Link&)op_args.GetObj("Destination")).SetLink(copy_dest);
 
-	GETOBJ(ObList, body, Childs).AddObj(copy_button);
+		GETOBJ(ObList, body, Childs).AddObj(copy_button);
+	}
+
+	{
+		paste_button = new Button(body, Rect<float>(0, 245, body->rect.size.x, 30));
+		GETOBJ(Link, paste_button, Target Op).SetLink(copy_op);
+
+		ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
+		((Link&)op_args.GetObj("Target")).SetLink(&copy_dest->GetChld("Clipboard Object"));
+
+		GETOBJ(ObList, body, Childs).AddObj(paste_button);
+	}
+
+	copy_link_button = new Button(body, Rect<float>(0, 280, body->rect.size.x, 30));
+	GETOBJ(ObList, body, Childs).AddObj(copy_link_button);
 }
 
 void ContextMenu::update_content() {
@@ -195,7 +210,7 @@ void ContextMenu::update_content() {
 
 void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
-	Menu::ProcBody(requests, tui);
+	Menu::ProcBody(requests, tui, triggers);
 
 	Link* target = &GETOBJ(Link, this, Target);
 	Obj* obj = target->GetLink();
@@ -255,12 +270,30 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 	}
 
 	if (!GETOBJ(Bool, link_menu, Hiden).GetVal()) {
+		
 		if (link_menu->select->state == WidgetState::CONFIRM) {
 			target->SetLink(((Link*)GETOBJ(Link, link_menu, Target).GetLink())->GetLink());
 			link_menu->select->state = WidgetState::NONE;
 			return;
 		}
+
+		if (link_menu->past->state == WidgetState::CONFIRM) {
+			((Link*)GETOBJ(Link, link_menu, Target).GetLink())->SetLink(link_clipboard);
+			return;
+		}
 	}
+
+	if (copy_link_button->state == WidgetState::CONFIRM) {
+		link_clipboard = target->GetLink();
+		return;
+	}
+
+
+	ObDict& copy_args = GETOBJ(ObDict, copy_button, Op Args);
+	Obj* copied = &((Link&)copy_args.GetObj("Destination")).GetLink()->GetChld("Clipboard Object");
+
+	ObDict& paste_args = GETOBJ(ObDict, paste_button, Op Args);
+	((Link&)paste_args.GetObj("Target")).SetLink(copied);
 }
 
 void ContextMenu::DrawBody(Window& canvas, vec2<float> crs) {
@@ -278,8 +311,15 @@ void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 
 	contex_menu->input_field->valid_input = nullptr;
 
-	ObDict& op_args = GETOBJ(ObDict, contex_menu->copy_button, Op Args);
-	((Link&)op_args.GetObj("Target")).SetLink(new_target);
+	{
+		ObDict& op_args = GETOBJ(ObDict, contex_menu->copy_button, Op Args);
+		((Link&)op_args.GetObj("Target")).SetLink(new_target);
+	}
+
+	{
+		ObDict& op_args = GETOBJ(ObDict, contex_menu->paste_button, Op Args);
+		((Link&)op_args.GetObj("Destination")).SetLink(new_target);
+	}
 
 	if (new_target->type.IsPrnt("ObList") || new_target->type.IsPrnt("ObDict")) {
 		GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(false);

@@ -153,9 +153,8 @@ bool Link::SetLink(Obj* obj) {
 	}
 
 	if (base_class) {
-		if (obj->type.IsPrnt(link_type)) {
+		if (!obj || obj->type.IsPrnt(link_type)) {
 			link = obj;
-			current_type = obj->type.idname;
 		}
 	}
 	else if (obj->type.idname == link_type) {

@@ -334,7 +334,7 @@ public:
 		GETOBJ(ObList, topbar, Childs).AddObj(title);
 	}
 
-	void ProcBody(ObList* requests, TUI* tui) {
+	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 		if (collapse_btn->state == WidgetState::CONFIRM) {
 			GETOBJ(Bool, this, Collapsed).Set(!GETOBJ(Bool, this, Collapsed).GetVal());
 		}
@@ -378,6 +378,7 @@ public:
 	}
 
 	Button* select;
+	Button* past;
 
 	LinkMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 		RegisterType(ObjType("LinkMenu"));
@@ -385,14 +386,25 @@ public:
 		ADDOBJ(Link, Target, *this, (this)).Init("Link", true);
 
 		select = new Button(body, Rect<float>(0, 0, body->rect.size.x, 30));
+		past = new Button(body, Rect<float>(0, 35, body->rect.size.x, 30));
 
 		select->label->text->Assign("Go to Obj");
+		past->label->text->Assign("Assign From Clipboard");
 
 		body->childs->PushBack(select);
+		body->childs->PushBack(past);
 	}
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
+		Menu::ProcBody(requests, tui, triggers);
 
+		Link* target = (Link*)GETOBJ(Link, this, Target).GetLink();
+		if (target && !target->GetLink()) {
+			GETOBJ(Bool, select, Hiden).Set(true);
+		}
+		else {
+			GETOBJ(Bool, select, Hiden).Set(false);
+		}
 	}
 	
 	void DrawBody(Window& cnv, vec2<float> crs) {
@@ -590,6 +602,10 @@ public:
 
 	Button* back_button;
 	Button* copy_button;
+	Button* paste_button;
+	Button* copy_link_button;
+
+	Obj* link_clipboard = nullptr;
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 	void DrawBody(Window& canvas, vec2<float> crs);

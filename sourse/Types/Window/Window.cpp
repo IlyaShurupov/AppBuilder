@@ -27,7 +27,7 @@ Window::Window() {
 	
 	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-	window = glfwCreateWindow(1000, 600, "NanoVG", NULL, NULL);
+	window = glfwCreateWindow(1000, 700, "NanoVG", NULL, NULL);
 	glfwMakeContextCurrent(window);
 
 	glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);

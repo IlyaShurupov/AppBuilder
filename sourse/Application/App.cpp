@@ -32,8 +32,10 @@ Application::Application(Obj* prnt) : Obj (prnt) {
     ADDOBJ(Float, Float, templates, (&templates));
     ADDOBJ(Bool, Bool, templates, (&templates));
     ADDOBJ(String, String, templates, (&templates));
+    ADDOBJ(Link, Link, templates, (&templates));
 
-    ADDOBJ(Obj, Temp, data, (&data));
+    Obj* temp = &ADDOBJ(Obj, Temp, data, (&data));
+    ADDOBJ(Obj, Clipboard Object, *temp, (temp));
 }
 
 KeyInput* AddKeyInput(TUI* tui, const Str& keyname, const Str& shifted, int key_code, bool text_input) {
