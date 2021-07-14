@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Macros.h"
+
+#include "Compiler/CCompiler.h"
+
 #include "Geometry/Ray.h"
 #include "BitMap/BitMap.h"
 #include "Time/Timer.h"
@@ -14,5 +18,3 @@
 
 #include "Keyboard/Keyboard.h"
 #include "Window/Window.h"
-
-#include "Macros.h"

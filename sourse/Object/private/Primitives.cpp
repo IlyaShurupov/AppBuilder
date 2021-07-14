@@ -566,3 +566,16 @@ bool ColorObj::Equal(const Obj& obj) {
 		GETOBJ(Float, this, B).GetVal() == GETOBJ(Float, this, B).GetVal() &&
 		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
 }
+
+
+void Method::Call()
+{
+}
+
+Method::Method(Obj* prnt) : Obj(prnt) {
+	RegisterType(ObjType("Method"));
+
+	ADDOBJ(String, Script, *this, (this));
+
+
+}

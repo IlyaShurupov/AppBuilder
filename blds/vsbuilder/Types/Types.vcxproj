@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\sourse\Types\BitMap\BitMap.h" />
     <ClInclude Include="..\..\..\sourse\Types\BitMap\Color.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Compiler\CCompiler.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Array.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\Hierarchy.h" />
     <ClInclude Include="..\..\..\sourse\Types\Containers\List.h" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\..\..\sourse\Types\Memory\Mem.h" />
     <ClInclude Include="..\..\..\sourse\Types\Strings\Strings.h" />
     <ClInclude Include="..\..\..\sourse\Types\Time\Timer.h" />
+    <ClInclude Include="..\..\..\sourse\Types\Types.h" />
     <ClInclude Include="..\..\..\sourse\Types\Window\fontstash.h" />
     <ClInclude Include="..\..\..\sourse\Types\Window\nanovg.h" />
     <ClInclude Include="..\..\..\sourse\Types\Window\nanovg_gl.h" />
@@ -57,6 +59,7 @@
     <ClInclude Include="..\..\..\sourse\Types\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\sourse\Types\Compiler\CCompiler.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Mesh.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Ray.cpp" />
     <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Trig.cpp" />
@@ -149,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -167,7 +170,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -185,7 +188,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -207,7 +210,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Dev\lib\glew-2.1.0\include;D:\Dev\lib\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

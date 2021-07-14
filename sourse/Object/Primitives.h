@@ -311,3 +311,24 @@ public:
 	
 	~ColorObj() {}
 };
+
+class Method : public Obj {
+
+	Method& operator = (const Method& in);
+
+	void (*function)(Obj* self) = nullptr;
+
+public:
+
+	Method(Obj* prnt);
+
+	virtual Method& Instance() {
+		return *new Method(*this);
+	}
+
+
+	void Call();
+	bool Compile();
+
+	~Method() {}
+};
