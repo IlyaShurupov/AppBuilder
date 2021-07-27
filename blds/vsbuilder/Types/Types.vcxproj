@@ -19,58 +19,50 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\sourse\Types\BitMap\BitMap.h" />
-    <ClInclude Include="..\..\..\sourse\Types\BitMap\Color.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Compiler\CCompiler.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Array.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Hierarchy.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\List.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Map.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Sort.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Stack.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Containers\Tuple.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Device\nanovg_gl.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Device\nanovg_gl_utils.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\fontstash.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg_gl.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\nanovg_gl_utils.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\stb_image.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Draw\stb_truetype.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Matrix.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Mesh.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Ray.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Rect.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Trig.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Vec2.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Geometry\Vec3.h" />
-    <ClInclude Include="..\..\..\sourse\Types\IO\Parser.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Keyboard\Keyboard.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Memory\Mem.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Strings\Strings.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Time\Timer.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Types.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\fontstash.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg_gl.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\nanovg_gl_utils.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\stb_image.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\stb_truetype.h" />
-    <ClInclude Include="..\..\..\sourse\Types\Window\Window.h" />
+    <ClCompile Include="..\..\..\source\Types\Geometry\private\Mesh.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Geometry\private\Ray.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Geometry\private\Trig.cpp" />
+    <ClCompile Include="..\..\..\source\Types\IO\private\Parser.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Macros.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Memory\private\Mem.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Strings\private\Strings.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Time\private\Timer.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Window\nanovg.cpp" />
+    <ClCompile Include="..\..\..\source\Types\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Types\Compiler\CCompiler.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Mesh.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Ray.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Geometry\private\Trig.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\IO\private\Parser.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Keyboard\Keyboard.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Macros.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Memory\private\Mem.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Strings\private\Strings.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Time\private\Timer.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Window\nanovg.cpp" />
-    <ClCompile Include="..\..\..\sourse\Types\Window\Window.cpp" />
+    <ClInclude Include="..\..\..\source\Types\BitMap\BitMap.h" />
+    <ClInclude Include="..\..\..\source\Types\BitMap\Color.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Array.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Hierarchy.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\List.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Map.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Sort.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Stack.h" />
+    <ClInclude Include="..\..\..\source\Types\Containers\Tuple.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Matrix.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Mesh.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Ray.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Rect.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Trig.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Vec2.h" />
+    <ClInclude Include="..\..\..\source\Types\Geometry\Vec3.h" />
+    <ClInclude Include="..\..\..\source\Types\IO\Parser.h" />
+    <ClInclude Include="..\..\..\source\Types\Keyboard\Keyboard.h" />
+    <ClInclude Include="..\..\..\source\Types\Macros.h" />
+    <ClInclude Include="..\..\..\source\Types\Memory\Allocators.h" />
+    <ClInclude Include="..\..\..\source\Types\Memory\Mem.h" />
+    <ClInclude Include="..\..\..\source\Types\Strings\Strings.h" />
+    <ClInclude Include="..\..\..\source\Types\Time\Timer.h" />
+    <ClInclude Include="..\..\..\source\Types\Types.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\fontstash.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\nanovg.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\nanovg_gl.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\nanovg_gl_utils.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\stb_image.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\stb_truetype.h" />
+    <ClInclude Include="..\..\..\source\Types\Window\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -152,7 +144,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -170,7 +162,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -188,7 +180,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -210,7 +202,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Application\UI\Draw;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

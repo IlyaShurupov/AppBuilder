@@ -25,12 +25,6 @@
     <ProjectReference Include="..\Application\Application.vcxproj">
       <Project>{ddd75a60-c33d-465f-b8e1-97a883b6493d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Object\Object.vcxproj">
-      <Project>{245cac89-e8b1-4ab6-af91-2dfd61ecf396}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Types\Types.vcxproj">
-      <Project>{ab3bb9a9-0597-47a6-bd7d-fc7874eb3819}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -110,20 +104,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Application.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\out\msvc\$(Configuration)\Application\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib &amp; copy $(SolutionDir)..\..\ext\tcc\lib\libtcc1-64.a $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib\  /Y &amp; copy $(SolutionDir)..\..\ext\tcc\libtcc.dll $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\  /Y</Command>
+      <Command>python3 $(SolutionDir)\postbuild.py   $(SolutionDir) $(SolutionDir)\..\..\out\msvc\$(Configuration)\ $(ProjectName)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>copy tcc lib</Message>
+      <Message>runing post build script</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -134,22 +128,22 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Application.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\out\msvc\$(Configuration)\Application\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib &amp; copy $(SolutionDir)..\..\ext\tcc\lib\libtcc1-64.a $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib\  /Y &amp; copy $(SolutionDir)..\..\ext\tcc\libtcc.dll $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\  /Y</Command>
+      <Command>python3 $(SolutionDir)\postbuild.py   $(SolutionDir) $(SolutionDir)\..\..\out\msvc\$(Configuration)\ $(ProjectName)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>copy tcc lib</Message>
+      <Message>runing post build script</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -158,14 +152,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Application.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\out\msvc\$(Configuration)\Application\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
     <ProjectReference>
@@ -175,10 +169,10 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib &amp; copy $(SolutionDir)..\..\ext\tcc\lib\libtcc1-64.a $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib\  /Y &amp; copy $(SolutionDir)..\..\ext\tcc\libtcc.dll $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\  /Y</Command>
+      <Command>python3 $(SolutionDir)\postbuild.py   $(SolutionDir) $(SolutionDir)\..\..\out\msvc\$(Configuration)\ $(ProjectName)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>copy tcc lib</Message>
+      <Message>runing post build script</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -189,25 +183,25 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Application.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\out\msvc\$(Configuration)\Application\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>mkdir $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib &amp; copy $(SolutionDir)..\..\ext\tcc\lib\libtcc1-64.a $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\lib\  /Y &amp; copy $(SolutionDir)..\..\ext\tcc\libtcc.dll $(SolutionDir)..\..\out\msvc\$(Configuration)\$(ProjectName)\  /Y</Command>
+      <Command>python3 $(SolutionDir)\postbuild.py   $(SolutionDir) $(SolutionDir)\..\..\out\msvc\$(Configuration)\ $(ProjectName)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>copy tcc lib</Message>
+      <Message>runing post build script</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

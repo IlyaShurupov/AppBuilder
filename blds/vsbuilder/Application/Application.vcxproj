@@ -19,23 +19,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sourse\Application\App.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\Defaults\private\Widgets.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\Thread\private\Thread.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\Thread\private\ThreadManager.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\UI\private\GUI.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\UI\private\Requester.cpp" />
-    <ClCompile Include="..\..\..\sourse\Application\UI\private\TUI.cpp" />
+    <ProjectReference Include="..\Object\Object.vcxproj">
+      <Project>{245cac89-e8b1-4ab6-af91-2dfd61ecf396}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Types\Types.vcxproj">
+      <Project>{ab3bb9a9-0597-47a6-bd7d-fc7874eb3819}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\sourse\Application\App.h" />
-    <ClInclude Include="..\..\..\sourse\Application\Defaults\Widgets.h" />
-    <ClInclude Include="..\..\..\sourse\Application\Defaults\Operators.h" />
-    <ClInclude Include="..\..\..\sourse\Application\Thread\Thread.h" />
-    <ClInclude Include="..\..\..\sourse\Application\Thread\ThreadManager.h" />
-    <ClInclude Include="..\..\..\sourse\Application\UI\GUI.h" />
-    <ClInclude Include="..\..\..\sourse\Application\UI\Requester.h" />
-    <ClInclude Include="..\..\..\sourse\Application\UI\UI.h" />
+    <ClCompile Include="..\..\..\source\Application\App.cpp" />
+    <ClCompile Include="..\..\..\source\Application\Defaults\private\Widgets.cpp" />
+    <ClCompile Include="..\..\..\source\Application\Thread\private\Thread.cpp" />
+    <ClCompile Include="..\..\..\source\Application\Thread\private\ThreadManager.cpp" />
+    <ClCompile Include="..\..\..\source\Application\UI\private\GUI.cpp" />
+    <ClCompile Include="..\..\..\source\Application\UI\private\Requester.cpp" />
+    <ClCompile Include="..\..\..\source\Application\UI\private\TUI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\source\Application\App.h" />
+    <ClInclude Include="..\..\..\source\Application\Defaults\Operators.h" />
+    <ClInclude Include="..\..\..\source\Application\Defaults\Widgets.h" />
+    <ClInclude Include="..\..\..\source\Application\Thread\Thread.h" />
+    <ClInclude Include="..\..\..\source\Application\Thread\ThreadManager.h" />
+    <ClInclude Include="..\..\..\source\Application\UI\GUI.h" />
+    <ClInclude Include="..\..\..\source\Application\UI\Requester.h" />
+    <ClInclude Include="..\..\..\source\Application\UI\TUI.h" />
+    <ClInclude Include="..\..\..\source\Application\UI\UI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\source\Application\Application.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -46,26 +58,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -117,12 +129,16 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
+      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +151,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -143,6 +159,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
+      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,13 +173,17 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
+      <MapExports>true</MapExports>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -175,7 +199,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\sourse\Types;$(SolutionDir)\..\..\sourse\Object;$(SolutionDir)\..\..\sourse\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -183,6 +207,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libtcc.lib;glfw3.lib;glew32s.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
+      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
