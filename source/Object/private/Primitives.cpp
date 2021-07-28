@@ -570,8 +570,9 @@ bool ColorObj::Equal(const Obj& obj) {
 
 
 void Method::Call() {
-	//void (*method)(Obj *) = (void (*)(Obj*))func.get_func("entry");
-	//method(this);
+	if (method) {
+		method(this);
+	}
 }
 
 // all for method obj
@@ -580,7 +581,24 @@ void Method::Call() {
 #include <stdio.h> //delete
 #include <windows.h>
 
+
+long GetFileSize(std::string filename) {
+	struct stat stat_buf;
+	int rc = stat(filename.c_str(), &stat_buf);
+	return rc == 0 ? stat_buf.st_size : -1;
+}
+
+const wchar_t* GetWC(const char* c) {
+	const size_t cSize = strlen(c) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	mbstowcs(wc, c, cSize);
+	return wc;
+}
+
 bool Method::Compile() {
+
+	method = nullptr;
+
 	Str& script = GETOBJ(String, this, Script).GetStr();
 
 	Str exe_path = "D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\";
@@ -615,7 +633,8 @@ bool Method::Compile() {
 
 
 	// getting the addresses
-	HINSTANCE hGetProcIDDLL = LoadLibrary(L"D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\tmp\\cppfile.dll");
+	const wchar_t* path = GetWC((exe_path + "tmp\\cppfile.dll ").str);
+	HINSTANCE hGetProcIDDLL = LoadLibrary(path);
 
 	if (!hGetProcIDDLL) {
 		return false;
@@ -625,10 +644,33 @@ bool Method::Compile() {
 	void(*func_start)() = (void(*)())GetProcAddress(hGetProcIDDLL, "__start");
 	void(*func_end)() = (void(*)())GetProcAddress(hGetProcIDDLL, "__end");
 
+
+	// creating bytecode
+	/* 
+	//std::ifstream input("D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\tmp\\cppfile.dll", std::ios::binary);
+	
+	LPVOID lpvBase;               // Base address of the test memory
+	LPTSTR lpPtr;                 // Generic character pointer
+	SYSTEM_INFO sysInfo;
+	GetSystemInfo(&sysInfo);
+
+	long size = (char*)func_end - (char*)func_start + 200;
+
+	lpvBase = VirtualAlloc(NULL, sysInfo.dwPageSize, MEM_RESERVE, PAGE_NOACCESS);
+	lpPtr = (LPTSTR)lpvBase;
+	LPVOID lpvResult = VirtualAlloc((LPVOID)lpPtr, sysInfo.dwPageSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+
+
+	for (int i = 0; i < size; i++) {
+		*((BYTE*)lpPtr + i) = *(((BYTE*)func) + i);
+	}
+
 	func(this);
 
-	// cleanup
-	remove((exe_path + "tmp").str);
+	((void(*)(Obj*))lpPtr)(this);
+	*/
+
+	method = func;
 	return true;
 }
 
