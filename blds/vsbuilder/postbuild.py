@@ -12,16 +12,7 @@ libs_path = exe_path + "lib"
 root = str(SolutionDir.absolute()) + "\\..\\.."
 
 # Creating Lib Directory
-os.system("mkdir " + libs_path)
-
-# Copying libtcc into lib dir
-os.system("copy " + root + "\\ext\\tcc\\lib\\libtcc1-64.a " + libs_path + " /Y ")
-os.system("copy " + root + "\\ext\\tcc\\libtcc.dll " + exe_path + " /Y ")
-
-# Copying Application.dll into output dir
-os.system("copy " + str(OutputDir.absolute()) + "\\Application\\Application.dll " + exe_path + " /Y")
-os.system("copy " + str(OutputDir.absolute()) + "\\Application\\Application.lib " + libs_path + " /Y")
-
+#os.system("mkdir " + libs_path)
 
 
 source_path = Path(root + "\\source");
@@ -40,7 +31,4 @@ def copy_includes(crnt_path):
 			copy_includes(path)
 			
 
-copy_includes(source_path)
-
-
-os.system("xcopy " + root + "\\ext\\compiler\\ " + exe_path + "\\compiler\\ /E /H /C /I")
+#copy_includes(source_path)

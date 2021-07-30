@@ -3,6 +3,9 @@
 
 #include "Object.h"
 
+#include "Method.h"
+
+
 class String : public Obj {
 
 	Str string;
@@ -312,14 +315,14 @@ public:
 	~ColorObj() {}
 };
 
+
 class Method : public Obj {
 
 	Method& operator = (const Method& in);
 
-	void (*method)(Obj*) = nullptr;
-	int size = 0;
-
 public:
+
+	Func* func = nullptr;
 
 	Method(Obj* prnt);
 

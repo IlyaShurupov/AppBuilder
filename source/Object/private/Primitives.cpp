@@ -3,6 +3,7 @@
 
 #include <cassert>
 
+
 String::String(const String& in) : Obj(in) {
 	string = in.string;
 }
@@ -568,118 +569,20 @@ bool ColorObj::Equal(const Obj& obj) {
 		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
 }
 
-
 void Method::Call() {
-	if (method) {
-		method(this);
-	}
-}
-
-// all for method obj
-#include <iostream>
-#include <fstream>  //fopen
-#include <stdio.h> //delete
-#include <windows.h>
-
-
-long GetFileSize(std::string filename) {
-	struct stat stat_buf;
-	int rc = stat(filename.c_str(), &stat_buf);
-	return rc == 0 ? stat_buf.st_size : -1;
-}
-
-const wchar_t* GetWC(const char* c) {
-	const size_t cSize = strlen(c) + 1;
-	wchar_t* wc = new wchar_t[cSize];
-	mbstowcs(wc, c, cSize);
-	return wc;
+	func->execute();
 }
 
 bool Method::Compile() {
-
-	method = nullptr;
-
-	Str& script = GETOBJ(String, this, Script).GetStr();
-
-	Str exe_path = "D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\";
-	//Str exe_path = ".\\cppfile.cpp";
-
-	system((Str("mkdir ") + exe_path + "tmp").str);
-
-	// create file
-	std::ofstream script_file((exe_path + "tmp\\\\cppfile.cpp").str);
-	script_file << script.str << std::endl;
-	script_file.close();
-
-	// compile
-	Str compiler = (exe_path + "compiler\\bin\\cl.exe /c /EHsc /Fo:") + (exe_path + "tmp\\cppfile.obj ");
-	Str include1 = Str(" -I ") + exe_path + "include\\Object ";
-	Str include2 = Str(" -I ") + exe_path + "include\\Types ";
-	Str include3 = Str(" -I ") + exe_path + "compiler\\include ";
-	Str include4 = Str(" -I ") + exe_path + "compiler\\include_win ";
-
-	Str compile_command = compiler + include1 + include2 + (exe_path + "tmp\\cppfile.cpp") + include3 + include4;
-	system(compile_command.str);
-
-	
-	// link
-	Str linker = exe_path + "compiler\\bin\\link.exe /MACHINE:X64 /DLL /OUT:" + (exe_path + "tmp\\cppfile.dll ");
-	Str lib = exe_path + "lib\\Application.lib ";
-	Str libs = " kernel32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ";
-	Str libpath = Str(" /LIBPATH:") + exe_path + "compiler\\lib ";
-
-	Str link_command = linker + (exe_path + "tmp\\cppfile.obj ") + lib + libpath + libs;
-	system(link_command.str);
-
-
-	// getting the addresses
-	const wchar_t* path = GetWC((exe_path + "tmp\\cppfile.dll ").str);
-	HINSTANCE hGetProcIDDLL = LoadLibrary(path);
-
-	if (!hGetProcIDDLL) {
-		return false;
-	}
-	
-	void(*func)(Obj*) = (void(*)(Obj*))GetProcAddress(hGetProcIDDLL, "entry");
-	void(*func_start)() = (void(*)())GetProcAddress(hGetProcIDDLL, "__start");
-	void(*func_end)() = (void(*)())GetProcAddress(hGetProcIDDLL, "__end");
-
-
-	// creating bytecode
-	/* 
-	//std::ifstream input("D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\tmp\\cppfile.dll", std::ios::binary);
-	
-	LPVOID lpvBase;               // Base address of the test memory
-	LPTSTR lpPtr;                 // Generic character pointer
-	SYSTEM_INFO sysInfo;
-	GetSystemInfo(&sysInfo);
-
-	long size = (char*)func_end - (char*)func_start + 200;
-
-	lpvBase = VirtualAlloc(NULL, sysInfo.dwPageSize, MEM_RESERVE, PAGE_NOACCESS);
-	lpPtr = (LPTSTR)lpvBase;
-	LPVOID lpvResult = VirtualAlloc((LPVOID)lpPtr, sysInfo.dwPageSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-
-
-	for (int i = 0; i < size; i++) {
-		*((BYTE*)lpPtr + i) = *(((BYTE*)func) + i);
-	}
-
-	func(this);
-
-	((void(*)(Obj*))lpPtr)(this);
-	*/
-
-	method = func;
+	func->compile();
 	return true;
 }
 
 Method& Method::operator=(const Method& in) {
+	func = in.func;
 	return *this;
 }
 
 Method::Method(Obj* prnt) : Obj(prnt) {
 	RegisterType(ObjType("Method"));
-
-	ADDOBJ(String, Script, *this, (this));
 }

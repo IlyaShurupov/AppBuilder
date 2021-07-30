@@ -91,8 +91,9 @@ struct Str {
 };
 
 #ifdef _DEBUG
-#define CDL(text) cnsl(text)
+#define CLOG(text) cnsl(text)
+#else
+#define CLOG(text) 
 #endif 
-#define CDL(text) 
 
 void cnsl(const Str& str);
