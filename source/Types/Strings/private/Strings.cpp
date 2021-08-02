@@ -171,7 +171,28 @@ void Str::coppy(Str* str, Range range) {
   }
 }
 
-str_idx Str::find(Str& string, Range range) {
+str_idx Str::find(const Str& string, Range range) {
+  
+  for (str_idx i = range.strt; i < range.end; i++) {
+
+    str_idx m = 0;
+    while (m < string.len()) {
+      if (this->str[i] != str[m]) {
+        break;
+      }
+      m++;
+    }
+
+    if (m == string.len() - 1) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+str_idx Str::find(const Str& string) {
+  Range range = Range(0, len());
+
   for (str_idx i = range.strt; i < range.end; i++) {
 
     str_idx m = 0;

@@ -19,12 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\Object\Method.h" />
+    <ClInclude Include="..\..\..\source\Object\Method\Compiler.h" />
+    <ClInclude Include="..\..\..\source\Object\Method\Instructions.h" />
     <ClInclude Include="..\..\..\source\Object\Object.h" />
     <ClInclude Include="..\..\..\source\Object\Primitives.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\Object\private\Method.cpp" />
+    <ClCompile Include="..\..\..\source\Object\Method\private\Compiler.cpp" />
+    <ClCompile Include="..\..\..\source\Object\Method\private\Instructions.cpp" />
+    <ClCompile Include="..\..\..\source\Object\Method\private\Method.cpp" />
     <ClCompile Include="..\..\..\source\Object\private\Object.cpp" />
     <ClCompile Include="..\..\..\source\Object\private\Primitives.cpp" />
   </ItemGroup>

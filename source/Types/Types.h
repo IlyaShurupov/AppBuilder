@@ -7,6 +7,7 @@
 #include "Time/Timer.h"
 #include "Strings/Strings.h"
 #include "IO/Parser.h"
+#include "IO/File.h"
 
 #include "Containers/List.h"
 #include "Containers/Array.h"

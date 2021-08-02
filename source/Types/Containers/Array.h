@@ -115,6 +115,14 @@ class Array {
     }
   }
 
+  void Delete() {
+    for (int idx = 0; idx < Len(); idx++) {
+      delete buff[idx];
+    }
+
+    Free();
+  }
+
   ~Array() {
     Free();
   }

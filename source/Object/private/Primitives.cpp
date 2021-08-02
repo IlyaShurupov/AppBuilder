@@ -569,20 +569,22 @@ bool ColorObj::Equal(const Obj& obj) {
 		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
 }
 
-void Method::Call() {
+void MethodObj::Call() {
 	func->execute();
 }
 
-bool Method::Compile() {
-	func->compile();
+bool MethodObj::Compile() {
+	func->compile(&GETOBJ(String, this, Script).GetStr());
 	return true;
 }
 
-Method& Method::operator=(const Method& in) {
+MethodObj& MethodObj::operator=(const MethodObj& in) {
 	func = in.func;
 	return *this;
 }
 
-Method::Method(Obj* prnt) : Obj(prnt) {
+MethodObj::MethodObj(Obj* prnt) : Obj(prnt) {
 	RegisterType(ObjType("Method"));
+
+	ADDOBJ(String, Script, *this, (this));
 }

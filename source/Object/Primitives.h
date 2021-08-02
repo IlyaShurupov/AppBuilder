@@ -3,7 +3,7 @@
 
 #include "Object.h"
 
-#include "Method.h"
+#include "Method/Method.h"
 
 
 class String : public Obj {
@@ -316,23 +316,23 @@ public:
 };
 
 
-class Method : public Obj {
+class MethodObj : public Obj {
 
-	Method& operator = (const Method& in);
+	MethodObj& operator = (const MethodObj& in);
 
 public:
 
-	Func* func = nullptr;
+	Method* func = nullptr;
 
-	Method(Obj* prnt);
+	MethodObj(Obj* prnt);
 
-	virtual Method& Instance() {
-		return *new Method(*this);
+	virtual MethodObj& Instance() {
+		return *new MethodObj(*this);
 	}
 
 
 	void Call();
 	bool Compile();
 
-	~Method() {}
+	~MethodObj() {}
 };
