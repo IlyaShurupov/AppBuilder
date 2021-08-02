@@ -163,6 +163,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -203,6 +204,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\include;$(SolutionDir)\..\..\ext\glfw\include;$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>

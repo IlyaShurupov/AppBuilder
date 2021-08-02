@@ -646,7 +646,7 @@ bool Method::Compile() {
 
 
 	// creating bytecode
-	/* 
+	
 	//std::ifstream input("D:\\Dev\\intern\\Nodes\\out\\msvc\\Debug\\TestApp\\tmp\\cppfile.dll", std::ios::binary);
 	
 	LPVOID lpvBase;               // Base address of the test memory
@@ -668,7 +668,7 @@ bool Method::Compile() {
 	func(this);
 
 	((void(*)(Obj*))lpPtr)(this);
-	*/
+	
 
 	method = func;
 	return true;

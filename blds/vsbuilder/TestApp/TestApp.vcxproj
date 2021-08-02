@@ -79,7 +79,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -89,7 +89,7 @@
     <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -129,6 +129,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,6 +185,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions); GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
