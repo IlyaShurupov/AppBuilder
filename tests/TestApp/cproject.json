@@ -1,5 +1,13 @@
 
 {
     "Type": "exe",
-    "Dependencies" : ["Application"]
+    "Dependencies" : ["Application"],
+
+  	"sources" : [
+  		"main.cpp"
+  	],
+
+	"headers" : [
+
+  	]
 }

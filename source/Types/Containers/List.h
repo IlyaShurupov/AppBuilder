@@ -237,8 +237,8 @@ public:
 		return ListIterator<Type>(this, 0);
 	}
 
-	int end() {
-		return Len();
+	ListIterator<Type> end() {
+		return ListIterator<Type>(this, Len());
 	}
 
 	~List() {
@@ -268,11 +268,10 @@ public:
 		idx++;
 	}
 
-	bool operator==(const ListIterator<Type>& IterNode) { return IterNode.iter == iter; }
-
 	bool operator==(int p_idx) { return idx == p_idx; }
 	bool operator!=(int p_idx) { return idx != p_idx; }
-	bool operator!=(const ListIterator<Type>& in) { return iter != in.iter; }
+	bool operator!=(const ListIterator<Type>& in) { return idx != in.idx; }
+	bool operator==(const ListIterator<Type>& in) { return idx == in.idx; }
 	bool operator>(int p_idx) { return idx > p_idx; }
 	bool operator<(int p_idx) { return idx < p_idx; }
 	bool operator>=(int p_idx) { return idx >= p_idx; }

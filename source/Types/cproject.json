@@ -1,7 +1,57 @@
 
 {
-  "Type": "StaticLibrary",
-  "AdditionalLibraries" : ["SDL2_image", "SDL2main", "SDL2"], 
-  "AdditionalLibraryPaths": ["{SDL_LIBS_PATH}"], 
-  "AdditionalIncludePaths": ["{SDL_INCLUDE_PATH}"]
+	"Type": "StaticLibrary",
+
+	"AdditionalLibraries" : ["glew32", "glfw3"], 
+
+	"AdditionalLibraryPaths": ["{GLFW_LIBPATH}", "{GLEW_LIBPATH}"], 
+	"AdditionalIncludePaths": ["{GLFW_INCLUDE}", "{GLEW_INCLUDE}"],
+
+	"sources" : [
+		"/BitMap/private/BitMap.cpp",
+		"/BitMap/private/Color.cpp",
+		"/Geomentry/private/Mesh.cpp",
+		"/Geomentry/private/Ray.cpp",
+		"/Geomentry/private/Trig.cpp",
+		"/IO/private/Parser.cpp",
+		"/Keyboard/private/Keyboard.cpp",
+		"/Memory/private/Mem.cpp",
+		"/Strings/private/Strings.cpp",
+		"/Time/private/Timer.cpp",
+		"/Window/private/Window.cpp",
+		"/Window/private/nanovg.cpp"
+	],
+
+	"headers" : [
+		"/BitMap/BitMap.h",
+		"/BitMap/Color.h",
+		"/Containers/Array.h",
+		"/Containers/Hierarchy.h",
+		"/Containers/List.h",
+		"/Containers/Map.h",
+		"/Containers/Sort.h",
+		"/Containers/Stack.h",
+		"/Containers/Tuple.h",
+		"/Geomentry/Matrix.h",
+		"/Geomentry/Mesh.h",
+		"/Geomentry/Ray.h",
+		"/Geomentry/Rect.h",
+		"/Geomentry/Trig.h",
+		"/Geomentry/Vec2.h",
+		"/Geomentry/Vec3.h",
+		"/IO/Parser.h",
+		"/Keyboard/Keyboard.h",
+		"/Memory/Mem.h",
+		"/Memory/Allocators.h",
+		"/Strings/Strings.h",
+		"/Time/Timer.h",
+		"/Window/Window.h",
+		"/Window/fontstash.h",
+		"/Window/nanovg.h",
+		"/Window/nanovg_gl.h",
+		"/Window/nanovg_gl_utils.h",
+		"/Window/stb_image.h",
+		"/Window/stb_truetype.h"
+	]
+
 }

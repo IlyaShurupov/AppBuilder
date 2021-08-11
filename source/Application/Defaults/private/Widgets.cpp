@@ -1,6 +1,4 @@
 
-#pragma once
-
 #include "Defaults/Widgets.h"
 
 

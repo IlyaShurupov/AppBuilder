@@ -568,12 +568,13 @@ bool ColorObj::Equal(const Obj& obj) {
 		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
 }
 
-
+/*
 void Method::Call() {
 	if (method) {
 		method(this);
 	}
 }
+
 
 // all for method obj
 #include <iostream>
@@ -683,3 +684,5 @@ Method::Method(Obj* prnt) : Obj(prnt) {
 
 	ADDOBJ(String, Script, *this, (this));
 }
+
+*/

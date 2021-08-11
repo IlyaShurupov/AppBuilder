@@ -2,7 +2,7 @@
 #include "App.h"
 #include "Primitives.h"
 
-
+/*
 void test(Application* app) {
 
 	Method* method = &ADDOBJ(Method, method, *app, (app));
@@ -25,6 +25,7 @@ void test(Application* app) {
 
 	int g = integer->GetVal();
 }
+*/
 
 
 int main() {
@@ -34,7 +35,7 @@ int main() {
 
 	Application* app = &ADDOBJ(Application, Test App, *root, (root));
 
-	test(app);
+	//test(app);
 
 	app->Compose();
 	app->Run();

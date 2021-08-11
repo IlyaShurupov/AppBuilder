@@ -312,6 +312,7 @@ public:
 	~ColorObj() {}
 };
 
+/*
 class Method : public Obj {
 
 	Method& operator = (const Method& in);
@@ -333,3 +334,4 @@ public:
 
 	~Method() {}
 };
+*/

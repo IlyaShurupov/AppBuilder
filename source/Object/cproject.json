@@ -1,5 +1,15 @@
 
 {
   "Type": "StaticLibrary",
-  "Dependencies" : [ "Types" ]
+  "Dependencies" : [ "Types" ],
+
+  	"sources" : [
+		"/private/Object.h",
+		"/private/Primitives.h"
+	],
+
+	"headers" : [
+		"/Object.h",
+		"/Primitives.h"
+	]
 }

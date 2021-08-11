@@ -7,15 +7,15 @@
 #include <GLFW/glfw3.h>
 //#include "GLFW/glfw3native.h"
 
-#include "nanovg.h"
+#include "Window/nanovg.h"
 #define NANOVG_GL3_IMPLEMENTATION
-#include "nanovg_gl.h"
+#include "Window/nanovg_gl.h"
 
 #include "Strings/Strings.h"
 
 #define NVGCOL(col) nvgRGBA((uint1)(col.r * 255), (uint1)(col.g * 255), (uint1)(col.b * 255), (uint1)(col.a * 255))
 
-#include <Windows.h>
+//#include <Windows.h>
 
 void get_font_dir(const char* file, Str* str) {
 	*str = file;

@@ -1,5 +1,28 @@
 
 {
     "Type": "StaticLibrary",
-    "Dependencies" : ["Object"]
+    "Dependencies" : ["Object"],
+
+	"sources" : [
+		"/App.cpp",
+		"/Defaults/private/Widgets.cpp",
+		"/Thread/private/Thread.cpp",
+		"/Thread/private/ThreadManager.cpp",
+		"/UI/private/GUI.cpp",
+		"/UI/private/Requester.cpp",
+		"/UI/private/TUI.cpp"
+	],
+
+	"headers" : [
+		"/App.h",
+		"/Defaults/private/Widgets.h",
+		"/Defaults/private/Operators.h",
+		"/Thread/private/Thread.h",
+		"/Thread/private/ThreadManager.h",
+		"/UI/private/GUI.h",
+		"/UI/private/Requester.h",
+		"/UI/private/TUI.h",
+		"/UI/private/UI.h"
+	]
+
 }

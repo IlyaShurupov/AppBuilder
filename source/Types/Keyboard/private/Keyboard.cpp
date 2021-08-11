@@ -3,23 +3,19 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+bool keyIsDown(int code);
+
 #ifdef _WIN
 #include <Windows.h>
 bool keyIsDown(int code) {
 	return GetAsyncKeyState(code) & 0x8000;
-}
-#else 
-bool keyIsDown(int code) {
-	return false;
 }
 #endif
 
 
 Keyboard::Keyboard() {
 
-	if (!glfwInit()) {
-		printf("Failed to init GLFW.");
-	}
+	glfwInit();
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 

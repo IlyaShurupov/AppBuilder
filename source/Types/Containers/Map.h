@@ -165,8 +165,8 @@ public:
 		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(this);  
 	}
 
-	int end() {
-		return nslots;
+	MapIterator<K, V, Hashfunc, CopyValfunc, table_size> end() {
+		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(nslots);
 	}
 
 	int SlotIdx(int entry_idx_in) {
@@ -211,6 +211,10 @@ public:
 		this->operator++();
 	}
 
+	MapIterator(int last_slot_idx) {
+		slot_idx = last_slot_idx;
+	}
+
 	void operator++() {
 		slot_idx++;
 
@@ -228,6 +232,10 @@ public:
 
 	bool operator!=(int p_idx) { 
 		return slot_idx != p_idx; 
+	}
+
+	bool operator!=(const MapIterator iter) { 
+		return slot_idx != iter.slot_idx; 
 	}
 
 	const MapIterator& operator*() { return *this; }

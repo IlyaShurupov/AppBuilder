@@ -21,13 +21,14 @@
 #include <math.h>
 #include <memory.h>
 
-#include "nanovg.h"
+
+#include "Window/nanovg.h"
 #define FONTSTASH_IMPLEMENTATION
-#include "fontstash.h"
+#include "Window/fontstash.h"
 
 #ifndef NVG_NO_STB
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "Window/stb_image.h"
 #endif 
 
 #ifdef _MSC_VER

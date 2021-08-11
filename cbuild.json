@@ -1,0 +1,21 @@
+
+{
+	"name" : "Nodes",
+
+	"projects" : [
+
+		"Test/TestApp/cproject.json", 
+		"source/Application/cproject.json", 
+		"source/Object/cproject.json", 
+		"source/Types/cproject.json"
+	],
+
+	"build_variables" : {
+
+		"GLFW_LIBPATH" : "/ext/glfw/lib/x64",
+		"GLEW_LIBPATH" : "/ext/glew-2.1.0/lib/Release/x64", 
+		"GLFW_INCLUDE" : "/ext/glfw/include",
+		"GLEW_INCLUDE" : "/ext/glew-2.1.0/include"
+
+	}
+}
