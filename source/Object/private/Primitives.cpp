@@ -569,6 +569,7 @@ bool ColorObj::Equal(const Obj& obj) {
 		GETOBJ(Float, this, A).GetVal() == GETOBJ(Float, this, A).GetVal());
 }
 
+/*
 void Method::Call() {
 	func->execute();
 }
@@ -586,3 +587,4 @@ Method& Method::operator=(const Method& in) {
 Method::Method(Obj* prnt) : Obj(prnt) {
 	RegisterType(ObjType("Method"));
 }
+*/

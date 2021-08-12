@@ -1,5 +1,7 @@
 #pragma once
 
+/*
+
 #include "Primitives.h"
 
 #include "Containers/Array.h"
@@ -66,3 +68,5 @@ void opcode_call(Array<int>* idx_args, Array<Tuple<Obj*, Str>>* scope) {
 		}
 	}
 }
+
+*/
