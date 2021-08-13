@@ -4,6 +4,11 @@
 
 Requester::Requester(const Requester& in) : Obj(in) {
 	instance_count = in.instance_count;
+
+	Link& target_link = ADDOBJ(Link, Target Op, *this, (this));
+	target_link.OnModCallBacks.Free();
+	target_link.BindModPoll(this, CanChangeTarget);
+	target_link.AddOnModCallBack(this, TargetChanged);
 }
 
 Requester::Requester(Obj* prnt) : Obj(prnt) {

@@ -88,6 +88,11 @@ ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
 	target->Init("Obj", true);
+
+	past_obj = new Button(topbar, Rect<float>(100, 5, 100, 25));
+	past_obj->label->text->Assign(" Past Obj ");
+	GETOBJ(ObList, topbar, Childs).AddObj(past_obj);
+
 }
 
 void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
@@ -126,6 +131,22 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 		target_is_self = false;
 		proc_by_type<ObList, ObListIter>();
 	}
+
+
+	if (clipboard_obj_dir && past_obj) {
+		if (past_obj->state == WidgetState::CONFIRM) {
+			// BAD! next and prev is random
+			Obj* copy_obj = &clipboard_obj_dir->GetChld("Clipboard Object");
+			copy_obj->prnt = container_obj;
+
+			if (container_obj->type.IsPrnt("ObDict")) {
+				((ObDict*)container_obj)->GetDict().Put("Clipboard Obj", copy_obj);
+			}
+			else if (container_obj->type.IsPrnt("ObList")) {
+				((ObList*)container_obj)->GetList().PushBack(copy_obj);
+			}
+		}
+	}
 }
 
 
@@ -145,8 +166,10 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 		list_menu->append_item = ListMenu::ButtonAppendItem;
 		list_menu->update_item = ListMenu::ButtonUpdateItem;
 		list_menu->widget_type = "Button";
-	
+		list_menu->title->text->Assign("List Menu");
 		GETOBJ(ObList, body, Childs).AddObj(list_menu);
+
+		list_menu->clipboard_obj_dir = copy_dest;
 	}
 
 	{
@@ -158,6 +181,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 		dict_menu->append_item = ListMenu::ButtonAppendItem;
 		dict_menu->update_item = ListMenu::ButtonUpdateItem;
 		dict_menu->widget_type = "Button";
+		dict_menu->title->text->Assign("Dict Menu");
 
 		GETOBJ(Link, dict_menu, Target).SetLink(dictlist);
 		GETOBJ(ObList, body, Childs).AddObj(dict_menu);
@@ -170,14 +194,17 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 
 	{
 		link_menu = new LinkMenu(body, Rect<float>(0, 315, body->rect.size.x, 200));
+		link_menu->title->text->Assign("Link Menu");
 		GETOBJ(ObList, body, Childs).AddObj(link_menu);
 	}
 
-	back_button = new Button(dict_menu->topbar, Rect<float>(100, 0, 60, 25));
-	GETOBJ(ObList, dict_menu->topbar, Childs).AddObj(back_button);
+	back_button = new Button(topbar, Rect<float>(160, 0, 70, 25));
+	back_button->label->text->Assign(" Parent ");
+	GETOBJ(ObList, topbar, Childs).AddObj(back_button);
 
 	{
 		copy_button = new Button(body, Rect<float>(0, 210, body->rect.size.x, 30));
+		copy_button->label->text->Assign(" Copy Object ");
 		GETOBJ(Link, copy_button, Target Op).SetLink(copy_op);
 	
 		ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
@@ -188,6 +215,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 
 	{
 		paste_button = new Button(body, Rect<float>(0, 245, body->rect.size.x, 30));
+		paste_button->label->text->Assign(" Paste Object ");
 		GETOBJ(Link, paste_button, Target Op).SetLink(copy_op);
 
 		ObDict& op_args = GETOBJ(ObDict, copy_button, Op Args);
@@ -197,6 +225,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 	}
 
 	copy_link_button = new Button(body, Rect<float>(0, 280, body->rect.size.x, 30));
+	copy_link_button->label->text->Assign(" Copy Object Link ");
 	GETOBJ(ObList, body, Childs).AddObj(copy_link_button);
 }
 
@@ -334,7 +363,7 @@ void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 		GETOBJ(Link, contex_menu->link_menu, Target).SetLink(new_target);
 	}
 
-	contex_menu->title->text->Assign(Str("Context Menu : ") += new_target->type.idname);
+	contex_menu->title->text->Assign(Str("Type : ") += new_target->type.idname);
 
 	contex_menu->dictlist->SetRef(&new_target->props, false);
 	

@@ -45,6 +45,10 @@ Obj::Obj(const Obj& in) {
 	}
 
 	objs_entry = this;
+
+	for (auto child : props) {
+		child->val->prnt = this;
+	}
 }
 
 Obj::Obj(Obj* _prnt) {

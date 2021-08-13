@@ -40,7 +40,10 @@ public:
 class Button : public Widget {
 
 	Button& operator = (const Button& in);
+
 	Button(const Button& in) : Widget(in) {
+		// BAD!
+		label = (Label*)(&(GETOBJ(ObList, this, Childs).GetList())[0]);
 	}
 
 public:
@@ -327,6 +330,7 @@ public:
 		ADDOBJ(Bool, Collapsed, *this, (this)).Set(false);
 
 		collapse_btn = new Button(this, Rect<float>(5, 5, 30, 30));
+		collapse_btn->label->text->Assign("...");
 		GETOBJ(ObList, this, Childs).AddObj(collapse_btn);
 
 
@@ -444,6 +448,8 @@ class ListMenu : public Menu {
 	
 	bool target_is_self = false;
 
+	Button* past_obj = nullptr;
+
 	template <typename ContainerType, typename ContainerIterType>
 	void proc_by_type() {
 		ContainerType* target = (ContainerType*)GETOBJ(Link, this, Target).GetLink();
@@ -544,6 +550,7 @@ public:
 
 	float items_start = 40;
 	float item_size = 25;
+	Obj* clipboard_obj_dir = nullptr;
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers);
 	void DrawBody(Window& canvas, vec2<float> crs) {

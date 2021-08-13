@@ -147,7 +147,7 @@ void Application::Compose() {
     act_cond_list.AddObj(activate_cond);
 
     Obj* temp = &GETOBJ(Obj, &GETOBJ(Obj, this, Data), Temp);
-    ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(50, 50, 300, 500), opholder_copy, temp);
+    ContextMenu* ctx_menu = new ContextMenu(gui, Rect<float>(20, 20, 300, 500), opholder_copy, temp);
     GETOBJ(Link, ctx_menu, Target).SetLink(this);
     GETOBJ(ObList, gui, Windows).AddObj(ctx_menu);
 

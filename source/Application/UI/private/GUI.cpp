@@ -2,7 +2,7 @@
 #include "UI/GUI.h"
 
 Widget::Widget(const Widget& in) : Requester(in) {
-	*childs = GETOBJ(ObList, this, Childs).GetList();
+	childs = &GETOBJ(ObList, this, Childs).GetList();
 }
 
 Widget::Widget(Obj* prnt, Rect<float> _rect, const Str& descrip) : Requester(prnt) {

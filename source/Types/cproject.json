@@ -1,7 +1,0 @@
-
-{
-  "Type": "StaticLibrary",
-  "AdditionalLibraries" : ["SDL2_image", "SDL2main", "SDL2"], 
-  "AdditionalLibraryPaths": ["{SDL_LIBS_PATH}"], 
-  "AdditionalIncludePaths": ["{SDL_INCLUDE_PATH}"]
-}

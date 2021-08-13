@@ -11,54 +11,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\Application\Defaults\private\Widgets.cpp">
+    <ClCompile Include="..\..\source\Application\App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\Thread\private\Thread.cpp">
+    <ClCompile Include="..\..\source\Application\UI\private\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\Thread\private\ThreadManager.cpp">
+    <ClCompile Include="..\..\source\Application\UI\private\Requester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\UI\private\GUI.cpp">
+    <ClCompile Include="..\..\source\Application\Thread\private\Thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\UI\private\Requester.cpp">
+    <ClCompile Include="..\..\source\Application\Thread\private\ThreadManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\UI\private\TUI.cpp">
+    <ClCompile Include="..\..\source\Application\UI\private\TUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\Application\App.cpp">
+    <ClCompile Include="..\..\source\Application\Defaults\private\Widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\Application\Defaults\Operators.h">
+    <ClInclude Include="..\..\source\Application\App.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\Defaults\Widgets.h">
+    <ClInclude Include="..\..\source\Application\UI\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\Thread\Thread.h">
+    <ClInclude Include="..\..\source\Application\Defaults\Operators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\Thread\ThreadManager.h">
+    <ClInclude Include="..\..\source\Application\UI\Requester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\App.h">
+    <ClInclude Include="..\..\source\Application\Thread\ThreadManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\UI\GUI.h">
+    <ClInclude Include="..\..\source\Application\Thread\Thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\UI\Requester.h">
+    <ClInclude Include="..\..\source\Application\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\UI\TUI.h">
+    <ClInclude Include="..\..\source\Application\UI\TUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\Application\UI\UI.h">
+    <ClInclude Include="..\..\source\Application\Defaults\Widgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

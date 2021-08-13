@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,41 +19,56 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Object\Object.vcxproj">
-      <Project>{245cac89-e8b1-4ab6-af91-2dfd61ecf396}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Types\Types.vcxproj">
-      <Project>{ab3bb9a9-0597-47a6-bd7d-fc7874eb3819}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\source\Types\Geometry\private\Mesh.cpp" />
+    <ClCompile Include="..\..\source\Types\Geometry\private\Ray.cpp" />
+    <ClCompile Include="..\..\source\Types\Geometry\private\Trig.cpp" />
+    <ClCompile Include="..\..\source\Types\IO\private\Parser.cpp" />
+    <ClCompile Include="..\..\source\Types\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="..\..\source\Types\Macros.cpp" />
+    <ClCompile Include="..\..\source\Types\Memory\private\Mem.cpp" />
+    <ClCompile Include="..\..\source\Types\Strings\private\Strings.cpp" />
+    <ClCompile Include="..\..\source\Types\Time\private\Timer.cpp" />
+    <ClCompile Include="..\..\source\Types\Window\nanovg.cpp" />
+    <ClCompile Include="..\..\source\Types\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\Application\App.cpp" />
-    <ClCompile Include="..\..\..\source\Application\Defaults\private\Widgets.cpp" />
-    <ClCompile Include="..\..\..\source\Application\Thread\private\Thread.cpp" />
-    <ClCompile Include="..\..\..\source\Application\Thread\private\ThreadManager.cpp" />
-    <ClCompile Include="..\..\..\source\Application\UI\private\GUI.cpp" />
-    <ClCompile Include="..\..\..\source\Application\UI\private\Requester.cpp" />
-    <ClCompile Include="..\..\..\source\Application\UI\private\TUI.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\source\Application\App.h" />
-    <ClInclude Include="..\..\..\source\Application\Defaults\Operators.h" />
-    <ClInclude Include="..\..\..\source\Application\Defaults\Widgets.h" />
-    <ClInclude Include="..\..\..\source\Application\Thread\Thread.h" />
-    <ClInclude Include="..\..\..\source\Application\Thread\ThreadManager.h" />
-    <ClInclude Include="..\..\..\source\Application\UI\GUI.h" />
-    <ClInclude Include="..\..\..\source\Application\UI\Requester.h" />
-    <ClInclude Include="..\..\..\source\Application\UI\TUI.h" />
-    <ClInclude Include="..\..\..\source\Application\UI\UI.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\source\Application\Application.def" />
+    <ClInclude Include="..\..\source\Types\BitMap\BitMap.h" />
+    <ClInclude Include="..\..\source\Types\BitMap\Color.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Array.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Hierarchy.h" />
+    <ClInclude Include="..\..\source\Types\Containers\List.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Map.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Sort.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Stack.h" />
+    <ClInclude Include="..\..\source\Types\Containers\Tuple.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Matrix.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Mesh.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Ray.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Rect.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Trig.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Vec2.h" />
+    <ClInclude Include="..\..\source\Types\Geometry\Vec3.h" />
+    <ClInclude Include="..\..\source\Types\IO\Parser.h" />
+    <ClInclude Include="..\..\source\Types\Keyboard\Keyboard.h" />
+    <ClInclude Include="..\..\source\Types\Macros.h" />
+    <ClInclude Include="..\..\source\Types\Memory\Allocators.h" />
+    <ClInclude Include="..\..\source\Types\Memory\Mem.h" />
+    <ClInclude Include="..\..\source\Types\Strings\Strings.h" />
+    <ClInclude Include="..\..\source\Types\Time\Timer.h" />
+    <ClInclude Include="..\..\source\Types\Types.h" />
+    <ClInclude Include="..\..\source\Types\Window\fontstash.h" />
+    <ClInclude Include="..\..\source\Types\Window\nanovg.h" />
+    <ClInclude Include="..\..\source\Types\Window\nanovg_gl.h" />
+    <ClInclude Include="..\..\source\Types\Window\nanovg_gl_utils.h" />
+    <ClInclude Include="..\..\source\Types\Window\stb_image.h" />
+    <ClInclude Include="..\..\source\Types\Window\stb_truetype.h" />
+    <ClInclude Include="..\..\source\Types\Window\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ddd75a60-c33d-465f-b8e1-97a883b6493d}</ProjectGuid>
-    <RootNamespace>Application</RootNamespace>
+    <ProjectGuid>{ab3bb9a9-0597-47a6-bd7d-fc7874eb3819}</ProjectGuid>
+    <RootNamespace>Types</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -103,42 +118,38 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\..\out\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\..\out\$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)\..\out\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\..\out\$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\..\out\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\..\out\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)\..\..\out\msvc\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\..\out\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\..\out\$(Configuration)\.intermediate\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);; _CRT_SECURE_NO_WARNINGS; GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\ext\glew-2.1.0\include;$(SolutionDir)\..\ext\glfw\include;$(SolutionDir)\..\source\Types;$(SolutionDir)\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
-      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,11 +158,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions); _CRT_SECURE_NO_WARNINGS; GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\ext\glew-2.1.0\include;$(SolutionDir)\..\ext\glfw\include;$(SolutionDir)\..\source\Types;$(SolutionDir)\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -159,31 +170,23 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
-      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);; _CRT_SECURE_NO_WARNINGS; GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\ext\glew-2.1.0\include;$(SolutionDir)\..\ext\glfw\include;$(SolutionDir)\..\source\Types;$(SolutionDir)\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
-      <MapExports>true</MapExports>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -195,11 +198,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions); WINDOWS; _CRT_SECURE_NO_WARNINGS; GLEW_STATIC </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\source\Types;$(SolutionDir)\..\..\source\Object;$(SolutionDir)\..\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\ext\glew-2.1.0\include;$(SolutionDir)\..\ext\glfw\include;$(SolutionDir)\..\source\Types;$(SolutionDir)\..\ext\tcc\libtcc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -207,10 +210,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\..\ext\glew-2.1.0\lib\Release\x64;$(SolutionDir)\..\..\ext\glfw\lib\x64;$(SolutionDir)\..\..\ext\nanovg\lib\x64\Release;$(SolutionDir)\..\..\ext\tcc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)\Application.def</ModuleDefinitionFile>
-      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
