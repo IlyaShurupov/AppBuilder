@@ -1,7 +1,6 @@
 
 #include "Memory/Mem.h"
 
-#ifdef MEM_DEBUG
 
 #include "Time/Timer.h"
 #include "Strings/Strings.h"
@@ -128,8 +127,15 @@ void operator delete(void* p, const char* file, int line)
   delete p;
 }
 
-
-#endif
+int mem_allocated_size() {
+  int size = 0;
+  MemHead* alloc_iter = mem_debug_entry_ptr;
+  while (alloc_iter) {
+    size += alloc_iter->size;
+    alloc_iter = alloc_iter->prev;
+  }
+  return size;
+}
 
 
 bool init_mem_debug() {

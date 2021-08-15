@@ -25,23 +25,82 @@ public:
 		text->Assign("Label");
 
 		ADDOBJ(ColorObj, Col, *this, (this)).Set(Color(0.7f, 0.7f, 0.7f, 1.f));
+		ADDOBJ(Int, Text Size, *this, (this)).Set(16);
 	}
 
 	void DrawBody(Window& cnv, vec2<float> crs) {
 		Color text_col;
 		GETOBJ(ColorObj, this, Col).Get(&text_col);
 
-		cnv.Text(GETOBJ(String, this, Text).GetStr().str, 5, 5, 16, text_col);
+		cnv.Text(GETOBJ(String, this, Text).GetStr().str, 5, 5, GETOBJ(Int, this, Text Size).GetVal(), text_col);
 	}
 
 	virtual ~Label() {}
 };
 
-class Button : public Widget {
+class Blank : public Widget {
+
+	Blank& operator = (const Blank& in);
+
+public:
+
+	Blank(const Blank& in) : Widget(in) {
+	}
+
+	virtual Blank& Instance() {
+		return *new Blank(*this);
+	}
+
+	Blank(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+		RegisterType(ObjType("Blank Widget"));
+
+		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.2f, 0.2f, 0.2f, .9f));
+		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.23f, 0.23f, 0.23f, .9f));
+		ADDOBJ(ColorObj, Activate Col, *this, (this)).Set(Color(0.4f, 0.4f, 0.4f, 0.4f));
+		ADDOBJ(ColorObj, Border Col, *this, (this)).Set(Color(0.1, 0.1, 0.1, 1));
+
+		ADDOBJ(Int, Roundness, *this, (this)).Set(7);
+		ADDOBJ(Int, Border Size, *this, (this)).Set(0);
+	}
+
+	void DrawBody(Window& cnv, vec2<float> crs) {
+
+		float padding = GETOBJ(Int, this, Border Size).GetVal();
+		Rect<float> inner_rec(0 + padding, 0 + padding, rect.size.x - padding * 2, rect.size.y - padding * 2);
+		Rect<float> outer_rec(0, 0, rect.size.x, rect.size.y);
+
+		if (padding > 0) {
+			Color border_col;
+			GETOBJ(ColorObj, this, Border Col).Get(&border_col);
+			cnv.RRect(outer_rec, border_col, GETOBJ(Int, this, Roundness).GetVal());
+		}
+
+		if (state == WidgetState::ACTIVE) {
+			Color activate_col;
+			GETOBJ(ColorObj, this, Activate Col).Get(&activate_col);
+			cnv.RRect(inner_rec, activate_col, GETOBJ(Int, this, Roundness).GetVal());
+		}
+		if (state != WidgetState::NONE) {
+
+			Color active;
+			GETOBJ(ColorObj, this, Active Col).Get(&active);
+			cnv.RRect(inner_rec, active, GETOBJ(Int, this, Roundness).GetVal());
+		}
+		else {
+			Color inactive;
+			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive);
+			cnv.RRect(inner_rec, inactive, GETOBJ(Int, this, Roundness).GetVal());
+		}
+	}
+
+	virtual ~Blank() {}
+};
+
+class Button : public Blank {
 
 	Button& operator = (const Button& in);
 
-	Button(const Button& in) : Widget(in) {
+	Button(const Button& in) : Blank(in) {
 		// BAD!
 		label = (Label*)(&(GETOBJ(ObList, this, Childs).GetList())[0]);
 	}
@@ -52,7 +111,7 @@ public:
 		return *new Button(*this);
 	}
 
-	Button(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+	Button(Obj* prnt, Rect<float> _rect) : Blank(prnt, _rect) {
 		RegisterType(ObjType("Button"));
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.2f, 0.2f, 0.2f, .9f));
@@ -71,23 +130,6 @@ public:
 		}
 	}
 
-	void DrawBody(Window& cnv, vec2<float> crs) {
-		if (state == WidgetState::ACTIVE) {
-			Color activate_col;
-			GETOBJ(ColorObj, this, Activate Col).Get(&activate_col);
-			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), activate_col, 7);
-		}
-		else if (state != WidgetState::NONE) {
-			Color active_col;
-			GETOBJ(ColorObj, this, Active Col).Get(&active_col);
-			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), active_col, 7);
-		}
-		else {
-			Color inactive_col;
-			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive_col);
-			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), inactive_col, 7);
-		}
-	}
 
 	virtual ~Button() {}
 };
@@ -294,13 +336,13 @@ public:
 	virtual ~Group() {}
 };
 
-class Menu : public Widget {
+class Menu : public Blank {
 
 	Menu& operator = (const Menu& in);
 
 public:
 
-	Menu(const Menu& in) : Widget(in) {
+	Menu(const Menu& in) : Blank(in) {
 	}
 
 	virtual Menu& Instance() {
@@ -312,14 +354,12 @@ public:
 	Button* collapse_btn;
 	Label* title;
 
-	Menu(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
+	Menu(Obj* prnt, Rect<float> _rect) : Blank(prnt, _rect) {
 		RegisterType(ObjType("Menu"));
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));
 		ADDOBJ(ColorObj, Text Col, *this, (this)).Set(Color(0.9f, 0.9f, 0.9f, .9f));
-
-		ADDOBJ(Int, Roundness, *this, (this)).Set(7);
 		
 		topbar = new Group(this, Rect<float>(40, 5, rect.size.x - 5, 30), "Topbar");
 		GETOBJ(ObList, this, Childs).AddObj(topbar);
@@ -350,20 +390,6 @@ public:
 		else {
 			rect.size.y = body->rect.size.y + body->rect.pos.y + 5;
 			GETOBJ(Bool, body, Hiden).Set(false);
-		}
-	}
-
-	void DrawBody(Window& cnv, vec2<float> crs) {
-
-		if (state != WidgetState::NONE) {
-			Color active;
-			GETOBJ(ColorObj, this, Active Col).Get(&active);
-			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), active, GETOBJ(Int, this, Roundness).GetVal());
-		}
-		else {
-			Color inactive;
-			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive);
-			cnv.RRect(Rect<float>(0, 0, rect.size.x, rect.size.y), inactive, GETOBJ(Int, this, Roundness).GetVal());
 		}
 	}
 
@@ -411,10 +437,6 @@ public:
 		}
 	}
 	
-	void DrawBody(Window& cnv, vec2<float> crs) {
-		Menu::DrawBody(cnv, crs);
-	}
-
 	virtual ~LinkMenu() {}
 };
 
@@ -623,10 +645,10 @@ public:
 };
 
 
-class Workspace : public Menu {
+class Workspace : public Blank {
 
 	Workspace& operator = (const Workspace& in);
-	Workspace(const Workspace& in) : Menu(in) {
+	Workspace(const Workspace& in) : Blank(in) {
 	}
 
 public:
@@ -638,20 +660,23 @@ public:
 	Button* show_ctx = nullptr;
 	ContextMenu* ctxm = nullptr;
 
-	Workspace(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest) : Menu(prnt, _rect) {
+	Workspace(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest) : Blank(prnt, _rect) {
 		RegisterType(ObjType("Workspace"));
 
-		ctxm = new ContextMenu(body, Rect<float>(700, 40, 300, 550), copy_op, copy_dest);
+		ctxm = new ContextMenu(this, Rect<float>(10, 45, 300, 550), copy_op, copy_dest);
 		GETOBJ(Link, ctxm, Target).SetLink(this);
-		GETOBJ(ObList, body, Childs).GetList().PushBack(ctxm);
+		GETOBJ(ObList, this, Childs).GetList().PushBack(ctxm);
 
-		GETOBJ(Bool, collapse_btn, Hiden).Set(true);
 		GETOBJ(Int, this, Roundness).Set(15);
+		GETOBJ(Int, this, Border Size).Set(3);
 
-		title->text->Assign(" Nodes 1.2 Beta ");
+		Label* title = new Label(this, Rect<float>(10, 10, 60, 30));
+		GETOBJ(ObList, this, Childs).AddObj(title);
+		title->text->Assign(" Nodes 1.3 Beta ");
+		GETOBJ(ColorObj, title, Col).Set(Color(0.9, 0.9, 0.87, 1));
 
-		show_ctx = new Button(topbar, Rect<float>(200, 5, 100, 25));
-		GETOBJ(ObList, topbar, Childs).GetList().PushBack(show_ctx);
+		show_ctx = new Button(this, Rect<float>(210, 10, 100, 25));
+		GETOBJ(ObList, this, Childs).GetList().PushBack(show_ctx);
 		show_ctx->label->text->Assign(" Data View ");
 		GETOBJ(ColorObj, show_ctx, Inactive Col).Set(Color(0.13, 0.13, 0.13, 1));
 		GETOBJ(ColorObj, show_ctx, Active Col).Set(Color(0.15, 0.15, 0.15, 1));
@@ -659,39 +684,16 @@ public:
 		GETOBJ(ColorObj, this, Inactive Col).Set(Color(0.17, 0.17, 0.18, 1));
 		GETOBJ(ColorObj, this, Active Col).Set(Color(0.2, 0.2, 0.21, 1));
 
-		GETOBJ(ColorObj, title, Col).Set(Color(0.9, 0.9, 0.87, 1));
-		GETOBJ(Float, &GETOBJ(Obj, topbar, Rect), Pos X).Set(7);
-		GETOBJ(Float, &GETOBJ(Obj, topbar, Rect), Size X).Set(1000);
-		GETOBJ(Float, &GETOBJ(Obj, topbar, Rect), Pos Y).Set(10);
+		Label* welcom = new Label(this, Rect<float>(300, 150, 300, 200));
+		welcom->text->Assign("   Nodes startup editor ");
+		GETOBJ(Int, welcom, Text Size).Set(25);
+		//GETOBJ(ObList, this, Childs).GetList().PushBack(welcom);
 
 
-	}
-
-	void DrawBody(Window& cnv, vec2<float> crs) {
-
-		float padding = 2;
-		Rect<float> inner_rec(0 + padding, 0 + padding, rect.size.x - padding * 2, rect.size.y - padding * 2);
-		Rect<float> outer_rec(0, 0, rect.size.x, rect.size.y);
-
-		cnv.RRect(outer_rec, Color(0.1, 0.1, 0.1, 1), GETOBJ(Int, this, Roundness).GetVal());
-
-		if (state != WidgetState::NONE) {
-			//cnv.RRect(outer_rec, Color(0, 0, 0, 1), GETOBJ(Int, this, Roundness).GetVal());
-
-			Color active;
-			GETOBJ(ColorObj, this, Active Col).Get(&active);
-			cnv.RRect(inner_rec, active, GETOBJ(Int, this, Roundness).GetVal());
-		}
-		else {
-			Color inactive;
-			GETOBJ(ColorObj, this, Inactive Col).Get(&inactive);
-			cnv.RRect(inner_rec, inactive, GETOBJ(Int, this, Roundness).GetVal());
-		}
-
+		GETOBJ(Bool, ctxm, Hiden).Set(1);
 	}
 
 	void ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
-		Menu::ProcBody(requests, tui, triggers);
 
 		if (show_ctx->state == WidgetState::CONFIRM) {
 			GETOBJ(Bool, ctxm, Hiden).Set(!GETOBJ(Bool, ctxm, Hiden).GetVal());

@@ -75,3 +75,46 @@ public:
 		state = OpState::FINISHED;
 	}
 };
+
+
+class SaveProgramm : public Operator {
+
+	SaveProgramm& operator = (const SaveProgramm& in);
+	SaveProgramm(const SaveProgramm& in) : Operator(in) {
+		int g = 0;
+	}
+
+
+public:
+
+	SaveProgramm(Obj* prnt) : Operator(prnt) {
+		RegisterType(ObjType("Save Programm"));
+
+		ObDict& args = GETOBJ(ObDict, this, Interface);
+
+		String* dest = new String(&args);
+		args.AddObj(dest, "Destination Folder");
+
+		
+		String* filename = new String(&args);
+		args.AddObj(filename, "File Name");
+	}
+
+	virtual SaveProgramm& Instance() {
+		return *new SaveProgramm(*this);
+	}
+
+	bool Poll() {
+		return true;
+	}
+
+	void Invoke() {
+		DictObj& args = ((ObDict*)GETOBJ(Link, this, Args).GetLink())->GetDict();
+
+		String* dest = ((String*)args.Get("Destination Folder"));
+		String* filename = ((String*)args.Get("File Name"));
+
+
+		state = OpState::FINISHED;
+	}
+};

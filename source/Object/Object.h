@@ -103,6 +103,20 @@ public:
 
 	virtual bool from_string(Str* str) { return false; }
 
+	virtual int save_size() {
+		return sizeof(Obj);
+	}
+
+	virtual void save(void* mem) {
+		Obj* save_obj = (Obj*)mem;
+
+		save_obj->type = type;
+		save_obj->prev = prev;
+		save_obj->next = next;
+		save_obj->prnt = prnt;
+	}
+
+
 	virtual ~Obj() {
 		if (next) {
 			next->next = prev;

@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\source\Types\Geometry\private\Mesh.cpp" />
     <ClCompile Include="..\..\source\Types\Geometry\private\Ray.cpp" />
     <ClCompile Include="..\..\source\Types\Geometry\private\Trig.cpp" />
+    <ClCompile Include="..\..\source\Types\IO\private\File.cpp" />
     <ClCompile Include="..\..\source\Types\IO\private\Parser.cpp" />
     <ClCompile Include="..\..\source\Types\Keyboard\Keyboard.cpp" />
     <ClCompile Include="..\..\source\Types\Macros.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\..\source\Types\Geometry\Trig.h" />
     <ClInclude Include="..\..\source\Types\Geometry\Vec2.h" />
     <ClInclude Include="..\..\source\Types\Geometry\Vec3.h" />
+    <ClInclude Include="..\..\source\Types\IO\File.h" />
     <ClInclude Include="..\..\source\Types\IO\Parser.h" />
     <ClInclude Include="..\..\source\Types\Keyboard\Keyboard.h" />
     <ClInclude Include="..\..\source\Types\Macros.h" />

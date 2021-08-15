@@ -192,7 +192,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\..\source\Types;$(SolutionDir)\..\source\Object;$(SolutionDir)\..\source\Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
