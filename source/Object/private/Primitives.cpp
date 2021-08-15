@@ -85,7 +85,17 @@ int ObListIter::Len() {
 
 ObList::ObList(const ObList& in) : Obj(in) {
 	list_type = in.list_type;
-	list = in.list;
+	
+	list.Clear();
+
+	const Node<Obj>* in_iter = in.list.First();
+	while (in_iter) { 
+		Obj& copy = in_iter->data->Instance();
+		copy.prnt = this;
+		list.PushBack(&copy);
+		in_iter = in_iter->next;
+	}
+
 	base_class = in.base_class;
 }
 

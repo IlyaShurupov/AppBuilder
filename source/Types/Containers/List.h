@@ -42,6 +42,10 @@ public:
 
 	inline Node<Type>* First() { return first; }
 	inline Node<Type>* Last() { return last; }
+
+	inline const Node<Type>* First() const { return first; }
+	inline const Node<Type>* Last() const { return last; }
+	
 	inline int Len() { return length; }
 
 	void Attach(Node<Type>* node, Node<Type>* node_to) {

@@ -89,7 +89,7 @@ ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
 	target->Init("Obj", true);
 
-	past_obj = new Button(topbar, Rect<float>(100, 5, 100, 25));
+	past_obj = new Button(topbar, Rect<float>(140, 5, 100, 25));
 	past_obj->label->text->Assign(" Past Obj ");
 	GETOBJ(ObList, topbar, Childs).AddObj(past_obj);
 
@@ -166,7 +166,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 		list_menu->append_item = ListMenu::ButtonAppendItem;
 		list_menu->update_item = ListMenu::ButtonUpdateItem;
 		list_menu->widget_type = "Button";
-		list_menu->title->text->Assign("List Menu");
+		list_menu->title->text->Assign(" Container Items");
 		GETOBJ(ObList, body, Childs).AddObj(list_menu);
 
 		list_menu->clipboard_obj_dir = copy_dest;
@@ -181,7 +181,7 @@ ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* c
 		dict_menu->append_item = ListMenu::ButtonAppendItem;
 		dict_menu->update_item = ListMenu::ButtonUpdateItem;
 		dict_menu->widget_type = "Button";
-		dict_menu->title->text->Assign("Dict Menu");
+		dict_menu->title->text->Assign("Obj Properties");
 
 		GETOBJ(Link, dict_menu, Target).SetLink(dictlist);
 		GETOBJ(ObList, body, Childs).AddObj(dict_menu);

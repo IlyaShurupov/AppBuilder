@@ -61,7 +61,7 @@ void Window::BeginFrame() {
 	// Update and render
 	glViewport(0, 0, fbWidth, fbHeight);
 
-	glClearColor(0.3f, 0.3f, 0.32f, 0.99f);
+	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	nvgBeginFrame(nvg, (float)winWidth, (float)winHeight, pxRatio);
 }
