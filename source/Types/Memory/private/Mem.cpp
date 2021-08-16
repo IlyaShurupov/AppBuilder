@@ -15,16 +15,6 @@ typedef char int1;
 #define WRAP_FILL_VAL 1  // bytes
 #endif
 
-struct MemHead {
-  MemHead* next;
-  MemHead* prev;
-  uint8 size;
-  const char* type;
-  const char* file;
-  uint8 line;
-  uint8 time;
-};
-
 MemHead* mem_debug_entry_ptr;
 uint8 num = 0;
 
@@ -122,13 +112,12 @@ void operator delete (void* ptr) {
   free(mhptr);
 }
 
-void operator delete(void* p, const char* file, int line)
-{
+void operator delete(void* p, const char* file, int line) {
   delete p;
 }
 
-int mem_allocated_size() {
-  int size = 0;
+uint8 mem_allocated_size() {
+  uint8 size = 0;
   MemHead* alloc_iter = mem_debug_entry_ptr;
   while (alloc_iter) {
     size += alloc_iter->size;
@@ -140,4 +129,15 @@ int mem_allocated_size() {
 
 bool init_mem_debug() {
   return true;
+}
+
+
+void mem_test_types() {
+  int size = 0;
+  size = sizeof(int1);
+  size = sizeof(int2);
+  size = sizeof(int4);
+  size = sizeof(int8);
+  size = sizeof(alnf);
+  size = sizeof(alni);
 }

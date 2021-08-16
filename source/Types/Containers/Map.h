@@ -34,8 +34,8 @@ class HashMap {
 public:
 
 	HashNode<V, K>** table;
-	int nslots;
-	int nentries = 0;
+	alni nslots;
+	alni nentries = 0;
 	bool del_values = true;
 
 	Hashfunc hash;
@@ -165,7 +165,7 @@ public:
 		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(this);  
 	}
 
-	int end() {
+	alni end() {
 		return nslots;
 	}
 

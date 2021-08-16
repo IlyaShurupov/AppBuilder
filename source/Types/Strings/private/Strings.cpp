@@ -171,7 +171,7 @@ void Str::coppy(Str* str, Range range) {
   }
 }
 
-str_idx Str::find(Str& string, Range range) {
+str_idx Str::find(Str& string, Range range) const {
   for (str_idx i = range.strt; i < range.end; i++) {
 
     str_idx m = 0;
@@ -189,7 +189,7 @@ str_idx Str::find(Str& string, Range range) {
   return -1;
 }
 
-str_idx Str::find(const char character, Range range) {
+str_idx Str::find(const char character, Range range) const {
   for (str_idx i = range.strt; i <= range.end; i++) {
     if (character == str[i]) {
       return i;
@@ -198,7 +198,7 @@ str_idx Str::find(const char character, Range range) {
   return -1;
 }
 
-str_idx Str::rfind(const char character, Range range) {
+str_idx Str::rfind(const char character, Range range) const {
   for (str_idx i = range.end; i >= range.strt; i--) {
     if (character == str[i]) {
       return i;
@@ -227,8 +227,8 @@ void to_string(Str* str, int val) {
 }
 
 void to_string(Str* str, int8 val) {
-  int iter = val;
-  int len = 0;
+  alni iter = val;
+  alni len = 0;
   while (iter /= 10) {
     len++;
   }
@@ -241,7 +241,7 @@ void to_string(Str* str, int8 val) {
 
   val = ABS(val);
 
-  for (int i = len - 1; i >= int(neg); i--) {
+  for (alni i = len - 1; i >= int(neg); i--) {
     str->str[i] = (char)(val % 10 + 48);
     val /= 10;
   }
@@ -251,11 +251,11 @@ void to_string(Str* str, int8 val) {
   }
 }
 
-void to_string(Str* str, float val) {
-  int left_side = (int)val;
-  int mantissa = (val - left_side) * 100000;
+void to_string(Str* str, alnf val) {
+  alni left_side = (alni)val;
+  alni mantissa = (val - left_side) * 100000;
 
-  int len = 3;
+  alni len = 3;
 
   while (left_side /= 10) {
     len++;
@@ -266,7 +266,7 @@ void to_string(Str* str, float val) {
   }
 
   str->alloc(len);
-  int ret = snprintf(str->str, len * sizeof(char) + 1, "%f", val);
+  alni ret = snprintf(str->str, len * sizeof(char) + 1, "%f", val);
 }
 
 void to_string(Str* str, bool val) {
@@ -308,4 +308,21 @@ bool str_from_string(Str* str, bool& val) {
 
 void cnsl(const Str& str) {
   printf(str.str);
+}
+
+
+int find_char(const char* c_str, int start, char val) {
+  for (int idx = start; c_str[idx] != '\0'; idx++) {
+    if (val == c_str[idx]) {
+      return idx;
+    }
+  }
+  return -1;
+}
+
+int cstr_len(const char* c_str) {
+  int idx = 0;
+  for (; c_str[idx] != '\0'; idx++) {
+  }
+  return idx;
 }

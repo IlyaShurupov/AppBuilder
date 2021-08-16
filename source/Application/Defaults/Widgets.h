@@ -685,9 +685,9 @@ public:
 		GETOBJ(ColorObj, this, Active Col).Set(Color(0.2, 0.2, 0.21, 1));
 
 		Label* welcom = new Label(this, Rect<float>(300, 150, 300, 200));
-		welcom->text->Assign("   Nodes startup editor ");
+		welcom->text->Assign("    Nodes startup editor \nfff \n\ngg");
 		GETOBJ(Int, welcom, Text Size).Set(25);
-		//GETOBJ(ObList, this, Childs).GetList().PushBack(welcom);
+		GETOBJ(ObList, this, Childs).GetList().PushBack(welcom);
 
 
 		GETOBJ(Bool, ctxm, Hiden).Set(1);

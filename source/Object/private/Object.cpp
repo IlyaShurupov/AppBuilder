@@ -1,9 +1,7 @@
 
 #include "Object.h"
 
-
 Obj* objs_entry = nullptr;
-
 
 Obj* CopyObj::operator()(Obj* in) {
 	return &in->Instance();
@@ -28,6 +26,10 @@ bool ObjType::IsPrnt(STRR prnt_id) {
 	return false;
 }
 
+
+void Obj::set_obj_entry(Obj* new_entry) {
+	objs_entry = new_entry;
+}
 
 Obj::Obj(const Obj& in) {
 	props = in.props;
@@ -110,7 +112,7 @@ void Obj::AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType)) {
 }
 
 void Obj::RemoveOnModCallBack(void (*call)(Obj* ths, ModType)) {
-	for (int i = 0; i < OnModCallBacks.Len(); i ++) {
+	for (uint4 i = 0; i < OnModCallBacks.Len(); i ++) {
 		if (OnModCallBacks[i].callback == call) {
 			OnModCallBacks.Remove(i);
 		}

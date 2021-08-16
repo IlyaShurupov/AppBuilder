@@ -1,14 +1,14 @@
 
 #include "Macros.h"
 
-int FltToInt(float f) {
-	union { float f; aligned i; } u;
+alni FltToInt(float f) {
+	union { float f; alni i; } u;
 	u.f = f;
 	return u.i;
 }
 
-float IntToFlt(aligned i) {
-	union { float f; aligned i; } u;
+float IntToFlt(alni i) {
+	union { float f; alni i; } u;
 	u.i = i;
 	return u.f;
 }

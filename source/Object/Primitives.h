@@ -117,7 +117,7 @@ public:
 
 class Int : public Obj {
 
-	aligned val = 0;
+	alni val = 0;
 
 	Int& operator = (const Int& in);
 
@@ -125,17 +125,17 @@ public:
 
 	Int(const Int& in);
 
-	aligned max = ALIGNED_MAX;
-	aligned min = ALIGNED_MIN;
+	alni max = ALIGNED_MAX;
+	alni min = ALIGNED_MIN;
 
 	Int(Obj* prnt);
 	virtual Int& Instance() {
 		return *new Int(*this);
 	}
 
-	bool Assign(aligned _val, aligned _min, aligned _max);
-	aligned GetVal();
-	bool Set(aligned _val);
+	bool Assign(alni _val, alni _min, alni _max);
+	alni GetVal();
+	bool Set(alni _val);
 	bool Equal(const Obj& obj);
 	Str as_string();
 	bool from_string(Str* str);
@@ -145,7 +145,7 @@ public:
 
 class Float : public Obj {
 
-	float val = 0;
+	alnf val = 0;
 
 	Float& operator = (const Float& in);
 

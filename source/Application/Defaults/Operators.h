@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Thread/Thread.h"
+#include "IO/File.h"
+
+extern Obj* objs_entry;
 
 class QuitProgram : public Operator {
 
@@ -93,11 +96,7 @@ public:
 		ObDict& args = GETOBJ(ObDict, this, Interface);
 
 		String* dest = new String(&args);
-		args.AddObj(dest, "Destination Folder");
-
-		
-		String* filename = new String(&args);
-		args.AddObj(filename, "File Name");
+		args.AddObj(dest, "File Path");
 	}
 
 	virtual SaveProgramm& Instance() {
@@ -105,16 +104,99 @@ public:
 	}
 
 	bool Poll() {
+		// check paths
 		return true;
 	}
 
 	void Invoke() {
+		// objects cannot share non object pointers
+		// each allocated object has alloc header with tmp 8b data
+		
+		// file layout :
+		// ------------------------
+		// |			header 512b 		|
+		// ------------------------ 
+		// |      obj size        |   
+		// |	    obj base        |		<-----|
+		// |		obj static dt     |					|
+		// |  obj dyn alloc data  |					|
+		// ------------------------					|
+		// |				... 					|					|
+		//																	|
+		// mem layout :											|
+		// ------------------------					|																		
+		// |	alloc mem header    | reserved - new pointer in file adress space 
+		// ------------------------ 
+		// |	    obj base        |	
+		// |		obj static dt     |
+		// ------------------------ 
+		// |				... 					|
+		// -------------------------
+		// |  obj dyn alloc data  |
+		//--------------------------
+		// |				... 					|
+
+
+		// getting args
 		DictObj& args = ((ObDict*)GETOBJ(Link, this, Args).GetLink())->GetDict();
+		String* dest = ((String*)args.Get("File Path"));
 
-		String* dest = ((String*)args.Get("Destination Folder"));
-		String* filename = ((String*)args.Get("File Name"));
+		// opening file
+		File file;
+		if (file.create(dest->GetStr())) {
 
+			// reserve for header
+			file.fill(uint4(0), 513);
+			file.adress = 512;
+
+			clear_flags();
+
+			// save all objects
+			save_obj(&file, objs_entry);
+
+		}
 
 		state = OpState::FINISHED;
+	}
+
+	// returns file space adress of saved object
+	static int save_obj(File* file, Obj* obj) {
+		
+		MemHead* allhead = MEMH_FROM_PTR(obj);
+
+		// check if already
+		alni obj_file_adress = allhead->reserved;
+		if (!obj_file_adress) {
+
+			// reserve for obj size
+			file->adress += 8;
+
+			obj_file_adress = file->adress;
+
+			// save new pointer in file adress space
+			allhead->reserved = obj_file_adress;
+
+			// adress changes accordingly to the saved data size
+			// all objects links saved through passed procedure adress
+			// all other links save manually by object
+			uint8 end_adress = obj->save_to_file(save_obj, file, obj_file_adress);
+
+			// save size
+			uint8 size_val = end_adress - obj_file_adress;
+			file->write<uint8>(&size_val, obj_file_adress - 8);
+
+			file->adress = end_adress;
+		}
+
+		return obj_file_adress;
+	}
+
+	void clear_flags() {
+		Obj* obj = objs_entry;
+		while (obj) {
+			MemHead* allhead = MEMH_FROM_PTR(obj);
+			allhead->reserved = 0;
+			obj = obj->prev;
+		}
 	}
 };

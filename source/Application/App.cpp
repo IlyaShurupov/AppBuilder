@@ -62,6 +62,9 @@ void Application::Compose() {
     OpHolder* opholder_copy = new OpHolder(&OpHolders, op_copy);
     OpHolders.AddObj(opholder_copy);
 
+    Operator* op_save = new SaveProgramm(nullptr);
+    OpHolder* opholder_save = new OpHolder(&OpHolders, op_save);
+    OpHolders.AddObj(opholder_save);
 
     // Adding TUI
     TUI* tui = new TUI(&GETOBJ(ObList, this, UIs));
@@ -88,7 +91,11 @@ void Application::Compose() {
 
       AddKeyInput(tui, ".", ">", KEY_PERIOD, 1);
       AddKeyInput(tui, "-", "_", KEY_MINUS, 1);
-      AddKeyInput(tui, "+", "+", KEY_PLUS, 1);
+      AddKeyInput(tui, "=", "+", KEY_PLUS, 1);
+
+      AddKeyInput(tui, "/", "?", KEY_OEM_2, 1);
+      AddKeyInput(tui, ";", ":", KEY_OEM_1, 1);
+      AddKeyInput(tui, "\\", "|", KEY_OEM_5, 1);
 
       AddKeyInput(tui, " ", " ", KEY_SPACE, 1);
 

@@ -4,6 +4,8 @@
 
 int main() {
 
+	mem_test_types();
+
 	Obj* root = new Obj(nullptr);
 	root->RegisterType(ObjType("Root"));
 

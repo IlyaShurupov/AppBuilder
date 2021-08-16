@@ -200,15 +200,15 @@ Int::Int(const Int& in) : Obj(in) {
 	min = in.min;
 }
 
-aligned max = ALIGNED_MAX;
-aligned min = ALIGNED_MIN;
+alni max = ALIGNED_MAX;
+alni min = ALIGNED_MIN;
 
 Int::Int(Obj* prnt) : Obj(prnt) {
 	RegisterType(ObjType("Int"));
 }
 
 
-bool Int::Assign(aligned _val, aligned _min, aligned _max) {
+bool Int::Assign(alni _val, alni _min, alni _max) {
 	if (!CanModify()) {
 		return false;
 	}
@@ -219,11 +219,11 @@ bool Int::Assign(aligned _val, aligned _min, aligned _max) {
 	return true;
 }
 
-aligned Int::GetVal() {
+alni Int::GetVal() {
 	return val;
 }
 
-bool Int::Set(aligned _val) {
+bool Int::Set(alni _val) {
 	if (!CanModify()) {
 		return false;
 	}

@@ -99,6 +99,7 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
 	Menu::ProcBody(requests, tui, triggers);
 
+	// BAD! target can be deleted make change callback
 	Obj* container_obj = GETOBJ(Link, this, Target).GetLink();
 	
 	if (!container_obj) {

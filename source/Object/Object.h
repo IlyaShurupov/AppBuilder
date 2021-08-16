@@ -62,6 +62,8 @@ class Obj {
 
 	Obj& operator=(const Obj& in);
 
+	void set_obj_entry(Obj* new_entry);
+
 public:
 
 	Obj(const Obj& in);
@@ -103,26 +105,31 @@ public:
 
 	virtual bool from_string(Str* str) { return false; }
 
-	virtual int save_size() {
+	// savings & loadings from file
+	virtual int static_size() {
 		return sizeof(Obj);
 	}
 
-	virtual void save(void* mem) {
-		Obj* save_obj = (Obj*)mem;
-
-		save_obj->type = type;
-		save_obj->prev = prev;
-		save_obj->next = next;
-		save_obj->prnt = prnt;
+	// returns file_adress + size needed
+	virtual int save_to_file(int (*save_obj)(File* file, Obj* obj), File* file, int file_adress) {
+		uint8 val = 1;
+		file->write<uint8>(&val, file_adress);
+		return file_adress + 8;
 	}
 
+	virtual void save_dyn_alloc_to_file() {
+	}
 
 	virtual ~Obj() {
 		if (next) {
-			next->next = prev;
+			next->prev = prev;
 		}
+		else {
+			set_obj_entry(prev);
+		}
+		
 		if (prev) {
-			prev->prev = next;
+			prev->next = next;
 		}
 	}
 };

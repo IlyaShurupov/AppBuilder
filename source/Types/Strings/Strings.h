@@ -5,7 +5,7 @@
 struct Str;
 
 void to_string(Str* str, int val);
-void to_string(Str* str, float val);
+void to_string(Str* str, alnf val);
 void to_string(Str* str, bool val);
 void to_string(Str* str, char val);
 
@@ -20,7 +20,7 @@ bool str_from_string(Str* str, float& val);
 bool str_from_string(Str* str, bool& val);
 
 
-typedef long int str_idx;
+typedef alni str_idx;
 
 struct Range {
   str_idx strt;
@@ -76,9 +76,9 @@ struct Str {
   
   void coppy(Str* str, Range range);
 
-  str_idx find(Str& string, Range range);
-  str_idx find(const char character, Range range);
-  str_idx rfind(const char character, Range range);
+  str_idx find(Str& string, Range range) const;
+  str_idx find(const char character, Range range) const;
+  str_idx rfind(const char character, Range range) const;
 
   void trim(Range range);
 
@@ -97,3 +97,6 @@ struct Str {
 #endif 
 
 void cnsl(const Str& str);
+
+int find_char(const char* c_str, int start, char val);
+int cstr_len(const char* c_str);
