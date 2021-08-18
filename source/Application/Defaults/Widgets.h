@@ -19,7 +19,7 @@ public:
 	String* text;
 
 	Label(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
-		RegisterType(ObjType("Label"));
+		RegisterType("Label");
 
 		text = &ADDOBJ(String, Text, *this, (this));
 		text->Assign("Label");
@@ -52,7 +52,7 @@ public:
 	}
 
 	Blank(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
-		RegisterType(ObjType("Blank Widget"));
+		RegisterType("Blank Widget");
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.2f, 0.2f, 0.2f, .9f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.23f, 0.23f, 0.23f, .9f));
@@ -112,7 +112,7 @@ public:
 	}
 
 	Button(Obj* prnt, Rect<float> _rect) : Blank(prnt, _rect) {
-		RegisterType(ObjType("Button"));
+		RegisterType("Button");
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.2f, 0.2f, 0.2f, .9f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.23f, 0.23f, 0.23f, .9f));
@@ -148,7 +148,7 @@ public:
 	}
 
 	Scroller(Obj* prnt) : Widget(prnt, Rect<float>()) {
-		RegisterType(ObjType("Scroller"));
+		RegisterType("Scroller");
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.25f, 0.25f, 0.25f, 1.f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.25f, 0.25f, 0.25f, 1.f));
@@ -193,7 +193,7 @@ public:
 
 			for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
 				Widget* widget = (Widget*)child.Data();
-				if (widget->type.idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
+				if (widget->type->idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
 					continue;
 				}
 
@@ -257,7 +257,7 @@ public:
 		for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
 			Widget* widget = (Widget*)child.Data();
 
-			if (widget->type.idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
+			if (widget->type->idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
 				continue;
 			}
 
@@ -285,7 +285,7 @@ public:
 
 			for (auto child : GETOBJ(ObList, target, Childs).GetList()) {
 				Widget* widget = (Widget*)child.Data();
-				if (widget->type.idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
+				if (widget->type->idname == "Scroller" || GETOBJ(Bool, widget, Hiden).GetVal()) {
 					continue;
 				}
 
@@ -321,7 +321,7 @@ public:
 	Scroller* scroller_x;
 
 	Group(Obj* prnt, Rect<float> _rect, const Str& descrip) : Widget(prnt, _rect, descrip) {
-		RegisterType(ObjType("Group"));
+		RegisterType("Group");
 
 		scroller = new Scroller(this);
 		GETOBJ(Link, scroller, Target).SetLink(this);
@@ -355,7 +355,7 @@ public:
 	Label* title;
 
 	Menu(Obj* prnt, Rect<float> _rect) : Blank(prnt, _rect) {
-		RegisterType(ObjType("Menu"));
+		RegisterType("Menu");
 
 		ADDOBJ(ColorObj, Inactive Col, *this, (this)).Set(Color(0.1f, 0.1f, 0.1f, .9f));
 		ADDOBJ(ColorObj, Active Col, *this, (this)).Set(Color(0.13f, 0.13f, 0.13f, .9f));
@@ -411,7 +411,7 @@ public:
 	Button* past;
 
 	LinkMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
-		RegisterType(ObjType("LinkMenu"));
+		RegisterType("LinkMenu");
 
 		ADDOBJ(Link, Target, *this, (this)).Init("Link", true);
 
@@ -482,7 +482,7 @@ class ListMenu : public Menu {
 		int widget_items_len = 0;
 
 		for (auto child : *widget_list) {
-			if (child->type.IsPrnt(widget_type)) {
+			if (child->type->IsPrnt(widget_type)) {
 				widget_items_len++;
 			}
 		}
@@ -492,7 +492,7 @@ class ListMenu : public Menu {
 
 		Node<Obj>* widget_node = widget_list->First();
 
-		while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+		while (widget_node && !widget_node->data->type->IsPrnt(widget_type)) {
 			widget_node = widget_node->next;
 		}
 
@@ -504,7 +504,7 @@ class ListMenu : public Menu {
 			++target_list;
 			widget_node = widget_node->next;
 
-			while (widget_node && !widget_node->data->type.IsPrnt(widget_type)) {
+			while (widget_node && !widget_node->data->type->IsPrnt(widget_type)) {
 				widget_node = widget_node->next;
 			}
 		}
@@ -512,7 +512,7 @@ class ListMenu : public Menu {
 		if (diff < 0) {
 			Node<Obj>* widget_node = widget_list->Last();
 			while (diff) {
-				if (widget_node->data->type.IsPrnt(widget_type)) {
+				if (widget_node->data->type->IsPrnt(widget_type)) {
 					Node<Obj>* del_node = widget_node;
 					widget_node = widget_node->prev;
 					widget_list->DelNode(del_node);
@@ -528,7 +528,7 @@ class ListMenu : public Menu {
 			float pos = -FLT_MAX;
 			if (widget_items_len) {
 				for (auto item : *widget_list) {
-					if (!item->type.IsPrnt(widget_type)) {
+					if (!item->type->IsPrnt(widget_type)) {
 						continue;
 					}
 					float item_pos = ((Widget*)item.Data())->rect.size_vec_w().y;
@@ -591,7 +591,7 @@ public:
 	}
 
 	static void LabelUpdateItem(Widget* widget, Obj* obj, Str* suggested) {
-		((Label*)widget)->text->Assign(suggested ? *suggested : obj->type.idname);
+		((Label*)widget)->text->Assign(suggested ? *suggested : obj->type->idname);
 	}
 
 	static Widget* ButtonAppendItem(Obj* parent, const Rect<float>& rect) {
@@ -599,7 +599,7 @@ public:
 	}
 
 	static void ButtonUpdateItem(Widget* widget, Obj* obj, Str* suggested) {
-		((Button*)widget)->label->text->Assign(suggested ? *suggested : obj->type.idname);
+		((Button*)widget)->label->text->Assign(suggested ? *suggested : obj->type->idname);
 	}
 
 
@@ -661,7 +661,7 @@ public:
 	ContextMenu* ctxm = nullptr;
 
 	Workspace(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest) : Blank(prnt, _rect) {
-		RegisterType(ObjType("Workspace"));
+		RegisterType("Workspace");
 
 		ctxm = new ContextMenu(this, Rect<float>(10, 45, 300, 550), copy_op, copy_dest);
 		GETOBJ(Link, ctxm, Target).SetLink(this);

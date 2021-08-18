@@ -7,7 +7,7 @@ int main() {
 	mem_test_types();
 
 	Obj* root = new Obj(nullptr);
-	root->RegisterType(ObjType("Root"));
+	root->RegisterType("Root");
 
 	Application* app = &ADDOBJ(Application, Test App, *root, (root));
 

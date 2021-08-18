@@ -12,7 +12,7 @@ class UI : public Obj {
     UI(const UI& in) : Obj(in) {} 
 
     UI(Obj* prnt) : Obj(prnt) {
-        RegisterType(ObjType("UI"));
+        RegisterType("UI");
     }
 
     virtual UI& Instance() {

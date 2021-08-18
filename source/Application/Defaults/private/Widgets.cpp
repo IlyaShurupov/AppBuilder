@@ -8,7 +8,7 @@ InputField::InputField(const InputField& in) : Widget(in) {
 }
 
 InputField::InputField(Obj* prnt, Rect<float> _rect) : Widget(prnt, _rect) {
-	RegisterType(ObjType("InputField"));
+	RegisterType("InputField");
 
 	ADDOBJ(String, Input, *this, (this));
 	ADDOBJ(Link, Target, *this, (this)).Init("Obj", true);
@@ -84,7 +84,7 @@ ListMenu::ListMenu(const ListMenu& in) : Menu(in) {
 }
 
 ListMenu::ListMenu(Obj* prnt, Rect<float> _rect) : Menu(prnt, _rect) {
-	RegisterType(ObjType("ListMenu"));
+	RegisterType("ListMenu");
 
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
 	target->Init("Obj", true);
@@ -106,11 +106,11 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 		return;
 	}
 
-	if (container_obj->type.IsPrnt("ObDict")) {
+	if (container_obj->type->IsPrnt("ObDict")) {
 		target_is_self = false;
 		proc_by_type<ObDict, ObDictIter>();
 	}
-	else if (container_obj->type.IsPrnt("ObList")) {
+	else if (container_obj->type->IsPrnt("ObList")) {
 		if (container_obj == &GETOBJ(ObList, this->body, Childs)) {
 			target_is_self = true;
 
@@ -118,7 +118,7 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 
 			while (widget_node) {
 
-				if (widget_node->data->type.IsPrnt(widget_type)) {
+				if (widget_node->data->type->IsPrnt(widget_type)) {
 					Node<Obj>* del_node = widget_node;
 					widget_node = widget_node->prev;
 					body->childs->DelNode(del_node);
@@ -140,10 +140,10 @@ void ListMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers) {
 			Obj* copy_obj = &clipboard_obj_dir->GetChld("Clipboard Object");
 			copy_obj->prnt = container_obj;
 
-			if (container_obj->type.IsPrnt("ObDict")) {
+			if (container_obj->type->IsPrnt("ObDict")) {
 				((ObDict*)container_obj)->GetDict().Put("Clipboard Obj", copy_obj);
 			}
-			else if (container_obj->type.IsPrnt("ObList")) {
+			else if (container_obj->type->IsPrnt("ObList")) {
 				((ObList*)container_obj)->GetList().PushBack(copy_obj);
 			}
 		}
@@ -155,7 +155,7 @@ ContextMenu::ContextMenu(const ContextMenu& in) : Menu(in) {
 }
 
 ContextMenu::ContextMenu(Obj* prnt, Rect<float> _rect, OpHolder* copy_op, Obj* copy_dest) : Menu(prnt, _rect) {
-	RegisterType(ObjType("ContextMenu"));
+	RegisterType("ContextMenu");
 
 	Link* target = &ADDOBJ(Link, Target, *this, (this));
 	target->Init("Obj", true);
@@ -252,7 +252,7 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 	if (!GETOBJ(Bool, list_menu, Hiden).GetVal()) {
 		int non_type = 0;
 		for (auto item : *list_menu->body->childs) {
-			if (!item->type.IsPrnt("Button")) {
+			if (!item->type->IsPrnt("Button")) {
 				non_type++;
 				continue;
 			}
@@ -260,10 +260,10 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 				Obj* new_target = nullptr;
 				Obj* target_list = GETOBJ(Link, list_menu, Target).GetLink();
 
-				if (target_list->type.IsPrnt("ObDict")) {
+				if (target_list->type->IsPrnt("ObDict")) {
 					new_target = ((ObDict*)target_list)->GetDict().GetEntry(item.Idx() - non_type)->val;
 				}
-				else if (target_list->type.IsPrnt("ObList")) {
+				else if (target_list->type->IsPrnt("ObList")) {
 					new_target = &((ObList*)target_list)->GetList()[item.Idx() - non_type];
 				}
 
@@ -279,7 +279,7 @@ void ContextMenu::ProcBody(ObList* requests, TUI* tui, WidgetTriggers* triggers)
 	if (!GETOBJ(Bool, dict_menu, Hiden).GetVal()) {
 		int non_type = 0;
 		for (auto item : *dict_menu->body->childs) {
-			if (!item->type.IsPrnt("Button")) {
+			if (!item->type->IsPrnt("Button")) {
 				non_type++;
 				continue;
 			}
@@ -351,20 +351,20 @@ void ContextMenu::TargetChanged(Obj* ths, ModType type) {
 		((Link&)op_args.GetObj("Destination")).SetLink(new_target);
 	}
 
-	if (new_target->type.IsPrnt("ObList") || new_target->type.IsPrnt("ObDict")) {
+	if (new_target->type->IsPrnt("ObList") || new_target->type->IsPrnt("ObDict")) {
 		GETOBJ(Bool, contex_menu->list_menu, Hiden).Set(false);
 		GETOBJ(Link, contex_menu->list_menu, Target).SetLink(new_target);
 	}
-	else if (new_target->type.IsPrnt("Int") || new_target->type.IsPrnt("Float") || new_target->type.IsPrnt("Bool") || new_target->type.IsPrnt("String")) {
+	else if (new_target->type->IsPrnt("Int") || new_target->type->IsPrnt("Float") || new_target->type->IsPrnt("Bool") || new_target->type->IsPrnt("String")) {
 		GETOBJ(Bool, contex_menu->input_field, Hiden).Set(false);
 		GETOBJ(Link, contex_menu->input_field, Target).SetLink(new_target);
 	}
-	else if (new_target->type.IsPrnt("Link")) {
+	else if (new_target->type->IsPrnt("Link")) {
 		GETOBJ(Bool, contex_menu->link_menu, Hiden).Set(false);
 		GETOBJ(Link, contex_menu->link_menu, Target).SetLink(new_target);
 	}
 
-	contex_menu->title->text->Assign(Str("Type : ") += new_target->type.idname);
+	contex_menu->title->text->Assign(Str("Type : ") += new_target->type->idname);
 
 	contex_menu->dictlist->SetRef(&new_target->props, false);
 	

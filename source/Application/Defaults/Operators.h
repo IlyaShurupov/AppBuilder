@@ -13,7 +13,7 @@ class QuitProgram : public Operator {
 public:
 
 	QuitProgram(Obj* prnt) : Operator(prnt) {
-		RegisterType(ObjType("Quit Program"));
+		RegisterType("Quit Program");
 		ObDict& args = GETOBJ(ObDict, this, Interface);
 		args.AddObj(new Bool(&args), "Save");
 	}
@@ -42,7 +42,7 @@ class CopyObject : public Operator {
 public:
 
 	CopyObject(Obj* prnt) : Operator(prnt) {
-		RegisterType(ObjType("Copy Object"));
+		RegisterType("Copy Object");
 		
 		ObDict& args = GETOBJ(ObDict, this, Interface);
 		
@@ -90,8 +90,14 @@ class SaveProgramm : public Operator {
 
 public:
 
+	struct NdHeader {
+		char name[8] = { ' ', 'N',  'o', 'd', 'e', 's', ' ', '\0'};
+		alnf version = 1.3f;
+		alni first_blok = 520;
+	} ndhead;
+
 	SaveProgramm(Obj* prnt) : Operator(prnt) {
-		RegisterType(ObjType("Save Programm"));
+		RegisterType("Save Programm");
 
 		ObDict& args = GETOBJ(ObDict, this, Interface);
 
@@ -147,6 +153,8 @@ public:
 
 			// reserve for header
 			file.fill(uint4(0), 513);
+			file.write<NdHeader>(&ndhead, 0);
+
 			file.adress = 512;
 
 			clear_flags();
@@ -176,16 +184,14 @@ public:
 			// save new pointer in file adress space
 			allhead->reserved = obj_file_adress;
 
-			// adress changes accordingly to the saved data size
-			// all objects links saved through passed procedure adress
-			// all other links save manually by object
-			uint8 end_adress = obj->save_to_file(save_obj, file, obj_file_adress);
+			uint8 saved_size = obj->save_to_file(save_obj, file, obj_file_adress);
 
 			// save size
-			uint8 size_val = end_adress - obj_file_adress;
-			file->write<uint8>(&size_val, obj_file_adress - 8);
+			file->write<uint8>(&saved_size, obj_file_adress - 8);
 
-			file->adress = end_adress;
+			file->adress = obj_file_adress + saved_size;
+
+			obj->save_oblinks(save_obj, file, obj_file_adress);
 		}
 
 		return obj_file_adress;

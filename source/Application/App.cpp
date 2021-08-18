@@ -15,7 +15,7 @@
 
 Application::Application(Obj* prnt) : Obj (prnt) {
     
-    RegisterType(ObjType("Application"));
+    RegisterType("Application");
 
     ADDOBJ(ObList, UIs, *this, (this)).Assign("UI", true);
     ADDOBJ(ObList, Requests, *this, (this)).Assign("Operator", true);

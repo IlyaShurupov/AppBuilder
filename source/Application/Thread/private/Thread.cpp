@@ -10,7 +10,7 @@ Operator::Operator(const Operator& in) : Obj(in) {
 
 
 Operator::Operator(Obj* prnt) : Obj(prnt) { 
-    RegisterType(ObjType("Operator"));
+    RegisterType("Operator");
     
     ObDict& args = ADDOBJ(ObDict, Interface, *this, (this)).Assign("Obj", true);
     args.AddObj(new String(&args), "Run Time Arg");

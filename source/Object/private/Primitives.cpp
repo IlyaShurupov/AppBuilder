@@ -9,7 +9,7 @@ String::String(const String& in) : Obj(in) {
 }
 
 String::String(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("String"));
+	RegisterType("String");
 }
 
 bool String::Assign(STRR _string) {
@@ -56,14 +56,14 @@ ObListIter::ObListIter(const Str* itertype, class ObList* oblist, int start_idx)
 	idx = start_idx;
 	
 	iter = oblist->list.Find(start_idx);
-	while (iter && type && !iter->data->type.IsPrnt(itertype)) {
+	while (iter && type && !iter->data->type->IsPrnt(itertype)) {
 		iter = iter->next;
 	}
 }
 
 void ObListIter::operator ++() {
 	iter = iter->next;
-	while (iter && type && !iter->data->type.IsPrnt(itertype)) {
+	while (iter && type && !iter->data->type->IsPrnt(itertype)) {
 		iter = iter->next;
 	}
 	idx++;
@@ -72,7 +72,7 @@ void ObListIter::operator ++() {
 int ObListIter::Len(const Str& type) {
 	int len = 0;
 	for (auto item : oblist->list) {
-		if (item->type.IsPrnt(type)) {
+		if (item->type->IsPrnt(type)) {
 			len++;
 		}
 	}
@@ -100,7 +100,7 @@ ObList::ObList(const ObList& in) : Obj(in) {
 }
 
 ObList::ObList(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("ObList"));
+	RegisterType("ObList");
 }
 
 ObList& ObList::Assign(Str _list_type, bool _base_class) {
@@ -119,11 +119,11 @@ bool ObList::AddObj(Obj* obj) {
 	}
 
 	if (base_class) {
-		if (obj->type.IsPrnt(list_type)) {
+		if (obj->type->IsPrnt(list_type)) {
 			list.PushBack(obj);
 		}
 	}
-	else if (obj->type.idname == list_type) {
+	else if (obj->type->idname == list_type) {
 		list.PushBack(obj);
 	}
 	else {
@@ -151,7 +151,7 @@ Link::Link(const Link& in) : Obj(in) {
 }
 
 Link::Link(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Link"));
+	RegisterType("Link");
 }
 
 void Link::Init(STRR _link_type, bool _base_class) {
@@ -165,13 +165,13 @@ bool Link::SetLink(Obj* obj) {
 	}
 
 	if (base_class) {
-		if (!obj || obj->type.IsPrnt(link_type)) {
+		if (!obj || obj->type->IsPrnt(link_type)) {
 			link = obj;
 		}
 	}
-	else if (obj->type.idname == link_type) {
+	else if (obj->type->idname == link_type) {
 		link = obj;
-		current_type = obj->type.idname;
+		current_type = obj->type->idname;
 	}
 	else {
 		return false;
@@ -204,7 +204,7 @@ alni max = ALIGNED_MAX;
 alni min = ALIGNED_MIN;
 
 Int::Int(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Int"));
+	RegisterType("Int");
 }
 
 
@@ -261,7 +261,7 @@ Float::Float(const Float& in) : Obj(in) {
 }
 
 Float::Float(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Float"));
+	RegisterType("Float");
 }
 
 bool Float::Assign(float _val, float _min, float _max) {
@@ -315,7 +315,7 @@ Bool::Bool(const Bool& in) : Obj(in) {
 }
 
 Bool::Bool(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Bool"));
+	RegisterType("Bool");
 }
 
 
@@ -381,7 +381,7 @@ ObDictIter::ObDictIter(const Str* itertype, class ObDict* oblist, int start_idx)
 			continue;
 		}
 
-		if (type && !obdict->dict->table[slot_idx]->val->type.IsPrnt(itertype)) {
+		if (type && !obdict->dict->table[slot_idx]->val->type->IsPrnt(itertype)) {
 			continue;
 		}
 
@@ -398,7 +398,7 @@ void ObDictIter::operator ++() {
 			break;
 		}
 
-	} while (!obdict->dict->table[slot_idx] || (type && !obdict->dict->table[slot_idx]->val->type.IsPrnt(itertype)));
+	} while (!obdict->dict->table[slot_idx] || (type && !obdict->dict->table[slot_idx]->val->type->IsPrnt(itertype)));
 
 	idx++;
 }
@@ -406,7 +406,7 @@ void ObDictIter::operator ++() {
 int ObDictIter::Len(const Str& type) {
 	int len = 0;
 	for (auto item : *obdict->dict) {
-		if (item->val->type.IsPrnt(type)) {
+		if (item->val->type->IsPrnt(type)) {
 			len++;
 		}
 	}
@@ -433,7 +433,7 @@ ObDict::ObDict(const ObDict& in) : Obj(in) {
 }
 
 ObDict::ObDict(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("ObDict"));
+	RegisterType("ObDict");
 	dict = new DictObj;
 }
 
@@ -453,11 +453,11 @@ bool ObDict::AddObj(Obj* obj, STRR name) {
 	}
 
 	if (base_class) {
-		if (obj->type.IsPrnt(dict_type)) {
+		if (obj->type->IsPrnt(dict_type)) {
 			dict->Put(name, obj);
 		}
 	}
-	else if (obj->type.idname == dict_type) {
+	else if (obj->type->idname == dict_type) {
 		dict->Put(name, obj);
 	}
 	else {
@@ -480,7 +480,7 @@ ObDict::~ObDict() {
 ObjTuple::ObjTuple(const ObjTuple& in) : Obj(in) {}
 
 ObjTuple::ObjTuple(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Tuple"));
+	RegisterType("Tuple");
 	ADDOBJ(Link, Head, *this, (this));
 	ADDOBJ(Link, Tail, *this, (this));
 }
@@ -502,7 +502,7 @@ ObjTuple::~ObjTuple() {
 CompareExpr::CompareExpr(const CompareExpr& in) : Obj(in) {}
 
 CompareExpr::CompareExpr(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Bool Compare Expretion"));
+	RegisterType("Bool Compare Expretion");
 
 	ADDOBJ(ObList, Conditions, *this, (this)).Assign("Tuple", false);
 	ADDOBJ(Bool, Or, *this, (this)).Assign(false);
@@ -540,7 +540,7 @@ bool CompareExpr::Equal(const Obj& obj) {
 
 
 ColorObj::ColorObj(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("Color"));
+	RegisterType("Color");
 
 	ADDOBJ(Float, R, *this, (this)).Assign(0, 0, 1);
 	ADDOBJ(Float, G, *this, (this)).Assign(0, 0, 1);
@@ -570,7 +570,7 @@ bool ColorObj::Set(const Color& col) {
 }
 
 bool ColorObj::Equal(const Obj& obj) {
-	assert((Str("Color") == obj.type.idname));
+	assert((Str("Color") == obj.type->idname));
 
 	return (
 		GETOBJ(Float, this, R).GetVal() == GETOBJ(Float, this, R).GetVal() &&

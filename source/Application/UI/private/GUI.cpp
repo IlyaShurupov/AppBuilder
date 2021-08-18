@@ -6,7 +6,7 @@ Widget::Widget(const Widget& in) : Requester(in) {
 }
 
 Widget::Widget(Obj* prnt, Rect<float> _rect, const Str& descrip) : Requester(prnt) {
-	RegisterType(ObjType("Widget"));
+	RegisterType("Widget");
 
 	ADDOBJ(ObList, Childs, *this, (this)).Assign("Widget", true);
 	childs = &GETOBJ(ObList, this, Childs).GetList();
@@ -130,7 +130,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, const Rect<float>& draw_
 	rect.pos += prnt_pos;
 	canvas.SetCanvasRect(rect);
 	Rect<float> clamped_bounds(draw_bounds);
-	if (prnt && prnt->type.IsPrnt("Widget")) {
+	if (prnt && prnt->type->IsPrnt("Widget")) {
 		Rect<float> prnt_rect(prnt_pos, ((Widget*)prnt)->rect.size);
 		if (!prnt_rect.overlap(rect)) {
 			rect.pos -= prnt_pos;
@@ -166,7 +166,7 @@ void Widget::RectMod(Obj* param, ModType type) {
 
 
 GUI::GUI(Obj* prnt, TUI* _tui) : UI(prnt) {
-	RegisterType(ObjType("GUI"));
+	RegisterType("GUI");
 
 	ADDOBJ(ObList, Windows, *this, (this)).Assign("Widget", true);
 

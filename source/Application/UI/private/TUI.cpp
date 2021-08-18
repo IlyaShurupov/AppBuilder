@@ -5,7 +5,7 @@
 ShortCut::ShortCut(const ShortCut& in) : Requester(in) {}
 
 ShortCut::ShortCut(Obj* prnt) : Requester(prnt) {
-	RegisterType(ObjType("ShortCut"));
+	RegisterType("ShortCut");
 
 	ADDOBJ(CompareExpr, Invoke, *this, (this));
 	ADDOBJ(ObList, RunTimeArgs, *this, (this)).Assign("Tuple", false);
@@ -38,7 +38,7 @@ void ShortCut::ProcInputs(ObList* reqs) {
 KeyInput::KeyInput(const KeyInput& in) : Obj(in) {}
 
 KeyInput::KeyInput(Obj* prnt) : Obj(prnt) {
-	RegisterType(ObjType("KeyInput"));
+	RegisterType("KeyInput");
 
 	ADDOBJ(Int, Key Code, *this, (this)).Assign(0, 0, 255);
 	ADDOBJ(Int, State, *this, (this)).Assign(0, 0, 5);
@@ -59,7 +59,7 @@ TUI::TUI(const TUI& in) : UI(in) {
 }
 
 TUI::TUI(Obj* prnt) : UI(prnt) {
-	RegisterType(ObjType("TUI"));
+	RegisterType("TUI");
 	ADDOBJ(ObList, Shortcuts, *this, (this)).Assign("ShortCut", false);
 	ADDOBJ(ObList, Inputs, *this, (this)).Assign("KeyInput", false);
 

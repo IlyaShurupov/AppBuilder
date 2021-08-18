@@ -97,7 +97,7 @@ public:
 	}
 
 	virtual Str as_string() {
-		return (type.idname + " ") += GETOBJ(String, this, Description).GetStr();
+		return (type->idname + " ") += GETOBJ(String, this, Description).GetStr();
 	}
 };
 

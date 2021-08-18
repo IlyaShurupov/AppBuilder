@@ -70,11 +70,15 @@ public:
 	NEXT:
 
 		if (HASHMAP_DELETED_SLOT(table, idx)) {
-			if (!existing) {
-				return idx;
+			if (existing) {
+				return -1;
 			}
+			return idx;
 		}
-		else if (!table[idx] && !existing) {
+		else if (!table[idx]) {
+			if (existing) {
+				return -1;
+			}
 			return idx;
 		}
 		else if (table[idx]->key == key) {
@@ -110,8 +114,14 @@ public:
 		}
 	}
 
+	int Presents(const K& key) {
+		int idx = find_slot(key, true);
+		return idx == -1 ? -1 : idx;
+	}
+
 	V& Get(const K& key) {
 		int idx = find_slot(key, true);
+		ASSERT(idx != -1);
 		return table[idx]->val;
 	}
 
@@ -126,9 +136,9 @@ public:
 		if (del_values) {
 			delete table[idx]->val;
 		}
-		
+
 		delete table[idx];
-		table[idx] = (HashNode<V, K>*)-1;
+		table[idx] = (HashNode<V, K>*) - 1;
 
 		nentries--;
 		if ((float)nentries / nslots < 1 - HASHMAP_LOAD_FACTOR) {
@@ -162,7 +172,7 @@ public:
 	}
 
 	MapIterator<K, V, Hashfunc, CopyValfunc, table_size> begin() {
-		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(this);  
+		return MapIterator<K, V, Hashfunc, CopyValfunc, table_size>(this);
 	}
 
 	alni end() {
@@ -182,7 +192,7 @@ public:
 		return -1;
 	}
 
-	HashNode<V, K>* GetEntry(int idx) { 
+	HashNode<V, K>* GetEntry(int idx) {
 		return table[SlotIdx(idx)];
 	}
 
@@ -226,8 +236,8 @@ public:
 		entry_idx++;
 	}
 
-	bool operator!=(int p_idx) { 
-		return slot_idx != p_idx; 
+	bool operator!=(int p_idx) {
+		return slot_idx != p_idx;
 	}
 
 	const MapIterator& operator*() { return *this; }

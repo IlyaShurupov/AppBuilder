@@ -2,6 +2,8 @@
 
 #include <limits.h>
 #include <float.h>
+#include <cassert>
+
 #include "Memory/Mem.h"
 
 // #if _WIN32 || _WIN64
@@ -21,7 +23,9 @@
 #define IF(cond, action) if ((cond)) { action; }
 #define SWAP(val1, val2, type) type tmp; tmp = val1; val1 = val2; val2 = tmp
 
+#define S_OFFSET(s, m) (alni(&(((s*)0)->m)))
 
+#define ASSERT(exp) assert((exp))
 
 // BAD! Coustom types
 typedef int SCR_INT;

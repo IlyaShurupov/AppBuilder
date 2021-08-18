@@ -3,7 +3,8 @@
 
 #include "Types.h"
 
-#define STRR const Str&
+#include "TypeTable.h"
+
 #define ADDOBJ(Type, Name, to, Args) ((Type &)(to).AddChld(new Type Args, #Name))
 #define GETOBJ(type, from, name) ((type&)*(from)->props.Get(#name))
 
@@ -42,22 +43,6 @@ struct OnModCallBack {
 	}
 };
 
-struct ObjType {
-
-	ObjType();
-	ObjType(STRR name);
-
-	bool IsPrnt(STRR);
-	bool operator==(const ObjType& in) {
-		return idname == in.idname;
-	}
-
-	Str idname;
-	bool locked = false;
-	ObjType* child = nullptr;
-	ObjType* prnt = nullptr;
-};
-
 class Obj {
 
 	Obj& operator=(const Obj& in);
@@ -76,10 +61,10 @@ public:
 	Obj& GetChld(STRR idname);
 	Obj& AddChld(Obj* chld, STRR idname);
 	void DelChild(STRR idname);
-	void RegisterType(const ObjType& _type);
+	ObjType* RegisterType(const Str& _type);
 
 	DictObj props;
-	ObjType type;
+	ObjType* type = nullptr;
 	Obj* prnt = nullptr;
 	Obj* next = nullptr;
 	Obj* prev = nullptr;
@@ -100,25 +85,36 @@ public:
 	void Modified(ModType type);
 
 	virtual Str as_string() { 
-		return type.idname; 
+		return type->idname; 
 	}
 
 	virtual bool from_string(Str* str) { return false; }
 
-	// savings & loadings from file
-	virtual int static_size() {
-		return sizeof(Obj);
-	}
-
-	// returns file_adress + size needed
+	// returns size written
 	virtual int save_to_file(int (*save_obj)(File* file, Obj* obj), File* file, int file_adress) {
-		uint8 val = 1;
-		file->write<uint8>(&val, file_adress);
-		return file_adress + 8;
+		uint8 size = save_static_self(file, file_adress);
+		size += save_dyn_alloc_to_file(file, file_adress);
+		return size;
 	}
 
-	virtual void save_dyn_alloc_to_file() {
+	// returns size written
+	virtual int save_static_self(File* file, int save_adress) {
+		int self_static_size = sizeof(Obj);
+		file->write((uint1 *)this, self_static_size, save_adress);
+		return self_static_size;
 	}
+
+	// returns size written
+	virtual int save_dyn_alloc_to_file(File* file, int self_adress) {
+		return 0;
+	}
+
+	// no size needed
+	virtual void save_oblinks(int (*save_obj)(File* file, Obj* obj), File* file, int self_adress) {
+		int test = S_OFFSET(Obj, prev) - S_OFFSET(Obj, next);
+		test++;
+	}
+
 
 	virtual ~Obj() {
 		if (next) {

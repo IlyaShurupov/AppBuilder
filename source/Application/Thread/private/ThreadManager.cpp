@@ -8,7 +8,7 @@ OpHolder::OpHolder(const OpHolder& in) : Obj(in) {
 
 
 OpHolder::OpHolder(Obj* prnt, Operator* _op) : Obj(prnt) {
-    RegisterType(ObjType("OpHolder"));
+    RegisterType("OpHolder");
     op = _op;
 }
 

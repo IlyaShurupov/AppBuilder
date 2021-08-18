@@ -4,6 +4,8 @@
 
 struct Str;
 
+#define STRR const Str&
+
 void to_string(Str* str, int val);
 void to_string(Str* str, alnf val);
 void to_string(Str* str, bool val);

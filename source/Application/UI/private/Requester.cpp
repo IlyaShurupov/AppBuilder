@@ -13,7 +13,7 @@ Requester::Requester(const Requester& in) : Obj(in) {
 
 Requester::Requester(Obj* prnt) : Obj(prnt) {
 
-	RegisterType(ObjType("Requester"));
+	RegisterType("Requester");
 
 	ADDOBJ(ObDict, Op Args, *this, (this)).Assign("Obj", true);
 

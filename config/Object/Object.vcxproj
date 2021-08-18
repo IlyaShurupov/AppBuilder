@@ -22,11 +22,13 @@
     <ClInclude Include="..\..\source\Object\Method.h" />
     <ClInclude Include="..\..\source\Object\Object.h" />
     <ClInclude Include="..\..\source\Object\Primitives.h" />
+    <ClInclude Include="..\..\source\Object\TypeTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\Object\private\Method.cpp" />
     <ClCompile Include="..\..\source\Object\private\Object.cpp" />
     <ClCompile Include="..\..\source\Object\private\Primitives.cpp" />
+    <ClCompile Include="..\..\source\Object\private\TypeTable.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

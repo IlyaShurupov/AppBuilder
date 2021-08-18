@@ -3,29 +3,11 @@
 
 Obj* objs_entry = nullptr;
 
+extern TypeTable g_type_table;
+
 Obj* CopyObj::operator()(Obj* in) {
 	return &in->Instance();
 }
-
-ObjType::ObjType() {
-	idname = "Obj";
-}
-
-ObjType::ObjType(STRR name) {
-	idname = name;
-}
-
-bool ObjType::IsPrnt(STRR prnt_id) {
-	ObjType* type_node = this;
-	while (type_node) {
-		if (type_node->idname == prnt_id) {
-			return true;
-		}
-		type_node = type_node->prnt;
-	}
-	return false;
-}
-
 
 void Obj::set_obj_entry(Obj* new_entry) {
 	objs_entry = new_entry;
@@ -54,7 +36,7 @@ Obj::Obj(const Obj& in) {
 }
 
 Obj::Obj(Obj* _prnt) {
-	type = ObjType("Obj");
+	type = g_type_table.define_type("Obj");
 	prnt = _prnt;
 
 	if (objs_entry) {
@@ -65,13 +47,11 @@ Obj::Obj(Obj* _prnt) {
 	objs_entry = this;
 }
 
-void Obj::RegisterType(const ObjType& _type) {
-	ObjType* current_type = new ObjType();
-	*current_type = type;
-	current_type->child = &(type);
-
-	type = _type;
-	type.prnt = current_type;
+ObjType* Obj::RegisterType(const Str& _type) {
+	ObjType* current_type = type;
+	type = g_type_table.define_type(_type);
+	type->prnt = current_type;
+	return type;
 }
 
 Obj& Obj::GetChld(STRR idname) {
@@ -97,7 +77,7 @@ void Obj::BindModPoll(Obj* ths, bool (*call)(Obj* ths)) {
 }
 
 bool Obj::CanModify() {
-	if (type.locked) {
+	if (type->locked) {
 		return false;
 	}
 	if (req_mod_poll) {
