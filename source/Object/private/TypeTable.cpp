@@ -13,10 +13,15 @@ ObjType::ObjType(STRR name) {
 	idname = name;
 }
 
-bool ObjType::IsPrnt(STRR prnt_id) {
+bool ObjType::InheritsFrom(STRR prnt_id) {
+
+	int inherit_type_idx = g_type_table.types.Presents(prnt_id);
+	assert(inherit_type_idx != -1);
+	ObjType* inherit_type = g_type_table.types.table[inherit_type_idx]->val;
 	ObjType* type_node = this;
+
 	while (type_node) {
-		if (type_node->idname == prnt_id) {
+		if (type_node == inherit_type) {
 			return true;
 		}
 		type_node = type_node->prnt;

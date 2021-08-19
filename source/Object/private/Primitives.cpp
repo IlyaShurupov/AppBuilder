@@ -56,14 +56,14 @@ ObListIter::ObListIter(const Str* itertype, class ObList* oblist, int start_idx)
 	idx = start_idx;
 	
 	iter = oblist->list.Find(start_idx);
-	while (iter && type && !iter->data->type->IsPrnt(itertype)) {
+	while (iter && type && !iter->data->type->InheritsFrom(itertype)) {
 		iter = iter->next;
 	}
 }
 
 void ObListIter::operator ++() {
 	iter = iter->next;
-	while (iter && type && !iter->data->type->IsPrnt(itertype)) {
+	while (iter && type && !iter->data->type->InheritsFrom(itertype)) {
 		iter = iter->next;
 	}
 	idx++;
@@ -72,7 +72,7 @@ void ObListIter::operator ++() {
 int ObListIter::Len(const Str& type) {
 	int len = 0;
 	for (auto item : oblist->list) {
-		if (item->type->IsPrnt(type)) {
+		if (item->type->InheritsFrom(type)) {
 			len++;
 		}
 	}
@@ -119,7 +119,7 @@ bool ObList::AddObj(Obj* obj) {
 	}
 
 	if (base_class) {
-		if (obj->type->IsPrnt(list_type)) {
+		if (obj->type->InheritsFrom(list_type)) {
 			list.PushBack(obj);
 		}
 	}
@@ -165,7 +165,7 @@ bool Link::SetLink(Obj* obj) {
 	}
 
 	if (base_class) {
-		if (!obj || obj->type->IsPrnt(link_type)) {
+		if (!obj || obj->type->InheritsFrom(link_type)) {
 			link = obj;
 		}
 	}
@@ -381,7 +381,7 @@ ObDictIter::ObDictIter(const Str* itertype, class ObDict* oblist, int start_idx)
 			continue;
 		}
 
-		if (type && !obdict->dict->table[slot_idx]->val->type->IsPrnt(itertype)) {
+		if (type && !obdict->dict->table[slot_idx]->val->type->InheritsFrom(itertype)) {
 			continue;
 		}
 
@@ -398,7 +398,7 @@ void ObDictIter::operator ++() {
 			break;
 		}
 
-	} while (!obdict->dict->table[slot_idx] || (type && !obdict->dict->table[slot_idx]->val->type->IsPrnt(itertype)));
+	} while (!obdict->dict->table[slot_idx] || (type && !obdict->dict->table[slot_idx]->val->type->InheritsFrom(itertype)));
 
 	idx++;
 }
@@ -406,7 +406,7 @@ void ObDictIter::operator ++() {
 int ObDictIter::Len(const Str& type) {
 	int len = 0;
 	for (auto item : *obdict->dict) {
-		if (item->val->type->IsPrnt(type)) {
+		if (item->val->type->InheritsFrom(type)) {
 			len++;
 		}
 	}
@@ -453,7 +453,7 @@ bool ObDict::AddObj(Obj* obj, STRR name) {
 	}
 
 	if (base_class) {
-		if (obj->type->IsPrnt(dict_type)) {
+		if (obj->type->InheritsFrom(dict_type)) {
 			dict->Put(name, obj);
 		}
 	}

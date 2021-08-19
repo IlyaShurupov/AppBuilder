@@ -184,7 +184,7 @@ public:
 			// save new pointer in file adress space
 			allhead->reserved = obj_file_adress;
 
-			uint8 saved_size = obj->save_to_file(save_obj, file, obj_file_adress);
+			uint8 saved_size = obj->save_to_file(file, obj_file_adress);
 
 			// save size
 			file->write<uint8>(&saved_size, obj_file_adress - 8);

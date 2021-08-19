@@ -34,6 +34,7 @@ public:
 
 #define KEY_LBUTTON        0x01
 #define KEY_RBUTTON        0x02
+#define KEY_ESC			       0x1B
 #define KEY_CANCEL         0x03
 #define KEY_MBUTTON        0x04    
 

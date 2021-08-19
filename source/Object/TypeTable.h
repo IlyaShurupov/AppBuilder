@@ -8,13 +8,12 @@ struct ObjType {
 	ObjType();
 	ObjType(STRR name);
 
-	bool IsPrnt(STRR);
+	bool InheritsFrom(STRR);
 	bool operator==(const ObjType& in) {
 		return idname == in.idname;
 	}
 
 	Str idname;
-	bool locked = false;
 	ObjType* prnt = nullptr;
 };
 

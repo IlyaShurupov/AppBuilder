@@ -77,9 +77,6 @@ void Obj::BindModPoll(Obj* ths, bool (*call)(Obj* ths)) {
 }
 
 bool Obj::CanModify() {
-	if (type->locked) {
-		return false;
-	}
 	if (req_mod_poll) {
 		return req_mod_poll(req_mod_param);
 	}

@@ -69,52 +69,34 @@ public:
 	Obj* next = nullptr;
 	Obj* prev = nullptr;
 
-	virtual bool Equal(const Obj& obj) { return false; }
-
 	// modification callbacks
-
 	Obj* req_mod_param = nullptr;
 	bool (*req_mod_poll)(Obj* req_mod_param) = nullptr;
 	Array<OnModCallBack> OnModCallBacks;
-
 	void BindModPoll(Obj* ths, bool (*call)(Obj* ths));
 	bool CanModify();
-
 	void AddOnModCallBack(Obj* ths, void (*call)(Obj* ths, ModType));
 	void RemoveOnModCallBack(void (*call)(Obj* ths, ModType));
 	void Modified(ModType type);
 
-	virtual Str as_string() { 
-		return type->idname; 
-	}
-
+	virtual Str as_string() { return type->idname; }
 	virtual bool from_string(Str* str) { return false; }
+	virtual bool Equal(const Obj& obj) { return false; }
 
 	// returns size written
-	virtual int save_to_file(int (*save_obj)(File* file, Obj* obj), File* file, int file_adress) {
-		uint8 size = save_static_self(file, file_adress);
-		size += save_dyn_alloc_to_file(file, file_adress);
-		return size;
-	}
-
-	// returns size written
-	virtual int save_static_self(File* file, int save_adress) {
-		int self_static_size = sizeof(Obj);
-		file->write((uint1 *)this, self_static_size, save_adress);
-		return self_static_size;
-	}
-
-	// returns size written
-	virtual int save_dyn_alloc_to_file(File* file, int self_adress) {
+	virtual int save_to_file(File* file, int file_adress) {
+		//file->write((uint1*)this, self_static_size, save_adress);
 		return 0;
+	}
+
+	virtual void load_from_file(File* file, int file_adress) {
+		return;
 	}
 
 	// no size needed
 	virtual void save_oblinks(int (*save_obj)(File* file, Obj* obj), File* file, int self_adress) {
-		int test = S_OFFSET(Obj, prev) - S_OFFSET(Obj, next);
-		test++;
+		//int test = S_OFFSET(Obj, prev) - S_OFFSET(Obj, next);
 	}
-
 
 	virtual ~Obj() {
 		if (next) {

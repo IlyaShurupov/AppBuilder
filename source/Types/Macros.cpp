@@ -31,3 +31,7 @@ int hash_string(const char* bytes) {
 	}
 	return hash;
 }
+
+void dbg_assert(const char* exp, const char* file, int line) {
+	throw -1;
+}

@@ -121,7 +121,7 @@ public:
 
 	V& Get(const K& key) {
 		int idx = find_slot(key, true);
-		ASSERT(idx != -1);
+		assert(idx != -1);
 		return table[idx]->val;
 	}
 

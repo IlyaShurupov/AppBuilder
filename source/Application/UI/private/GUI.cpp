@@ -130,7 +130,7 @@ void Widget::Draw(Window& canvas, vec2<float> prnt_pos, const Rect<float>& draw_
 	rect.pos += prnt_pos;
 	canvas.SetCanvasRect(rect);
 	Rect<float> clamped_bounds(draw_bounds);
-	if (prnt && prnt->type->IsPrnt("Widget")) {
+	if (prnt && prnt->type->InheritsFrom("Widget")) {
 		Rect<float> prnt_rect(prnt_pos, ((Widget*)prnt)->rect.size);
 		if (!prnt_rect.overlap(rect)) {
 			rect.pos -= prnt_pos;

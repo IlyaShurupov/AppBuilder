@@ -2,7 +2,6 @@
 
 #include <limits.h>
 #include <float.h>
-#include <cassert>
 
 #include "Memory/Mem.h"
 
@@ -25,7 +24,14 @@
 
 #define S_OFFSET(s, m) (alni(&(((s*)0)->m)))
 
-#define ASSERT(exp) assert((exp))
+void dbg_assert(const char* exp, const char* file, int line);
+
+#ifdef NDEBUG
+#define assert(exp) ((void)0)
+#else
+#define assert(exp) if (!(exp)) {dbg_assert(#exp, __FILE__, __LINE__);}
+#endif
+
 
 // BAD! Coustom types
 typedef int SCR_INT;

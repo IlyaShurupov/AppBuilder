@@ -482,7 +482,7 @@ class ListMenu : public Menu {
 		int widget_items_len = 0;
 
 		for (auto child : *widget_list) {
-			if (child->type->IsPrnt(widget_type)) {
+			if (child->type->InheritsFrom(widget_type)) {
 				widget_items_len++;
 			}
 		}
@@ -492,7 +492,7 @@ class ListMenu : public Menu {
 
 		Node<Obj>* widget_node = widget_list->First();
 
-		while (widget_node && !widget_node->data->type->IsPrnt(widget_type)) {
+		while (widget_node && !widget_node->data->type->InheritsFrom(widget_type)) {
 			widget_node = widget_node->next;
 		}
 
@@ -504,7 +504,7 @@ class ListMenu : public Menu {
 			++target_list;
 			widget_node = widget_node->next;
 
-			while (widget_node && !widget_node->data->type->IsPrnt(widget_type)) {
+			while (widget_node && !widget_node->data->type->InheritsFrom(widget_type)) {
 				widget_node = widget_node->next;
 			}
 		}
@@ -512,7 +512,7 @@ class ListMenu : public Menu {
 		if (diff < 0) {
 			Node<Obj>* widget_node = widget_list->Last();
 			while (diff) {
-				if (widget_node->data->type->IsPrnt(widget_type)) {
+				if (widget_node->data->type->InheritsFrom(widget_type)) {
 					Node<Obj>* del_node = widget_node;
 					widget_node = widget_node->prev;
 					widget_list->DelNode(del_node);
@@ -528,7 +528,7 @@ class ListMenu : public Menu {
 			float pos = -FLT_MAX;
 			if (widget_items_len) {
 				for (auto item : *widget_list) {
-					if (!item->type->IsPrnt(widget_type)) {
+					if (!item->type->InheritsFrom(widget_type)) {
 						continue;
 					}
 					float item_pos = ((Widget*)item.Data())->rect.size_vec_w().y;
@@ -684,9 +684,10 @@ public:
 		GETOBJ(ColorObj, this, Inactive Col).Set(Color(0.17, 0.17, 0.18, 1));
 		GETOBJ(ColorObj, this, Active Col).Set(Color(0.2, 0.2, 0.21, 1));
 
-		Label* welcom = new Label(this, Rect<float>(300, 150, 300, 200));
-		welcom->text->Assign("    Nodes startup editor \nfff \n\ngg");
-		GETOBJ(Int, welcom, Text Size).Set(25);
+		Label* welcom = new Label(this, Rect<float>(150, 150, 300, 200));
+		welcom->text->Assign("  Nodes startup editor. Press esc to exit. ");
+		GETOBJ(Int, welcom, Text Size).Set(35);
+		GETOBJ(Int, welcom, DrawOrder).Set(-1);
 		GETOBJ(ObList, this, Childs).GetList().PushBack(welcom);
 
 

@@ -106,6 +106,7 @@ void Application::Compose() {
     KeyInput* key_LMB = AddKeyInput(tui, "LMB", "", KEY_LBUTTON, 0);
     KeyInput* key_RMB = AddKeyInput(tui, "RMB", "", KEY_RBUTTON, 0);
     KeyInput* key_del = AddKeyInput(tui, "DELETE", "", KEY_DELETE, 0);
+    KeyInput* key_esc = AddKeyInput(tui, "DELETE", "", KEY_ESC, 0);
 
     // Adding Shortcuts
     ShortCut* shcut = new ShortCut(&GETOBJ(ObList, tui, Shortcuts));
@@ -117,7 +118,7 @@ void Application::Compose() {
     Int* trigger_val = new Int(cond);
     trigger_val->Assign(3, -1, 5);
     cond->GetHead().SetLink(trigger_val);
-    cond->GetTail().SetLink(&GETOBJ(Int, key_del, State));
+    cond->GetTail().SetLink(&GETOBJ(Int, key_esc, State));
     cond_list.AddObj(cond);
     
     GETOBJ(ObList, tui, Shortcuts).AddObj(shcut);
