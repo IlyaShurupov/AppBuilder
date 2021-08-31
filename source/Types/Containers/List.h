@@ -35,6 +35,7 @@ class List {
 
 public:
 	bool recursive_free_on_destruction = true;
+	bool shared_nodes = false;
 
 public:
 	List() {}
@@ -184,7 +185,12 @@ public:
 	}
 
 	void Release() {
-		ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+		if (shared_nodes) {
+			ForEach([](List<Type>* list, Node<Type>* node) { list->Detach(node); });
+		}
+		else {
+			ForEach([](List<Type>* list, Node<Type>* node) { Node<Type>* del_node = node;  list->Detach(node); delete del_node; });
+		}
 		length = 0;
 		first = last = nullptr;
 	}
@@ -204,12 +210,7 @@ public:
 
 	List<Type>& operator = (const List<Type>& in) {
 
-		if (recursive_free_on_destruction) {
-			Delete();
-		}
-		else {
-			Release();
-		}
+		Clear();
 
 		*this += in;
 

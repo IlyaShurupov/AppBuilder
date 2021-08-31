@@ -265,6 +265,7 @@ void GUI::PumpRequests(ObList* requests) {
 		Widget* widget = ((Widget*)widget_iter.Data());
 		widget->Proc(requests, &triggers, tui);
 	}
+
 }
 
 void GUI::OutPut(Obj* root) {
